@@ -19,6 +19,19 @@ normal back navigation flushes pending changes. Browser shutdown is best-effort,
 not a guarantee of durable browser storage. See STORAGE_AND_SAVING.md for current
 storage and later Photos/Gallery / Save as / design-board export actions.
 
+Style/autosave validation: all 63 VM/widget tests pass. Coverage includes failed
+saves and retry, queued edits, style controls, save-before-Back, backup restoration
+and reopening isolated Hive storage with saved preferences. Analysis and the web
+release build pass. No live AI calls or existing browser data were used.
+
+Manual Chrome check after hot restart of the existing session/address:
+1. Open a room, scroll to AI instructions, tick Modern and Contemporary and enter
+   an Other direction. Choose Explore ideas for a whole-room renovation.
+2. Enter changes and protected features, pause and check Saved locally.
+3. Expand Preview prepared prompt; check styles, palette and layout restrictions.
+4. Edit again and immediately use Back. Reopen and check the draft survived.
+5. Back up the project and restore a separate copy; verify preferences and photos.
+
 The user's supplied kitchen/dining board is a target for future presentation:
 separate A/B designs, room-wide renders, material swatches and a plan inset.
 Keep the reference image unchanged and do not infer verified measurements or

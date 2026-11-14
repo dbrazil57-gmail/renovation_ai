@@ -956,11 +956,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
           final saved = await draft.save();
           if (saved && !draft.dirty && context.mounted) {
             Navigator.pop(context);
-          } else if (!saved && context.mounted)
+          } else if (!saved && context.mounted) {
             notice(
               context,
               'Save failed. Stay on this screen and retry saving.',
             );
+          }
         },
         child: Scaffold(
           appBar: AppBar(

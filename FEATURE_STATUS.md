@@ -3,7 +3,7 @@
 Updated 14 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
-Latest automated checks: all 56 VM/widget tests pass; static analysis is clean;
+Latest automated checks: all 63 VM/widget tests pass; static analysis is clean;
 the web release build passes.
 Existing user data was not opened, cleared or migrated during these checks.
 
@@ -35,6 +35,9 @@ Existing user data was not opened, cleared or migrated during these checks.
 | Review status | History labels distinguish passed, pending and favourite designs; review menu can return an idea to Explore |
 | Before / after | Slider comparison against original; differing crops may not align |
 | Room instructions | Save requested changes and protected-feature text |
+| Design styles | Ten tickable style choices plus Other free text; saved per room and included in prompts/backups |
+| Draft autosave | Text, styles, mode and layout preference save after a short pause; status, retry and save-before-Back handling |
+| Prompt preparation | Scope-aware local template, layout preference, broad-request hint and prepared-prompt preview; not AI-authored |
 | Explore / Precision modes | Different prompts; precision is not technically enforced |
 | Manual AI handoff | Copy prompt and import external result |
 | In-app OpenAI integration | Local relay, private key entry, consent, new-version saving and failure handling; tested with simulated responses only |
