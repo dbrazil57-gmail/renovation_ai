@@ -20,6 +20,10 @@ Existing user data was not opened, cleared or migrated during these checks.
 | Colour palettes | Seven coordinated presets with named swatches, hex references and suggested surfaces; choose after uploading a new room or change later in its workspace |
 | Visible palette controls | Palette panel appears above room photos; choose directly from the swatch strip or open the full chooser |
 | Saved colour direction | Palette preference persists with the room, survives backup/restore and enters copied / in-app AI prompts; previous versions retain the palette text used in their saved prompt |
+| Design style choices | Tick Modern, Contemporary, Classic and other styles; add Other / extra direction; preferences persist and enter prompts |
+| Scope-aware prepared prompts | Distinguishes a coordinated renovation from a precision correction, handles "nothing to retain", respects layout/style/palette priorities and asks for missing photos |
+| Prompt preview | Live preview of locally prepared text; clearly labelled as not AI-written |
+| Draft autosave | Local saves for instructions, protections, styles and mode; visible saving/saved/failure state, manual retry and pending-save handling on normal back navigation |
 | Local persistence | Hive metadata and image boxes; isolated file-reopen tests pass |
 | Immutable originals | Edit/generation flows create separate images and versions |
 | Image viewing | Workspace zoom/pan |
@@ -84,7 +88,7 @@ rooms/backups without this optional preference remain readable.
 - Dedicated Paint/sketch reference attachment workflow (ordinary images can be imported).
 - Rotation, eraser and brush controls.
 - Delete projects/rooms and versions; review filters and richer rejected-version management.
-- Autosaved instruction drafts and explicit unsaved-change protection.
+- Stronger protection against browser/process shutdown and persistent backup scheduling.
 - Comprehensive startup/storage corruption, low-space and interrupted-import recovery.
 - Persistent Android AI connection settings / secure production backend.
 - Guaranteed encrypted-at-rest photo storage.

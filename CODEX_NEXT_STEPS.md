@@ -4,6 +4,26 @@ Updated: 14 November 2026 (Australia/Sydney).
 
 ## Current direction: local workflow and look/feel, no key required yet
 
+Newest style/autosave batch: tickable Modern, Contemporary, Classic, Minimalist,
+Scandinavian, Coastal, Hamptons, Industrial, Rustic and Japandi choices, plus Other
+free text. Keep existing layout and walls is an explicit preference. New rooms
+default to Explore ideas; older records preserve the prior precision default.
+The local prompt builder now uses these choices, handles "nothing to retain"
+without a contradictory retain clause, and suggests Explore when a precision
+request mentions multiple room elements. It does not change mode automatically.
+A prepared-prompt preview is explicitly labelled as local/template-based.
+
+Room text/style/mode drafts autosave after a short pause. Saving, Saved locally
+and failure states are visible. Save instructions remains a force-save/retry;
+normal back navigation flushes pending changes. Browser shutdown is best-effort,
+not a guarantee of durable browser storage. See STORAGE_AND_SAVING.md for current
+storage and later Photos/Gallery / Save as / design-board export actions.
+
+The user's supplied kitchen/dining board is a target for future presentation:
+separate A/B designs, room-wide renders, material swatches and a plan inset.
+Keep the reference image unchanged and do not infer verified measurements or
+permission to alter unrelated architecture from the reference.
+
 Latest user report: palette not visible in the room/design screen. The visibility
 fix moves the card above the gallery and shows directly selectable palette
 swatches even before a preference is saved. The full chooser and existing saved

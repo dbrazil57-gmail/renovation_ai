@@ -13,6 +13,9 @@ Rooms support up to six original photos, a primary viewpoint and optional
 multi-image AI context. Add angles when creating a room or from its workspace.
 Choose a colour palette after selecting new room photos, or use Colour palette
 in the workspace. Presets are saved locally and included in future design prompts.
+Design styles and an Other field also feed the prepared prompt. Text and style
+preferences autosave locally, with visible status and a manual save/retry.
+See [STORAGE_AND_SAVING.md](STORAGE_AND_SAVING.md) for storage and export options.
 In-app AI connection: [AI_TEST_SETUP.md](AI_TEST_SETUP.md). A developer API key is
 required; a subscription login cannot be entered as an API key.
 
