@@ -25,6 +25,7 @@ and reopening isolated Hive storage with saved preferences. Analysis and the web
 release build pass. No live AI calls or existing browser data were used.
 
 Manual Chrome check after hot restart of the existing session/address:
+
 1. Open a room, scroll to AI instructions, tick Modern and Contemporary and enter
    an Other direction. Choose Explore ideas for a whole-room renovation.
 2. Enter changes and protected features, pause and check Saved locally.

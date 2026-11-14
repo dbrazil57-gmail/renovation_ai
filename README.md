@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Renovision AI — local Stage 1 prototype
 
 An existing Flutter renovation app with project/room creation, local Hive storage,
@@ -69,3 +70,6 @@ flutter build web
 - Room workspaces offer Download image (metadata-free PNG). Projects offer Back
   up project (exact original bytes, history and approvals); restore adds a separate
   project copy. Check browser Downloads. Backups contain private photos/metadata.
+=======
+# renovation_ai
+>>>>>>> origin/main
