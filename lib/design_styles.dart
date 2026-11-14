@@ -30,8 +30,9 @@ bool hasNoProtectedFinishes(String text) =>
 bool looksLikeBroadRenovation(String text) {
   final lower = text.toLowerCase();
   if (RegExp(r'whole room|full renovation|everything|all to change')
-      .hasMatch(lower))
+      .hasMatch(lower)) {
     return true;
+  }
   final groups = [
     r'cupboard|cabinet|joinery',
     r'benchtop|worktop|countertop',

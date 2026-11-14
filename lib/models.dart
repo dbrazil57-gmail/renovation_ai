@@ -248,7 +248,7 @@ String buildRenovationPrompt({
       if (designStyles[id] != null) designStyles[id]!,
   ];
   final layout = preciseEdit || keepLayout
-      ? 'LAYOUT: Keep the existing walls, openings, window sizes, room proportions, camera viewpoint and positions of the main kitchen/room elements. Update the requested surfaces and fittings in place; do not relocate the peninsula, sink or appliance tower unless explicitly instructed.'
+      ? 'LAYOUT: Keep the existing walls, openings, window sizes, room proportions, camera viewpoint and positions of the main room elements. Update the requested surfaces and fittings in place.${roomName.toLowerCase().contains('kitchen') ? ' Do not relocate the peninsula, sink or appliance tower unless explicitly instructed.' : ''}'
       : 'LAYOUT: Internal furniture or cabinetry layout exploration is allowed within the existing room. Keep the outer walls, openings and viewpoint; do not invent structural changes or extra windows and doors.';
   final style = [
     ...styleNames,

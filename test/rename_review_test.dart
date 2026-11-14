@@ -60,46 +60,54 @@ void main() {
     },
   );
 
-  testWidgets('rename room preserves unsaved instruction draft and baseline', (
-    tester,
-  ) async {
-    final design = await store.createDesign(
-      roomId: room.id,
-      image: image,
-      title: 'Option',
-      prompt: 'Keep windows',
-    );
-    await store.approveBaseline(room.id, designId: design.id);
-    await tester.pumpWidget(
-      MaterialApp(
-        home: WorkspaceScreen(store: store, roomId: room.id),
-      ),
-    );
-    await tester.pumpAndSettle();
-    final instructions = find.widgetWithText(TextField, 'What should change?');
-    await tester.scrollUntilVisible(
-      instructions,
-      350,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.pumpAndSettle();
-    await tester.ensureVisible(instructions);
-    await tester.enterText(instructions, 'Unsaved skirting instructions');
-    await tester.tap(find.byTooltip('Rename room'));
-    await tester.pumpAndSettle();
-    await tester.enterText(dialogField(), 'Home office');
-    await tester.tap(find.text('Save'));
-    await tester.pumpAndSettle();
-    expect(find.text('Home office'), findsOneWidget);
-    expect(
-      tester.widget<TextField>(instructions).controller!.text,
-      'Unsaved skirting instructions',
-    );
-    expect(store.roomById(room.id)!.instructions, '');
-    expect(store.roomById(room.id)!.approvedDesignId, design.id);
-    expect(store.imageFor(room.originalId), orderedEquals(image));
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'rename room preserves autosaved instruction draft and baseline',
+    (tester) async {
+      final design = await store.createDesign(
+        roomId: room.id,
+        image: image,
+        title: 'Option',
+        prompt: 'Keep windows',
+      );
+      await store.approveBaseline(room.id, designId: design.id);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WorkspaceScreen(store: store, roomId: room.id),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final instructions = find.widgetWithText(
+        TextField,
+        'What should change?',
+      );
+      await tester.scrollUntilVisible(
+        instructions,
+        350,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(instructions);
+      await tester.enterText(instructions, 'Unsaved skirting instructions');
+      await tester.tap(find.byTooltip('Rename room'));
+      await tester.pumpAndSettle();
+      await tester.enterText(dialogField(), 'Home office');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      expect(find.text('Home office'), findsOneWidget);
+      expect(
+        tester.widget<TextField>(instructions).controller!.text,
+        'Unsaved skirting instructions',
+      );
+      await tester.pump(const Duration(milliseconds: 700));
+      expect(
+        store.roomById(room.id)!.instructions,
+        'Unsaved skirting instructions',
+      );
+      expect(store.roomById(room.id)!.approvedDesignId, design.id);
+      expect(store.imageFor(room.originalId), orderedEquals(image));
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets(
     'passed design returns to review on a narrow screen without changing approval',

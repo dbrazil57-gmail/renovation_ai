@@ -60,6 +60,15 @@ void main() {
       final ids = store.roomById(room.id)!.photoIds;
       await store.setPrimaryPhoto(room.id, ids.last);
       await store.setRoomPalette(room.id, 'charcoal_walnut');
+      await store.saveRoomDraft(
+        room.id,
+        instructions: 'New cabinets',
+        protectedFeatures: 'Keep windows',
+        designStyleIds: ['modern', 'contemporary'],
+        otherStyle: 'Warm and practical',
+        preciseEdit: false,
+        keepLayout: true,
+      );
       store.dispose();
       await records.close();
       await photos.close();
@@ -71,6 +80,11 @@ void main() {
       store = RenovisionStore(records: records, photos: photos);
       expect(store.roomById(room.id)!.photoIds, ids);
       expect(store.roomById(room.id)!.colourPaletteId, 'charcoal_walnut');
+      expect(store.roomById(room.id)!.designStyleIds, [
+        'modern',
+        'contemporary',
+      ]);
+      expect(store.roomById(room.id)!.otherStyle, 'Warm and practical');
       expect(store.roomById(room.id)!.primaryId, ids.last);
       expect(store.imageFor(ids[0]), orderedEquals([1, 2]));
       expect(store.imageFor(ids[1]), orderedEquals([3, 4]));

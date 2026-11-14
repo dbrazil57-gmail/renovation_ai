@@ -40,7 +40,8 @@ class RoomDraft extends ChangeNotifier {
     otherStyle.addListener(_textChanged);
   }
 
-  String get _text => '${changes.text}\u0000${protected.text}\u0000${otherStyle.text}';
+  String get _text =>
+      '${changes.text}\u0000${protected.text}\u0000${otherStyle.text}';
   void _textChanged() {
     if (_lastText == _text) return;
     _lastText = _text;

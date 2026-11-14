@@ -93,11 +93,13 @@ class ProjectBackup {
         _optionalText(room['primaryPhotoId']);
         _optionalText(room['colourPaletteId']);
         _optionalText(room['otherStyle']);
-        if (room['designStyleIds'] != null)
+        if (room['designStyleIds'] != null) {
           _list(room['designStyleIds'], 20).forEach(_string);
+        }
         for (final field in ['preciseEdit', 'keepLayout']) {
-          if (room[field] != null && room[field] is! bool)
+          if (room[field] != null && room[field] is! bool) {
             throw const FormatException();
+          }
         }
         if (room['additionalPhotoIds'] != null) {
           _list(room['additionalPhotoIds'], 5).forEach(_string);
