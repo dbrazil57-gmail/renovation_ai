@@ -24,6 +24,7 @@ class RoomDraft extends ChangeNotifier {
   int _savedRevision = 0;
   bool _disposed = false;
   Future<bool> _queue = Future.value(true);
+  late String _lastText;
 
   RoomDraft(this.store, RenovationRoom room)
     : roomId = room.id,
@@ -33,9 +34,17 @@ class RoomDraft extends ChangeNotifier {
       styleIds = room.designStyleIds.toSet(),
       preciseEdit = room.preciseEdit,
       keepLayout = room.keepLayout {
-    changes.addListener(_changed);
-    protected.addListener(_changed);
-    otherStyle.addListener(_changed);
+    _lastText = _text;
+    changes.addListener(_textChanged);
+    protected.addListener(_textChanged);
+    otherStyle.addListener(_textChanged);
+  }
+
+  String get _text => '${changes.text}\u0000${protected.text}\u0000${otherStyle.text}';
+  void _textChanged() {
+    if (_lastText == _text) return;
+    _lastText = _text;
+    _changed();
   }
 
   bool get dirty => _revision != _savedRevision;

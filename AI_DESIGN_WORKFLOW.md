@@ -19,6 +19,16 @@ not a claim that prompt writing or multiple-result generation is implemented.
 
 ## Prompt-writing requirements
 
+Presentation reference supplied by the user: a kitchen/dining design board with
+two labelled alternatives, a wider room render, a floor-plan inset and material
+swatches for cabinetry, benchtops and flooring. This is the quality/presentation
+target. Keep the provided image unchanged. It is a style/presentation reference,
+not permission to change another room's walls/glazing. Any plan measurements must
+come from confirmed user measurements; do not treat generated inset labels as a
+survey or invent verified dimensions. Later boards should make option selection
+and refinement straightforward rather than flattening all alternatives into an
+uneditable single image.
+
 - Use the actual room photographs, selected palette, user changes and room memory.
 - Separate layout-preserving renovation from a small-area precision correction.
   Replacing cabinets, flooring and appliances together is a renovation request,
