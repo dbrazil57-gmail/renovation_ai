@@ -1,0 +1,481 @@
+import 'package:flutter/foundation.dart';
+import 'package:hive_ce/hive_ce.dart';
+
+import 'models.dart';
+import 'ai_service.dart';
+import 'project_backup.dart';
+import 'file_transfer.dart';
+import 'design_palettes.dart';
+
+/// Stage 1 local-only prototype storage. Photos are kept in a dedicated box.
+/// For production-scale image libraries, move large originals to app-private
+/// files while retaining stable IDs in this metadata store.
+class RenovisionStore extends ChangeNotifier {
+  final Box<dynamic> records;
+  final Box<dynamic> photos;
+  final AiService ai;
+  final AppFiles files;
+  int _sequence = 0;
+
+  RenovisionStore({
+    required this.records,
+    required this.photos,
+    AiService? ai,
+    AppFiles? files,
+  }) : ai = ai ?? AiService(),
+       files = files ?? createAppFiles();
+
+  @override
+  void dispose() {
+    ai.dispose();
+    super.dispose();
+  }
+
+  String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${_sequence++}';
+
+  List<RenovationProject> get projects =>
+      records.keys
+          .where((key) => key.toString().startsWith('project:'))
+          .map((key) => RenovationProject.fromMap(records.get(key) as Map))
+          .toList()
+        ..sort((a, b) => b.created.compareTo(a.created));
+
+  List<RenovationRoom> roomsFor(String projectId) =>
+      records.keys
+          .where((key) => key.toString().startsWith('room:'))
+          .map((key) => RenovationRoom.fromMap(records.get(key) as Map))
+          .where((r) => r.projectId == projectId)
+          .toList()
+        ..sort((a, b) => b.created.compareTo(a.created));
+
+  List<DesignVersion> get allDesigns =>
+      records.keys
+          .where((key) => key.toString().startsWith('design:'))
+          .map((key) => DesignVersion.fromMap(records.get(key) as Map))
+          .toList()
+        ..sort((a, b) => b.created.compareTo(a.created));
+
+  List<DesignVersion> designsFor(String roomId) =>
+      allDesigns.where((d) => d.roomId == roomId).toList();
+
+  RenovationProject? projectById(String id) {
+    final value = records.get('project:$id');
+    return value is Map ? RenovationProject.fromMap(value) : null;
+  }
+
+  String _validName(String value) {
+    final name = value.trim();
+    if (name.isEmpty || name.length > 80) {
+      throw ArgumentError('Use a name between 1 and 80 characters.');
+    }
+    return name;
+  }
+
+  Future<void> renameProject(String id, String name) async {
+    final trimmed = _validName(name);
+    final current = records.get('project:$id');
+    if (current is! Map) throw StateError('Project is unavailable.');
+    await records.put('project:$id', {...current, 'name': trimmed});
+    notifyListeners();
+  }
+
+  Future<void> renameRoom(String id, String name) async {
+    final trimmed = _validName(name);
+    final current = records.get('room:$id');
+    if (current is! Map) throw StateError('Room is unavailable.');
+    await records.put('room:$id', {...current, 'name': trimmed});
+    notifyListeners();
+  }
+
+  RenovationRoom? roomById(String id) {
+    final value = records.get('room:$id');
+    return value is Map ? RenovationRoom.fromMap(value) : null;
+  }
+
+  Uint8List? imageFor(String id) {
+    final value = photos.get(id);
+    if (value is Uint8List) return value;
+    if (value is List<int>) return Uint8List.fromList(value);
+    return null;
+  }
+
+  ProjectBackup backupFor(String projectId) {
+    final raw = records.get('project:$projectId');
+    if (raw is! Map) throw const BackupFailure('Project is unavailable.');
+    final rooms = roomsFor(projectId);
+    final roomIds = rooms.map((room) => room.id).toSet();
+    final designs = allDesigns
+        .where((design) => roomIds.contains(design.roomId))
+        .toList();
+    final ids = <String>{
+      ...rooms.expand((room) => room.photoIds),
+      ...designs.map((design) => design.imageId),
+      ...designs.map((design) => design.sourceImageId).whereType<String>(),
+      ...designs.expand((design) => design.supportingImageIds),
+    };
+    final images = <String, Uint8List>{};
+    for (final id in ids) {
+      final bytes = imageFor(id);
+      if (bytes == null) {
+        throw const BackupFailure(
+          'A project image is missing. Backup was not created.',
+        );
+      }
+      images[id] = Uint8List.fromList(bytes);
+    }
+    return ProjectBackup(
+      project: RenovationProject.fromMap(raw),
+      rooms: rooms,
+      designs: designs,
+      photos: images,
+    );
+  }
+
+  /// Restore into new identifiers; publish the project last. Roll back only
+  /// identifiers allocated by this operation if a write fails.
+  Future<RenovationProject> restoreBackup(ProjectBackup backup) async {
+    // Callers cannot bypass validation by constructing a ProjectBackup directly.
+    final validated = ProjectBackup.decode(backup.encode());
+    String recordId(String type) {
+      var id = _newId();
+      while (records.get('$type:$id') != null) {
+        id = _newId();
+      }
+      return id;
+    }
+
+    final project = RenovationProject(
+      id: recordId('project'),
+      name: '${validated.project.name} (restored)',
+      created: validated.project.created,
+    );
+    final roomIds = {
+      for (final room in validated.rooms) room.id: recordId('room'),
+    };
+    final designIds = {
+      for (final design in validated.designs) design.id: recordId('design'),
+    };
+    final photoIds = <String, String>{};
+    for (final id in validated.photos.keys) {
+      var newId = 'photo_${_newId()}';
+      while (photos.get(newId) != null) {
+        newId = 'photo_${_newId()}';
+      }
+      photoIds[id] = newId;
+    }
+    final stagedRecords = <String, Map<String, dynamic>>{};
+    for (final room in validated.rooms) {
+      stagedRecords['room:${roomIds[room.id]}'] = {
+        ...room.toMap(),
+        'id': roomIds[room.id],
+        'projectId': project.id,
+        'originalId': photoIds[room.originalId],
+        'additionalPhotoIds': room.additionalPhotoIds
+            .map((id) => photoIds[id]!)
+            .toList(),
+        'primaryPhotoId': room.primaryPhotoId == null
+            ? null
+            : photoIds[room.primaryPhotoId],
+        'approvedDesignId': room.approvedDesignId == null
+            ? null
+            : designIds[room.approvedDesignId],
+      };
+    }
+    for (final design in validated.designs) {
+      stagedRecords['design:${designIds[design.id]}'] = {
+        ...design.toMap(),
+        'id': designIds[design.id],
+        'roomId': roomIds[design.roomId],
+        'imageId': photoIds[design.imageId],
+        'supportingImageIds': design.supportingImageIds
+            .map((id) => photoIds[id]!)
+            .toList(),
+        'parentId': design.parentId == null ? null : designIds[design.parentId],
+        'sourceImageId': design.sourceImageId == null
+            ? null
+            : photoIds[design.sourceImageId],
+      };
+    }
+    stagedRecords['project:${project.id}'] = project.toMap();
+    final writtenPhotos = <String>[];
+    final writtenRecords = <String>[];
+    try {
+      for (final entry in validated.photos.entries) {
+        writtenPhotos.add(photoIds[entry.key]!);
+        await photos.put(photoIds[entry.key]!, entry.value);
+      }
+      for (final entry in stagedRecords.entries) {
+        writtenRecords.add(entry.key);
+        await records.put(entry.key, entry.value);
+      }
+    } catch (_) {
+      var cleanupFailed = false;
+      for (final key in writtenRecords.reversed) {
+        try {
+          await records.delete(key);
+        } catch (_) {
+          cleanupFailed = true;
+        }
+      }
+      for (final id in writtenPhotos) {
+        try {
+          await photos.delete(id);
+        } catch (_) {
+          cleanupFailed = true;
+        }
+      }
+      if (cleanupFailed) {
+        throw const BackupFailure(
+          'Restore failed and some new records could not be removed. Existing projects were not overwritten. Keep the backup and check storage before retrying.',
+        );
+      }
+      throw const BackupFailure(
+        'Restore could not be saved. New records were removed; existing projects are unchanged. Check available storage.',
+      );
+    }
+    notifyListeners();
+    return project;
+  }
+
+  Future<RenovationProject> createProject(String name) async {
+    final project = RenovationProject(
+      id: _newId(),
+      name: name.trim(),
+      created: DateTime.now(),
+    );
+    await records.put('project:${project.id}', project.toMap());
+    notifyListeners();
+    return project;
+  }
+
+  Future<RenovationRoom> createRoom({
+    required String projectId,
+    required String name,
+    required Uint8List originalImage,
+    List<Uint8List> additionalImages = const [],
+    String colourPaletteId = '',
+  }) async {
+    _validatePalette(colourPaletteId);
+    _validateRoomPhotos([originalImage, ...additionalImages], existingCount: 0);
+    final photoId = 'photo_${_newId()}';
+    final added = <String>[];
+    try {
+      added.add(photoId);
+      await photos.put(photoId, originalImage);
+      final extraIds = <String>[];
+      for (final bytes in additionalImages) {
+        final id = 'photo_${_newId()}';
+        added.add(id);
+        extraIds.add(id);
+        await photos.put(id, bytes);
+      }
+      final room = RenovationRoom(
+        id: _newId(),
+        projectId: projectId,
+        name: name.trim(),
+        originalId: photoId,
+        additionalPhotoIds: extraIds,
+        colourPaletteId: colourPaletteId,
+        preciseEdit: false,
+        instructions: '',
+        protectedFeatures: '',
+        created: DateTime.now(),
+      );
+      await records.put('room:${room.id}', room.toMap());
+      notifyListeners();
+      return room;
+    } catch (_) {
+      for (final id in added) {
+        try {
+          await photos.delete(id);
+        } catch (_) {}
+      }
+      rethrow;
+    }
+  }
+
+  static const maxRoomPhotos = 6;
+  Future<void> saveRoomDraft(
+    String roomId, {
+    required String instructions,
+    required String protectedFeatures,
+    required List<String> designStyleIds,
+    required String otherStyle,
+    required bool preciseEdit,
+    required bool keepLayout,
+  }) async {
+    final room = roomById(roomId);
+    if (room == null) throw StateError('Room is unavailable.');
+    await updateRoom(
+      room.copyWith(
+        instructions: instructions,
+        protectedFeatures: protectedFeatures,
+        designStyleIds: designStyleIds,
+        otherStyle: otherStyle,
+        preciseEdit: preciseEdit,
+        keepLayout: keepLayout,
+      ),
+    );
+  }
+
+  void _validatePalette(String id) {
+    if (id.isNotEmpty && paletteById(id) == null) {
+      throw ArgumentError('Choose an available colour palette.');
+    }
+  }
+
+  Future<void> setRoomPalette(String roomId, String paletteId) async {
+    _validatePalette(paletteId);
+    final room = roomById(roomId);
+    if (room == null) throw StateError('Room is unavailable.');
+    await updateRoom(room.copyWith(colourPaletteId: paletteId));
+  }
+
+  void _validateRoomPhotos(
+    List<Uint8List> images, {
+    required int existingCount,
+  }) {
+    if (images.isEmpty ||
+        images.length + existingCount > maxRoomPhotos ||
+        images.any(
+          (image) => image.isEmpty || image.length > 18 * 1024 * 1024,
+        )) {
+      throw ArgumentError(
+        'Choose up to 6 room photos, each smaller than 18 MB.',
+      );
+    }
+  }
+
+  Future<void> addRoomPhotos(String roomId, List<Uint8List> images) async {
+    final room = roomById(roomId);
+    if (room == null) throw StateError('Room is unavailable.');
+    _validateRoomPhotos(images, existingCount: room.photoIds.length);
+    final ids = <String>[];
+    try {
+      for (final bytes in images) {
+        final id = 'photo_${_newId()}';
+        ids.add(id);
+        await photos.put(id, bytes);
+      }
+      final latest = roomById(roomId)!;
+      if (latest.photoIds.length + ids.length > maxRoomPhotos) {
+        throw StateError('Room photo limit reached.');
+      }
+      await updateRoom(
+        latest.copyWith(
+          additionalPhotoIds: [...latest.additionalPhotoIds, ...ids],
+        ),
+      );
+    } catch (_) {
+      for (final id in ids) {
+        try {
+          await photos.delete(id);
+        } catch (_) {}
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> setPrimaryPhoto(String roomId, String photoId) async {
+    final room = roomById(roomId);
+    if (room == null || !room.photoIds.contains(photoId)) {
+      throw ArgumentError('Choose a photo from this room.');
+    }
+    await updateRoom(room.copyWith(primaryPhotoId: photoId));
+  }
+
+  Future<void> updateRoom(RenovationRoom room) async {
+    await records.put('room:${room.id}', room.toMap());
+    notifyListeners();
+  }
+
+  Future<DesignVersion> createDesign({
+    required String roomId,
+    required Uint8List image,
+    required String title,
+    required String prompt,
+    String? parentId,
+    String? sourceImageId,
+    String? aiProvider,
+    String? aiModel,
+    String? providerRequestId,
+    List<String> supportingImageIds = const [],
+  }) async {
+    final photoId = 'photo_${_newId()}';
+    await photos.put(photoId, image);
+    final design = DesignVersion(
+      id: _newId(),
+      roomId: roomId,
+      imageId: photoId,
+      title: title.trim().isEmpty ? 'New design' : title.trim(),
+      prompt: prompt,
+      parentId: parentId,
+      sourceImageId: sourceImageId,
+      aiProvider: aiProvider,
+      aiModel: aiModel,
+      providerRequestId: providerRequestId,
+      supportingImageIds: supportingImageIds,
+      favourite: false,
+      rejected: false,
+      created: DateTime.now(),
+    );
+    await records.put('design:${design.id}', design.toMap());
+    notifyListeners();
+    return design;
+  }
+
+  Future<void> rateDesign(DesignVersion design, {required bool keep}) async {
+    await records.put(
+      'design:${design.id}',
+      design.copyWith(favourite: keep, rejected: !keep).toMap(),
+    );
+    notifyListeners();
+  }
+
+  /// Removing a favourite returns it to pending review rather than rejecting it.
+  Future<void> setFavourite(
+    DesignVersion design, {
+    required bool favourite,
+  }) async {
+    final current = records.get('design:${design.id}');
+    if (current is! Map) throw StateError('Design no longer exists.');
+    final saved = DesignVersion.fromMap(current);
+    await records.put(
+      'design:${design.id}',
+      saved.copyWith(favourite: favourite, rejected: false).toMap(),
+    );
+    notifyListeners();
+  }
+
+  /// Undo a pass without approving the image or making it a favourite.
+  Future<void> returnToReview(String designId) async {
+    final current = records.get('design:$designId');
+    if (current is! Map) throw StateError('Design is unavailable.');
+    await records.put('design:$designId', {
+      ...current,
+      'favourite': false,
+      'rejected': false,
+    });
+    notifyListeners();
+  }
+
+  /// Approval is independent of favourites and never changes image bytes.
+  Future<void> approveBaseline(String roomId, {String? designId}) async {
+    final room = roomById(roomId);
+    if (room == null) throw StateError('Room no longer exists.');
+    if (designId != null) {
+      final value = records.get('design:$designId');
+      if (value is! Map) throw StateError('Design no longer exists.');
+      final design = DesignVersion.fromMap(value);
+      if (design.roomId != roomId || imageFor(design.imageId) == null) {
+        throw StateError('Choose an available design from this room.');
+      }
+    }
+    await updateRoom(
+      room.copyWith(
+        approvedDesignId: designId,
+        useOriginalBaseline: designId == null,
+      ),
+    );
+  }
+}
