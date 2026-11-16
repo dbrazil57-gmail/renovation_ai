@@ -1,0 +1,31 @@
+{
+  "created": "2026-11-15",
+  "method": "Built-in imagegen tool",
+  "purpose": "Fictional inspiration samples; no user room photos or competitor images used",
+  "prompts": [
+    {
+      "id": "kitchen",
+      "prompt": "Create one photorealistic editorial interior photograph, landscape 3:2, of a plausible modest Australian kitchen: modern contemporary warm charcoal handleless cupboards, walnut timber accents, pale stone benchtops, large warm greige floor tiles, new black appliances, a window, soft natural daylight. Purpose: original fictional-room inspiration thumbnail for Renovision app. Clean attractive realistic room composition, no people, no text, no logos, no collage, no graphics. Do not use any conversation images or private renovation photo as reference."
+    },
+    {
+      "id": "bathroom",
+      "prompt": "Create one photorealistic editorial interior photograph, landscape 3:2, of a plausible modest bathroom: Japandi style, sage floating vanity with oak details, warm white walls, pale stone tiles, large simple mirror, realistic sink and tap, walk-in glass shower, soft natural daylight. Purpose: original fictional-room inspiration thumbnail for Renovision app. Clean realistic architecture and plumbing, no people, no text, no logos, no collage, no graphics. Do not use any conversation images or private renovation photo as reference."
+    },
+    {
+      "id": "living",
+      "prompt": "Create one photorealistic editorial interior photograph, landscape 3:2, of a plausible modest coastal living and dining room: soft white walls, muted sea-blue and sand textiles, light oak furniture, comfortable sofa, a small dining area, large window and natural daylight. Purpose: original fictional-room inspiration thumbnail for Renovision app. Clean attractive realistic architecture, no people, no text, no logos, no collage, no graphics. Do not use any conversation images or private renovation photo as reference."
+    },
+    {
+      "id": "bedroom",
+      "prompt": "Create one photorealistic editorial interior photograph, landscape 3:2, of a plausible Australian main bedroom: warm minimalist Scandinavian direction, pale oak bed frame, warm white walls, oatmeal linen, restrained greige furnishings, simple bedside tables, realistic window and daylight. Original fictional-room inspiration thumbnail for Renovision app. No people, no words, no branding, no collage. Do not use any conversation images or private renovation photos."
+    },
+    {
+      "id": "classic_kitchen",
+      "prompt": "Create one photorealistic editorial interior photograph, landscape 3:2, of a plausible Australian kitchen in a classic Hamptons direction: navy shaker lower cupboards, warm white upper cupboards, light stone benchtop, subtle brass fittings, simple tiled splashback and pale floor. A realistic window and natural daylight. Original fictional-room inspiration thumbnail for Renovision app. No people, no words, no branding, no collage. Do not use any conversation images or private renovation photos."
+    },
+    {
+      "id": "office",
+      "prompt": "Create one photorealistic editorial interior photograph, landscape 3:2, of a plausible Australian home study: industrial style, walnut desk, charcoal metal shelving, warm neutral walls, functional comfortable chair, soft black desk lamp and simple storage, realistic window, daylight. Inviting modest domestic room rather than large commercial office. Original fictional-room inspiration thumbnail for Renovision app. No people, no words, no branding, no collage. Do not use any conversation images or private renovation photos."
+    }
+  ]
+}

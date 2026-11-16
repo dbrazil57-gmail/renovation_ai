@@ -14,6 +14,127 @@ import 'colour_palette_widgets.dart';
 import 'room_draft.dart';
 import 'design_style_widgets.dart';
 import 'design_styles.dart';
+import 'room_analysis_widgets.dart';
+import 'renovation_scope_widgets.dart';
+import 'storage_status_widgets.dart';
+import 'room_save_widgets.dart';
+import 'exit_guard.dart';
+import 'room_start_widgets.dart';
+import 'room_starters.dart';
+import 'room_prompt.dart';
+import 'room_setup.dart';
+
+Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
+    room.setupComplete
+    ? WorkspaceScreen(store: store, roomId: room.id)
+    : RoomSetupScreen(
+        store: store,
+        roomId: room.id,
+        workspace: (designId) => WorkspaceScreen(
+          store: store,
+          roomId: room.id,
+          initialDesignId: designId,
+        ),
+      );
+
+Future<void> startRoomWithPhotos(
+  BuildContext context,
+  RenovisionStore store, {
+  RenovationProject? project,
+  RoomStarter? starter,
+  bool camera = false,
+}) async {
+  try {
+    String? newProjectName;
+    if (project == null) {
+      newProjectName = await askText(
+        context,
+        title: 'Name your project',
+        hint: 'e.g. My renovation',
+      );
+      if (newProjectName == null || !context.mounted) return;
+    }
+    final choice = await showDialog<RoomStartChoice>(
+      context: context,
+      builder: (_) => RoomStartDialog(starter: starter),
+    );
+    if (choice == null || !context.mounted) return;
+    final single = camera ? await pickRoomImage(context, camera: true) : null;
+    final images = camera
+        ? (single == null ? null : [single])
+        : await selectRoomPhotos(remaining: 6);
+    if (images == null || images.isEmpty || !context.mounted) return;
+    final destination = project ?? await store.createProject(newProjectName!);
+    final room = await store.createRoom(
+      projectId: destination.id,
+      name: choice.name,
+      originalImage: images.first,
+      additionalImages: images.skip(1).toList(),
+      colourPaletteId: choice.starter?.paletteId ?? '',
+      guidedSetup: true,
+      roomTypeId: choice.roomTypeId,
+      designStyleIds: choice.starter == null || choice.starter!.styleId.isEmpty
+          ? []
+          : [choice.starter!.styleId],
+    );
+    if (context.mounted) {
+      await Navigator.push<void>(
+        context,
+        MaterialPageRoute(builder: (_) => roomEntry(store, room)),
+      );
+    }
+  } catch (error) {
+    if (context.mounted) {
+      notice(
+        context,
+        error is ArgumentError
+            ? '${error.message}'
+            : 'Room could not be saved. Please try again.',
+      );
+    }
+  }
+}
+
+Future<void> useRoomStarter(
+  BuildContext context,
+  RenovisionStore store,
+  RoomStarter starter,
+) async {
+  String? projectId;
+  if (store.projects.isNotEmpty) {
+    projectId = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        title: const Text('Choose a project'),
+        children: [
+          for (final project in store.projects)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(dialogContext, project.id),
+              child: Text(project.name),
+            ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(dialogContext, ''),
+            child: const Text('Create a new project'),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+    if (projectId == null || !context.mounted) return;
+  }
+  if (!context.mounted) return;
+  await startRoomWithPhotos(
+    context,
+    store,
+    project: projectId == null || projectId.isEmpty
+        ? null
+        : store.projectById(projectId),
+    starter: starter,
+  );
+}
 
 Future<Uint8List?> pickRoomImage(
   BuildContext context, {
@@ -122,6 +243,11 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int selected = 0;
+  @override
+  void initState() {
+    super.initState();
+    selected = widget.store.projects.isEmpty ? 0 : 1;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -242,6 +368,40 @@ class ProjectsTab extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         const Text('Your photos, designs and decisions stay on this device.'),
+        if (store.resumeRoom case final room?) ...[
+          const SizedBox(height: 12),
+          Card(
+            child: Column(
+              children: [
+                PhotoThumb(
+                  width: double.infinity,
+                  height: 180,
+                  bytes: store.imageFor(
+                    store
+                            .designsFor(room.id)
+                            .where((d) => d.id == room.approvedDesignId)
+                            .firstOrNull
+                            ?.imageId ??
+                        room.primaryId,
+                  ),
+                ),
+                ListTile(
+                  title: Text('Continue ${room.name}'),
+                  subtitle: Text(
+                    '${store.projectById(room.projectId)?.name ?? ''} · saved on this device',
+                  ),
+                  trailing: const Icon(Icons.play_arrow_outlined),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (_) => roomEntry(store, room),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         const SizedBox(height: 16),
         Align(
           alignment: Alignment.centerLeft,
@@ -261,6 +421,17 @@ class ProjectsTab extends StatelessWidget {
         const SizedBox(height: 16),
         RestoreProjectButton(
           store: store,
+          openDocument: true,
+          onRestored: (project) => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ProjectScreen(store: store, project: project),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        RestoreProjectButton(
+          store: store,
           onRestored: (project) => Navigator.push(
             context,
             MaterialPageRoute(
@@ -270,7 +441,9 @@ class ProjectsTab extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         const Text(
-          'Saved in this browser/device. Open a project to back it up, or a room to download an image.',
+          kIsWeb
+              ? 'Use Open project to load a saved .renovision.json file with its rooms, photos and design choices. Keep using http://localhost:7357 for this app.'
+              : 'Use Open project to load a saved project file with its rooms, photos and design choices. Your working projects are saved on this device.',
         ),
         const SizedBox(height: 16),
         if (store.projects.isEmpty)
@@ -330,45 +503,7 @@ class ProjectScreen extends StatelessWidget {
   }
 
   Future<void> _addRoom(BuildContext context, {bool camera = false}) async {
-    final name = await askText(
-      context,
-      title: 'Add a room',
-      hint: 'Kitchen, office, exterior…',
-    );
-    if (name == null || !context.mounted) return;
-    try {
-      final single = camera ? await pickRoomImage(context, camera: true) : null;
-      final images = camera
-          ? (single == null ? null : [single])
-          : await selectRoomPhotos(remaining: 6);
-      if (images == null || !context.mounted) return;
-      final paletteId = await chooseColourPalette(context, photos: images);
-      if (paletteId == null || !context.mounted) return;
-      final room = await store.createRoom(
-        projectId: project.id,
-        name: name,
-        originalImage: images.first,
-        additionalImages: images.skip(1).toList(),
-        colourPaletteId: paletteId,
-      );
-      if (context.mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => WorkspaceScreen(store: store, roomId: room.id),
-          ),
-        );
-      }
-    } catch (error) {
-      if (context.mounted) {
-        notice(
-          context,
-          error is ArgumentError
-              ? '${error.message}'
-              : 'Room could not be saved. Please try again.',
-        );
-      }
-    }
+    await startRoomWithPhotos(context, store, project: project, camera: camera);
   }
 
   @override
@@ -395,6 +530,7 @@ class ProjectScreen extends StatelessWidget {
             'Rooms and spaces',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
+          ProjectFileControls(store: store, projectId: project.id),
           const SizedBox(height: 8),
           const Text(
             'Select several photos of the same room when importing, or add more angles later. Originals are preserved; designs are stored separately.',
@@ -415,12 +551,45 @@ class ProjectScreen extends StatelessWidget {
                   icon: const Icon(Icons.camera_alt_outlined),
                   label: const Text('Take photo'),
                 ),
+              OutlinedButton.icon(
+                onPressed: () => Navigator.push<void>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => Scaffold(
+                      appBar: AppBar(title: const Text('Sample designs')),
+                      body: PageFrame(
+                        children: [
+                          InspirationGallery(
+                            onUse: (starter) => startRoomWithPhotos(
+                              context,
+                              store,
+                              project: project,
+                              starter: starter,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                icon: const Icon(Icons.collections_outlined),
+                label: const Text('Browse sample designs'),
+              ),
             ],
           ),
           const SizedBox(height: 18),
-          ProjectBackupCard(
-            store: store,
-            project: store.projectById(project.id) ?? project,
+          OutlinedButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (_) => Scaffold(
+                  appBar: AppBar(title: const Text('Settings')),
+                  body: SettingsTab(store: store),
+                ),
+              ),
+            ),
+            icon: const Icon(Icons.settings_outlined),
+            label: const Text('Save, restore and AI settings'),
           ),
           const SizedBox(height: 18),
           if (store.roomsFor(project.id).isEmpty)
@@ -447,8 +616,7 @@ class ProjectScreen extends StatelessWidget {
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              WorkspaceScreen(store: store, roomId: room.id),
+                          builder: (_) => roomEntry(store, room),
                         ),
                       ),
                     ),
@@ -482,7 +650,16 @@ class PhotoThumb extends StatelessWidget {
               color: Color(0xFFE5E9E7),
               child: Icon(Icons.broken_image_outlined),
             )
-          : Image.memory(bytes!, fit: BoxFit.cover, gaplessPlayback: true),
+          : Image.memory(
+              bytes!,
+              fit: BoxFit.cover,
+              gaplessPlayback: true,
+              cacheWidth: 600,
+              frameBuilder: (context, child, frame, synchronous) =>
+                  synchronous || frame != null
+                  ? child
+                  : const Center(child: Text('Loading…')),
+            ),
     ),
   );
 }
@@ -589,6 +766,10 @@ class ExploreTab extends StatelessWidget {
                 ),
               );
             }),
+          const SizedBox(height: 24),
+          InspirationGallery(
+            onUse: (starter) => useRoomStarter(context, store, starter),
+          ),
         ],
       );
     },
@@ -652,53 +833,96 @@ class LibraryTab extends StatelessWidget {
 
 class SettingsTab extends StatelessWidget {
   final RenovisionStore store;
-  const SettingsTab({super.key, required this.store});
+  final Widget? roomSaving;
+  final Future<bool> Function()? beforeBackup;
+  const SettingsTab({
+    super.key,
+    required this.store,
+    this.roomSaving,
+    this.beforeBackup,
+  });
   @override
-  Widget build(BuildContext context) => PageFrame(
-    children: [
-      Text(
-        'Settings and privacy',
-        style: Theme.of(context).textTheme.headlineSmall,
-      ),
-      const SizedBox(height: 12),
-      const Card(
-        child: ListTile(
-          leading: Icon(Icons.phonelink_lock_outlined),
-          title: Text('Local-first prototype'),
-          subtitle: Text(
-            'Projects and images are saved in this device/browser profile. Optional in-app AI sends your selected photo and prompt to OpenAI only after you confirm an edit.',
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: store,
+    builder: (context, _) => PageFrame(
+      children: [
+        Text(
+          'Settings and privacy',
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        const SizedBox(height: 12),
+        ExpansionTile(
+          title: const Text('AI connection and models'),
+          children: [AiConnectionCard(ai: store.ai)],
+        ),
+        ?roomSaving,
+        Text('Save and restore', style: Theme.of(context).textTheme.titleLarge),
+        const Text(
+          kIsWeb
+              ? 'Projects save locally in this browser/profile. Backup files are separate portable copies; choose a file to restore one.'
+              : 'Projects save locally in the app. Use Save project for a portable file and Open project to load one.',
+        ),
+        RestoreProjectButton(
+          store: store,
+          onRestored: (project) => Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (_) => ProjectScreen(store: store, project: project),
+            ),
           ),
         ),
-      ),
-      const Card(
-        child: ListTile(
-          leading: Icon(Icons.language_outlined),
-          title: Text('Browser storage warning'),
-          subtitle: Text(
-            'Browser storage can be cleared. Use Back up project inside each project and check the downloaded file. Restore backups from Projects. Keep original photos separately too.',
+        for (final project in store.projects) ...[
+          Text(project.name, style: Theme.of(context).textTheme.titleMedium),
+          ProjectFileControls(
+            store: store,
+            projectId: project.id,
+            beforeSave: beforeBackup,
+          ),
+          ProjectBackupCard(
+            store: store,
+            project: project,
+            beforeSave: beforeBackup,
+          ),
+        ],
+        StorageStatusCard(store: store),
+        const Card(
+          child: ListTile(
+            leading: Icon(Icons.phonelink_lock_outlined),
+            title: Text('Local-first prototype'),
+            subtitle: Text(
+              'Projects and images are saved in this device/browser profile. Optional in-app AI sends your selected photo and prompt to OpenAI only after you confirm an edit.',
+            ),
           ),
         ),
-      ),
-      AiConnectionCard(ai: store.ai),
-      const Card(
-        child: ListTile(
-          leading: Icon(Icons.generating_tokens_outlined),
-          title: Text('Manual AI handoff is also available'),
-          subtitle: Text(
-            'Copy a carefully scoped prompt, then upload the relevant photo or marked reference in your existing AI provider app. Import its output as a new design version.',
+        if (kIsWeb) const Card(
+          child: ListTile(
+            leading: Icon(Icons.language_outlined),
+            title: Text('Browser storage warning'),
+            subtitle: Text(
+              'Use Back up project and Restore project backup here. Browser storage belongs to this exact address and profile; backup files are not automatically read from Downloads. Keep originals separately.',
+            ),
           ),
         ),
-      ),
-      const Card(
-        child: ListTile(
-          leading: Icon(Icons.shield_outlined),
-          title: Text('Before public release'),
-          subtitle: Text(
-            'Add robust backups, encrypted local storage where appropriate, secure API integration, a privacy policy, testing and purchase verification.',
+        const Card(
+          child: ListTile(
+            leading: Icon(Icons.generating_tokens_outlined),
+            title: Text('Manual AI handoff is also available'),
+            subtitle: Text(
+              'Copy a carefully scoped prompt, then upload the relevant photo or marked reference in your existing AI provider app. Import its output as a new design version.',
+            ),
           ),
         ),
-      ),
-    ],
+        const Card(
+          child: ListTile(
+            leading: Icon(Icons.shield_outlined),
+            title: Text('Before public release'),
+            subtitle: Text(
+              'Add robust backups, encrypted local storage where appropriate, secure API integration, a privacy policy, testing and purchase verification.',
+            ),
+          ),
+        ),
+      ],
+    ),
   );
 }
 
@@ -719,13 +943,71 @@ class WorkspaceScreen extends StatefulWidget {
 class _WorkspaceScreenState extends State<WorkspaceScreen>
     with WidgetsBindingObserver {
   late final RoomDraft draft;
-  TextEditingController get changes => draft.changes;
+  bool analysingRoom = false;
+  bool editingRoom = false;
+  bool get aiPending => analysingRoom || editingRoom;
+  late final PageExitGuard pageExitGuard;
+  TextEditingController get changes =>
+      precise ? draft.correction : draft.changes;
+  bool get hasEffectiveChanges => precise
+      ? draft.correction.text.trim().isNotEmpty
+      : draft.hasRequestedChanges;
   TextEditingController get protected => draft.protected;
   String? selectedId;
   bool get precise => draft.preciseEdit;
-  String provider = 'ChatGPT';
   late String selectedPhotoId;
   bool includeRoomContext = true;
+
+  RoomSaveControls _savingControls({
+    bool compact = false,
+    BuildContext? settingsContext,
+  }) => RoomSaveControls(
+    store: widget.store,
+    draft: draft,
+    activeImage: () => _activeImage(widget.store.roomById(widget.roomId)!),
+    autosaveOnly: compact,
+    aiPending: aiPending,
+    saveAndClose: () async {
+      if (settingsContext == null) {
+        await _saveAndClose();
+        return;
+      }
+      if (await _save() && settingsContext.mounted) {
+        Navigator.pop(settingsContext);
+      }
+    },
+    askName: (title, initial) =>
+        askText(settingsContext ?? context, title: title, initial: initial),
+    onProjectCopy: (copy) => Navigator.pushReplacement(
+      settingsContext ?? context,
+      MaterialPageRoute<void>(
+        builder: (_) => ProjectScreen(store: widget.store, project: copy),
+      ),
+    ),
+  );
+
+  Future<void> _openSettings() async {
+    if (aiPending) {
+      notice(
+        context,
+        'Finish or save the pending AI result before opening Settings.',
+      );
+      return;
+    }
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (settingsContext) => Scaffold(
+          appBar: AppBar(title: const Text('Settings')),
+          body: SettingsTab(
+            store: widget.store,
+            beforeBackup: draft.save,
+            roomSaving: _savingControls(settingsContext: settingsContext),
+          ),
+        ),
+      ),
+    );
+  }
 
   Future<void> _renameRoom() async {
     final current = widget.store.roomById(widget.roomId);
@@ -744,6 +1026,55 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
         notice(context, 'Could not save the new room name. Please try again.');
       }
     }
+  }
+
+  Future<void> _openSetup() async {
+    if (aiPending || !await draft.save() || !mounted) return;
+    final current = widget.store.roomById(widget.roomId)!;
+    try {
+      await widget.store.updateRoom(
+        current.copyWith(setupStep: 0, setupComplete: false),
+      );
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              roomEntry(widget.store, widget.store.roomById(widget.roomId)!),
+        ),
+      );
+    } catch (_) {
+      if (mounted) {
+        notice(context, 'Could not open guided setup. Your room is retained.');
+      }
+    }
+  }
+
+  Future<void> _projectFile() async {
+    if (aiPending) return;
+    final current = widget.store.roomById(widget.roomId)!;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Save project file'),
+        content: SizedBox(
+          width: 520,
+          child: SingleChildScrollView(
+            child: ProjectFileControls(
+              store: widget.store,
+              projectId: current.projectId,
+              beforeSave: draft.save,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _reviewVersion(DesignVersion design, String action) async {
@@ -771,27 +1102,64 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     super.initState();
     final room = widget.store.roomById(widget.roomId)!;
     draft = RoomDraft(widget.store, room);
+    pageExitGuard = createPageExitGuard(() {
+      draft.save();
+    });
+    draft.addListener(_updateExitGuard);
+    widget.store.documents.addListener(_updateExitGuard);
     WidgetsBinding.instance.addObserver(this);
     selectedId = widget.initialDesignId ?? room.approvedDesignId;
     selectedPhotoId = room.primaryId;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      try {
+        await widget.store.rememberRoom(widget.roomId);
+      } catch (_) {
+        if (mounted) {
+          notice(
+            context,
+            'Could not remember this room for startup. Your project is retained.',
+          );
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    draft.removeListener(_updateExitGuard);
+    widget.store.documents.removeListener(_updateExitGuard);
+    pageExitGuard.dispose();
     draft.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed && draft.dirty) {
+    if (state != AppLifecycleState.resumed &&
+        draft.dirty &&
+        (draft.autosaveEnabled || state == AppLifecycleState.detached)) {
       draft.save();
     }
   }
 
   Future<bool> _save() async {
     final saved = await draft.save();
+    final projectId = widget.store.roomById(widget.roomId)!.projectId;
+    if (saved && widget.store.documents.linked(projectId)) {
+      try {
+        await widget.store.documents.save(projectId);
+      } catch (_) {
+        if (mounted) {
+          notice(
+            context,
+            'Project file could not be saved. Local work is retained; retry Save project.',
+          );
+        }
+        return false;
+      }
+    }
     if (mounted) {
       notice(
         context,
@@ -803,20 +1171,20 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     return saved;
   }
 
+  void _updateExitGuard() => pageExitGuard.setPending(
+    draft.dirty || aiPending || widget.store.documents.pending,
+  );
+
+  Future<void> _saveAndClose() async {
+    if (aiPending) return;
+    if (await _save() && !draft.dirty && mounted) Navigator.maybePop(context);
+  }
+
+  String _templatePrompt(RenovationRoom room) =>
+      roomTemplatePrompt(room, draft, includeRoomContext: includeRoomContext);
+
   String _prompt(RenovationRoom room) =>
-      buildRenovationPrompt(
-        roomName: room.name,
-        instructions: changes.text,
-        protectedFeatures: protected.text,
-        preciseEdit: precise,
-        colourPaletteId: room.colourPaletteId,
-        designStyleIds: draft.styleIds.toList(),
-        otherStyle: draft.otherStyle.text,
-        keepLayout: draft.keepLayout,
-      ) +
-      (includeRoomContext && room.photoIds.length > 1
-          ? '\nMULTIPLE VIEWS OF THE SAME ROOM: Image 1 is the working image and defines the output camera viewpoint and any approved design. Remaining images show other angles for spatial context. Consolidate the room details across these views; do not make a collage, duplicate furniture or invent unseen geometry. Do not use older reference furnishings to undo approved changes in image 1. If views conflict, prioritise image 1. Produce one design from its viewpoint, not a verified 3D reconstruction.'
-          : '');
+      reviewedRoomPrompt(_templatePrompt(room), draft);
 
   Uint8List? _activeImage(RenovationRoom room) {
     if (selectedId != null) {
@@ -827,7 +1195,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     return widget.store.imageFor(selectedPhotoId);
   }
 
-  AiEditRequest _aiRequest(RenovationRoom room) {
+  AiEditRequest _aiRequest(RenovationRoom room, {bool forAnalysis = false}) {
+    if (precise && isWholeRoomRequest(changes.text)) {
+      throw const AiFailure(
+        '“All” is a whole-room request. Choose Whole-room renovation, or describe a specific correction before copying or generating.',
+      );
+    }
     var sourceId = selectedPhotoId;
     if (selectedId != null) {
       final selected = widget.store
@@ -844,27 +1217,71 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     if (image == null) {
       throw const AiFailure('The selected image is unavailable.');
     }
+    final supporting = {
+      if (includeRoomContext && room.photoIds.length > 1)
+        for (final id in room.photoIds.where((id) => id != sourceId))
+          id:
+              widget.store.imageFor(id) ??
+              (throw const AiFailure('A room context photo is unavailable.')),
+    };
+    if (!forAnalysis &&
+        draft.useAiPrompt &&
+        (draft.aiPrompt.text.trim().isEmpty ||
+            !(draft.analysis?.matches(
+                  sourceId,
+                  supporting.keys,
+                  _templatePrompt(room),
+                ) ??
+                false))) {
+      throw const AiFailure(
+        'The AI prompt no longer matches this room and its preferences. Analyse again, or untick Use this AI prompt.',
+      );
+    }
+    final prompt = forAnalysis ? _templatePrompt(room) : _prompt(room);
+    if (prompt.length > 16000) {
+      throw const AiFailure(
+        'The prepared prompt is too long. Shorten the instructions or edited AI prompt.',
+      );
+    }
     return AiEditRequest(
       roomId: room.id,
       parentId: selectedId,
       sourceImageId: sourceId,
       image: image,
-      supportingImages: {
-        if (includeRoomContext && room.photoIds.length > 1)
-          for (final id in room.photoIds.where((id) => id != sourceId))
-            id:
-                widget.store.imageFor(id) ??
-                (throw const AiFailure('A room context photo is unavailable.')),
-      },
-      prompt: _prompt(room),
-      instructions: changes.text,
+      supportingImages: supporting,
+      prompt: prompt,
+      instructions: hasEffectiveChanges
+          ? [
+              changes.text,
+              if (!precise) draft.scopePrompt,
+            ].where((s) => s.trim().isNotEmpty).join('\n')
+          : '',
       precise: precise,
       title: precise ? 'AI precision edit' : 'AI renovation concept',
     );
   }
 
   Future<void> _copyPrompt(RenovationRoom room) async {
-    if (precise && changes.text.trim().isEmpty) {
+    try {
+      _aiRequest(room);
+    } on AiFailure catch (error) {
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Check the design request'),
+          content: Text(error.message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    if (!mounted) return;
+    if (precise && !hasEffectiveChanges) {
       notice(
         context,
         'Describe the specific change before copying a precision prompt.',
@@ -876,7 +1293,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     if (mounted) {
       notice(
         context,
-        'Prompt copied. Open $provider, attach the selected image and paste the prompt.',
+        'Prompt copied. Paste it into your AI app and attach the working photo and any selected supporting views.',
       );
     }
   }
@@ -944,16 +1361,41 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: Listenable.merge([widget.store, draft]),
+    listenable: Listenable.merge([widget.store, draft, widget.store.documents]),
     builder: (context, _) {
       final room = widget.store.roomById(widget.roomId)!;
       final versions = widget.store.designsFor(room.id);
       final source = _activeImage(room);
       return PopScope(
-        canPop: !draft.dirty,
+        canPop:
+            !draft.dirty &&
+            !aiPending &&
+            !widget.store.documents.hasPending(room.projectId),
         onPopInvokedWithResult: (didPop, result) async {
           if (didPop) return;
+          if (aiPending) {
+            notice(
+              context,
+              analysingRoom
+                  ? 'Room analysis is running. Wait for it to finish so the result can be saved.'
+                  : 'An AI design is running or waiting to save. Keep this room open and save the result before leaving.',
+            );
+            return;
+          }
           final saved = await draft.save();
+          if (saved && widget.store.documents.linked(room.projectId)) {
+            try {
+              await widget.store.documents.save(room.projectId);
+            } catch (_) {
+              if (context.mounted) {
+                notice(
+                  context,
+                  'Project file could not be saved. Local work is retained; retry Save project.',
+                );
+              }
+              return;
+            }
+          }
           if (saved && !draft.dirty && context.mounted) {
             Navigator.pop(context);
           } else if (!saved && context.mounted) {
@@ -967,6 +1409,21 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
           appBar: AppBar(
             title: Text(room.name),
             actions: [
+              IconButton(
+                tooltip: 'Save project file',
+                icon: const Icon(Icons.save_outlined),
+                onPressed: aiPending ? null : _projectFile,
+              ),
+              IconButton(
+                tooltip: 'Guided room setup',
+                icon: const Icon(Icons.format_list_numbered),
+                onPressed: aiPending ? null : _openSetup,
+              ),
+              IconButton(
+                tooltip: 'Room settings',
+                icon: const Icon(Icons.settings_outlined),
+                onPressed: _openSettings,
+              ),
               IconButton(
                 tooltip: 'Rename room',
                 icon: const Icon(Icons.edit_outlined),
@@ -989,6 +1446,30 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 store: widget.store,
                 room: room,
                 preview: source,
+              ),
+              const SizedBox(height: 12),
+              _savingControls(compact: true),
+              const SizedBox(height: 14),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: aiPending ? null : _openSettings,
+                  icon: const Icon(Icons.settings_input_component_outlined),
+                  label: const Text('AI connection settings'),
+                ),
+              ),
+              const SizedBox(height: 14),
+              RoomAnalysisCard(
+                store: widget.store,
+                draft: draft,
+                buildRequest: () => _aiRequest(
+                  widget.store.roomById(widget.roomId)!,
+                  forAnalysis: true,
+                ),
+                onBusyChanged: (value) {
+                  setState(() => analysingRoom = value);
+                  _updateExitGuard();
+                },
               ),
               const SizedBox(height: 14),
               RoomPhotosCard(
@@ -1137,13 +1618,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          if (source != null)
-                            DownloadImageButton(
-                              files: widget.store.files,
-                              bytes: source,
-                              name:
-                                  '${room.name}-${selectedId == null ? 'view-${room.photoIds.indexOf(selectedPhotoId) + 1}' : versions.firstWhere((d) => d.id == selectedId).title}',
-                            ),
                           OutlinedButton.icon(
                             onPressed: () =>
                                 _editReference(room, sketch: false),
@@ -1188,39 +1662,66 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
               const SizedBox(height: 6),
               Semantics(liveRegion: true, child: Text(draft.status)),
               const SizedBox(height: 10),
-              DesignStyleControls(draft: draft),
-              const SizedBox(height: 8),
               const Text(
                 'Precision mode currently prepares instructions and reference images. It does not enforce a mask or guarantee that an external AI preserves other areas.',
               ),
               const SizedBox(height: 8),
               SegmentedButton<bool>(
                 segments: const [
-                  ButtonSegment(value: true, label: Text('Precision edit')),
-                  ButtonSegment(value: false, label: Text('Explore ideas')),
+                  ButtonSegment(
+                    value: false,
+                    label: Text('Whole-room renovation'),
+                  ),
+                  ButtonSegment(value: true, label: Text('Precise correction')),
                 ],
                 selected: {precise},
                 onSelectionChanged: (v) => draft.setPrecise(v.first),
               ),
+              if (!precise) ...[
+                const SizedBox(height: 12),
+                DesignStyleControls(draft: draft),
+                const Text(
+                  'Describe your goal and what must stay. AI can propose coordinated surfaces, fittings, lighting and styling from your photos. Review its brief before generating.',
+                ),
+                ExpansionTile(
+                  key: const ValueKey('advanced-room-controls'),
+                  title: const Text('Advanced Keep / Replace controls'),
+                  subtitle: const Text(
+                    'Optional saved overrides for the whole-room design.',
+                  ),
+                  maintainState: true,
+                  children: [RenovationScopeControls(draft: draft)],
+                ),
+              ] else ...[
+                const SizedBox(height: 8),
+                const Text(
+                  'Describe one correction to the selected Working from image. Your whole-room brief, style, palette and replacement selections are saved separately and will not be reapplied. Explicit Keep choices still apply. You can generate directly without analysing again.',
+                ),
+              ],
               if (precise && looksLikeBroadRenovation(changes.text)) ...[
                 const SizedBox(height: 8),
                 const Text(
-                  'This request mentions several room elements. Explore ideas may fit a coordinated renovation better than Precision edit.',
+                  'This is a broad renovation request. Choose Whole-room renovation to coordinate the selected changes; use Precise correction for a specific detail.',
                 ),
                 TextButton(
                   onPressed: () => draft.setPrecise(false),
-                  child: const Text('Switch to Explore ideas'),
+                  child: const Text('Use whole-room renovation'),
                 ),
               ],
               const SizedBox(height: 12),
               TextField(
+                key: ValueKey('instructions-$precise'),
                 controller: changes,
                 minLines: 2,
                 maxLines: 5,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'What should change?',
-                  hintText: 'Remove only the fireplace; add dark joinery',
+                  labelText: precise
+                      ? 'Specific correction'
+                      : 'What should change?',
+                  hintText: precise
+                      ? 'Remove only the cupboard handles; keep everything else.'
+                      : 'Modernise the whole kitchen; keep the layout.',
                 ),
               ),
               const SizedBox(height: 12),
@@ -1236,9 +1737,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
               ),
               const SizedBox(height: 12),
               ExpansionTile(
+                key: const ValueKey('prepared-prompt-preview'),
                 title: const Text('Preview prepared prompt'),
-                subtitle: const Text(
-                  'Prepared from your choices on this device; not AI-written yet.',
+                subtitle: Text(
+                  draft.useAiPrompt
+                      ? 'Your reviewed AI prompt plus current room requirements.'
+                      : 'Prepared from your choices on this device; not AI-written.',
                 ),
                 children: [
                   Padding(
@@ -1249,14 +1753,20 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
               ),
               const SizedBox(height: 12),
               ExpansionTile(
+                key: const ValueKey('ai-generation'),
                 initiallyExpanded: widget.store.ai.connected,
                 title: const Text('AI generation (optional)'),
+                maintainState: true,
                 subtitle: const Text(
                   'You can work with photos and versions without a key.',
                 ),
                 children: [
                   AiEditCard(
                     store: widget.store,
+                    onPendingChanged: (pending) {
+                      if (mounted) setState(() => editingRoom = pending);
+                      _updateExitGuard();
+                    },
                     buildRequest: () => _aiRequest(room),
                     onSaved: (design) {
                       if (mounted) setState(() => selectedId = design.id);
@@ -1270,18 +1780,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 runSpacing: 8,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  OutlinedButton.icon(
-                    onPressed: _save,
-                    icon: const Icon(Icons.save_outlined),
-                    label: const Text('Save instructions'),
-                  ),
-                  DropdownButton<String>(
-                    value: provider,
-                    items: ['ChatGPT', 'Gemini']
-                        .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                        .toList(),
-                    onChanged: (s) => setState(() => provider = s!),
-                  ),
                   FilledButton.icon(
                     onPressed: () => _copyPrompt(room),
                     icon: const Icon(Icons.copy),
@@ -1291,7 +1789,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
               ),
               const SizedBox(height: 8),
               const Text(
-                'Alternatively, copy the prompt and attach your selected photo in ChatGPT/Gemini yourself, then import the result below. Manual handoff does not call the API.',
+                'Optional: copy the same prepared prompt into another AI app that supports image editing. Attach the working photo and selected supporting views yourself, then import its result below. Copying does not connect a provider or make an API request.',
               ),
               const SizedBox(height: 18),
               FilledButton.tonalIcon(

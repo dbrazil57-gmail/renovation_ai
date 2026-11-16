@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -36,12 +37,14 @@ void main() {
   late Uint8List output;
   late RenovationRoom room;
   DesignVersion? saved;
+  Completer<void>? editGate;
 
   setUp(() async {
     edits = 0;
     status = 200;
     submitted = null;
     saved = null;
+    editGate = null;
     original = img.encodePng(img.Image(width: 60, height: 40));
     output = img.encodePng(img.Image(width: 80, height: 50));
     ai = AiService(
@@ -53,17 +56,21 @@ void main() {
               'model': 'test-image-model',
               'quality': 'low',
               'maxInputImages': 7,
+              'imageModels': ['test-image-model', 'test-alternate-model'],
+              'imageQualities': ['low', 'medium'],
             }),
             200,
           );
         }
         edits++;
         submitted = jsonDecode(request.body) as Map<String, dynamic>;
+        if (editGate != null) await editGate!.future;
         return http.Response(
           jsonEncode({
             'image': base64Encode(output),
             'provider': 'OpenAI',
-            'model': 'test-image-model',
+            'model': submitted!['model'] ?? 'test-image-model',
+            'quality': submitted!['quality'],
             'requestId': 'test-request',
           }),
           status,
@@ -112,6 +119,7 @@ void main() {
   }
 
   Future<void> confirm(WidgetTester tester) async {
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Generate AI design'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Generate AI design'));
@@ -121,7 +129,175 @@ void main() {
   }
 
   testWidgets(
-    'workspace generates from approved version and keeps its parent',
+    'All cannot generate a precision edit until the user chooses whole-room mode',
+    (tester) async {
+      await store.updateRoom(
+        room.copyWith(
+          instructions: 'All',
+          correctionInstructions: 'All',
+          preciseEdit: true,
+        ),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WorkspaceScreen(store: store, roomId: room.id),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Generate AI design'),
+        350,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(find.text('Generate AI design'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Generate AI design'));
+      await tester.pumpAndSettle();
+      expect(edits, 0);
+      expect(
+        find.textContaining('“All” is a whole-room request'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Use whole-room renovation'),
+        -350,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(find.text('Use whole-room renovation'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Use whole-room renovation'));
+      await tester.pump(const Duration(milliseconds: 700));
+      await tester.scrollUntilVisible(
+        find.text('Generate AI design'),
+        350,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await confirm(tester);
+      expect(edits, 1);
+      expect(
+        submitted!['prompt'],
+        contains('coordinated whole-room renovation'),
+      );
+      expect(submitted!['prompt'], isNot(contains('PRECISION EDIT:')));
+    },
+  );
+
+  testWidgets(
+    'model selection sends nothing until confirmation and the reviewed settings are frozen',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(child: AiConnectionCard(ai: ai)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('test-image-model').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('test-alternate-model').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('low').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('medium').last);
+      await tester.pumpAndSettle();
+      expect(ai.model, 'test-alternate-model');
+      expect(edits, 0);
+      await showCard(tester);
+      await tester.tap(find.text('Generate AI design'));
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.textContaining(
+            'test-alternate-model · medium quality',
+          ),
+        ),
+        findsOneWidget,
+      );
+      ai.selectImageSettings(
+        imageModel: 'test-image-model',
+        imageQuality: 'low',
+      );
+      await tester.tap(find.text('Send to OpenAI'));
+      await tester.pumpAndSettle();
+      expect(submitted!['model'], 'test-alternate-model');
+      expect(submitted!['quality'], 'medium');
+      expect(edits, 1);
+      expect(saved!.aiModel, 'test-alternate-model');
+      expect(saved!.title, contains('test-alternate-model / medium'));
+      expect(
+        () => ai.selectImageSettings(
+          imageModel: 'arbitrary',
+          imageQuality: 'low',
+        ),
+        throwsA(isA<AiFailure>()),
+      );
+      expect(edits, 1);
+    },
+  );
+
+  testWidgets(
+    'running image generation blocks Back and survives scrolling away before local saving',
+    (tester) async {
+      editGate = Completer<void>();
+      addTearDown(() {
+        if (!editGate!.isCompleted) editGate!.complete();
+      });
+      await store.updateRoom(
+        room.copyWith(instructions: 'Fix the skirting only'),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (_) =>
+                        WorkspaceScreen(store: store, roomId: room.id),
+                  ),
+                ),
+                child: const Text('Open room'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open room'));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Generate AI design'),
+        350,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.ensureVisible(find.text('Generate AI design'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Generate AI design'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Send to OpenAI'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(edits, 1);
+      await tester.pageBack();
+      await tester.pump();
+      expect(find.byType(WorkspaceScreen), findsOneWidget);
+      expect(store.designsFor(room.id), isEmpty);
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, 1800));
+      await tester.pump(const Duration(milliseconds: 400));
+      editGate!.complete();
+      await tester.pumpAndSettle();
+      expect(store.designsFor(room.id), hasLength(1));
+      expect(store.imageFor(room.originalId), orderedEquals(original));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'precision correction uses the approved version and keeps its parent without whole-room scope',
     (tester) async {
       final baseline = await store.createDesign(
         roomId: room.id,
@@ -134,7 +310,11 @@ void main() {
       await store.updateRoom(
         store
             .roomById(room.id)!
-            .copyWith(instructions: 'Fix the skirting only'),
+            .copyWith(
+              instructions: 'Modernise the whole room',
+              correctionInstructions: 'Fix the skirting only',
+              preciseEdit: true,
+            ),
       );
       await tester.pumpWidget(
         MaterialApp(
@@ -159,7 +339,15 @@ void main() {
       expect(generated.parentId, baseline.id);
       expect(generated.sourceImageId, baseline.imageId);
       expect(generated.prompt, contains('Fix the skirting only'));
-      expect(generated.prompt, contains('COLOUR PALETTE: Charcoal & walnut'));
+      expect(generated.prompt, contains('PRECISION EDIT:'));
+      expect(generated.prompt, isNot(contains('EXPLORATION:')));
+      expect(
+        generated.prompt,
+        isNot(contains('Replace the existing flooring')),
+      );
+      expect(generated.prompt, isNot(contains('REPLACE Oven')));
+      expect(generated.prompt, isNot(contains('COLOUR PALETTE:')));
+      expect(generated.prompt, isNot(contains('Modernise the whole room')));
       expect(store.roomById(room.id)!.approvedDesignId, baseline.id);
       expect(store.imageFor(room.originalId), orderedEquals(original));
       expect(tester.takeException(), isNull);

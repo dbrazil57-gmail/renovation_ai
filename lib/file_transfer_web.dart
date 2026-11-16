@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 import 'dart:typed_data';
 
 import 'package:cross_file/cross_file.dart';
@@ -10,9 +11,144 @@ import 'project_backup.dart';
 
 AppFiles createAppFiles() => _WebFiles();
 
-class _WebFiles implements AppFiles {
+@JS()
+extension type _PickerWindow._(JSObject _) implements JSObject {
+  external JSPromise<web.FileSystemFileHandle> showSaveFilePicker(
+    JSObject options,
+  );
+  external JSPromise<JSArray<web.FileSystemFileHandle>> showOpenFilePicker(
+    JSObject options,
+  );
+}
+
+class _BrowserFileDestination
+    implements ReusableSaveDestination, IdentifiableDestination {
+  final web.FileSystemFileHandle handle;
+  _BrowserFileDestination(this.handle);
+  @override
+  Future<bool> sameFile(SaveDestination other) async {
+    if (other is! _BrowserFileDestination) return false;
+    return (await handle.isSameEntry(other.handle).toDart).toDart;
+  }
+
+  @override
+  Future<FileSaveResult> write(Uint8List bytes) async {
+    final stream = await handle.createWritable().toDart;
+    try {
+      await stream.write(bytes.toJS).toDart;
+      await stream.close().toDart;
+      return FileSaveResult.saved;
+    } catch (_) {
+      try {
+        await stream.abort().toDart;
+      } catch (_) {
+        /* Preserve the original error. */
+      }
+      rethrow;
+    }
+  }
+}
+
+class _DownloadDestination implements SaveDestination {
+  final _WebFiles files;
+  final String name;
+  final String mimeType;
+  _DownloadDestination(this.files, this.name, this.mimeType);
+  @override
+  Future<FileSaveResult> write(Uint8List bytes) =>
+      files.save(bytes, name: name, mimeType: mimeType);
+}
+
+class _WebFiles
+    implements AppFiles, LocationChoosingFiles, ProjectOpeningFiles {
+  @override
+  Future<OpenedProjectFile?> openProjectFile() async {
+    final picker = web.window.getProperty<JSAny?>('showOpenFilePicker'.toJS);
+    if (picker == null ||
+        !picker.isA<JSFunction>() ||
+        !web.window.isSecureContext) {
+      final bytes = await pickBackup();
+      return bytes == null ? null : OpenedProjectFile(bytes);
+    }
+    try {
+      final handles = await (web.window as _PickerWindow)
+          .showOpenFilePicker(
+            {
+                  'multiple': false,
+                  'types': [
+                    {
+                      'description': 'Renovision project',
+                      'accept': {
+                        'application/json': ['.json'],
+                      },
+                    },
+                  ],
+                }.jsify()
+                as JSObject,
+          )
+          .toDart;
+      if (handles.toDart.isEmpty) return null;
+      final handle = handles.toDart.first;
+      final file = await handle.getFile().toDart;
+      if (file.size > ProjectBackup.maxFileBytes) {
+        throw const BackupFailure('Choose a project smaller than 100 MB.');
+      }
+      final bytes = (await file.arrayBuffer().toDart).toDart.asUint8List();
+      return OpenedProjectFile(
+        bytes,
+        destination: _BrowserFileDestination(handle),
+        name: file.name,
+      );
+    } catch (error) {
+      if (error.toString().contains('AbortError')) return null;
+      if (error is BackupFailure) rethrow;
+      throw const BackupFailure(
+        'The project file could not be opened. Existing projects are unchanged.',
+      );
+    }
+  }
+
   @override
   bool get supported => true;
+  @override
+  Future<SaveDestination?> chooseSaveLocation({
+    required String name,
+    required String mimeType,
+  }) async {
+    final picker = web.window.getProperty<JSAny?>('showSaveFilePicker'.toJS);
+    if (picker == null ||
+        !picker.isA<JSFunction>() ||
+        !web.window.isSecureContext) {
+      return _DownloadDestination(this, name, mimeType);
+    }
+    try {
+      final handle = await (web.window as _PickerWindow)
+          .showSaveFilePicker(
+            {
+                  'suggestedName': name,
+                  'types': [
+                    {
+                      'description': mimeType == 'image/png'
+                          ? 'PNG image'
+                          : 'Renovision project backup',
+                      'accept': {
+                        mimeType: [mimeType == 'image/png' ? '.png' : '.json'],
+                      },
+                    },
+                  ],
+                }.jsify()
+                as JSObject,
+          )
+          .toDart;
+      return _BrowserFileDestination(handle);
+    } catch (error) {
+      if (error.toString().contains('AbortError')) return null;
+      throw const BackupFailure(
+        'The save location could not be opened. Click Save as again and choose a location.',
+      );
+    }
+  }
+
   @override
   Future<FileSaveResult> save(
     Uint8List bytes, {

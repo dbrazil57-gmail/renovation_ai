@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
@@ -9,11 +11,9 @@ Future<void> main() async {
   await Hive.initFlutter();
   final records = await Hive.openBox<dynamic>('renovision_records_v1');
   final photos = await Hive.openBox<dynamic>('renovision_photo_bytes_v1');
-  runApp(
-    RenovisionApp(
-      store: RenovisionStore(records: records, photos: photos),
-    ),
-  );
+  final store = RenovisionStore(records: records, photos: photos);
+  runApp(RenovisionApp(store: store));
+  unawaited(store.restoreAiConnection());
 }
 
 class RenovisionApp extends StatelessWidget {

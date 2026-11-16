@@ -85,6 +85,8 @@ void main() {
       prompt: 'Keep the wide windows',
     );
     await tester.pumpWidget(RenovisionApp(store: store));
+    await tester.tap(find.text('Explore'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Save idea'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Library'));
@@ -111,20 +113,25 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      final workingImage = find.byWidgetPredicate(
+        (widget) =>
+            widget is DropdownButtonFormField<String> &&
+            widget.decoration.labelText == 'Working from',
+      );
       await tester.scrollUntilVisible(
-        find.byType(DropdownButtonFormField<String>),
+        workingImage,
         350,
         scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
       final selector = tester.widget<DropdownButtonFormField<String>>(
-        find.byType(DropdownButtonFormField<String>),
+        workingImage,
       );
       expect(selector.initialValue, approved.id);
       expect(find.text('Working from the approved baseline.'), findsOneWidget);
-      await tester.ensureVisible(find.byType(DropdownButtonFormField<String>));
+      await tester.ensureVisible(workingImage);
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.tap(workingImage);
       await tester.pumpAndSettle();
       await tester.tap(find.textContaining('Original photograph').last);
       await tester.pumpAndSettle();

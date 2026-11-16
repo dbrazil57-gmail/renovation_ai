@@ -63,6 +63,36 @@ const designPalettes = [
     PaletteColour('Silver grey', 0xBCBFC0, 'Worktops / finishes'),
     PaletteColour('Black', 0x202425, 'Accents'),
   ]),
+  DesignPalette('white_oak', 'White & oak', [
+    PaletteColour('Warm white', 0xF5F1E9, 'Walls'),
+    PaletteColour('Chalk', 0xECE7DD, 'Cabinetry'),
+    PaletteColour('Light oak', 0xC8AA7F, 'Timber / finishes'),
+    PaletteColour('Oatmeal', 0xB8A68E, 'Accents'),
+  ]),
+  DesignPalette('forest_cream', 'Forest & cream', [
+    PaletteColour('Cream', 0xF2EBDC, 'Walls'),
+    PaletteColour('Forest green', 0x304E41, 'Cabinetry'),
+    PaletteColour('Warm stone', 0xC6BBA8, 'Worktops / finishes'),
+    PaletteColour('Aged brass', 0xA38C58, 'Accents'),
+  ]),
+  DesignPalette('blush_brass', 'Soft blush & brass', [
+    PaletteColour('Soft ivory', 0xF4EDE6, 'Walls'),
+    PaletteColour('Dusty blush', 0xC7A49C, 'Cabinetry'),
+    PaletteColour('Pale terrazzo', 0xD6CEC2, 'Worktops / finishes'),
+    PaletteColour('Brushed brass', 0xB59B68, 'Accents'),
+  ]),
+  DesignPalette('greige_black', 'Greige & black', [
+    PaletteColour('Linen', 0xEAE3D8, 'Walls'),
+    PaletteColour('Greige', 0xA9A194, 'Cabinetry'),
+    PaletteColour('Pale concrete', 0xCECBC3, 'Worktops / finishes'),
+    PaletteColour('Soft black', 0x292B2B, 'Accents'),
+  ]),
+  DesignPalette('blue_copper', 'Deep blue & copper', [
+    PaletteColour('Porcelain white', 0xEFEDE8, 'Walls'),
+    PaletteColour('Deep blue', 0x30485D, 'Cabinetry'),
+    PaletteColour('Pale marble', 0xD7D8D5, 'Worktops / finishes'),
+    PaletteColour('Copper', 0xB67A5E, 'Accents'),
+  ]),
 ];
 
 DesignPalette? paletteById(String? id) {

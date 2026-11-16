@@ -62,7 +62,7 @@ void main() {
     expect(prompt, contains('coordinated renovation'));
     expect(
       prompt,
-      contains('Modern + Contemporary + Warm, handleless cupboards'),
+      contains('Modern / Contemporary + Warm, handleless cupboards'),
     );
     expect(prompt, contains('Keep the existing walls'));
     expect(prompt, isNot(contains('MUST RETAIN: Nothing')));
@@ -113,7 +113,7 @@ void main() {
       final saved = store.roomById(room.id)!;
       expect(saved.instructions, 'New cabinets and floor');
       expect(saved.otherStyle, 'Warm and practical');
-      expect(saved.designStyleIds, ['modern', 'contemporary']);
+      expect(saved.designStyleIds, ['modern']);
       final restored = await store.restoreBackup(
         ProjectBackup.decode(store.backupFor(room.projectId).encode()),
       );
@@ -121,10 +121,7 @@ void main() {
         store.roomsFor(restored.id).single.otherStyle,
         'Warm and practical',
       );
-      expect(store.roomsFor(restored.id).single.designStyleIds, [
-        'modern',
-        'contemporary',
-      ]);
+      expect(store.roomsFor(restored.id).single.designStyleIds, ['modern']);
       expect(store.imageFor(room.originalId), orderedEquals(image));
     },
   );
@@ -176,7 +173,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final modern = find.widgetWithText(FilterChip, 'Modern');
+    final modern = find.widgetWithText(FilterChip, 'Modern / Contemporary');
     await tester.scrollUntilVisible(
       modern,
       350,

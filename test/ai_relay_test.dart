@@ -18,6 +18,7 @@ void main() {
   late http.Request? sentToProvider;
   late Uint8List original;
   late Uint8List result;
+  late Map<String, dynamic> analysisBody;
 
   setUp(() async {
     providerCalls = 0;
@@ -27,12 +28,41 @@ void main() {
     image.exif.imageIfd.imageDescription = 'Private original metadata';
     original = img.encodeJpg(image);
     result = img.encodePng(img.Image(width: 60, height: 40));
+    analysisBody = {
+      'status': 'completed',
+      'output': [
+        {
+          'type': 'message',
+          'content': [
+            {
+              'type': 'output_text',
+              'text': jsonEncode({
+                'observations':
+                    'A window above the sink and a peninsula are visible.',
+                'questions': [
+                  'Should the dining-facing side have storage doors?',
+                ],
+                'prompt':
+                    'Keep the window and room layout; modernise the cabinetry.',
+              }),
+            },
+          ],
+        },
+      ],
+    };
     final relay = AiRelay(
       apiKey: 'synthetic-test-key',
       pairingCode: 'test-connection',
       clientFactory: () => MockClient((request) async {
         providerCalls++;
         sentToProvider = request;
+        if (request.url.path == '/v1/responses') {
+          return http.Response(
+            jsonEncode(analysisBody),
+            providerStatus,
+            headers: {'x-request-id': 'analysis-request'},
+          );
+        }
         return http.Response(
           jsonEncode({
             'data': [
@@ -77,6 +107,7 @@ void main() {
       );
       expect(response.statusCode, 200);
       expect(jsonDecode(response.body)['provider'], 'OpenAI');
+      expect(jsonDecode(response.body)['analysisModel'], 'gpt-6-luna');
       expect(response.body, isNot(contains('synthetic-test-key')));
       expect(
         response.headers['access-control-allow-origin'],
@@ -86,6 +117,50 @@ void main() {
       expect(providerCalls, 0);
     },
   );
+
+  test('confirmed edit uses chosen model and quality; unsupported selections never reach provider', () async {
+    final response = await browser.get(
+      base.resolve('/health'),
+      headers: headers(),
+    );
+    final config = jsonDecode(response.body) as Map;
+    expect(config['imageModels'], contains('gpt-image-2.5-flare'));
+    expect(config['imageQualities'], contains('medium'));
+    final data = jsonDecode(editBody()) as Map<String, dynamic>;
+    data['model'] = 'gpt-image-2.5-flare';
+    data['quality'] = 'medium';
+    final edited = await browser.post(
+      base.resolve('/edit'),
+      headers: headers(),
+      body: jsonEncode(data),
+    );
+    expect(edited.statusCode, 200);
+    expect(jsonDecode(edited.body)['model'], 'gpt-image-2.5-flare');
+    expect(jsonDecode(edited.body)['quality'], 'medium');
+    final multipart = latin1.decode(sentToProvider!.bodyBytes);
+    expect(multipart, contains('name="model"\r\n\r\ngpt-image-2.5-flare'));
+    expect(multipart, contains('name="quality"\r\n\r\nmedium'));
+    expect(providerCalls, 1);
+    data['model'] = 'unadvertised-model';
+    final rejected = await browser.post(
+      base.resolve('/edit'),
+      headers: headers(),
+      body: jsonEncode(data),
+    );
+    expect(rejected.statusCode, 400);
+    expect(providerCalls, 1);
+    data['model'] = 'gpt-image-2.5-flare';
+    data['quality'] = 'unbounded';
+    expect(
+      (await browser.post(
+        base.resolve('/edit'),
+        headers: headers(),
+        body: jsonEncode(data),
+      )).statusCode,
+      400,
+    );
+    expect(providerCalls, 1);
+  });
 
   test(
     'wrong pairing code or non-local browser origin cannot invoke provider',
@@ -222,4 +297,140 @@ void main() {
       expect(response.body, isNot(contains(base64Encode(original))));
     },
   );
+
+  test('vision endpoint sends ordered metadata-free images and returns structured analysis once', () async {
+    final input = jsonDecode(editBody()) as Map<String, dynamic>;
+    input['supportingImages'] = [base64Encode(original)];
+    final response = await browser.post(
+      base.resolve('/analyse'),
+      headers: headers(),
+      body: jsonEncode(input),
+    );
+    expect(response.statusCode, 200);
+    expect(providerCalls, 1);
+    final sent = jsonDecode(sentToProvider!.body) as Map<String, dynamic>;
+    expect(sent['store'], false);
+    expect(sent['max_output_tokens'], 3000);
+    expect(sent['text']['format']['strict'], true);
+    expect(sent['instructions'], contains('not just the room label'));
+    final content = sent['input'][0]['content'] as List;
+    final inputs = content
+        .where((item) => item['type'] == 'input_image')
+        .toList();
+    expect(inputs, hasLength(2));
+    expect(content[0]['text'], contains('Change only the skirting'));
+    for (final image in inputs) {
+      final bytes = base64Decode(
+        (image['image_url'] as String).split(',').last,
+      );
+      expect(
+        latin1.decode(bytes),
+        isNot(contains('Private original metadata')),
+      );
+      expect(img.decodePng(bytes), isNotNull);
+    }
+    final body = jsonDecode(response.body);
+    expect(body['observations'], contains('window above the sink'));
+    expect(body['requestId'], 'analysis-request');
+    expect(body['model'], 'gpt-6-luna');
+    expect(body.containsKey('image'), false);
+    expect(
+      img.decodeImage(original)!.exif.imageIfd.imageDescription,
+      'Private original metadata',
+    );
+  });
+
+  test(
+    'vision working copy preserves camera orientation before removing metadata',
+    () async {
+      final camera = img.Image(width: 60, height: 40);
+      camera.exif.imageIfd.orientation = 6;
+      camera.exif.imageIfd.imageDescription = 'Private camera metadata';
+      final bytes = img.encodeJpg(camera);
+      final response = await browser.post(
+        base.resolve('/analyse'),
+        headers: headers(),
+        body: jsonEncode({
+          'image': base64Encode(bytes),
+          'prompt': 'Describe this room',
+          'confirmed': true,
+        }),
+      );
+      expect(response.statusCode, 200);
+      final sent = jsonDecode(sentToProvider!.body);
+      final content = sent['input'][0]['content'] as List;
+      final url =
+          content.singleWhere((p) => p['type'] == 'input_image')['image_url']
+              as String;
+      final cleanBytes = base64Decode(url.split(',').last);
+      final clean = img.decodePng(cleanBytes)!;
+      expect(clean.width, 40);
+      expect(clean.height, 60);
+      expect(
+        latin1.decode(cleanBytes),
+        isNot(contains('Private camera metadata')),
+      );
+      // JPEG decoding bakes EXIF rotation into pixels. The original still keeps
+      // its private metadata; only the uploaded PNG copy has it removed.
+      expect(
+        img.decodeJpg(bytes)!.exif.imageIfd.imageDescription,
+        'Private camera metadata',
+      );
+    },
+  );
+
+  test('analysis requires consent and a valid local connection before contacting provider', () async {
+    for (final (code, confirmed, status) in [
+      ('wrong', true, 401),
+      ('test-connection', false, 400),
+    ]) {
+      final response = await browser.post(
+        base.resolve('/analyse'),
+        headers: headers(code: code),
+        body: editBody(confirmed: confirmed),
+      );
+      expect(response.statusCode, status);
+    }
+    expect(providerCalls, 0);
+  });
+
+  test('incomplete, refused and malformed analyses are rejected without automatic retries', () async {
+    for (final bad in [
+      {'status': 'incomplete', 'output': []},
+      {
+        'status': 'completed',
+        'output': [
+          {
+            'type': 'message',
+            'content': [
+              {'type': 'refusal', 'refusal': 'No'},
+            ],
+          },
+        ],
+      },
+      {
+        'status': 'completed',
+        'output': [
+          {
+            'type': 'message',
+            'content': [
+              {
+                'type': 'output_text',
+                'text': '{"observations":"Imagined room"}',
+              },
+            ],
+          },
+        ],
+      },
+    ]) {
+      analysisBody = bad;
+      final response = await browser.post(
+        base.resolve('/analyse'),
+        headers: headers(),
+        body: editBody(),
+      );
+      expect(response.statusCode, 502);
+    }
+    expect(providerCalls, 3);
+  });
 }

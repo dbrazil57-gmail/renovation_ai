@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
+import 'room_analysis.dart';
+
 class AiFailure implements Exception {
   final String message;
   const AiFailure(this.message);
@@ -16,11 +18,13 @@ class AiResult {
   final String provider;
   final String model;
   final String? requestId;
+  final String? quality;
   const AiResult({
     required this.image,
     required this.provider,
     required this.model,
     this.requestId,
+    this.quality,
   });
 }
 
@@ -28,13 +32,50 @@ class AiResult {
 /// key is never sent to the Flutter app or written to its project/photo store.
 class AiService extends ChangeNotifier {
   final http.Client Function() clientFactory;
+  Map<String, dynamic>? get rememberedConnection => _url == null
+      ? null
+      : {
+          'url': _url,
+          'pairingCode': _pairingCode,
+          'model': model,
+          'quality': quality,
+        };
+  String? connectionNotice;
+  String _preferredUrl = 'http://127.0.0.1:8787';
   String? _url;
   String? _pairingCode;
   String? model;
   String? quality;
+  String? analysisModel;
+  List<String> imageModels = const [];
+  List<String> imageQualities = const [];
+  bool get supportsAnalysis => connected && analysisModel != null;
   int maxInputImages = 1;
   bool get connected => _url != null;
-  String get relayUrl => _url ?? 'http://127.0.0.1:8787';
+  String get relayUrl => _url ?? _preferredUrl;
+
+  Future<void> restoreConnection(Map saved) async {
+    final url = saved['url'];
+    final code = saved['pairingCode'];
+    if (url is! String || code is! String) return;
+    try {
+      localRelay(url);
+      _preferredUrl = url;
+      await connect(url: url, pairingCode: code);
+      if (imageModels.contains(saved['model']) &&
+          imageQualities.contains(saved['quality'])) {
+        selectImageSettings(
+          imageModel: saved['model'] as String,
+          imageQuality: saved['quality'] as String,
+        );
+      }
+      connectionNotice =
+          'Saved local AI connection restored. No images were sent.';
+    } catch (_) {
+      connectionNotice = 'Saved AI settings found. Start the relay, then reconnect; a restarted relay may have a new code.';
+    }
+    notifyListeners();
+  }
 
   AiService({http.Client Function()? clientFactory})
     : clientFactory = clientFactory ?? http.Client.new;
@@ -80,9 +121,24 @@ class AiService extends ChangeNotifier {
         );
       }
       _url = uri.toString();
+      _preferredUrl = _url!;
+      connectionNotice = null;
       _pairingCode = pairingCode.trim();
       model = data['model'] as String;
       quality = data['quality'] as String;
+      imageModels = {
+        model!,
+        ...?((data['imageModels'] as List?)?.whereType<String>()),
+      }.toList();
+      imageQualities = {
+        quality!,
+        ...?((data['imageQualities'] as List?)?.whereType<String>()),
+      }.toList();
+      analysisModel =
+          data['analysisModel'] is String &&
+              (data['analysisModel'] as String).trim().isNotEmpty
+          ? data['analysisModel'] as String
+          : null;
       maxInputImages = data['maxInputImages'] is int
           ? (data['maxInputImages'] as int).clamp(1, 7)
           : 1;
@@ -103,7 +159,26 @@ class AiService extends ChangeNotifier {
     _pairingCode = null;
     model = null;
     quality = null;
+    analysisModel = null;
+    imageModels = const [];
+    imageQualities = const [];
     maxInputImages = 1;
+    notifyListeners();
+  }
+
+  void selectImageSettings({
+    required String imageModel,
+    required String imageQuality,
+  }) {
+    if (!connected ||
+        !imageModels.contains(imageModel) ||
+        !imageQualities.contains(imageQuality)) {
+      throw const AiFailure(
+        'Choose a model and quality offered by the connected relay.',
+      );
+    }
+    model = imageModel;
+    quality = imageQuality;
     notifyListeners();
   }
 
@@ -111,9 +186,19 @@ class AiService extends ChangeNotifier {
     required Uint8List image,
     required String prompt,
     List<Uint8List> supportingImages = const [],
+    String? imageModel,
+    String? imageQuality,
   }) async {
     if (!connected) {
       throw const AiFailure('Connect your local AI relay in Settings first.');
+    }
+    final chosenModel = imageModel ?? model!;
+    final chosenQuality = imageQuality ?? quality!;
+    if (!imageModels.contains(chosenModel) ||
+        !imageQualities.contains(chosenQuality)) {
+      throw const AiFailure(
+        'Reconnect the relay and choose an available image model and quality.',
+      );
     }
     if (supportingImages.length + 1 > maxInputImages) {
       throw const AiFailure(
@@ -145,6 +230,8 @@ class AiService extends ChangeNotifier {
               'supportingImages': supportingImages.map(base64Encode).toList(),
               'prompt': prompt,
               'confirmed': true,
+              'model': chosenModel,
+              'quality': chosenQuality,
             }),
           )
           .timeout(const Duration(seconds: 210));
@@ -163,6 +250,7 @@ class AiService extends ChangeNotifier {
         model: data['model'] as String,
         provider: 'OpenAI',
         requestId: data['requestId'] as String?,
+        quality: data['quality'] as String?,
       );
     } on AiFailure {
       rethrow;
@@ -179,6 +267,63 @@ class AiService extends ChangeNotifier {
     }
   }
 
+  Future<RoomAnalysisResult> analyse({
+    required Uint8List image,
+    required String context,
+    List<Uint8List> supportingImages = const [],
+  }) async {
+    if (!supportsAnalysis) {
+      throw const AiFailure(
+        'Connect the updated local AI relay in Settings to analyse photos.',
+      );
+    }
+    final inputs = [image, ...supportingImages];
+    if (inputs.length > maxInputImages ||
+        inputs.any((b) => b.isEmpty || b.length > 18 * 1024 * 1024) ||
+        inputs.fold<int>(0, (sum, b) => sum + b.length) > 36 * 1024 * 1024 ||
+        context.trim().isEmpty ||
+        context.length > 16000) {
+      throw const AiFailure(
+        'Use up to seven photos (18 MB each, 36 MB combined) and shorter room instructions.',
+      );
+    }
+    final client = clientFactory();
+    try {
+      final response = await client
+          .post(
+            Uri.parse(_url!).resolve('/analyse'),
+            headers: {
+              'Authorization': 'Bearer $_pairingCode',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({
+              'image': base64Encode(image),
+              'supportingImages': supportingImages.map(base64Encode).toList(),
+              'prompt': context,
+              'confirmed': true,
+            }),
+          )
+          .timeout(const Duration(seconds: 110));
+      final data = _readResponse(response);
+      if (data['provider'] != 'OpenAI') throw const FormatException();
+      try {
+        return RoomAnalysisResult.fromMap(data);
+      } on FormatException {
+        throw const AiFailure(
+          'No complete room analysis was returned. Your previous analysis remains available; no automatic retry was made.',
+        );
+      }
+    } on AiFailure {
+      rethrow;
+    } catch (_) {
+      throw const AiFailure(
+        'Room analysis was interrupted or could not be read. A charge may have occurred; check usage before retrying.',
+      );
+    } finally {
+      client.close();
+    }
+  }
+
   Map<String, dynamic> _readResponse(http.Response response) {
     if (response.statusCode != 200) {
       final message = switch (response.statusCode) {
@@ -187,7 +332,7 @@ class AiService extends ChangeNotifier {
         413 => 'This image is too large for the local AI test.',
         429 => 'The relay or AI provider is busy or rate-limited. No automatic retry was made.',
         504 => 'The provider timed out. A charge may have occurred; check usage before retrying.',
-        _ => 'AI generation failed. Your original and approved baseline are unchanged. Check your provider account before retrying.',
+        _ => 'The AI request failed. Your original and approved baseline are unchanged. Check your provider account before retrying.',
       };
       throw AiFailure(message);
     }

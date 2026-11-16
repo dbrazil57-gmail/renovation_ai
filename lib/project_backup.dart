@@ -86,17 +86,58 @@ class ProjectBackup {
         for (final field in ['projectId', 'originalId']) {
           _string(room[field]);
         }
-        for (final field in ['instructions', 'protectedFeatures']) {
+        for (final field in [
+          'instructions',
+          'protectedFeatures',
+          'correctionInstructions',
+        ]) {
           _optionalText(room[field]);
         }
         _optionalText(room['approvedDesignId']);
         _optionalText(room['primaryPhotoId']);
         _optionalText(room['colourPaletteId']);
         _optionalText(room['otherStyle']);
+        _optionalText(room['flooringNotes']);
+        _optionalText(room['removeItems']);
+        _optionalText(room['roomTypeId']);
+        if (room['roomItemChoices'] != null) {
+          final choices = _map(room['roomItemChoices']);
+          if (choices.length > 100 ||
+              choices.entries.any(
+                (entry) =>
+                    entry.key.isEmpty ||
+                    entry.key.length > 100 ||
+                    !['keep', 'replace'].contains(entry.value),
+              )) {
+            throw const FormatException();
+          }
+        }
+        if (room['renovationScopeIds'] != null) {
+          _list(room['renovationScopeIds'], 20).forEach(_string);
+        }
+        _optionalText(room['aiPrompt']);
+        if (room['aiPrompt'] is String &&
+            (room['aiPrompt'] as String).length > 8000) {
+          throw const FormatException();
+        }
+        if (room['analysis'] != null && room['analysis'] is! Map) {
+          throw const FormatException();
+        }
         if (room['designStyleIds'] != null) {
           _list(room['designStyleIds'], 20).forEach(_string);
         }
-        for (final field in ['preciseEdit', 'keepLayout']) {
+        if (room['setupStep'] != null &&
+            (room['setupStep'] is! int ||
+                (room['setupStep'] as int) < 0 ||
+                (room['setupStep'] as int) > 3)) {
+          throw const FormatException();
+        }
+        for (final field in [
+          'preciseEdit',
+          'keepLayout',
+          'useAiPrompt',
+          'setupComplete',
+        ]) {
           if (room[field] != null && room[field] is! bool) {
             throw const FormatException();
           }
@@ -142,6 +183,23 @@ class ProjectBackup {
           throw const FormatException();
         }
         requiredPhotos.addAll(room.photoIds);
+        final analysis = room.analysis;
+        if (analysis != null) {
+          final validImages = {
+            ...room.photoIds,
+            ...designs.where((d) => d.roomId == room.id).map((d) => d.imageId),
+          };
+          if (!validImages.contains(analysis.sourceImageId) ||
+              !analysis.supportingImageIds.every(room.photoIds.contains)) {
+            throw const BackupFailure('Backup has unrelated analysis photos.');
+          }
+          requiredPhotos.add(analysis.sourceImageId);
+          requiredPhotos.addAll(analysis.supportingImageIds);
+        }
+        if (room.useAiPrompt &&
+            (analysis == null || room.aiPrompt.trim().isEmpty)) {
+          throw const BackupFailure('Backup has an incomplete AI prompt.');
+        }
         if (room.approvedDesignId != null &&
             byDesign[room.approvedDesignId]?.roomId != room.id) {
           throw const BackupFailure('Backup has an invalid approved baseline.');

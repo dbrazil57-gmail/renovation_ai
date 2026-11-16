@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:hive_ce/hive_ce.dart';
 
 import 'models.dart';
+import 'room_analysis.dart';
 import 'ai_service.dart';
 import 'project_backup.dart';
 import 'file_transfer.dart';
 import 'design_palettes.dart';
+import 'design_styles.dart';
+import 'room_features.dart';
+import 'project_documents.dart';
 
 /// Stage 1 local-only prototype storage. Photos are kept in a dedicated box.
 /// For production-scale image libraries, move large originals to app-private
@@ -15,7 +21,10 @@ class RenovisionStore extends ChangeNotifier {
   final Box<dynamic> photos;
   final AiService ai;
   final AppFiles files;
+  late final ProjectDocuments documents;
   int _sequence = 0;
+  bool _restoringAi = false;
+  Future<void> _aiSettingsQueue = Future.value();
 
   RenovisionStore({
     required this.records,
@@ -23,15 +32,107 @@ class RenovisionStore extends ChangeNotifier {
     AiService? ai,
     AppFiles? files,
   }) : ai = ai ?? AiService(),
-       files = files ?? createAppFiles();
+       files = files ?? createAppFiles() {
+    documents = ProjectDocuments(
+      encode: (id) => backupFor(id).encode(),
+      autosave: () => autosaveEnabled,
+    );
+    addListener(documents.changed);
+    this.ai.addListener(_rememberAiConnection);
+  }
+
+  void _rememberAiConnection() {
+    if (_restoringAi) return;
+    final snapshot = ai.rememberedConnection;
+    _aiSettingsQueue = _aiSettingsQueue
+        .catchError((_) {})
+        .then((_) async {
+          if (snapshot == null) {
+            await records.delete('settings:ai_connection');
+          } else {
+            await records.put('settings:ai_connection', snapshot);
+          }
+        })
+        .catchError((_) {
+          ai.connectionNotice = 'AI is connected, but its settings could not be remembered on this device.';
+        });
+  }
+
+  Future<void> restoreAiConnection() async {
+    final saved = records.get('settings:ai_connection');
+    if (saved is! Map) return;
+    _restoringAi = true;
+    try {
+      await ai.restoreConnection(saved);
+    } finally {
+      _restoringAi = false;
+    }
+  }
 
   @override
   void dispose() {
+    ai.removeListener(_rememberAiConnection);
+    removeListener(documents.changed);
+    documents.dispose();
     ai.dispose();
     super.dispose();
   }
 
   String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${_sequence++}';
+
+  RenovationRoom? get resumeRoom {
+    final saved = records.get('settings:resume');
+    final previous = saved is Map ? roomById(saved['roomId'].toString()) : null;
+    if (previous != null && projectById(previous.projectId) != null) {
+      return previous;
+    }
+    final rooms = projects.expand((p) => roomsFor(p.id)).toList()
+      ..sort((a, b) => b.created.compareTo(a.created));
+    return rooms.isEmpty ? null : rooms.first;
+  }
+
+  Future<void> rememberRoom(String roomId) async {
+    if (roomById(roomId) == null) return;
+    await records.put('settings:resume', {'roomId': roomId});
+    notifyListeners();
+  }
+
+  bool get autosaveEnabled {
+    final settings = records.get('settings:saving');
+    return settings is! Map || settings['autosave'] != false;
+  }
+
+  Future<void> setAutosaveEnabled(bool enabled) async {
+    await records.put('settings:saving', {'autosave': enabled});
+    notifyListeners();
+  }
+
+  DateTime? get lastStorageCheck {
+    final value = records.get('meta:storage_check');
+    return value is Map
+        ? DateTime.tryParse(value['checkedAt'].toString())
+        : null;
+  }
+
+  /// Explicit small write/read check; never overwrite any project/photo record.
+  /// A successful check proves this session's writes, not restart durability.
+  Future<void> checkLocalStorage() async {
+    final token = _newId();
+    final probe = Uint8List.fromList(token.codeUnits);
+    await photos.put('diagnostic:storage_check', probe);
+    if (!listEquals(imageFor('diagnostic:storage_check'), probe)) {
+      throw StateError('Photo storage read-back failed.');
+    }
+    await records.put('meta:storage_check', {
+      'token': token,
+      'checkedAt': DateTime.now().toUtc().toIso8601String(),
+    });
+    final saved = records.get('meta:storage_check');
+    if (saved is! Map || saved['token'] != token) {
+      throw StateError('Project storage read-back failed.');
+    }
+    notifyListeners();
+  }
 
   List<RenovationProject> get projects =>
       records.keys
@@ -133,7 +234,10 @@ class RenovisionStore extends ChangeNotifier {
 
   /// Restore into new identifiers; publish the project last. Roll back only
   /// identifiers allocated by this operation if a write fails.
-  Future<RenovationProject> restoreBackup(ProjectBackup backup) async {
+  Future<RenovationProject> restoreBackup(
+    ProjectBackup backup, {
+    String? projectName,
+  }) async {
     // Callers cannot bypass validation by constructing a ProjectBackup directly.
     final validated = ProjectBackup.decode(backup.encode());
     String recordId(String type) {
@@ -144,9 +248,15 @@ class RenovisionStore extends ChangeNotifier {
       return id;
     }
 
+    final restoredBaseName = validated.project.name.replaceFirst(
+      RegExp(r'(?:\s+\(restored\))+\s*$', caseSensitive: false),
+      '',
+    );
     final project = RenovationProject(
       id: recordId('project'),
-      name: '${validated.project.name} (restored)',
+      name: projectName == null
+          ? '$restoredBaseName (restored)'
+          : _validName(projectName),
       created: validated.project.created,
     );
     final roomIds = {
@@ -179,6 +289,14 @@ class RenovisionStore extends ChangeNotifier {
         'approvedDesignId': room.approvedDesignId == null
             ? null
             : designIds[room.approvedDesignId],
+        if (room.analysis != null)
+          'analysis': {
+            ...room.analysis!.toMap(),
+            'sourceImageId': photoIds[room.analysis!.sourceImageId],
+            'supportingImageIds': room.analysis!.supportingImageIds
+                .map((id) => photoIds[id]!)
+                .toList(),
+          },
       };
     }
     for (final design in validated.designs) {
@@ -254,8 +372,18 @@ class RenovisionStore extends ChangeNotifier {
     required Uint8List originalImage,
     List<Uint8List> additionalImages = const [],
     String colourPaletteId = '',
+    String roomTypeId = '',
+    List<String> designStyleIds = const [],
+    bool guidedSetup = false,
   }) async {
     _validatePalette(colourPaletteId);
+    if (roomTypeId.isNotEmpty && !roomTypes.containsKey(roomTypeId)) {
+      throw ArgumentError('Choose an available room type.');
+    }
+    final styles = canonicalStyleIds(designStyleIds);
+    if (styles.any((id) => !designStyles.containsKey(id))) {
+      throw ArgumentError('Choose an available design style.');
+    }
     _validateRoomPhotos([originalImage, ...additionalImages], existingCount: 0);
     final photoId = 'photo_${_newId()}';
     final added = <String>[];
@@ -276,7 +404,10 @@ class RenovisionStore extends ChangeNotifier {
         originalId: photoId,
         additionalPhotoIds: extraIds,
         colourPaletteId: colourPaletteId,
+        roomTypeId: roomTypeId,
+        designStyleIds: styles,
         preciseEdit: false,
+        setupComplete: !guidedSetup,
         instructions: '',
         protectedFeatures: '',
         created: DateTime.now(),
@@ -298,22 +429,40 @@ class RenovisionStore extends ChangeNotifier {
   Future<void> saveRoomDraft(
     String roomId, {
     required String instructions,
+    String? correctionInstructions,
     required String protectedFeatures,
     required List<String> designStyleIds,
     required String otherStyle,
     required bool preciseEdit,
     required bool keepLayout,
+    RoomAnalysis? analysis,
+    String? aiPrompt,
+    bool? useAiPrompt,
+    List<String>? renovationScopeIds,
+    String? flooringNotes,
+    String? removeItems,
+    String? roomTypeId,
+    Map<String, String>? roomItemChoices,
   }) async {
     final room = roomById(roomId);
     if (room == null) throw StateError('Room is unavailable.');
     await updateRoom(
       room.copyWith(
         instructions: instructions,
+        correctionInstructions: correctionInstructions,
         protectedFeatures: protectedFeatures,
         designStyleIds: designStyleIds,
         otherStyle: otherStyle,
         preciseEdit: preciseEdit,
         keepLayout: keepLayout,
+        analysis: analysis,
+        aiPrompt: aiPrompt,
+        useAiPrompt: useAiPrompt,
+        renovationScopeIds: renovationScopeIds,
+        flooringNotes: flooringNotes,
+        removeItems: removeItems,
+        roomTypeId: roomTypeId,
+        roomItemChoices: roomItemChoices,
       ),
     );
   }

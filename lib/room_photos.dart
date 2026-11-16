@@ -34,7 +34,7 @@ class RoomPhotosCard extends StatefulWidget {
   final String? selectedPhotoId;
   final ValueChanged<String> onView;
   final bool includeContext;
-  final ValueChanged<bool> onContextChanged;
+  final ValueChanged<bool>? onContextChanged;
   final Future<List<Uint8List>?> Function(int remaining)? pickPhotos;
   const RoomPhotosCard({
     super.key,
@@ -138,6 +138,7 @@ class _RoomPhotosCardState extends State<RoomPhotosCard> {
                             widget.store.imageFor(id)!,
                             width: 134,
                             height: 85,
+                            cacheWidth: 400,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -169,7 +170,8 @@ class _RoomPhotosCardState extends State<RoomPhotosCard> {
             icon: const Icon(Icons.add_photo_alternate_outlined),
             label: Text(busy ? 'Saving photos…' : 'Add room photos'),
           ),
-          if (widget.room.photoIds.length > 1)
+          if (widget.room.photoIds.length > 1 &&
+              widget.onContextChanged != null)
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: const Text('Use other views as AI context'),

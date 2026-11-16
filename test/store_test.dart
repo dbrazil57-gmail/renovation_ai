@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive_ce.dart';
 import 'package:renovision_ai/models.dart';
 import 'package:renovision_ai/store.dart';
+import 'package:renovision_ai/room_analysis.dart';
 
 void main() {
   late Directory directory;
@@ -60,14 +61,39 @@ void main() {
       final ids = store.roomById(room.id)!.photoIds;
       await store.setPrimaryPhoto(room.id, ids.last);
       await store.setRoomPalette(room.id, 'charcoal_walnut');
+      await store.checkLocalStorage();
+      await store.setAutosaveEnabled(false);
+      final checkTimestamp = store.lastStorageCheck;
       await store.saveRoomDraft(
         room.id,
         instructions: 'New cabinets',
         protectedFeatures: 'Keep windows',
         designStyleIds: ['modern', 'contemporary'],
         otherStyle: 'Warm and practical',
+        renovationScopeIds: ['flooring', 'dated_fixtures'],
+        flooringNotes: 'Large-format tiles',
+        removeItems: 'Old wall telephone',
+        roomTypeId: 'kitchen',
+        roomItemChoices: {
+          'kitchen_appliances': 'replace',
+          'kitchen_oven': 'keep',
+        },
         preciseEdit: false,
         keepLayout: true,
+        analysis: RoomAnalysis(
+          result: const RoomAnalysisResult(
+            observations: 'Two windows visible.',
+            questions: [],
+            prompt: 'Keep both windows.',
+            model: 'test-vision',
+          ),
+          sourceImageId: ids.last,
+          supportingImageIds: [ids.first],
+          context: 'New cabinets',
+          created: DateTime.now().toUtc(),
+        ),
+        aiPrompt: 'Keep both windows. Modernise cabinets.',
+        useAiPrompt: true,
       );
       store.dispose();
       await records.close();
@@ -80,11 +106,33 @@ void main() {
       store = RenovisionStore(records: records, photos: photos);
       expect(store.roomById(room.id)!.photoIds, ids);
       expect(store.roomById(room.id)!.colourPaletteId, 'charcoal_walnut');
+      expect(store.lastStorageCheck, checkTimestamp);
+      expect(store.autosaveEnabled, false);
       expect(store.roomById(room.id)!.designStyleIds, [
         'modern',
         'contemporary',
       ]);
       expect(store.roomById(room.id)!.otherStyle, 'Warm and practical');
+      expect(store.roomById(room.id)!.renovationScopeIds, [
+        'flooring',
+        'dated_fixtures',
+      ]);
+      expect(store.roomById(room.id)!.flooringNotes, 'Large-format tiles');
+      expect(store.roomById(room.id)!.removeItems, 'Old wall telephone');
+      expect(store.roomById(room.id)!.roomTypeId, 'kitchen');
+      expect(store.roomById(room.id)!.roomItemChoices, {
+        'kitchen_appliances': 'replace',
+        'kitchen_oven': 'keep',
+      });
+      expect(store.roomById(room.id)!.analysis!.sourceImageId, ids.last);
+      expect(store.roomById(room.id)!.analysis!.supportingImageIds, [
+        ids.first,
+      ]);
+      expect(
+        store.roomById(room.id)!.aiPrompt,
+        'Keep both windows. Modernise cabinets.',
+      );
+      expect(store.roomById(room.id)!.useAiPrompt, true);
       expect(store.roomById(room.id)!.primaryId, ids.last);
       expect(store.imageFor(ids[0]), orderedEquals([1, 2]));
       expect(store.imageFor(ids[1]), orderedEquals([3, 4]));

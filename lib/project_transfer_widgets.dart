@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
 
@@ -21,6 +23,19 @@ String saveMessage(FileSaveResult result) => switch (result) {
   FileSaveResult.saved => 'File saved to your chosen location.',
   FileSaveResult.cancelled => 'Save cancelled.',
 };
+
+Uint8List pngExportBytes(Uint8List bytes) {
+  final image = img.decodeImage(bytes);
+  if (image == null) {
+    throw const BackupFailure(
+      'This image cannot be converted. Use a project backup to keep its exact bytes.',
+    );
+  }
+  image.exif = img.ExifData();
+  image.iccProfile = null;
+  image.textData?.clear();
+  return img.encodePng(image);
+}
 
 class DownloadImageButton extends StatefulWidget {
   final AppFiles files;
@@ -89,10 +104,12 @@ class _DownloadImageButtonState extends State<DownloadImageButton> {
 class ProjectBackupCard extends StatefulWidget {
   final RenovisionStore store;
   final RenovationProject project;
+  final Future<bool> Function()? beforeSave;
   const ProjectBackupCard({
     super.key,
     required this.store,
     required this.project,
+    this.beforeSave,
   });
   @override
   State<ProjectBackupCard> createState() => _ProjectBackupCardState();
@@ -107,6 +124,15 @@ class _ProjectBackupCardState extends State<ProjectBackupCard> {
       message = null;
     });
     try {
+      if (widget.beforeSave != null && !await widget.beforeSave!()) {
+        if (mounted) {
+          setState(
+            () => message =
+                'Save pending room changes successfully before backing up.',
+          );
+        }
+        return;
+      }
       final bytes = widget.store.backupFor(widget.project.id).encode();
       final result = await widget.store.files.save(
         bytes,
@@ -171,10 +197,12 @@ class _ProjectBackupCardState extends State<ProjectBackupCard> {
 class RestoreProjectButton extends StatefulWidget {
   final RenovisionStore store;
   final ValueChanged<RenovationProject> onRestored;
+  final bool openDocument;
   const RestoreProjectButton({
     super.key,
     required this.store,
     required this.onRestored,
+    this.openDocument = false,
   });
   @override
   State<RestoreProjectButton> createState() => _RestoreProjectButtonState();
@@ -185,13 +213,23 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
   Future<void> _restore() async {
     setState(() => busy = true);
     try {
-      final bytes = await widget.store.files.pickBackup();
+      final files = widget.store.files;
+      final opened = widget.openDocument && files is ProjectOpeningFiles
+          ? await (files as ProjectOpeningFiles).openProjectFile()
+          : null;
+      final bytes = widget.openDocument && files is ProjectOpeningFiles
+          ? opened?.bytes
+          : await files.pickBackup();
       if (bytes == null || !mounted) return;
       final backup = ProjectBackup.decode(bytes);
       final approved = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: const Text('Restore a project copy?'),
+          title: Text(
+            widget.openDocument
+                ? 'Open this project?'
+                : 'Restore a project copy?',
+          ),
           content: Text(
             '${backup.project.name}\n${backup.rooms.length} rooms · ${backup.designs.length} versions · ${backup.photos.length} images\n\nA separate restored project will be added. Existing projects will not be replaced.',
           ),
@@ -202,13 +240,25 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Restore copy'),
+              child: Text(
+                widget.openDocument ? 'Open project' : 'Restore copy',
+              ),
             ),
           ],
         ),
       );
       if (approved != true || !mounted) return;
-      final restored = await widget.store.restoreBackup(backup);
+      final restored = await widget.store.restoreBackup(
+        backup,
+        projectName: widget.openDocument ? backup.project.name : null,
+      );
+      if (opened?.destination case final destination?) {
+        await widget.store.documents.link(
+          restored.id,
+          destination,
+          alreadySaved: true,
+        );
+      }
       if (mounted) widget.onRestored(restored);
     } catch (error) {
       if (mounted) {
@@ -229,6 +279,120 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
   Widget build(BuildContext context) => OutlinedButton.icon(
     onPressed: busy || !widget.store.files.supported ? null : _restore,
     icon: const Icon(Icons.restore),
-    label: Text(busy ? 'Restoring…' : 'Restore project backup'),
+    label: Text(
+      busy
+          ? 'Opening…'
+          : widget.openDocument
+          ? 'Open project…'
+          : 'Restore project backup',
+    ),
+  );
+}
+
+class ProjectFileControls extends StatefulWidget {
+  final RenovisionStore store;
+  final String projectId;
+  final Future<bool> Function()? beforeSave;
+  const ProjectFileControls({
+    super.key,
+    required this.store,
+    required this.projectId,
+    this.beforeSave,
+  });
+  @override
+  State<ProjectFileControls> createState() => _ProjectFileControlsState();
+}
+
+class _ProjectFileControlsState extends State<ProjectFileControls> {
+  bool busy = false;
+  String? error;
+  Future<void> save({bool saveAs = false}) async {
+    setState(() {
+      busy = true;
+      error = null;
+    });
+    try {
+      final docs = widget.store.documents;
+      SaveDestination? destination;
+      if (saveAs || !docs.linked(widget.projectId)) {
+        final project = widget.store.projectById(widget.projectId)!;
+        destination = await chooseSaveDestination(
+          widget.store.files,
+          name: '${exportName(project.name)}.renovision.json',
+          mimeType: 'application/json',
+        );
+        if (destination == null) return;
+      }
+      if (widget.beforeSave != null && !await widget.beforeSave!()) {
+        throw const BackupFailure(
+          'Room changes could not be saved. Retry before saving the project file.',
+        );
+      }
+      if (destination != null) {
+        await docs.link(widget.projectId, destination);
+      }
+      await docs.save(widget.projectId);
+    } catch (failure) {
+      if (mounted) {
+        setState(
+          () => error = failure is BackupFailure ? failure.message : 'Project file could not be saved. Local work is retained; try Save project as.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: widget.store.documents,
+    builder: (context, _) => Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Project file',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const Text(
+              'One file contains all rooms, original photos, designs and their saved instructions and choices. Keep it private. AI connection credentials are stored separately on this device.',
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                FilledButton.icon(
+                  onPressed: busy || !widget.store.files.supported
+                      ? null
+                      : () => save(),
+                  icon: const Icon(Icons.save_outlined),
+                  label: Text(busy ? 'Saving project…' : 'Save project'),
+                ),
+                OutlinedButton(
+                  onPressed: busy || !widget.store.files.supported
+                      ? null
+                      : () => save(saveAs: true),
+                  child: const Text('Save project as…'),
+                ),
+              ],
+            ),
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                error ?? widget.store.documents.status(widget.projectId),
+              ),
+            ),
+            Text(
+              kIsWeb
+                  ? 'Chrome can update a file you choose while it is open here. After restarting the app, use Open project to reconnect that file. Other browsers may download a separate copy.'
+                  : 'App-local autosave keeps your work on this device. Use Save project to save a complete file with the system chooser, and Open project to load a saved file.',
+            ),
+          ],
+        ),
+      ),
+    ),
   );
 }

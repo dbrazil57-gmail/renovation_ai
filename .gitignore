@@ -18,10 +18,9 @@ migrate_working_dir/
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# Personal editor launch/tasks/settings can contain local paths or test values.
+/.vscode/
+*.code-workspace
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -50,7 +49,58 @@ app.*.map.json
 # Local source snapshots (not project/photo backups).
 .local_backups/
 
+# Private recovered project/photo backups.
+/recovered_projects/
+
+# Private generated images/prompts, screenshots and disposable browser profiles.
+/output/
+/screenshots/
+/browser-profile/
+/chrome-profile/
+/chrome-user-data/
+
 # Local AI credentials must never be committed.
 .env
 .env.*
+*.env
+*.env.*
 !.env.example
+*.local.json
+*.local.yaml
+*.local.yml
+*.local.toml
+*.local.ini
+local.settings.json
+settings.local.*
+credentials.json
+service-account*.json
+/.aws/
+/.codex/
+/.local/
+/local_data/
+/private/
+/secrets/
+
+# Portable customer projects and local databases contain private photos/settings.
+*.renovision.json
+*.hive
+*.hivec
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.db
+*.db-wal
+*.db-shm
+/exports/
+/backups/
+
+# Machine-specific SDK paths and signing credentials.
+**/local.properties
+**/key.properties
+*.jks
+*.keystore
+*.pem
+*.key
+*.p12
+*.pfx

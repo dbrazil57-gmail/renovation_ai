@@ -1,6 +1,5 @@
 const designStyles = <String, String>{
-  'modern': 'Modern',
-  'contemporary': 'Contemporary',
+  'modern': 'Modern / Contemporary',
   'classic': 'Classic',
   'minimalist': 'Minimalist',
   'scandinavian': 'Scandinavian',
@@ -9,7 +8,22 @@ const designStyles = <String, String>{
   'industrial': 'Industrial',
   'rustic': 'Rustic',
   'japandi': 'Japandi',
+  'mid_century': 'Mid-century modern',
+  'art_deco': 'Art Deco',
+  'mediterranean': 'Mediterranean',
+  'farmhouse': 'Farmhouse',
+  'cottage': 'Country cottage',
+  'french_provincial': 'French provincial',
+  'bohemian': 'Bohemian',
+  'eclectic': 'Eclectic',
+  'transitional': 'Transitional',
+  'hotel': 'Boutique hotel',
 };
+
+// Read legacy selections without rewriting existing room records or history.
+String canonicalStyleId(String id) => id == 'contemporary' ? 'modern' : id;
+List<String> canonicalStyleIds(Iterable<String> ids) =>
+    ids.map(canonicalStyleId).toSet().toList();
 
 bool hasNoProtectedFinishes(String text) =>
     const {
@@ -27,8 +41,17 @@ bool hasNoProtectedFinishes(String text) =>
           .trim(),
     );
 
+bool isWholeRoomRequest(String text) => const {
+  'all',
+  'everything',
+  'whole room',
+  'all of it',
+  'change everything',
+}.contains(text.toLowerCase().trim().replaceAll(RegExp(r'[.!]'), ''));
+
 bool looksLikeBroadRenovation(String text) {
   final lower = text.toLowerCase();
+  if (isWholeRoomRequest(text)) return true;
   if (RegExp(r'whole room|full renovation|everything|all to change')
       .hasMatch(lower)) {
     return true;

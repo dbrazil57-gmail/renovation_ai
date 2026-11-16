@@ -21,12 +21,55 @@ class _FocusEditScreenState extends State<FocusEditScreen> {
   Offset? start;
   final List<List<Offset>> strokes = [];
   bool processing = false;
-  late final img.Image? decoded;
+  bool loading = true;
+  double ratio = 1;
+  String? loadError;
+  ImageStream? previewStream;
+  ImageStreamListener? previewListener;
+  static const previewWidth = 1600;
 
   @override
   void initState() {
     super.initState();
-    decoded = img.decodeImage(widget.bytes);
+    // Paint the route before requesting a display-sized, engine-decoded image.
+    // Full-resolution Dart decoding is needed only when saving a derivative.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final provider = ResizeImage.resizeIfNeeded(
+        previewWidth,
+        null,
+        MemoryImage(widget.bytes),
+      );
+      previewStream = provider.resolve(createLocalImageConfiguration(context));
+      previewListener = ImageStreamListener(
+        (info, _) {
+          if (mounted) {
+            setState(() {
+              ratio = info.image.width / info.image.height;
+              loading = false;
+            });
+          }
+          info.dispose();
+        },
+        onError: (Object error, StackTrace? stack) {
+          if (mounted) {
+            setState(() {
+              loading = false;
+              loadError = 'This image could not be opened. Try a JPEG or PNG.';
+            });
+          }
+        },
+      );
+      previewStream!.addListener(previewListener!);
+    });
+  }
+
+  @override
+  void dispose() {
+    if (previewListener != null) {
+      previewStream?.removeListener(previewListener!);
+    }
+    super.dispose();
   }
 
   Offset _normalise(Offset offset, Size size) => Offset(
@@ -35,16 +78,29 @@ class _FocusEditScreenState extends State<FocusEditScreen> {
   );
 
   Future<void> _save() async {
-    if (processing) return;
+    if (processing || loading || loadError != null) return;
+    if (!widget.sketch &&
+        (crop == null || crop!.width < 0.04 || crop!.height < 0.04)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Drag to select a rectangular part of the image first.',
+          ),
+        ),
+      );
+      return;
+    }
     setState(() => processing = true);
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
     try {
-      final original = decoded?.clone();
-      if (original == null) {
+      final source = img.decodeImage(widget.bytes);
+      if (source == null) {
         throw StateError(
           'Image format could not be decoded. Try a JPEG or PNG.',
         );
       }
-      img.Image output = original;
+      img.Image output = img.bakeOrientation(source);
       if (widget.sketch) {
         final brush = img.ColorRgba8(245, 112, 25, 230);
         for (final stroke in strokes) {
@@ -91,142 +147,179 @@ class _FocusEditScreenState extends State<FocusEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final image = decoded;
-    if (image == null) {
+    if (loading || loadError != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Edit reference')),
-        body: const Center(
-          child: Text(
-            'This image format is not supported by the editing engine.',
-          ),
+        appBar: AppBar(
+          title: Text(widget.sketch ? 'Sketch / mark up' : 'Crop / focus'),
+        ),
+        body: Center(
+          child: loading
+              ? const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Preparing image preview…'),
+                  ],
+                )
+              : Text(loadError!),
         ),
       );
     }
-    final ratio = image.width / image.height;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.sketch ? 'Sketch / mark up' : 'Crop / focus'),
-      ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 820),
-          child: ListView(
-            padding: const EdgeInsets.all(18),
-            children: [
-              Text(
-                widget.sketch
-                    ? 'Draw directly over the image to guide the AI. The annotated copy is saved as a new version.'
-                    : 'Drag a rectangular selection over the detail you want to focus on. This creates a new cropped reference; it does not replace the full-room image.',
-              ),
-              const SizedBox(height: 14),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final width = math.min(720.0, constraints.maxWidth);
-                  return Center(
-                    child: SizedBox(
-                      width: width,
-                      child: AspectRatio(
-                        aspectRatio: ratio,
-                        child: LayoutBuilder(
-                          builder: (context, imageConstraints) {
-                            final canvasSize = Size(
-                              imageConstraints.maxWidth,
-                              imageConstraints.maxHeight,
-                            );
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  Image.memory(widget.bytes, fit: BoxFit.fill),
-                                  IgnorePointer(
-                                    child: CustomPaint(
-                                      painter: _OverlayPainter(
-                                        crop: crop,
-                                        strokes: strokes,
-                                        sketch: widget.sketch,
+    return PopScope(
+      canPop: !processing,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.sketch ? 'Sketch / mark up' : 'Crop / focus'),
+        ),
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 820),
+            child: ListView(
+              padding: const EdgeInsets.all(18),
+              children: [
+                if (processing)
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 14),
+                    child: Column(
+                      children: [
+                        LinearProgressIndicator(),
+                        SizedBox(height: 8),
+                        Text('Saving a new reference at original resolution…'),
+                      ],
+                    ),
+                  ),
+                Text(
+                  widget.sketch
+                      ? 'Draw directly over the image to guide the AI. The annotated copy is saved as a new version.'
+                      : 'Drag a rectangular selection over the detail you want to focus on. This creates a new cropped reference; it does not replace the full-room image.',
+                ),
+                const SizedBox(height: 14),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final width = math.min(720.0, constraints.maxWidth);
+                    return Center(
+                      child: SizedBox(
+                        width: width,
+                        child: AspectRatio(
+                          aspectRatio: ratio,
+                          child: LayoutBuilder(
+                            builder: (context, imageConstraints) {
+                              final canvasSize = Size(
+                                imageConstraints.maxWidth,
+                                imageConstraints.maxHeight,
+                              );
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    Image.memory(
+                                      widget.bytes,
+                                      fit: BoxFit.fill,
+                                      cacheWidth: previewWidth,
+                                    ),
+                                    IgnorePointer(
+                                      child: CustomPaint(
+                                        painter: _OverlayPainter(
+                                          crop: crop,
+                                          strokes: strokes,
+                                          sketch: widget.sketch,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    dragStartBehavior: DragStartBehavior.down,
-                                    onPanStart: (details) {
-                                      final pt = _normalise(
-                                        details.localPosition,
-                                        canvasSize,
-                                      );
-                                      setState(() {
-                                        if (widget.sketch) {
-                                          strokes.add([pt]);
-                                        } else {
-                                          start = pt;
-                                          crop = Rect.fromPoints(pt, pt);
-                                        }
-                                      });
-                                    },
-                                    onPanUpdate: (details) {
-                                      final pt = _normalise(
-                                        details.localPosition,
-                                        canvasSize,
-                                      );
-                                      setState(() {
-                                        if (widget.sketch) {
-                                          if (strokes.isNotEmpty) {
-                                            strokes.last.add(pt);
-                                          }
-                                        } else if (start != null) {
-                                          crop = Rect.fromPoints(start!, pt);
-                                        }
-                                      });
-                                    },
-                                    onPanEnd: (_) => start = null,
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                                    GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      dragStartBehavior: DragStartBehavior.down,
+                                      onPanStart: processing
+                                          ? null
+                                          : (details) {
+                                              final pt = _normalise(
+                                                details.localPosition,
+                                                canvasSize,
+                                              );
+                                              setState(() {
+                                                if (widget.sketch) {
+                                                  strokes.add([pt]);
+                                                } else {
+                                                  start = pt;
+                                                  crop = Rect.fromPoints(
+                                                    pt,
+                                                    pt,
+                                                  );
+                                                }
+                                              });
+                                            },
+                                      onPanUpdate: processing
+                                          ? null
+                                          : (details) {
+                                              final pt = _normalise(
+                                                details.localPosition,
+                                                canvasSize,
+                                              );
+                                              setState(() {
+                                                if (widget.sketch) {
+                                                  if (strokes.isNotEmpty) {
+                                                    strokes.last.add(pt);
+                                                  }
+                                                } else if (start != null) {
+                                                  crop = Rect.fromPoints(
+                                                    start!,
+                                                    pt,
+                                                  );
+                                                }
+                                              });
+                                            },
+                                      onPanEnd: (_) => start = null,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 18),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  if (widget.sketch)
+                    );
+                  },
+                ),
+                const SizedBox(height: 18),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    if (widget.sketch)
+                      OutlinedButton.icon(
+                        onPressed: processing || strokes.isEmpty
+                            ? null
+                            : () => setState(() => strokes.removeLast()),
+                        icon: const Icon(Icons.undo),
+                        label: const Text('Undo stroke'),
+                      ),
                     OutlinedButton.icon(
-                      onPressed: strokes.isEmpty
+                      onPressed: processing
                           ? null
-                          : () => setState(() => strokes.removeLast()),
-                      icon: const Icon(Icons.undo),
-                      label: const Text('Undo stroke'),
+                          : () => setState(() {
+                              crop = null;
+                              strokes.clear();
+                            }),
+                      icon: const Icon(Icons.restart_alt),
+                      label: const Text('Reset selection'),
                     ),
-                  OutlinedButton.icon(
-                    onPressed: () => setState(() {
-                      crop = null;
-                      strokes.clear();
-                    }),
-                    icon: const Icon(Icons.restart_alt),
-                    label: const Text('Reset selection'),
-                  ),
-                  FilledButton.icon(
-                    onPressed: processing ? null : _save,
-                    icon: const Icon(Icons.save_alt),
-                    label: Text(
-                      processing ? 'Processing…' : 'Save as new version',
+                    FilledButton.icon(
+                      onPressed: processing ? null : _save,
+                      icon: const Icon(Icons.save_alt),
+                      label: Text(
+                        processing ? 'Processing…' : 'Save as new version',
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                'Stage 1 note: crop/markup produces a reference image. The app does not yet blend an edited crop back into the unchanged whole-room photo.',
-              ),
-            ],
+                  ],
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  'Stage 1 note: crop/markup produces a reference image. The app does not yet blend an edited crop back into the unchanged whole-room photo.',
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -324,10 +417,18 @@ class _CompareScreenState extends State<CompareScreen> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.memory(widget.original, fit: BoxFit.contain),
+                      Image.memory(
+                        widget.original,
+                        fit: BoxFit.contain,
+                        cacheWidth: 1600,
+                      ),
                       ClipRect(
                         clipper: _FractionClipper(amount),
-                        child: Image.memory(widget.edited, fit: BoxFit.contain),
+                        child: Image.memory(
+                          widget.edited,
+                          fit: BoxFit.contain,
+                          cacheWidth: 1600,
+                        ),
                       ),
                       Align(
                         alignment: Alignment(amount * 2 - 1, 0),

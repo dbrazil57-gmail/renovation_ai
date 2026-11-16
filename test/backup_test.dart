@@ -96,6 +96,20 @@ void main() {
   });
   tearDown(() => store.dispose());
 
+  test('repeated restores add only one restored label and keep existing copies intact', () async {
+    final restored = await store.restoreBackup(store.backupFor(project.id));
+    final again = await store.restoreBackup(store.backupFor(restored.id));
+    expect(again.name, 'Claylands (restored)');
+    expect(again.id, isNot(restored.id));
+    expect(store.projectById(project.id)!.name, 'Claylands');
+    expect(store.roomsFor(again.id).single.photoIds, hasLength(1));
+    await store.renameProject(again.id, 'Claylands (restored) (restored)');
+    final fromOlderName = await store.restoreBackup(store.backupFor(again.id));
+    expect(fromOlderName.name, 'Claylands (restored)');
+    expect(store.projects, hasLength(4));
+    expect(store.imageFor(store.roomsFor(fromOlderName.id).single.originalId), orderedEquals(original));
+  });
+
   test('backup round trip preserves exact originals, approvals and branch metadata', () async {
     final before = jsonEncode(records.entries);
     final backup = ProjectBackup.decode(store.backupFor(project.id).encode());

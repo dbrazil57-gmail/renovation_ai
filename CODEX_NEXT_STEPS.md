@@ -1,251 +1,410 @@
 # Renovision next steps
 
-Updated: 14 November 2026 (Australia/Sydney).
+Updated 16 November 2026 (Australia/Sydney). Keep this as the single current work
+list; update existing documents rather than creating one file per idea.
 
-## Current direction: local workflow and look/feel, no key required yet
+Manual-copy clarification: removed the ChatGPT/Gemini dropdown because both
+choices copied the identical prepared prompt and only changed the toast. There
+is now one provider-neutral Copy AI prompt action, with instructions to attach
+photos in an image-capable external app. This is separate from the actual in-app
+AI connection; only OpenAI is currently integrated. Additional providers are
+optional future integrations, not required to generate a design.
 
-Newest style/autosave batch: tickable Modern, Contemporary, Classic, Minimalist,
-Scandinavian, Coastal, Hamptons, Industrial, Rustic and Japandi choices, plus Other
-free text. Keep existing layout and walls is an explicit preference. New rooms
-default to Explore ideas; older records preserve the prior precision default.
-The local prompt builder now uses these choices, handles "nothing to retain"
-without a contradictory retain clause, and suggests Explore when a precision
-request mentions multiple room elements. It does not change mode automatically.
-A prepared-prompt preview is explicitly labelled as local/template-based.
+Restore-name correction: restoring a previously restored backup now collapses
+trailing repeated `(restored)` suffixes to one. Existing project records and
+contents are not renamed or migrated; use the project pencil to clean an older
+title. Open project continues preserving the file's name. Eight backup/restore
+tests pass and Flutter analysis is clean. No private project data was changed.
 
-Room text/style/mode drafts autosave after a short pause. Saving, Saved locally
-and failure states are visible. Save instructions remains a force-save/retry;
-normal back navigation flushes pending changes. Browser shutdown is best-effort,
-not a guarantee of durable browser storage. See STORAGE_AND_SAVING.md for current
-storage and later Photos/Gallery / Save as / design-board export actions.
+## Latest batch: guided rooms and portable project files (16 November)
 
-Style/autosave validation: all 63 VM/widget tests pass. Coverage includes failed
-saves and retry, queued edits, style controls, save-before-Back, backup restoration
-and reopening isolated Hive storage with saved preferences. Analysis and the web
-release build pass. No live AI calls or existing browser data were used.
+Android follow-up validation: all 125 VM/widget tests pass; final static analysis
+is clean. Eight file tests also pass after extending cancellation coverage: a
+cancelled chooser-only save cannot trigger another chooser from autosave. Current
+preview build is `01649b08ae` at the same http://localhost:7357 address.
 
-Manual Chrome check after hot restart of the existing session/address:
+Android-first clarification: Chrome is a development preview; the product must
+behave as a native Android phone app. Browser-only file APIs stay in the web
+adapter. Reusable destinations are now explicit: Android's current chooser-based
+export saves a file once, then app-local autosave continues without repeatedly
+opening a chooser. Updating/reconnecting a persistent Android document URI is
+still outstanding. Phone screens no longer show browser-specific file advice;
+the release manifest now includes INTERNET for later HTTPS service connectivity.
+The current AI relay/HTTP development transport is not a production backend.
 
-1. Open a room, scroll to AI instructions, tick Modern and Contemporary and enter
-   an Other direction. Choose Explore ideas for a whole-room renovation.
-2. Enter changes and protected features, pause and check Saved locally.
-3. Expand Preview prepared prompt; check styles, palette and layout restrictions.
-4. Edit again and immediately use Back. Reopen and check the draft survived.
-5. Back up the project and restore a separate copy; verify preferences and photos.
+Toolchain check: Android SDK 36.0.0 and an emulator are present, but Flutter doctor
+reports missing command-line tools and unknown SDK licence status. No tools were
+installed and no licences were accepted. Before Android sign-off, complete setup,
+build/install on a device/emulator, and test touch/keyboard layout, camera/photo
+picker, denied permissions, Back, backgrounding/process restart, project files,
+large photos and AI connection. Chrome tests do not establish these behaviours.
 
-The user's supplied kitchen/dining board is a target for future presentation:
-separate A/B designs, room-wide renders, material swatches and a plan inset.
-Keep the reference image unchanged and do not infer verified measurements or
-permission to alter unrelated architecture from the reference.
+Repository privacy follow-up: `.gitignore` now excludes local editor/test
+settings, credential/environment/signing files, private databases and exported
+projects, browser profiles, recovery/backups and all `output/` artifacts. The
+two previously tracked kitchen output files were removed from the index only;
+local copies remain. Their content still exists in commit `f94fe9b`; historical
+cleanup before publishing that history remains a separate task. No history
+rewrite, commit or push was made. Common credential-pattern scans found no
+matches in upload-eligible text, tracked text, or the eight reachable commits;
+pattern scans are not a guarantee against every possible secret format.
 
-Latest user report: palette not visible in the room/design screen. The visibility
-fix moves the card above the gallery and shows directly selectable palette
-swatches even before a preference is saved. The full chooser and existing saved
-selections remain. Hot restart the existing app session to load these changes;
-verify the palette is visible before scrolling to photos.
+Final served build: `0adf905de0` at http://localhost:7357. Flutter analysis is
+clean. After the complete 124-test run, 13 save/settings/file checks also passed
+for the final Save and close integration. No new app URL is needed.
 
-Palette visibility checks: all 56 tests pass, analysis is clean and the web build
-passes. New tests
-check swatches are visible when a room opens, direct selection persists, and the
-horizontal strip works at phone width. Real Chrome interaction still needs the
-user's check after restarting the existing Flutter session.
+Implemented a four-step new-room setup with photos/primary view, goal and optional
+style/palette, AI analysis/review, then final editable options and generation.
+Finish later saves progress; existing rooms open normally and can reopen guided
+setup. Offline setup is supported; AI calls always require explicit confirmation.
 
-The user also wants AI to write an editable prompt, then generate multiple design
-options, select one and improve it. This is a future feature request. See
-[AI_DESIGN_WORKFLOW.md](AI_DESIGN_WORKFLOW.md) for the requested flow and proposed implementation
-sequence. Current prompts are still templates and generation returns one image;
-do not describe multiple input photos as multiple returned designs.
+Added Open project and first-class Save project/Save project as using the existing
+portable .renovision.json format. Files contain all project rooms/images/designs,
+instructions/analysis/choices and setup progress. Chrome can update a chosen file
+and autosave changes while linked. Sequential writes, failed-save recovery,
+cancelled selection and same-file project-copy protection are covered. After app
+restart, Open project reconnects the disk file. Existing local projects are kept.
 
-Newest palette batch: seven coordinated presets plus No palette preference.
-After selecting new room photos, a chooser previews the uploaded room and colour
-swatches. Existing rooms have Colour palette > Change palette in the workspace.
-Each room stores a stable preset ID; backup/restore preserves it. Copied and
-in-app AI prompts include names, surface suggestions and hex values, with scope
-limited to requested edit areas in Precision mode. Existing photos, approvals
-and historical design prompts are not recoloured or rewritten.
+AI relay address/code and selected model/quality are now remembered in this
+browser separately from portable files. Startup tries the local health endpoint,
+never a generation. If the relay restarts, enter its new code. Continue using
+http://localhost:7357; do not introduce alternate app ports/hostnames.
 
-Palette manual Chrome check: create a test room, select photos, choose a preset
-and confirm Use palette. In the room, change the choice, copy a prompt, verify
-its COLOUR PALETTE section, then reopen and back up/restore the room's project.
-Test No palette preference and cancelling the chooser. No API key is required.
-Exact rendered AI colour adherence is not claimed without a live provider test.
+Validation: all 124 VM/widget tests passed and a web release build passed. Direct
+isolated Chrome checks cover desktop/phone rendering, Settings and Open project.
+A desktop Chrome flow created a disposable project, imported a fictional photo,
+opened setup and saved/parsed a full project via an actual browser-sandbox file
+handle. This is not the Windows file chooser test.
+The separate Chrome widget harness stalled before running tests; no pass claimed.
+User confirmed normal-profile project auto-reload. Pending manual test: save a
+real project file, finish setup, restart Chrome, Open project, check every photo
+and prompt, reconnect file saving, and verify the remembered AI connection while
+the same relay remains running. No paid AI calls or user project changes were
+made by these tests. Large project JSON encode/decode can still pause Chrome;
+background-worker optimisation and recovery after forced termination remain.
 
-Palette batch verification: all 54 tests pass, analysis is clean and the web
-release build passes. Tests cover phone-width selection, cancellation, draft
-preservation, copied and in-app prompts, storage reopen and project restoration.
-The existing Chrome test-runner limitation remains; real browser interaction and
-AI colour adherence still need manual/live tests. No paid AI calls were made.
+## Earlier status retest
 
-Newest batch: multiple photos per room. New-room import accepts multiple files;
-the workspace Room photos card adds views later (six total), previews each, and
-saves a primary-view choice. Other angles can be enabled/disabled as AI context.
-The active working image is sent first, followed by supporting originals from
-that same room. Approval remains separate, and an approved design still opens
-first. Each result records supporting image IDs as well as its main source.
+Status retest (16 November): 111 tests passed again; Flutter analysis clean.
+Actual isolated Chrome checks passed at desktop (1440px) and phone (390px)
+widths for gallery rendering and Settings navigation with AI connection/Restore
+controls. Live provider generation, normal-profile restart and Android remain
+unverified. No user projects or photos were changed by the retest.
 
-Test in Chrome after hot restart: add 2–3 photos to one room, select a primary,
-toggle context, reopen the room, back up and restore a copy. Confirm all views
-and the primary choice survive, with original bytes and approvals unchanged.
-When eventually testing AI, restart the local relay and reconnect so it advertises
-multi-input support. Review all images in the send-confirmation dialog.
+## Latest batch: simpler design and correction modes (16 November)
 
-Multi-view checks: all 46 tests pass, static analysis is clean and the web build
-passes. Tests include
-multi-image relay ordering/sanitisation, recording the primary/supporting inputs,
-gallery selection, save failure, reopening photo records, backup/restore with
-fresh IDs and reading old one-photo/version-1 backups. No paid calls were made.
+Whole-room renovation now supplies a coordinated photo-led design direction
+(surfaces, relevant fittings/appliances, lighting and restrained styling/cleanup)
+without requiring a checklist. Explicit protected items and Keep choices take
+priority. Detailed selections are collapsed into optional Advanced Keep / Replace
+controls and remain stored as overrides. Uncertain fixed fittings require a
+question or an explicit removal request.
 
-Backups now export schema version 2 and still accept version 1. Multi-input AI
-has simulated provider tests; actual consolidation quality needs a live API test.
+Precise correction has a separate saved instruction field. It excludes the old
+renovation text, palette/style and replacement selections, while retaining Keep
+protections and the selected working image. Switching modes deselects the old AI
+prompt; a direct correction can generate without another analysis. Both briefs
+and overrides survive backup/restore. Existing instruction text is preserved as
+the whole-room brief; old rooms start with an empty dedicated correction field.
 
-Latest completed batch: project/room header pencil controls rename records without
-changing identifiers or saved images. Project titles and backup names refresh
-immediately. Version history now labels Favourite, Passed, Awaiting review and
-Approved baseline; the review menu supports Mark as passed / Return to review.
-Returning to review does not approve the design or mark it as a favourite.
+All 113 tests pass; Flutter analysis is clean. The local web app was recompiled.
+No paid provider calls were made, and the AI relay and saved user projects were
+left intact. User test: refresh > whole-room goal/style/palette > analyse/review
+> generate; select result > precise correction > describe one change > generate.
+Reconnect with the running relay code if the app session was refreshed.
 
-Rename/review checks: all 37 tests pass and analysis is clean, including name
-persistence after reopening Hive files, keeping instruction drafts during a
-rename, and returning a passed design to review at phone width.
+## Earlier batch: saved-work startup and Settings (16 November)
 
-To test after the download/backup checks below, hot restart the existing session:
-rename a project and room, reopen them, and confirm that photos/history remain.
-In a room's history, use the three-dot review menu to return a passed idea to
-Explore. Confirm that baseline approval stays unchanged.
+Button feedback follow-up: the user's real analysed brief combined Precise
+correction with "All"; copy/generation rejected it but feedback was easy to
+miss. Both now show a validation dialog. Analysis also rejects that combination
+before a provider call. Select Whole-room renovation and analyse again to replace
+the earlier no-change AI prompt. Sixteen targeted scope/generation tests pass;
+Flutter analysis is clean. No paid requests were made during the fix, and the
+user's running AI relay was not restarted.
 
-See [FEATURE_STATUS.md](FEATURE_STATUS.md) for implemented, unverified and deferred
-features. The user wants to improve the app before setting up a developer API key.
+Whole-room default follow-up: new-room creation already used whole-room mode;
+the model constructor now agrees and the mode control lists Whole-room first.
+Explicit modes saved in existing rooms are preserved. Changing the requested
+scope invalidates an earlier AI brief; settle choices, analyse once, review/use
+the new prompt, then generate. Thirteen store/scope tests passed.
 
-The previous local batch added Download image in rooms, Back up project inside projects,
-Restore project backup on Projects, current-image badges and optional collapsed
-AI controls. Restore creates a new project with fresh IDs; originals and existing
-projects are preserved. File transfer targets Chrome and Android; Android native
-chooser behaviour is not yet verified.
+Precision retest: 29 focused AI/scope/analysis/prompt tests passed; analysis
+clean. The saved-design regression now explicitly uses precision mode, checks
+the selected baseline's image bytes/parent and excludes unrelated flooring and
+oven replacement instructions. Switching modes retains existing scope choices;
+added guidance explains removing unrelated selections before a small correction.
+This is a prompt-based edit, not masked preservation. Live visual precision still
+needs the user's provider test; no paid requests were made by these checks.
 
-Next manual check in the existing Chrome session:
+Startup now reads existing projects and opens Projects when records exist,
+instead of the pending-ideas Explore feed. Continue shows a saved room photo
+and returns to the last opened room, using its approved design/primary view.
+Older records without a resume marker also discover an existing room. This is
+local browser storage, not automatic scanning of external backup files.
 
-1. Open the saved test room and use Download image. Locate the PNG in Downloads.
-2. Open the project and use Back up project. Keep the .renovision.json file.
-3. From Projects, restore it as a copy and check photos, versions and approval.
-4. Confirm the original project is still present and unchanged.
+Design pages now keep Autosave and save status. The Settings gear holds Save now,
+Save and close and Save as (project copy/image/backup). Global Settings has visible
+Restore project backup, per-project backup controls and an AI connection/models
+section. Backups opened from an active room flush its draft first. The room's AI
+shortcut opens Settings. API keys still stay in the private relay; pairing is
+session-only. The older per-project backup card and workspace image-download
+button have been moved to these settings controls.
 
-Backups include original image bytes/metadata. Download image prepares a separate
-metadata-free PNG. Prototype backup limits are 64 MB of photos / 100 MB file.
-Do not describe a browser download as a verified saved backup until the user
-checks the file and completes a restore.
+All 111 tests pass, including startup discovery, autosave preference reuse and
+Settings saving with Autosave off. Analysis is clean and the web build passes.
+Current build is `6e2f59dcc5`; refresh the fixed
+Chrome address. Manual check: saved photo on startup > Continue > room Settings
+> Save now/Save as > backup file > Settings Restore. Verify normal-profile restart
+and actual file chooser behaviour. Keep existing projects and recovered backups.
 
-Latest local-batch checks: all 32 tests pass and `flutter analyze --no-pub` is
-clean. `flutter build web --no-pub --no-web-resources-cdn` passes. Tests cover exact bytes, branch/approval remapping, repeated imports,
-photo integrity validation, failed-restore rollback, and the transfer controls.
-No paid AI calls were made; tests use disposable records and synthetic images.
+## Latest batch: whole-room briefs and editor loading (16 November)
 
-## Latest direction: in-app AI testing
+Analysis handoff follow-up: when the user selects the reviewed AI prompt,
+the copied/generated brief now also includes the saved PHOTO ANALYSIS
+observations, labelled as fallible observations rather than instructions or
+measurements. The actual working photo and explicit user requirements retain
+priority; spotting a bin does not itself authorise removal. Existing stale-input
+checks still apply. This path needs connected analysis first; ordinary offline
+template copying does not acquire image understanding. For manual testing,
+ChatGPT can analyse the photo, draft the combined brief for approval, then edit.
+Follow-up validation: 13 focused prompt/analysis tests pass, static analysis is
+clean and the web build passes. Current test build is `7fd099c58b`; the earlier
+108-test full pass predates this small handoff change. Live vision remains unverified.
 
-The user has requested in-app generation to test the actual workflow. This
-supersedes the earlier manual-only/deferred-AI direction for private testing.
-They currently have a subscription/login, not a developer API key.
+Implemented clearer Whole-room renovation / Precise correction labels, an opt-in
+Tidy and stage scope choice (bins/washing-up/incidental clutter), and a guard
+against copying/generating an All request as a precision edit. Switch mode
+explicitly; existing room settings are not silently changed. Whole-room All is
+expanded into a coordinated selected-scope brief with layout/protections retained.
 
-- Added an optional local OpenAI relay and in-app connection/generation UI.
-- Key entry is private in `tool/start_ai_relay.ps1`; Flutter receives only a
-  temporary relay code in memory. See [AI_TEST_SETUP.md](AI_TEST_SETUP.md).
-- The app previews the selected image/prompt and requires Send to OpenAI before
-  any provider request. One low-quality image is requested with no auto retries.
-- Results save as new branches with source image ID, prompt, provider/model and
-  request ID. Existing originals and approved baselines remain intact.
-- Simulated provider tests cover consent, failure and local-save recovery;
-  actual provider calls require the user's API key and are still unverified.
-- Latest validation: `flutter analyze --no-pub` is clean and all 25 tests pass.
-  `flutter build web --no-pub --no-web-resources-cdn` passes. The launcher passes
-  PowerShell syntax validation. No paid API calls were made.
-- Next: help the user obtain API access, connect the local relay, and test one
-  Claylands room edit. Do not request that they paste a key into chat or source.
+Finished the interrupted asynchronous preview change. Crop/sketch paint their
+screen before engine decoding, reuse a display-sized preview and show loading/
+saving states. Comparison/workspace previews also use a 1600px decode target.
+Original bytes and full-resolution derivative saves are retained; native EXIF
+orientation is baked into derivative output. Browser full-resolution encoding
+still runs synchronously; loading/saving is not claimed fully non-blocking.
 
-Use RENOVISION_PROJECT_BRIEF.md as the product requirements. Preserve the existing
-Hive box names and photo IDs. Never clear browser storage to diagnose missing data.
+All 108 VM/widget tests pass. Current analysis/build status is recorded in
+FEATURE_STATUS.md. The prior 106-test catalogue batch below is historical.
+Analysis is clean and the updated web release build passes. Test build
+`0fd4d9ddad` at http://localhost:7357 using the same normal Chrome profile.
 
-## Next work, in priority order
+Next user test needs no API key: open the saved kitchen, choose Whole-room
+renovation, keep Layout protected, choose desired surfaces/appliances and tick
+Tidy and stage. Copy the prompt, attach the working photo in ChatGPT and generate.
+Import the result back into its room; inspect bins/clutter, floor, phone,
+appliances and retained architecture. Test crop opening on the same large photo.
 
-1. Complete the manual Chrome checklist below using the user's existing test
-   example. Record the project/room, attempted action, expected behaviour and
-   actual result. The example has not yet been inspected by Codex.
-2. Investigate Chrome automated-test bootstrap failures without clearing user
-   storage or changing the installed Flutter SDK as an incidental cleanup.
-3. Add download/share for the selected image so app-created crops and sketches
-   can be attached during manual AI handoff. Preserve originals; sanitise copies
-   intended for sharing and explain that an external AI receives uploaded photos.
-4. Add project export/restore with format validation and a non-destructive import
-   strategy. Verify round trips with images, branches, approvals and room memory
-   before describing the feature as a backup solution.
-5. Distinguish reference images from generated results and record source image,
-   provider and edit context. Retain compatibility with existing saved records.
-6. Add region/mask selection and saved annotation history, then assess compositing
-   and outside-region change warnings. Do not claim precision guarantees.
-7. Resolve Android command-line tools/licence setup, then test on emulator and
-   a real phone: import, camera, permissions, gestures, interrupted picker flows
-   and persistence after restart. Chrome testing remains the first priority.
+## Conversation-to-code audit (16 November)
 
-Work in coherent batches. Run analysis, relevant tests and a web build after code
-changes. In-app AI is now opt-in for private tests. Keep payments, public hosting
-and store release work deferred.
+Reviewed the requests available in this conversation against current code. Keep
+these gaps distinct from features merely needing live/device verification.
 
-## Completed batch
+| Requested outcome | Actual position | Next action |
+| --- | --- | --- |
+| Preserve existing photos/projects | Original bytes and branches are retained; recovery backups exist | Keep stable origin/profile; verify real restart/restore |
+| Multiple views of a room | Up to six originals and multi-input requests implemented | Live check consolidated interpretation; not verified 3D |
+| Palettes/styles and comprehensive room list | 42 spaces, 19 styles, 12 palettes, six fictional samples implemented | Extend illustrated coverage and keep full choices visible |
+| Smarter prompt from photo analysis | Vision analysis and editable prompt wired to relay | Real API access and photo-based quality test |
+| AI designs inside app / model testing | Four image-model options, analysis model and confirmed one-image requests implemented | Pair user's private API key and verify access/adherence/cost |
+| Multiple alternatives then choose/refine | Existing single-result versions can be selected, approved and branched | Implement bounded new-option batches and A/B selection |
+| Include floors/remove phone/update appliances | Scope and room-specific Keep/Replace preferences enter prompts | Check actual images; correct prompts are not proof of edits |
+| Exact changes retaining approved layout | Protected text, precision prompt and approved baseline exist | Masks, compositing, structured locks and outside-region warnings missing |
+| Auto/manual/exit/Save as storage | Controls and portable backup implemented | Real browser restart/picker/restore checks; stronger crash recovery later |
+| Fast tool navigation with visible progress | Synchronous editor decode identified; asynchronous preview change partly applied | Finish editor tests and image loading states, measure large-image behaviour, validate/build before release |
+| More visual workspace | Sample gallery/room cards implemented | Photo-led desktop/phone workspace redesign remains a proposal |
+| Reference images / kitchen design board | Ordinary multi-angle images and sketch/crop exist | Separate inspiration/material/sketch roles and design-board export missing |
+| Camera preview, snapshots, refine | Still-camera entry point exists, Android unverified | Embedded preview, saved camera composites and same-view overlay missing; tracked AR later |
+| Competitor/pricing lessons | Research and priorities recorded in existing reference | Convert into verified workflows; no billing or competitor quality benchmark yet |
+| Progress/continuity | Analysis/generation have waiting states; room saving status exists | Finish editor states and clearer stage feedback. Agent updates cannot replace the client's thinking UI or guarantee client reconnection |
 
-- Added an optional approvedDesignId to room records; legacy records use the original.
-- Rooms open at their approved baseline. Viewing or importing another version does
-  not approve it automatically. Users can approve a selected version or return
-  to the existing baseline.
-- Unfavouriting returns a version to pending review; Pass remains rejection.
-- Fixed the name dialog's text-controller lifetime during its closing animation.
-- Cached the editor's decoded source, cloned it for saving, explicitly cleared EXIF
-  from derived references, started selections at pointer-down, and added sketch undo.
-- Added isolated storage/reopen tests and browser-compatible UI/editor tests.
+Immediate order: finish the interrupted editor performance patch and tests;
+verify existing-project restart/backup; connect live API access and run the
+kitchen analysis > design > approve > narrow-refinement test. Then add bounded
+alternatives/result review and the responsive workspace. Android acceptance
+follows. Billing, public release, 3D/live AR and additional providers are later.
 
-Original source snapshots are in `.local_backups/before-baseline-fixes/`.
-These are code snapshots, not backups of the user's projects or photographs.
+The 106-test/build pass below belongs to the 15 November catalogue batch.
+Current unvalidated editor changes must not be reported as passing those checks.
 
-## Manual Chrome acceptance
+## Basic app: current position and remaining tasks
 
-Use the existing running app's browser profile and address when checking existing
-data. A different browser profile or origin (including port) has separate storage.
-Hot restart the existing Flutter session to load Dart changes if it is still open.
+The private Flutter prototype exists and can be used locally. It is not yet a
+verified end-to-end AI renovation app: the user's live API access and real-device
+acceptance tests are still outstanding. No new provider or 3D engine is required
+for the basic photo-based workflow.
 
-1. Confirm the existing project, room and photos are still visible.
-2. In a separate test room, import a JPEG and verify zoom/pan and the original.
-3. Crop and sketch a reference. Check selection position, undo and saved versions.
-4. Select a design and choose Approve as baseline. Leave and reopen the room;
-   it should reopen that design. Selecting another version must not approve it.
-5. Return to approved baseline, then try approving the original again.
-6. Save an idea, open Library, remove its favourite in the workspace, and confirm
-   it returns to Explore rather than becoming rejected. Test both swipe directions.
-7. Save instructions, copy a narrow precision prompt, manually generate externally
-   using a photo already available as a file, and import the result as a branch.
-8. Compare original/result, then test the layout at a narrow browser width.
+| Area | Current position | Remaining for the basic private test |
+| --- | --- | --- |
+| Room setup | 42 home/utility/outdoor space choices, search, categories and custom names | Check naming and selection with the user's rooms |
+| Design choices | 19 styles, 12 palettes and six labelled fictional examples; full choices separate from sample filters | Check selections carry through to actual generated images |
+| Photos and projects | Multiple originals, local room preferences, versions, approval and backups | Verify the user's normal Chrome profile after a complete stop/restart and an actual backup restore |
+| AI analysis/prompt | Local relay, visible observations/questions, editable prompt and explicit selection | Connect a developer API key and inspect one real-room analysis |
+| AI images | Confirmed one-image requests, model/quality choice, saved branches and comparison | Generate real results, check adherence/costs, approve one and refine that exact result |
+| Failure handling | No automatic paid retries; pending-result local-save retry and normal-exit protection | Check interrupted real requests, actual browser close behaviour and disk/file-picker failures |
+| Android | Shared Flutter code and still-photo entry point | Verify SDK setup, build, camera/permissions, save/export and restart on a device |
 
-## Still incomplete
+### Minimum acceptance checklist
 
-- Verify real Chrome image download and project backup/restore, then Android file
-  chooser behaviour. These now have implementations; browser persistence still
-  depends on profile/address and site storage.
-- Explicit reference/result types and richer annotation history. In-app AI results
-  now record source image ID, parent, provider/model and provider request ID.
-- Masks, structured room locks, compositing and outside-region change detection.
-- Storage failure/recovery UI, import validation and Android lost-picker recovery.
-- Android test setup: command-line tools and licences were unresolved at assessment.
-- Automated Chrome tests use disposable memory, so they do not verify real browser
-  storage persistence. VM storage tests verify Hive file close/reopen separately.
+- [ ] Check API-credit eligibility / billing and create a developer key privately.
+- [ ] Start `tool/start_ai_relay.ps1`; connect using its temporary code in the app.
+- [ ] Open an existing kitchen room; verify originals and saved preferences.
+- [ ] Analyse its photos in-app; review observations/questions and select the edited prompt.
+- [ ] Generate one low-quality image; confirm it is saved as a separate version.
+- [ ] Check layout/windows, selected floor, phone removal, appliances and cabinetry.
+- [ ] Approve a result, request one focused refinement, and compare with its parent.
+- [ ] Reopen the app at the same origin/profile and confirm project, photos,
+      preferences, analysis and approved design remain. Keep export copies.
+- [ ] Export a project to a chosen location, restore it as a copy and inspect it.
+- [ ] Repeat the core workflow on Android before calling the phone app tested.
 
-No AI processing, payment or deployment was performed during the baseline-fix
-batch. The project folder was not a Git repository at assessment; do not claim a
-milestone commit exists. The later in-app AI batch is described above.
+Multiple new alternatives in one batch, masks/compositing, independent open-plan
+zones, a shorter responsive workspace and more sample coverage remain further
+work. Basic testing can compare separate single-image versions now. Payments,
+accounts, cloud sync, public hosting and live tracked AR are outside this private
+basic-app acceptance gate.
 
-## Validation in this batch
+### Continuity and batch reporting
 
-- `flutter analyze --no-pub`: clean, no issues.
-- `flutter build web --no-pub --no-web-resources-cdn`: passed, rendering assets
-  bundled locally. This verifies compilation, not interactive browser behaviour.
-- `flutter test --no-pub`: all 14 tests pass, including real Hive file reopen,
-  UI navigation/approval/favourites, a phone-width layout, crop and sketch saves.
-- Chrome automated tests were attempted with JavaScript and WebAssembly. Both
-  stalled during Flutter browser bootstrap before running test cases; the tool
-  reported `Iframe JS Execution Stalled`. Both processes were stopped. Do not
-  report these as browser test passes. Manual Chrome testing remains required.
+Preserve this checklist and FEATURE_STATUS.md after each validated batch, and
+report changes, checks, running build and remaining blockers to the user. Resume
+from the existing files after a session interruption; inspect the server instead
+of starting a competing one or changing ports. The agent cannot guarantee that
+the client automatically reconnects after a full disconnection. Do not replace
+missing credentials or approval with automatic billable retries.
+
+Requirements: [project brief](RENOVISION_PROJECT_BRIEF.md).
+Actual implementation/limits: [feature status](FEATURE_STATUS.md).
+Run instructions: [README](README.md).
+Detailed setup/recovery: [testing guide](docs/TESTING_GUIDE.md).
+Design/research background: [product notes](docs/PRODUCT_NOTES.md).
+
+15 November review findings: [DecAI user-review lessons](docs/PRODUCT_NOTES.md#decai-user-review-lessons).
+Prioritise room fidelity, result-versus-brief checks and continuing a selected
+design without repeating setup. These are lessons from a limited public review
+sample, not evidence that our outputs already perform better.
+
+## 1. Finish real Chrome saving tests
+
+Use `tool/start_web_test.ps1`, then open `http://localhost:7357` in the same normal
+Chrome profile. Keep the host/port unchanged. Never clear site storage to diagnose
+missing projects. Earlier test projects were recovered into portable backups;
+[recovery instructions](docs/TESTING_GUIDE.md#recovered-projects) include the files.
+
+- Confirm the existing project, room, original photos and instructions are present.
+- With Autosave on, change text/preferences, wait for Saved, leave and reopen.
+- With Autosave off, verify Save now and Save and close. Normal Back must save
+  pending drafts and stay in the room if saving fails.
+- Test Save as: named independent project copy, clean PNG and full project backup.
+  Verify the Chrome location chooser, cancelling it and the resulting files.
+- Restore a backup as a copy; check photos, preferences, versions and approval.
+- Stop/restart Flutter and close/reopen normal Chrome at the same address.
+  Confirm the project, photos and preferences persist without re-uploading.
+- Browser close/refresh warnings and best-effort flush need real testing;
+  forced shutdown cannot guarantee completion. Keep source photos/backups.
+
+## 2. Improve the visual starting experience
+
+15 November implementation: searchable/categorised room-type cards, custom naming, six original
+AI-created sample rooms, room/style filtering and sample details are now present.
+Use this style starts a new room with the selected style/palette and the user's
+own photos. Samples are bundled under `assets/inspiration/`, separate from saved
+projects. All 42 room types, 19 styles and 12 palettes are available independently
+of the six illustrated examples. More sample categories, applying a preset to an existing room and the
+responsive workspace redesign below remain future work.
+
+- Done: 42 selectable home/utility/outdoor room types with search and seven
+  categories. Original eight IDs and existing room-specific choices are retained;
+  new subtypes use relevant controls. A custom name remains editable.
+- Done: illustrated sample-design gallery, filtered by room/style, with visible
+  palette/material descriptions and a clear Use this style action. Explore today
+  reviews the user's own versions alongside the separate sample section.
+- Keep sample inspiration distinct from personal photos, generated results and
+  approved designs. Use owned/licensed or purpose-generated samples; private
+  renovation photos are not public app assets. A sample must not change the
+  geometry of the user's room or silently create personal project records.
+- Build the responsive photo-led workspace: photo first, Style / Changes / Keep
+  controls beside it on desktop and below it on phone; saved versions and
+  Compare / Approve / Refine actions together. Existing private review mockups
+  are in `output/design-review/`; they are proposals, not app features.
+- Reuse IDs, storage, draft/save controls, approvals and room profiles.
+
+## 3. Complete and verify the in-app AI journey
+
+The workspace now has Test AI with this room near the top, including connection
+setup/model controls. The updated relay offers GPT Image 2.5 and 2.6 Sunburst and Flare
+(plus a configured custom default) and low/medium/high quality. Model changes
+send no request. Image confirmation freezes the reviewed settings; result titles
+retain model/quality and structured metadata retains the actual returned model.
+Restart an older relay and reconnect to see these controls. Analysis still uses
+the relay's separately configured analysis model.
+
+The user confirmed on 15 November that they still have a subscription/login only.
+Live testing awaits their own developer key and available API credit. Eligible
+Pro/Business subscribers should check included-credit eligibility first; see the
+model/access notes in docs/PRODUCT_NOTES.md#ai-model-choice. No user photo was
+transmitted or live app-provider request made during this implementation.
+
+Follow [AI setup](docs/TESTING_GUIDE.md#ai-test-setup) when API access is available.
+A ChatGPT subscription/login is not a developer API key. Enter a key only through
+the private relay launcher, never chat/source. Do not run paid requests silently.
+
+- Verify visible room analysis, clarification questions and the editable prompt
+  against the actual photos. Explicitly select the AI prompt for generation.
+- Check current palette, Modern / Contemporary, scope and Keep/Replace choices
+  enter the request; stale analysis must not override changed preferences.
+- Test the kitchen: retain layout/windows/viewpoint, change selected flooring,
+  remove the old telephone/cord and repair the wall, visibly update requested
+  appliances, and retain handleless cabinetry and selected colour direction.
+- Compare and approve a result, then refine that exact version. Confirm saved
+  originals and prior branches survive. Check retrying local save sends no new
+  provider request. Provider adherence and live costs remain unverified.
+- Add a result-side checklist of requested changes/protected features and a
+  useful way to flag what missed. Check the image against it rather than treating
+  a correct prompt or AI explanation as proof of a correct design. Extend the
+  benchmark with a specified two-bed arrangement and an open-plan kitchen/living
+  scene; explicit independent room zones are not implemented yet.
+- Add bounded multi-result generation and A/B selection as a separate batch;
+  current generation returns one image. Retain partial successes, show usage,
+  and never automatically retry paid requests.
+
+## 4. Subsequent work
+
+- True selected-region editing/masks/compositing and outside-region warnings.
+- Separate material, inspiration and sketch references; design-board export.
+- Project search/filtering, safe deletion/undo and richer version review.
+- Android setup and real device tests: capture, permissions, gestures, pickers,
+  saved projects after restart, interrupted operations and backup round trips.
+- Camera path: verify existing still capture, then an explicitly approximate
+  same-view comparison overlay. Moving-camera whole-room AR is separate future
+  research; a generated flat image is not a tracked room model.
+- Keep billing/public hosting/store release deferred. A$4.99 starter / A$9.99
+  room packs are price hypotheses only; measure analysis, outputs, refinements,
+  retries and other costs before setting allowances. No uncapped paid AI.
+
+## Validation and preservation
+
+Latest recorded code checks (15 November): 106 VM/widget tests passed, static
+analysis is clean and the final catalogue web release build passed. These do not prove real Chrome
+restart durability, file-picker behaviour, Android or provider quality. The
+earlier documentation consolidation did not rerun code checks or AI calls.
+Do not assume an earlier server session/build is still running; check Settings.
+
+Current 16 November test server: http://localhost:7357, build `6e2f59dcc5`.
+The previous server was stopped normally and replaced at the same address.
+Refresh in normal Chrome; check Settings > App build and saved data. This does
+not verify that the user's own saved project has survived a browser restart.
+The final app was rendered in isolated Chrome profiles at 1440px desktop and
+390px phone width; sample controls were present and the page fitted the viewport.
+Private screenshots are `output/design-review/app-explore-desktop.png` and
+`output/design-review/app-explore-mobile.png`. These visual checks do not replace
+the acceptance checklist or real device/provider tests above.
+
+After code changes, run analysis, relevant tests and the web build. Keep Hive box
+names, original photo bytes, IDs and existing projects intact. Use disposable test
+data for automated checks. Normal user work stays in the existing browser profile.
+Earlier detailed documentation is preserved in the consolidated references;
+exact pre-cleanup files and the longer old next-steps history are copied under
+`.local_backups/documentation-2026-11-15-*/`. These are document copies, not app
+project/photo backups.
