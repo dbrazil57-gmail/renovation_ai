@@ -7,6 +7,77 @@ Use the [project brief](../RENOVISION_PROJECT_BRIEF.md) for requirements,
 dated individually; the 14 November prices were not rechecked during cleanup.
 Proposals and the earlier roadmap are not completed features.
 
+## Visual direction review — 18 November 2026
+
+### Selected references: HOMLY workflow + Forma styling
+
+Latest user selection refines the earlier Planner 5D preference:
+[HOMLY — AI Interior Design App UI/UX & Motion Animation](https://dribbble.com/shots/27821170-HOMLY-AI-Interior-Design-App-UI-UX-Motion-Animation)
+is the requested functional reference;
+[Forma — Interior Design & Renovation Platform](https://dribbble.com/shots/27758267-Forma-Interior-Design-Renovation-Platform)
+is the requested styling reference. Retain Planner 5D's room choices and compact
+fine-tuning as supporting inspiration. These are preferences, not implemented UI.
+
+Access limits: the two exact shot pages did not load reliably in the research
+tool. HOMLY's animation/interactions have not been inspected. A related
+[Forma shot from the same designer](https://dribbble.com/shots/27728147-Forma-Interior-Design-Renovation-Platform)
+was accessible and describes a visual canvas with precise controls, materials,
+style variations and version comparison in one workspace. Its published palette
+includes cream, taupe, charcoal and brown. Do not attribute unverified interaction
+details or a reusable Flutter template to either reference.
+
+Renovision adaptation: warm cream/taupe surfaces, charcoal text, restrained earthy
+accents, strong room photography and a clear type hierarchy. Keep Take photo and
+Choose photos prominent, then room/style choices and one image-led workspace.
+Desktop: image/comparison beside a compact control panel. Phone: image with
+Room, Style, Refine and Versions sections, exposing only the active controls.
+Keep the contextual toolbar, visible save/progress state, clean result thumbnails
+and selected-design refinement. Preserve keyboard/large-text access even where
+some scrolling is necessary. Use existing room records, images and version data;
+make no storage migrations just for styling. Camera Renovation View remains the
+priority new capability. Do not introduce estimated budgets, shopping catalogues
+or contractor features solely because a reference depicts them. No APK requested.
+
+User preference now selects the Planner 5D-inspired direction: image-led room
+choices, fine-tuning beside the image, and minimal page scrolling. This supersedes
+the earlier open choice between three visual directions. Use its public page as
+inspiration, not proof of the exact layout in an authenticated editor or as a
+template/source licence. Retain Renovision's own branding and shared Flutter code.
+
+Proposed desktop workspace: image/comparison canvas and nearby versions, alongside
+one compact active control panel (Room/photos, Style/colours, Refine or Versions).
+On phones retain a useful image preview above a compact tabbed/expandable panel;
+let content reflow for keyboard/large text rather than promising zero scrolling.
+Preserve contextual toolbar ordering, drafts across tab switches, source/version
+identity and paid-job state. Use the existing 42 room choices with suitable visual
+category examples. A dedicated refinement panel and this responsive layout are
+still proposed, not shipped. Camera Renovation View remains the main new feature;
+this workspace design should accommodate it rather than replace that priority.
+
+Private Android testing is already possible; public-launch readiness is a separate
+milestone. Current priorities are a clearer image-led workspace, selected-design
+refinement, real-device storage/lifecycle/network acceptance, interrupted-job
+recovery and production distribution/signing decisions. No release date is set.
+
+Reviewed public examples: [Homestyler photo/style workflow](https://www.homestyler.com/ai-room-design?lang=en_US),
+[Planner 5D room-design presentation](https://planner5d.com/use/ai-room-design),
+and [Dribbble interior-app concepts](https://dribbble.com/search/interior-design-mobile-app).
+Public pages and concept portfolios are inspiration, not evidence of tested
+in-app usability or reusable Flutter source. No template was purchased/imported.
+
+Three isolated previews explore Warm Studio (recommended), Image Workspace and
+Editorial Home. They use an existing fictional kitchen sample; concept thumbnails
+reuse that image and are not newly generated designs. The previews do not save
+projects or call AI. Source: ignored `output/design-review/renovision-directions.html`.
+
+Recommended direction: warm neutral surfaces and restrained teal, large room-photo
+project cards, a dominant design image, visual styles/palettes, compact refinement
+controls and consistent contextual toolbar. Desktop should use the available width
+for image and controls; Android should stack them with touch-friendly controls.
+Preserve local storage, originals, version history and current AI integration.
+Choose one coherent design system first; optional skins can follow. No broad app
+layout changes were made in this research batch. Build an APK only when requested.
+
 - [AI design workflow](#ai-design-workflow)
 - [Competitor review](#competitor-review)
 - [DecAI user-review lessons](#decai-user-review-lessons)
@@ -470,8 +541,36 @@ price will not compensate for lost projects or repeated unwanted changes.
 
 
 
-Recorded 14 November 2026 following the user's product idea. This is a proposed
-direction, not an implemented camera/AR feature or a change to Stage 1 scope.
+Recorded 14 November 2026; priority updated 18 November following the user's
+clarification. Camera Renovation View is now the main proposed new experience,
+ahead of optional skins. Embedded camera preview and overlays remain unimplemented;
+continuous, consistent whole-room AR is a separate research milestone.
+
+### Updated first milestone and acceptance
+
+Open a room's Camera Renovation View; show a responsive embedded camera feed.
+Choose style/palette and explicitly capture the current view for generation.
+Show genuine request progress while keeping the captured viewpoint available;
+generation is asynchronous, not an instantaneous transformation of video frames.
+When the result arrives, immediately enable a slider/opacity comparison against
+that frozen source frame. Save the clean original, result and settings to the
+existing room automatically, with the existing retry/error handling. Refinement
+starts from the selected saved result. This frozen-frame milestone is distinct
+from a later overlay on the running camera, which needs manual viewpoint alignment.
+
+Accept on Android only after checking permission denial, portrait/landscape crop
+and orientation alignment, app background/resume, failed/interrupted requests,
+source/result persistence after restart and no extra requests when moving the
+slider or phone. Manual camera overlays must be labelled approximate and should
+be hidden or realigned by the user after viewpoint changes; automatic mismatch
+detection must not be claimed before it is implemented and tested.
+
+Technical references checked 18 November:
+[OpenAI image generation](https://developers.openai.com/api/docs/guides/image-generation)
+documents latency limitations (complex requests may take up to two minutes);
+[ARCore session configuration](https://developers.google.com/ar/develop/java/session-config)
+documents camera frames and device poses. Neither supplies instantaneous,
+view-consistent whole-room renovation from one generated still image.
 
 ### Intended experience
 
@@ -502,8 +601,8 @@ current dependencies/implementation.
 
 Original photos, supporting room views, preferences, AI analysis, generated
 versions and approved-baseline refinement already provide much of the storage
-and design workflow to reuse. Multi-option generation remains planned; the
-current AI request produces one image.
+and design workflow to reuse. Multi-option generation is now implemented as
+two or three sequential saved image requests; it is not continuous video generation.
 
 ### Suggested stages
 
@@ -557,10 +656,11 @@ real camera behaviour and any later tracking; desktop Chrome does not establish
 phone AR performance. Retain gallery upload as an equivalent entry point for
 existing photos and devices without the camera/AR capability.
 
-First complete reliable saving and the in-app photo-to-refinement journey.
-Then validate camera capture and prototype same-view comparison before choosing
-an AR dependency or restructuring the app. The brief already stages camera
-capture first and aligned overlays later; this proposal elaborates that path.
+Preserve reliable saving and the in-app photo-to-refinement journey while
+prioritising the same-view Camera Renovation View prototype described above.
+Validate embedded capture and frozen-frame comparison before choosing an AR
+dependency. The later manual camera overlay and tracked rendering remain
+separate milestones; optional cosmetic skins should follow this priority.
 
 ## Earlier roadmap
 

@@ -72,7 +72,7 @@ void main() {
     expect(store.projects.single.name, 'Claylands');
     await tester.tap(find.text('Claylands'));
     await tester.pumpAndSettle();
-    expect(find.text('Import room photo'), findsOneWidget);
+    expect(find.text('Choose photos'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -86,6 +86,8 @@ void main() {
     );
     await tester.pumpWidget(RenovisionApp(store: store));
     await tester.tap(find.text('Explore'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Save idea'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Save idea'));
     await tester.pumpAndSettle();

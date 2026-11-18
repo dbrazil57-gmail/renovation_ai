@@ -9,6 +9,7 @@ import 'package:renovision_ai/ai_service.dart';
 import 'package:renovision_ai/models.dart';
 import 'package:renovision_ai/room_setup.dart';
 import 'package:renovision_ai/store.dart';
+import 'package:renovision_ai/image_viewer.dart';
 
 import 'support/memory_box.dart';
 
@@ -121,7 +122,7 @@ void main() {
         'Your renovation goal (optional)',
       );
       await tester.enterText(goal, 'Modernise while keeping layout');
-      await tester.tap(find.text('Finish later'));
+      await tester.tap(find.byTooltip('Finish later'));
       await tester.pumpAndSettle();
       expect(find.text('Start setup'), findsOneWidget);
       expect(
@@ -166,7 +167,7 @@ void main() {
       await reach(tester, find.text('Use this AI prompt for the next design'));
       await tester.tap(find.text('Use this AI prompt for the next design'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Review final options'));
+      await tester.tap(find.text('Choose redesign options'));
       await tester.pumpAndSettle();
       await reach(tester, find.text('Generate AI design'));
       await tester.tap(find.text('Generate AI design'));
@@ -176,6 +177,22 @@ void main() {
       expect(analyses, 1);
       expect(edits, 1);
       expect(store.designsFor(room.id), hasLength(1));
+      final resultPreview = find.byWidgetPredicate(
+        (w) =>
+            w is ExpandableImage && w.title.startsWith('AI renovation concept'),
+      );
+      await reach(tester, resultPreview);
+      await tester.tap(
+        find.descendant(
+          of: resultPreview,
+          matching: find.byTooltip('Open image full screen'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(ImageViewerScreen), findsOneWidget);
+      await tester.tap(find.byTooltip('Close image viewer'));
+      await tester.pumpAndSettle();
+      expect(edits, 1);
       await tester.tap(find.text('Open design workspace'));
       await tester.pumpAndSettle();
       expect(find.text('Finished workspace'), findsOneWidget);

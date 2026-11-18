@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import 'ai_service.dart';
 import 'ai_widgets.dart';
+import 'ai_activity_widget.dart';
 import 'colour_palette_widgets.dart';
 import 'design_style_widgets.dart';
 import 'design_styles.dart';
@@ -14,16 +15,21 @@ import 'room_draft.dart';
 import 'room_photos.dart';
 import 'room_prompt.dart';
 import 'store.dart';
+import 'image_viewer.dart';
+import 'design_delete_widgets.dart';
+import 'screen_toolbar.dart';
 
 class RoomSetupScreen extends StatefulWidget {
   final RenovisionStore store;
   final String roomId;
   final Widget Function(String? designId) workspace;
+  final WidgetBuilder? settingsBuilder;
   const RoomSetupScreen({
     super.key,
     required this.store,
     required this.roomId,
     required this.workspace,
+    this.settingsBuilder,
   });
   @override
   State<RoomSetupScreen> createState() => _RoomSetupScreenState();
@@ -118,7 +124,13 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
       if (finish) {
         Navigator.pushReplacement<void, void>(
           context,
-          MaterialPageRoute(builder: (_) => widget.workspace(designId)),
+          MaterialPageRoute(
+            builder: (_) => widget.workspace(
+              designId != null && widget.store.isDesignDeleted(designId!)
+                  ? null
+                  : designId,
+            ),
+          ),
         );
       } else {
         Navigator.pop(context);
@@ -175,6 +187,8 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
       sourceImageId: sourceId,
       image: widget.store.imageFor(sourceId)!,
       supportingImages: supporting,
+      styleIds: draft.styleIds.toList(),
+      otherStyle: draft.otherStyle.text,
       prompt: prompt,
       instructions: text,
       precise: draft.preciseEdit,
@@ -190,6 +204,25 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
     draft.dispose();
     scroll.dispose();
     super.dispose();
+  }
+
+  Future<void> openSettings() async {
+    if (busy || widget.settingsBuilder == null) return;
+    setState(() => saving = true);
+    updateGuard();
+    try {
+      if (await save() && mounted) {
+        await Navigator.push<void>(
+          context,
+          MaterialPageRoute(builder: widget.settingsBuilder!),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => saving = false);
+        updateGuard();
+      }
+    }
   }
 
   @override
@@ -209,11 +242,43 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Set up ${current.name}'),
+            title: Text(
+              'Set up ${current.name}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
             actions: [
-              TextButton(
-                onPressed: busy ? null : () => leave(),
-                child: const Text('Finish later'),
+              ScreenToolbar(
+                tools: [
+                  ScreenTool(
+                    ScreenAction.save,
+                    label: 'Save project file',
+                    onPressed: busy
+                        ? null
+                        : () => showProjectSaveDialog(
+                            context,
+                            store: widget.store,
+                            projectId: current.projectId,
+                            beforeSave: save,
+                          ),
+                  ),
+                  if (widget.settingsBuilder != null)
+                    ScreenTool(
+                      ScreenAction.settings,
+                      label: 'Room settings',
+                      onPressed: busy ? null : openSettings,
+                    ),
+                  ScreenTool(
+                    ScreenAction.finishLater,
+                    label: 'Finish later',
+                    onPressed: busy ? null : () => leave(),
+                  ),
+                  ScreenTool.help(
+                    context,
+                    title: 'Room setup tools',
+                    message: 'Save keeps a complete project file. Settings opens saving and AI options. Finish later saves your current setup step so you can continue later. The bottom buttons move through the four steps.',
+                  ),
+                ],
               ),
             ],
           ),
@@ -276,11 +341,10 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                   ],
                   if (step == 1 || step == 3) ...[
                     if (step == 3)
-                      Image.memory(
-                        widget.store.imageFor(current.primaryId)!,
+                      ExpandableImage(
+                        bytes: widget.store.imageFor(current.primaryId)!,
+                        title: '${current.name} · original',
                         height: 220,
-                        cacheWidth: 1200,
-                        fit: BoxFit.contain,
                       ),
                     SegmentedButton<bool>(
                       segments: const [
@@ -388,6 +452,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                     ),
                     AiEditCard(
                       store: widget.store,
+                      draft: draft,
                       buildRequest: request,
                       onPendingChanged: (value) {
                         if (mounted) setState(() => generating = value);
@@ -397,21 +462,13 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                         if (mounted) setState(() => designId = design.id);
                       },
                     ),
-                    if (designId != null) ...[
+                    if (designId != null &&
+                        !widget.store.isDesignDeleted(designId!)) ...[
                       const Text(
                         'Design saved. Open the workspace to compare, approve or refine it.',
                       ),
-                      Image.memory(
-                        widget.store.imageFor(
-                          widget.store
-                              .designsFor(current.id)
-                              .firstWhere((d) => d.id == designId)
-                              .imageId,
-                        )!,
-                        height: 260,
-                        cacheWidth: 1200,
-                      ),
                     ],
+                    DeletedDesignsCard(store: widget.store, roomId: current.id),
                     ProjectFileControls(
                       store: widget.store,
                       projectId: current.projectId,
@@ -423,32 +480,42 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
             ),
           ),
           bottomNavigationBar: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Wrap(
-                spacing: 10,
-                runSpacing: 8,
-                alignment: WrapAlignment.end,
-                children: [
-                  if (step > 0)
-                    OutlinedButton(
-                      onPressed: busy ? null : () => move(step - 1),
-                      child: const Text('Back'),
-                    ),
-                  if (step < 3)
-                    FilledButton(
-                      onPressed: busy ? null : () => move(step + 1),
-                      child: Text(
-                        step == 2 ? 'Review final options' : 'Continue',
-                      ),
-                    ),
-                  if (step == 3)
-                    FilledButton(
-                      onPressed: busy ? null : () => leave(finish: true),
-                      child: const Text('Open design workspace'),
-                    ),
-                ],
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AiActivityStrip(
+                  activity: widget.store.ai.activity,
+                  roomId: current.id,
+                  safeArea: false,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Wrap(
+                    spacing: 10,
+                    runSpacing: 8,
+                    alignment: WrapAlignment.end,
+                    children: [
+                      if (step > 0)
+                        OutlinedButton(
+                          onPressed: busy ? null : () => move(step - 1),
+                          child: const Text('Back'),
+                        ),
+                      if (step < 3)
+                        FilledButton(
+                          onPressed: busy ? null : () => move(step + 1),
+                          child: Text(
+                            step == 2 ? 'Choose redesign options' : 'Continue',
+                          ),
+                        ),
+                      if (step == 3)
+                        FilledButton(
+                          onPressed: busy ? null : () => leave(finish: true),
+                          child: const Text('Open design workspace'),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),

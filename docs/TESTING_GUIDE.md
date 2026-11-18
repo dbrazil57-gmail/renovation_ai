@@ -180,6 +180,36 @@ Do not delete browser data or run cleanup to fix an apparently empty project lis
 
 ## AI test setup
 
+### Internet API on Android (18 November)
+
+This is the independent phone route; the laptop relay is optional.
+
+1. Open **Settings > AI connection and models**. If a laptop relay is connected,
+   choose **Disconnect AI** first.
+2. Select **Internet API**, enter your OpenAI developer API key privately and
+   choose **Connect OpenAI over internet**. The check lists model access; it
+   does not generate an image. Choose the image model/quality after connecting.
+3. Open a saved room, choose **Analyse room photos**, review the saved analysis
+   and proposed prompt, then generate a design with the normal confirmation.
+   Each confirmed analysis/generation uses your API account.
+4. Restart the Android app and confirm the connection and project still restore.
+   Use **Disconnect and remove API key** to remove this device's saved key.
+
+Android encrypts the key using Android Keystore. The encrypted preference is
+excluded from Android cloud backup and device transfer. Project Open/Save files
+never carry keys. Chrome direct mode keeps its key in memory only and requires
+re-entry after reload. No key is embedded in source or APK. Direct requests use
+fixed https://api.openai.com/v1/ endpoints, reject redirects and never automatically
+retry a possibly billed request. Working photo copies have metadata stripped and
+are resized to at most 2048px on the longest edge; originals remain intact.
+
+The six mocked direct-mode tests and full 135-test suite passed without real keys
+or paid provider calls. Real internet generation and physical-device lifecycle
+remain manual checks. Old emulator adb reverse settings are irrelevant in this
+mode: disabling them does not change the direct HTTPS route.
+
+The following relay instructions apply only to **Laptop relay** development mode.
+
 ### Current in-app test controls (15 November)
 
 Open **Settings > AI connection and models**, or use the room's **AI connection
@@ -197,7 +227,7 @@ Settings shortcut to connect; generation is in **AI generation (optional)**.
 Returned image-model metadata and the model/quality in the generated version's
 title help identify trials. These settings are kept for the current app session.
 
-The user currently has only a ChatGPT subscription. Before a live test, obtain
+Historical onboarding: a ChatGPT subscription alone is insufficient. Obtain
 API access as described below, then run the private relay launcher and enter the
 key only in its hidden terminal prompt. No live provider tests were made for
 this batch. The in-app controls do not sign in to a ChatGPT subscription.
@@ -423,6 +453,196 @@ No masks, compositing or outside-region change detection are implemented yet.
 
 ### Android target and device acceptance
 
+#### Install directly on a physical Android phone
+
+Latest toolbar update: `output/mobile-test/renovision-test-1.0.6.apk`, version
+1.0.6+7, source `3ffefb376a`. Install over the existing app without uninstalling.
+
+Latest compact-help update: `output/mobile-test/renovision-test-1.0.5.apk`,
+version 1.0.5+6, source `7944f6f4ea`. Install over the current app; do not uninstall.
+
+Latest deletion update: `output/mobile-test/renovision-test-1.0.4.apk`, version
+1.0.4+5, source `55b1bf7204`. Install over the current app without uninstalling.
+
+Latest multi-concept update: `output/mobile-test/renovision-test-1.0.3.apk`,
+version 1.0.3+4, source `a198a37712`. Install over the current app; no uninstall.
+
+Latest crop/markup update: `output/mobile-test/renovision-test-1.0.2.apk`, version
+1.0.2+3, source `e7b7ed2e66`. This supersedes the 1.0.1 package below. Install as
+an update; the package and signing identity remain unchanged.
+
+Viewer update: `output/mobile-test/renovision-test-1.0.1.apk` (also copied to
+`renovision-test.apk`), version 1.0.1+2, source `4d0ef665b2`. Install this APK as
+an update over version 1.0.0; the package ID and signing key are unchanged.
+Do not uninstall the current app to update it.
+
+Google Play and a Google account are not required for this private APK test.
+The phone test package is `output/mobile-test/renovision-test.apk` (ignored by
+Git). It is a release-mode universal APK for ARM32, ARM64 and x86-64, signed with
+this PC's existing development signing key, not a Play Store release package.
+
+1. Copy the APK to the phone, for example by USB file transfer into Downloads.
+2. Open it from the phone's Files app and choose Install. If Android asks,
+   allow that Files app to install unknown apps, then return to the installer.
+   USB debugging and Android Studio are unnecessary for this method.
+3. Open Renovision. Its storage is separate from Chrome/the emulator. To bring
+   existing work across, use Save project on the source device, copy the
+   `.renovision.json` file to the phone, and choose Open project there.
+4. In Settings > AI connection and models, select Internet API and enter the
+   key privately on the phone. Project files do not transfer AI credentials.
+5. Test a photo import, analysis, generation, saving, full close/reopen and
+   project export/reopen. The phone needs internet for AI, without a PC relay.
+
+For later test updates, install over the existing app; do not uninstall first.
+Keep the package ID and development signing key stable to preserve update
+compatibility, and retain a portable project backup. APKs are for Android;
+iPhone testing needs a separate iOS build/distribution workflow.
+
+#### Full-screen image check on the phone
+
+1. Open an existing generated design and tap its image/full-screen button.
+   Saved version and favourite thumbnails also open the viewer; tapping a
+   version's text still selects it as the working version as before.
+2. Pinch out/in, drag after zooming, try the zoom buttons, and double-tap to
+   zoom or fit. Fit image resets the view. The full stored image is used here,
+   rather than the thumbnail-sized preview.
+3. Enable Android Auto rotate and turn the phone sideways. The viewer should
+   resize and refit the picture. Turn it upright again and close using X or Back.
+4. Confirm the same room/history/baseline remains. No new design or AI request
+   should be created by viewing. Generate another image only if you want to test
+   the tappable result preview beside generation controls or in guided setup.
+
+Automated gesture, resize and preservation checks passed as part of 140 tests;
+physical S21 acceptance is still a manual check. Original files are unchanged.
+
+#### Crop and markup checks (1.0.2)
+
+- Open Crop / focus, draw a box, resize each corner/edge and drag its interior
+  to move it. A tap without a drag must keep the box. Save as new version and
+  confirm the crop looks correct while the original remains available.
+- Open Sketch / markup. Add several marks using pen, line, arrow, rectangle
+  and ellipse, with different colours and Fine/Medium/Bold widths.
+- Choose Text note, tap the photo and enter a comment (up to 100 characters).
+  Choose Select / move, tap a note and use Edit note; move a shape, recolour it
+  or use Remove selected. Check Undo, Redo and Clear marks (also undoable).
+- Save as new version and open the reference full screen. Check shape colours,
+  text placement and detail. References are flattened when saved: individual
+  marks can be edited during this session, but cannot be recovered as separate
+  layers when reopening the saved image. Colours/shapes guide the AI visually;
+  they do not create an enforced edit mask.
+
+143 regression tests passed, including saved-pixel, metadata and original-byte
+preservation checks. Native S21 touch/keyboard/visual checks remain manual.
+
+#### Multiple design ideas and style comparison (1.0.3)
+
+1. Choose Whole-room renovation and an original room photo in Working from for
+   fresh alternatives. A selected generated design is instead the reference for
+   variations on it. Style chips change the next request, not an existing image.
+2. Select Modern / Contemporary and Classic. With one result these blend into
+   a transitional design. For separate looks, open AI generation, tick Multiple
+   design ideas and Compare styles separately, and choose 2 or 3 concepts.
+   With two styles/three concepts, the extra concept blends the styles. Select
+   no more styles than the requested count when comparing them separately.
+3. Review the confirmation: model, quality, actual starting photo/context views,
+   number of separate paid requests and each concept brief. Cancel sends none.
+4. Generate. Progress identifies concept number/stage. Each received image saves
+   before the next request. Stop after this image lets the current request finish
+   (it may be billed), then prevents the rest. Do not assume it cancels billing.
+5. Open result images full screen, compare them, then choose Use this design.
+   This selects the working version; approval and favourites remain separate.
+   Stored version prompts/provider request IDs identify what was actually sent.
+6. Reopen the room/project to check saved versions and the batch preferences.
+   If a local save fails, Retry saving result saves only those received bytes;
+   it does not resume the remaining paid requests. Provider failure also stops
+   the batch and retains earlier versions. Generate again starts a new batch.
+
+Fresh whole-room prompts request visible variation within protected features,
+layout and palette. Exact-byte duplicates are flagged; visually similar files
+with different encodings are not detected. No automatic replacement requests or
+guarantee of model novelty. The 152-test suite uses simulated provider responses;
+real image quality/style adherence needs a user API test. If an older reviewed
+AI prompt is stale after upgrading/changing preferences, analyse again or untick
+Use this AI prompt; its saved text/history is preserved.
+
+#### Delete unwanted designs (1.0.4)
+
+1. Tap a generated result's trash icon, or open its version-history menu and
+   choose Delete design. Explore and favourites also have delete icons.
+2. Cancel once to check the design remains. Confirm deletion to remove it from
+   active design lists. Check that the current working image falls back safely
+   if that was the deleted design. Original photos remain available.
+3. Use Undo in the message, or expand Deleted designs in the room workspace
+   and tap Restore. Recovery keeps the same history, image and favourite status.
+4. Save/reopen a project and check deleted designs remain deleted and restorable.
+   Deleting a parent must not damage its refinements or their source images.
+5. Approved baselines are protected: approve the original or another design
+   first, then delete the unwanted former baseline. Wait for AI work to finish
+   before deleting designs; deletion itself sends no provider request.
+
+Deleted designs and bytes remain in local storage and saved project files for
+recovery and valid source references; this action does not free their disk space.
+Permanent purge is not included. 160 tests pass, including generated-gallery
+deletion without additional paid requests and backup/restoration of deleted
+parents referenced by refinements and analysis. Physical-phone checks remain.
+
+#### Compact help controls (1.0.5)
+
+- On Chrome, hover over a circled info icon to read its explanation. Clicking
+  it opens a readable help panel; keyboard Tab/Enter also works.
+- On the phone, tap the icon and close the scrollable panel with Close or Back.
+  Help does not save files, change selections or toggle Autosave.
+- Check Step 1 still shows room-photo guidance. Project file should now show
+  Save project, Save project as and a short status, with the longer file/privacy/
+  browser explanation in its info control.
+- Check palette/style and workspace sections are less text-heavy. Instructions,
+  actual AI analysis/results and current form values are not hidden. Saving
+  failures, unsaved/pending messages, AI progress and paid-generation consent
+  remain visible in full.
+
+166 automated tests passed, including hover, keyboard and phone-sized large-text
+help panels. Native S21 visual/touch review remains a manual check.
+
+#### Contextual top-right toolbars (1.0.6)
+
+- Open a project, room setup and workspace. Shared actions keep the same icons
+  and relative order; only relevant tools appear. Use hover/long-press labels.
+- On the phone, use More tools for extra actions. On wider screens more icons
+  appear directly, with the same order. Long room/project titles should truncate
+  rather than collide with the toolbar.
+- Save project file opens the existing Save/Save as controls. In guided setup,
+  Settings first saves draft edits; Back returns to the same step. Finish later
+  is a toolbar icon with that label and still saves progress before leaving.
+- In markup, try toolbar Undo/Redo and Save as new version. In crop, use Reset
+  selection and Save; original photos remain unchanged. The body buttons still
+  work and use the same handlers.
+- Full-screen viewing shows zoom/fit/help rather than unrelated project tools.
+  Before/after has Reset comparison to centre the slider and Help.
+- Settings has Help but no redundant Settings action on its own screen.
+
+172 tests passed, including actual file saving through the project toolbar and
+phone-width overflow selection. Native S21 touch/navigation checks remain manual.
+
+18 November: debug build `a793f4c30b` is installed on the existing Medium Phone
+emulator. Native launch, project navigation and system Open picker presentation
+were observed. The project copy in Downloads survived the PC restart. A saved
+room workspace was visible, but controlled import/save/restart, camera and
+keyboard acceptance checks remain. Emulator interaction overlapped the check;
+coordinate with the user before further taps. Full Android acceptance is not
+claimed. Logs/screenshots are kept only under ignored local output.
+
+AI progress now stays visible at the bottom of workspace/setup with elapsed
+time and actual client stages. The indeterminate indicator does not claim a
+provider completion percentage. A failed local save can be retried without a
+second AI call. This activity is in memory; it does not recover a running paid
+request after force-closing/restarting the app.
+
+After a PC restart, start the relay privately with `tool/start_ai_relay.ps1`.
+The current emulator has `adb reverse tcp:8787 tcp:8787`, so its default
+`http://127.0.0.1:8787` reaches the PC relay while that tunnel exists. Without
+the tunnel, an emulator can use `http://10.0.2.2:8787`. These addresses and the
+relay process are development setup, not the production phone backend.
+
 Android is the target app, not an optional browser wrapper. Chrome provides a
 temporary preview for shared layout/workflows only. Validate touch targets,
 keyboard/safe areas, Back, camera/photo selection, denied permissions, lifecycle,
@@ -459,3 +679,23 @@ require testing. No automated test result here claims a successful paid generati
 This loopback relay is for your private Windows development workflow. It is not
 a production backend and must not be exposed on the internet or packaged with a
 reusable API key for distribution.
+## Phone camera and gallery entry — 18 November source update
+
+Packaged on request as **1.0.7+8**, source `fa1e8d0319`:
+`output/mobile-test/renovision-test-1.0.7.apk` (also `renovision-test.apk`).
+175 automated tests pass; static analysis clean. Package/version and matching
+certificate verified against 1.0.6. Install as an update without uninstalling.
+HOMLY/Forma redesign and live-camera overlay are not included. Build later APKs
+only when asked.
+
+On the phone, open a project and use **Take photo** for a new
+room or **Choose photos** for existing phone photos (up to six per room). In room
+setup and the workspace, Room photos offers both actions for additional angles.
+Starting from a sample design offers the same source choice. The camera path
+opens the phone's still-camera app; it is not yet an embedded live renovation view.
+
+Check cancellation, a failed/unavailable camera, multiple gallery selection,
+six-photo limit, reopening the project after restart and unchanged originals.
+Adding photos must not start a paid AI request. Photos are stored locally using
+the existing project store; choosing them is separate from sending them to AI.
+Process-kill recovery during an external camera/gallery picker remains unverified.

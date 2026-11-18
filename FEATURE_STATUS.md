@@ -1,7 +1,161 @@
 # Renovision feature status
 
-Updated 16 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
+Updated 18 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
+
+Post-analysis redesign choices (source change after APK 1.0.7): a current
+whole-room analysis now offers 1 design / 2 ideas / 3 ideas. The choice uses the
+existing saved concept count; it does not generate images or invalidate the
+analysis. Guided setup's next action is Choose redesign options; multi-image
+generation labels show the requested count. Existing per-request confirmation,
+sequential generation, gallery selection and saved version history are reused.
+Stale analysis and precise correction do not offer this whole-room chooser.
+No newer APK built; 1.0.7 does not contain these post-analysis UI changes.
+Static analysis is clean and all 176 tests pass, including count persistence,
+no paid generation on selection, analysis freshness and reviewed-prompt sending.
+
+Requested mobile test build: version 1.0.7+8, source `fa1e8d0319`. Static analysis
+clean and all 175 tests passed. Universal APK built in 75.3 seconds at
+`output/mobile-test/renovision-test-1.0.7.apk` (also `renovision-test.apk`).
+Package/version verified; certificate matches 1.0.6 for an in-place update.
+Includes the phone camera/gallery changes below. HOMLY/Forma layout, embedded
+camera preview and live renovation overlay are not implemented in this build.
+No physical-device acceptance or real provider requests were performed here.
+
+Phone photo entry update (18 November, source only): project screens show Take
+photo and Choose photos; room setup and the workspace's Room photos card now
+support taking additional camera photos as well as choosing several existing
+device photos. Sample-design starts offer a camera/gallery source choice.
+Camera capture reuses the native still-camera picker, validates size and copies
+photo bytes into existing room storage. Cancellation/failure preserves originals.
+These are local photo inputs, not automatic AI uploads or a live camera overlay.
+Packaged in requested 1.0.7 APK; physical S21 acceptance and picker process-kill recovery
+remain to be checked. All 175 automated tests passed, including camera/gallery
+routing, cancellation/failure and persistence on reopening the local store.
+
+Camera Renovation View (priority updated 18 November): requested as the main new
+experience, ahead of optional skins. Existing still-camera capture and saved
+before/after comparison can be reused. Embedded live camera preview, capture-to-
+generation screen, camera overlays and tracked AR are not implemented. First
+target is explicit capture/generation followed by frozen-view slider comparison;
+instantaneous whole-room transformation while moving remains a research goal.
+
+Contextual toolbars (1.0.6+7 / `3ffefb376a`): shared icons/order across project,
+room setup/workspace, editors, viewing/comparison and relevant root/settings
+screens. Irrelevant actions are omitted; temporary unavailable actions disable.
+More tools holds extra actions in the same order on narrow screens. Existing
+body actions remain; Save and Settings use the current storage/draft flows.
+172 tests pass and static analysis is clean. Phone overflow, disabled actions,
+toolbar saving, retained setup edits, editor Undo and comparison reset are covered;
+physical S21 visual verification is still a manual check.
+Universal 1.0.6 APK built and signature verified against 1.0.5; version code 7
+supports installation over the current app with the same package identity.
+
+Compact UI/help (1.0.5+6 / `7944f6f4ea`): optional explanations moved from repeated
+paragraphs into info icons on project saving, palettes, styles and workspace/
+generation controls. Desktop hover shows details; tap/keyboard opens a scrollable
+panel. Project saving retains buttons and compact success feedback; failures,
+action-required status, progress and AI paid-request consent remain visible.
+First-step room-photo guidance remains visible. All 166 tests pass, including
+hover/phone/keyboard accessibility and no accidental saves or switch changes.
+Physical S21 visual verification remains pending.
+Universal 1.0.5 APK built and signature verified against 1.0.4; same package and
+higher version code 6 support installation over the current app without uninstalling.
+
+Recoverable design deletion (1.0.4+5 / `55b1bf7204`): generated-gallery, Explore
+and favourite delete buttons plus Delete design in version-history menus.
+Confirmation, Undo and Deleted designs/Restore preserve originals, child/analysis
+references and backups. Approved baselines require choosing another baseline
+before deleting; deletion is blocked during AI work. Deleted records and bytes
+remain recoverable in local storage and portable project files; permanent purge
+is not implemented. Current selection safely falls back on deletion. All 160
+tests passed; static analysis clean. Physical S21 verification remains a user test.
+Universal 1.0.4 APK built; signature verified against 1.0.3, unchanged package
+identity and higher version code 5 for installation over the existing app.
+
+Multiple concepts (1.0.3+4 / `a198a37712`): style chips blend influences in one
+design; this is now explained alongside concrete visual style cues. Multiple
+design ideas adds 2/3 sequential concepts and optional separate-style comparison,
+with explicit paid-request count, one frozen starting image and individual saved
+versions/prompts. Gallery images open full screen and Use this design selects
+the next working image without baseline approval. Earlier results survive
+partial failures; Stop after this image blocks later requests, and save retries
+are local only. Exact-file duplicates warn without paid replacements. Batch
+settings autosave/export with rooms. 152 tests passed; static analysis clean.
+Actual model adherence and visual novelty remain user checks, not guarantees.
+The universal 1.0.3 APK is built; signature verified against 1.0.2 with the same
+package identity and higher version code 4 for in-place installation.
+
+Crop/markup update (1.0.2+3, source `e7b7ed2e66`): crop corners and edges can be
+dragged, and the existing box can be moved. Markup supports pen/line/arrow/
+rectangle/ellipse/text notes, multiple colours and widths, multiple objects,
+selection/moving, note editing, recolouring, whole-object removal and undo/redo.
+Full-resolution reference export leaves the original untouched and strips source
+metadata. Marks/notes flatten on save; persistent editable layer history is not
+implemented. All 143 tests pass; static analysis clean. Physical-phone acceptance
+of these editor changes remains pending; no provider requests were needed.
+The universal 1.0.2 APK is built; signature verified against 1.0.1, with unchanged
+package identity and higher version code 3 for in-place installation.
+
+Phone viewer update: version 1.0.1+2 / source `4d0ef665b2` adds full-screen
+viewing from generated results, working images, Explore, saved version thumbnails
+and favourites. Supports pinch zoom/pan, double-tap zoom/fit, zoom buttons and
+reset. Full image bytes are used for detail viewing; portrait/landscape adapt
+without modifying the source or changing approval/history. Android Auto rotate
+must be enabled for physical rotation. Latest regression suite: 140 tests passed,
+including gesture/rotation/data-preservation checks and a guided generation
+result-viewing flow; static analysis clean. User installed the earlier APK on
+their Samsung S21; the new physical-device viewer check is pending.
+The version 1.0.1 universal APK is built and its signature/update compatibility
+verified against 1.0.0. No new native screenshot check was possible because the
+existing emulator did not respond to inspection; it was not wiped or reinstalled.
+
+18 November direct API update: personal OpenAI keys now work without a PC relay.
+Settings > AI connection and models > Internet API checks model access, then
+analysis and generation send actual photos/prompts directly to api.openai.com
+over HTTPS. Android saves the key encrypted using Android Keystore and excludes
+its ciphertext from device backup/transfer. Keys are excluded from project files;
+Chrome direct keys last only for the current session. Disconnect removes the key.
+No automatic paid retries or redirect forwarding. Six new mocked tests cover
+transport, metadata cleanup, privacy, restoration, failures and phone key entry;
+135 total regression tests passed. Real API and physical-phone checks remain.
+Build `9d222d5de2` built and installed over the emulator app without deleting data;
+the saved project and new Internet API form are visible. Static analysis is clean.
+Earlier relay-only statements below describe the previous development route.
+
+User subsequently reported the direct API test worked. A signed, release-mode
+universal APK is prepared at `output/mobile-test/renovision-test.apk` for private
+phone installation (same source build). Signature verified; physical-device
+acceptance remains pending. Existing app/emulator data were not changed for this
+packaging step. Installation instructions are in the testing guide.
+
+18 November progress/Android resume batch: 129 automated tests passed; final
+static analysis is clean. New fixed
+AI activity strips in workspace/setup show elapsed time and real client phases,
+terminal errors and local-save failures; no percentage is fabricated. Retry-saving
+does not resend a generation request. Current source build: `a793f4c30b`.
+
+Android x86-64 debug build now installed and launched on the existing emulator
+after a non-wiping cold boot. Screenshots/accessibility dumps verified initial
+navigation and system file-picker presentation; a saved room workspace was then
+observed. This supersedes earlier "not installed" notes, but is not complete
+Android acceptance. Camera, real AI, controlled import/save/restart and keyboard
+checks remain. The emulator test project survived the reboot. Windows Chrome
+projects and source files were not cleared. Provider relay must be restarted
+privately after the reboot; no paid AI requests were made by these checks.
+
+Current regroup: core design/generation/saving works in the Chrome preview,
+including user-tested AI results. The new elapsed/stage display is implemented;
+durable recovery of an in-flight AI job after app/process restart is still
+missing. The proposed refinement panel and wide desktop workspace remain
+unimplemented.
+
+Earlier Android setup history (superseded by installation above): initial build failed on an incomplete NDK
+download. The official required NDK has now been checksum-verified and installed,
+with the incomplete installer preserved; the retry also installed SDK platforms
+36 and 35 and CMake 3.22.1. The retry now successfully produced the x86-64 debug
+APK in 320.3 seconds. Android acceptance remains incomplete. A private copy of the saved
+project is in emulator Downloads; PC originals and browser data are unchanged.
 
 Manual-copy follow-up: removed the cosmetic ChatGPT/Gemini selector; both had
 copied the same text. One Copy AI prompt action now explains that external apps
@@ -135,8 +289,8 @@ preservation remains unverified against a live provider and is not mask-enforced
 | Stable Chrome testing | Fixed localhost:7357 web-server launcher; normal Chrome profile; Settings build/origin/counts and explicit write/read diagnostic; recovered older test backups available |
 | Immutable originals | Edit/generation flows create separate images and versions |
 | Image viewing | Workspace zoom/pan |
-| Crop | Rectangular crop saved as a new reference |
-| Sketch / markup | Draw on a copy; reset and undo strokes |
+| Crop | Draw, resize with corner/edge handles, move and reset the box; save a separate cropped reference |
+| Sketch / markup | Multiple coloured pen strokes, lines, arrows, rectangles, ellipses and editable text notes; three widths, select/move/recolour/remove, undo/redo; flattened reference on save |
 | Version history | Select versions, branch edits and track parent IDs |
 | Approved baseline | Explicit approval retained when reopening a room |
 | Favourites / pass | Buttons, swipe review and favourites Library |
@@ -145,8 +299,8 @@ preservation remains unverified against a live provider and is not mask-enforced
 | Room instructions | Save requested changes and protected-feature text |
 | Explore / Precision modes | Different prompts; precision is not technically enforced |
 | Manual AI handoff | Copy prompt and import external result |
-| In-app OpenAI integration | Local relay, private key entry, consent, new-version saving and failure handling; tested with simulated responses only |
-| AI setup location | Settings > AI connection and models. Provider keys stay in the PC relay. The browser remembers its local relay code/address and model/quality separately from project files; startup checks the running relay |
+| In-app OpenAI integration | Direct HTTPS with personal API key, or optional development relay; consent, new-version saving and failure handling. New transport tested with simulated responses; user real-key verification pending |
+| AI setup location | Settings > AI connection and models > Internet API. Android Keystore-backed encrypted key storage; browser session memory only. Keys never enter project exports. Laptop relay remains optional |
 | In-app image-model testing | Connected relay advertises its configured model plus GPT Image 2.5 and 2.6 Sunburst / Flare, with low/medium/high quality; selection is local and confirmation freezes settings. Default is still 2.5 Sunburst/low. Actual account access, quality and costs remain unverified |
 | Pending image protection | Image card stays alive while scrolling/collapsing; normal Back and Save and close wait while a request or received unsaved result is pending. Browser shutdown remains best-effort |
 | AI edit metadata | Source image ID, parent, prompt, provider/model and request ID |
@@ -204,11 +358,12 @@ rooms/backups without this optional preference remain readable.
 - Outside-region change detection and visual warnings.
 - Separate reference/result types and editable sketch/annotation history.
 - Dedicated Paint/sketch reference attachment workflow (ordinary images can be imported).
-- Rotation, eraser and brush controls.
-- Delete projects/rooms and versions; review filters and richer rejected-version management.
+- Image rotation and pixel-level erasing (whole-mark removal and line widths are implemented).
+- Delete projects/rooms, permanently purge trashed designs, review filters and richer rejected-version management.
 - Stronger protection against browser/process shutdown and persistent backup scheduling.
 - Comprehensive startup/storage corruption, low-space and interrupted-import recovery.
-- Persistent Android AI connection settings / secure production backend.
+- Physical-phone acceptance of the new encrypted API key storage and direct
+  internet requests; a managed service/account strategy if distributing a shared-key product.
 - Guaranteed encrypted-at-rest photo storage.
 
 ## Deferred beyond private Stage 1 testing
@@ -216,7 +371,9 @@ rooms/backups without this optional preference remain readable.
 - Payments, credits/subscriptions, purchase verification and production billing.
 - Public hosting, customer authentication and public API service.
 - Play Store release, signing/distribution and launch compliance work.
-- Camera-aligned overlays and live AR/video transformation.
+- Consistent moving-camera whole-room AR/video transformation. Same-view camera
+  capture/comparison and later manual alignment overlays are now prioritised
+  prototypes, not implemented features.
 - Tradie/client/job features, branded exports and team/enterprise roles.
 - iOS build/device verification and release.
 

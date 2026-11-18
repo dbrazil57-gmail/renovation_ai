@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import 'design_styles.dart';
 import 'room_draft.dart';
+import 'context_help.dart';
 
 class DesignStyleControls extends StatelessWidget {
   final RoomDraft draft;
@@ -13,11 +14,12 @@ class DesignStyleControls extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Design style', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 6),
-          const Text(
-            'Tick a style or mix a couple of influences. Use Other for your own direction.',
+          const HelpHeading(
+            title: 'Design style',
+            message: 'Choose one style or blend several influences in one design. Style choices apply to your next generation, not an existing image. Use Other for your own direction. For separate style concepts, choose Multiple design ideas and Compare styles separately in AI generation.',
           ),
+          const SizedBox(height: 6),
+          const Text('Multiple ticks blend in one design.'),
           const SizedBox(height: 10),
           Wrap(
             spacing: 8,
@@ -33,6 +35,9 @@ class DesignStyleControls extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
+          if (draft.styleIds.contains('modern') &&
+              draft.styleIds.contains('classic'))
+            const Text('Modern + Classic creates a transitional blend.'),
           TextField(
             controller: draft.otherStyle,
             maxLength: 500,

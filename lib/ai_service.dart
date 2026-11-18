@@ -5,35 +5,31 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import 'room_analysis.dart';
+import 'ai_activity.dart';
+import 'ai_types.dart';
+export 'ai_types.dart';
+import 'secret_store.dart';
+import 'openai_internet.dart';
 
-class AiFailure implements Exception {
-  final String message;
-  const AiFailure(this.message);
-  @override
-  String toString() => message;
-}
-
-class AiResult {
-  final Uint8List image;
-  final String provider;
-  final String model;
-  final String? requestId;
-  final String? quality;
-  const AiResult({
-    required this.image,
-    required this.provider,
-    required this.model,
-    this.requestId,
-    this.quality,
-  });
-}
-
-/// Only the local relay pairing code is held here, in memory. The provider API
-/// key is never sent to the Flutter app or written to its project/photo store.
+/// Supports a personal internet API key or the development relay. Provider keys
+/// stay in the platform vault/session memory, never project/photo records.
 class AiService extends ChangeNotifier {
+  final AiActivity activity = AiActivity();
   final http.Client Function() clientFactory;
-  Map<String, dynamic>? get rememberedConnection => _url == null
+  final SecretStore keyStore;
+  bool isDirect = false;
+  String? _directKey;
+  bool get preferDirect => true;
+  bool get keyRememberedOnDevice => keyStore.persistent;
+  Map<String, dynamic>? get rememberedConnection => !connected
       ? null
+      : isDirect
+      ? {
+          'mode': 'direct',
+          'model': model,
+          'quality': quality,
+          'analysisModel': analysisModel,
+        }
       : {
           'url': _url,
           'pairingCode': _pairingCode,
@@ -51,10 +47,38 @@ class AiService extends ChangeNotifier {
   List<String> imageQualities = const [];
   bool get supportsAnalysis => connected && analysisModel != null;
   int maxInputImages = 1;
-  bool get connected => _url != null;
+  bool get connected => isDirect ? _directKey != null : _url != null;
   String get relayUrl => _url ?? _preferredUrl;
 
   Future<void> restoreConnection(Map saved) async {
+    if (saved['mode'] == 'direct') {
+      isDirect = true;
+      try {
+        final key = await keyStore.read();
+        if (key == null || key.isEmpty) {
+          connectionNotice = 'Enter your OpenAI API key in Settings to reconnect over the internet.';
+        } else {
+          _directKey = key;
+          imageModels = directImageModels;
+          imageQualities = const ['low', 'medium', 'high'];
+          model = imageModels.contains(saved['model'])
+              ? saved['model'] as String
+              : imageModels.first;
+          quality = imageQualities.contains(saved['quality'])
+              ? saved['quality'] as String
+              : 'low';
+          analysisModel = saved['analysisModel'] is String
+              ? saved['analysisModel'] as String
+              : 'gpt-6-luna';
+          maxInputImages = 7;
+          connectionNotice = 'Saved API key loaded from device storage. Photos go directly to OpenAI over the internet after confirmation.';
+        }
+      } catch (_) {
+        connectionNotice = 'The device could not read the saved API key. Re-enter it in AI settings.';
+      }
+      notifyListeners();
+      return;
+    }
     final url = saved['url'];
     final code = saved['pairingCode'];
     if (url is! String || code is! String) return;
@@ -77,8 +101,61 @@ class AiService extends ChangeNotifier {
     notifyListeners();
   }
 
-  AiService({http.Client Function()? clientFactory})
-    : clientFactory = clientFactory ?? http.Client.new;
+  AiService({http.Client Function()? clientFactory, SecretStore? keyStore})
+    : clientFactory = clientFactory ?? http.Client.new,
+      keyStore = keyStore ?? createSecretStore();
+
+  Future<void> connectDirect({required String apiKey}) async {
+    if (activity.active) {
+      throw const AiFailure('Wait for the current AI request to finish.');
+    }
+    final key = apiKey.trim();
+    if (key.isEmpty ||
+        key.length > 1024 ||
+        RegExp(r'[\s\x00-\x1f]').hasMatch(key)) {
+      throw const AiFailure(
+        'Enter your OpenAI developer API key without spaces.',
+      );
+    }
+    final available = await OpenAiInternet(clientFactory).models(key);
+    final images = directImageModels.where(available.contains).toList();
+    if (images.isEmpty) {
+      throw const AiFailure(
+        'This key has no supported image model listed. Check image-model access in your OpenAI API account.',
+      );
+    }
+    try {
+      await keyStore.write(key);
+    } catch (_) {
+      throw const AiFailure(
+        'The API key could not be saved securely. No connection was changed.',
+      );
+    }
+    _directKey = key;
+    isDirect = true;
+    _url = null;
+    _pairingCode = null;
+    imageModels = images;
+    imageQualities = const ['low', 'medium', 'high'];
+    model = images.contains(model) ? model : images.first;
+    quality = imageQualities.contains(quality) ? quality : 'low';
+    analysisModel =
+        [
+          'gpt-6-luna',
+          'gpt-4.1-mini',
+          'gpt-4o-mini',
+        ].where(available.contains).firstOrNull ??
+        'gpt-6-luna';
+    maxInputImages = 7;
+    connectionNotice = 'Connected directly to OpenAI over HTTPS. The key check generated no image.';
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    activity.dispose();
+    super.dispose();
+  }
 
   static Uri localRelay(String value) {
     final uri = Uri.tryParse(value.trim());
@@ -121,6 +198,8 @@ class AiService extends ChangeNotifier {
         );
       }
       _url = uri.toString();
+      isDirect = false;
+      _directKey = null;
       _preferredUrl = _url!;
       connectionNotice = null;
       _pairingCode = pairingCode.trim();
@@ -154,7 +233,8 @@ class AiService extends ChangeNotifier {
     }
   }
 
-  void disconnect() {
+  Future<void> disconnect() async {
+    _directKey = null;
     _url = null;
     _pairingCode = null;
     model = null;
@@ -164,6 +244,13 @@ class AiService extends ChangeNotifier {
     imageQualities = const [];
     maxInputImages = 1;
     notifyListeners();
+    try {
+      await keyStore.delete();
+    } catch (_) {
+      throw const AiFailure(
+        'The device could not remove the stored key. Try Remove key again in Settings.',
+      );
+    }
   }
 
   void selectImageSettings({
@@ -174,7 +261,7 @@ class AiService extends ChangeNotifier {
         !imageModels.contains(imageModel) ||
         !imageQualities.contains(imageQuality)) {
       throw const AiFailure(
-        'Choose a model and quality offered by the connected relay.',
+        'Choose an available model and quality for this connection.',
       );
     }
     model = imageModel;
@@ -188,21 +275,22 @@ class AiService extends ChangeNotifier {
     List<Uint8List> supportingImages = const [],
     String? imageModel,
     String? imageQuality,
+    void Function(AiStage)? onProgress,
   }) async {
     if (!connected) {
-      throw const AiFailure('Connect your local AI relay in Settings first.');
+      throw const AiFailure('Connect AI in Settings first.');
     }
     final chosenModel = imageModel ?? model!;
     final chosenQuality = imageQuality ?? quality!;
     if (!imageModels.contains(chosenModel) ||
         !imageQualities.contains(chosenQuality)) {
       throw const AiFailure(
-        'Reconnect the relay and choose an available image model and quality.',
+        'Connect AI in Settings and choose an available image model and quality.',
       );
     }
     if (supportingImages.length + 1 > maxInputImages) {
       throw const AiFailure(
-        'Restart the updated local relay and reconnect to send multiple room views.',
+        'This connection cannot accept that many room views. Reduce the selected views or reconnect in Settings.',
       );
     }
     if ([
@@ -214,10 +302,30 @@ class AiService extends ChangeNotifier {
         'Selected room views exceed the 36 MB AI input limit. Use smaller photos or turn off other views.',
       );
     }
+    if (isDirect) {
+      return OpenAiInternet(clientFactory).edit(
+        key: _directKey!,
+        prompt: prompt,
+        model: chosenModel,
+        quality: chosenQuality,
+        sources: [image, ...supportingImages],
+        onProgress: onProgress,
+      );
+    }
     final uri = Uri.parse(_url!).resolve('/edit');
     final code = _pairingCode!;
     final client = clientFactory();
     try {
+      onProgress?.call(AiStage.preparing);
+      final body = jsonEncode({
+        'image': base64Encode(image),
+        'supportingImages': supportingImages.map(base64Encode).toList(),
+        'prompt': prompt,
+        'confirmed': true,
+        'model': chosenModel,
+        'quality': chosenQuality,
+      });
+      onProgress?.call(AiStage.waiting);
       final response = await client
           .post(
             uri,
@@ -225,16 +333,10 @@ class AiService extends ChangeNotifier {
               'Authorization': 'Bearer $code',
               'Content-Type': 'application/json',
             },
-            body: jsonEncode({
-              'image': base64Encode(image),
-              'supportingImages': supportingImages.map(base64Encode).toList(),
-              'prompt': prompt,
-              'confirmed': true,
-              'model': chosenModel,
-              'quality': chosenQuality,
-            }),
+            body: body,
           )
           .timeout(const Duration(seconds: 210));
+      onProgress?.call(AiStage.reading);
       final data = _readResponse(response);
       if (data['image'] is! String ||
           data['model'] is! String ||
@@ -271,10 +373,11 @@ class AiService extends ChangeNotifier {
     required Uint8List image,
     required String context,
     List<Uint8List> supportingImages = const [],
+    void Function(AiStage)? onProgress,
   }) async {
     if (!supportsAnalysis) {
       throw const AiFailure(
-        'Connect the updated local AI relay in Settings to analyse photos.',
+        'Connect an AI service with photo analysis in Settings first.',
       );
     }
     final inputs = [image, ...supportingImages];
@@ -287,8 +390,25 @@ class AiService extends ChangeNotifier {
         'Use up to seven photos (18 MB each, 36 MB combined) and shorter room instructions.',
       );
     }
+    if (isDirect) {
+      return OpenAiInternet(clientFactory).analyse(
+        key: _directKey!,
+        model: analysisModel!,
+        prompt: context,
+        sources: inputs,
+        onProgress: onProgress,
+      );
+    }
     final client = clientFactory();
     try {
+      onProgress?.call(AiStage.preparing);
+      final body = jsonEncode({
+        'image': base64Encode(image),
+        'supportingImages': supportingImages.map(base64Encode).toList(),
+        'prompt': context,
+        'confirmed': true,
+      });
+      onProgress?.call(AiStage.waiting);
       final response = await client
           .post(
             Uri.parse(_url!).resolve('/analyse'),
@@ -296,14 +416,10 @@ class AiService extends ChangeNotifier {
               'Authorization': 'Bearer $_pairingCode',
               'Content-Type': 'application/json',
             },
-            body: jsonEncode({
-              'image': base64Encode(image),
-              'supportingImages': supportingImages.map(base64Encode).toList(),
-              'prompt': context,
-              'confirmed': true,
-            }),
+            body: body,
           )
           .timeout(const Duration(seconds: 110));
+      onProgress?.call(AiStage.reading);
       final data = _readResponse(response);
       if (data['provider'] != 'OpenAI') throw const FormatException();
       try {

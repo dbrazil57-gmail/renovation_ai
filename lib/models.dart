@@ -47,6 +47,8 @@ class RenovationRoom {
   final String otherStyle;
   final bool preciseEdit;
   final bool keepLayout;
+  final int conceptCount;
+  final bool compareStyles;
   final RoomAnalysis? analysis;
   final String aiPrompt;
   final bool useAiPrompt;
@@ -78,6 +80,8 @@ class RenovationRoom {
     this.otherStyle = '',
     this.preciseEdit = false,
     this.keepLayout = true,
+    this.conceptCount = 1,
+    this.compareStyles = true,
     this.analysis,
     this.aiPrompt = '',
     this.useAiPrompt = false,
@@ -103,6 +107,8 @@ class RenovationRoom {
     String? otherStyle,
     bool? preciseEdit,
     bool? keepLayout,
+    int? conceptCount,
+    bool? compareStyles,
     RoomAnalysis? analysis,
     String? aiPrompt,
     bool? useAiPrompt,
@@ -123,6 +129,8 @@ class RenovationRoom {
     otherStyle: otherStyle ?? this.otherStyle,
     preciseEdit: preciseEdit ?? this.preciseEdit,
     keepLayout: keepLayout ?? this.keepLayout,
+    conceptCount: conceptCount ?? this.conceptCount,
+    compareStyles: compareStyles ?? this.compareStyles,
     analysis: analysis ?? this.analysis,
     aiPrompt: aiPrompt ?? this.aiPrompt,
     useAiPrompt: useAiPrompt ?? this.useAiPrompt,
@@ -155,6 +163,8 @@ class RenovationRoom {
     'otherStyle': otherStyle,
     'preciseEdit': preciseEdit,
     'keepLayout': keepLayout,
+    'conceptCount': conceptCount,
+    'compareStyles': compareStyles,
     'analysis': analysis?.toMap(),
     'aiPrompt': aiPrompt,
     'useAiPrompt': useAiPrompt,
@@ -195,6 +205,10 @@ class RenovationRoom {
         ? data['preciseEdit'] as bool
         : true,
     keepLayout: data['keepLayout'] is bool ? data['keepLayout'] as bool : true,
+    conceptCount: data['conceptCount'] is int
+        ? (data['conceptCount'] as int).clamp(1, 3)
+        : 1,
+    compareStyles: data['compareStyles'] != false,
     analysis: data['analysis'] is Map
         ? RoomAnalysis.fromMap(data['analysis'] as Map)
         : null,
@@ -225,6 +239,7 @@ class DesignVersion {
   final String? parentId;
   final bool favourite;
   final bool rejected;
+  final bool deleted;
   final DateTime created;
   final String? sourceImageId;
   final String? aiProvider;
@@ -241,6 +256,7 @@ class DesignVersion {
     required this.parentId,
     required this.favourite,
     required this.rejected,
+    this.deleted = false,
     required this.created,
     this.sourceImageId,
     this.aiProvider,
@@ -249,22 +265,24 @@ class DesignVersion {
     this.supportingImageIds = const [],
   });
 
-  DesignVersion copyWith({bool? favourite, bool? rejected}) => DesignVersion(
-    id: id,
-    roomId: roomId,
-    imageId: imageId,
-    title: title,
-    prompt: prompt,
-    parentId: parentId,
-    sourceImageId: sourceImageId,
-    aiProvider: aiProvider,
-    aiModel: aiModel,
-    providerRequestId: providerRequestId,
-    supportingImageIds: supportingImageIds,
-    favourite: favourite ?? this.favourite,
-    rejected: rejected ?? this.rejected,
-    created: created,
-  );
+  DesignVersion copyWith({bool? favourite, bool? rejected, bool? deleted}) =>
+      DesignVersion(
+        id: id,
+        roomId: roomId,
+        imageId: imageId,
+        title: title,
+        prompt: prompt,
+        parentId: parentId,
+        sourceImageId: sourceImageId,
+        aiProvider: aiProvider,
+        aiModel: aiModel,
+        providerRequestId: providerRequestId,
+        supportingImageIds: supportingImageIds,
+        favourite: favourite ?? this.favourite,
+        rejected: rejected ?? this.rejected,
+        deleted: deleted ?? this.deleted,
+        created: created,
+      );
 
   Map<String, dynamic> toMap() => {
     'id': id,
@@ -280,6 +298,7 @@ class DesignVersion {
     'supportingImageIds': supportingImageIds,
     'favourite': favourite,
     'rejected': rejected,
+    'deleted': deleted,
     'created': created.toIso8601String(),
   };
 
@@ -299,6 +318,7 @@ class DesignVersion {
     ),
     favourite: data['favourite'] == true,
     rejected: data['rejected'] == true,
+    deleted: data['deleted'] == true,
     created: DateTime.parse(data['created'].toString()),
   );
 }
@@ -375,7 +395,7 @@ $layout
 ${!preciseEdit && wholeRoomDirection ? 'WHOLE-ROOM DESIGN DIRECTION: Use the photographs to propose a coordinated renovation appropriate to this room. Consider flooring, wall finishes, cabinetry and work surfaces where present, suitable modern fittings/appliances, layered lighting, materials and restrained furniture/accessory styling. Remove everyday loose clutter such as freestanding bins and washing-up for the concept. Do not retain visibly dated finishes merely because they appear in the source photo. These are design suggestions to review, not measured construction advice. Explicit user instructions and KEEP choices override this direction. Preserve the agreed layout, useful storage, functional or uncertain equipment and the actual outside view. Ask before removing an uncertain fixed fitting; remove a wall telephone only when explicitly requested. Do not invent structural openings, hidden appliances or additional built-in elements.' : ''}
 $scope
 $itemPrompt
-${style.isEmpty ? '' : 'DESIGN STYLE: ${style.join(' + ')}. Blend the selected influences coherently. Style is guidance only; apply it within the requested scope and never at the expense of protected features.'}
+${style.isEmpty ? '' : styleDirection(designStyleIds, other: otherStyle)}
 ${paletteById(colourPaletteId)?.prompt(precise: preciseEdit) ?? ''}
 ${preciseEdit ? 'Keep unselected regions consistent. Do not silently remove items outside the target area. A marked-up reference or crop limits the intended change; it is not permission to redesign the rest of the room.' : 'Coordinate the requested changes across the room. Where new storage is requested, depict usable doors, panels and shelving appropriate to that request rather than blank decorative cladding. Do not silently remove items outside the requested renovation scope.'}
 Do not add extra windows, doors, walls, alcoves or furniture unless asked. Preserve useful existing storage unless its removal is explicitly requested. Resolve unclear instructions conservatively; ask about genuinely conflicting requirements rather than inventing a new brief.

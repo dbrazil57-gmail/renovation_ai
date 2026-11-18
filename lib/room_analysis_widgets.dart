@@ -5,6 +5,7 @@ import 'ai_widgets.dart';
 import 'room_analysis.dart';
 import 'room_draft.dart';
 import 'store.dart';
+import 'ai_activity.dart';
 
 class RoomAnalysisCard extends StatefulWidget {
   final RenovisionStore store;
@@ -45,12 +46,17 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
   }
 
   Future<void> _analyse() async {
-    if (busy || !widget.store.ai.supportsAnalysis) return;
+    if (busy ||
+        !widget.store.ai.supportsAnalysis ||
+        widget.store.ai.activity.active) {
+      return;
+    }
     setState(() {
       busy = true;
       message = null;
     });
     widget.onBusyChanged(true);
+    var activityStarted = false;
     try {
       final request = widget.buildRequest();
       final confirmed = await showDialog<bool>(
@@ -111,9 +117,23 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
         ),
       );
       if (confirmed != true || !mounted) return;
+      if (widget.store.ai.activity.active) return;
+      widget.store.ai.activity.begin(
+        roomId: request.roomId,
+        operation: 'Room analysis',
+      );
+      activityStarted = true;
+      await WidgetsBinding.instance.endOfFrame;
       // Save local preferences first. Never pay for a request when storage is
       // already known to be failing. Keep a received result in the draft on failure.
       if (!await widget.draft.save()) {
+        if (mounted) {
+          widget.store.ai.activity.update(
+            AiStage.failed,
+            detail:
+                'Local settings could not be saved. No AI request was sent.',
+          );
+        }
         if (mounted) {
           setState(
             () => message =
@@ -128,6 +148,9 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
         image: request.image,
         supportingImages: request.supportingImages.values.toList(),
         context: request.prompt,
+        onProgress: (stage) {
+          if (mounted) widget.store.ai.activity.update(stage);
+        },
       );
       if (!mounted) return;
       widget.draft.setAnalysis(
@@ -139,8 +162,14 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
           created: DateTime.now().toUtc(),
         ),
       );
+      widget.store.ai.activity.update(AiStage.saving);
+      await WidgetsBinding.instance.endOfFrame;
       final saved = await widget.draft.save();
       if (mounted) {
+        widget.store.ai.activity.update(
+          saved ? AiStage.completed : AiStage.saveFailed,
+          detail: saved ? '' : 'Analysis received. Keep this screen open and retry saving; this does not call AI again.',
+        );
         setState(
           () => message = saved
               ? 'Analysis saved. Review the observations and prompt before using it.'
@@ -148,9 +177,18 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
         );
       }
     } on AiFailure catch (error) {
+      if (activityStarted && mounted) {
+        widget.store.ai.activity.update(AiStage.failed, detail: error.message);
+      }
       if (mounted) setState(() => message = error.message);
     } catch (_) {
       if (mounted) {
+        if (activityStarted) {
+          widget.store.ai.activity.update(
+            AiStage.failed,
+            detail: 'Analysis did not finish. No automatic retry was sent. Check usage before analysing again.',
+          );
+        }
         setState(
           () => message = 'Analysis could not finish. Previous results are retained. No automatic retry was made; check provider usage before trying again.',
         );
@@ -170,7 +208,11 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
   Widget build(BuildContext context) {
     super.build(context);
     return ListenableBuilder(
-      listenable: Listenable.merge([widget.store.ai, widget.draft]),
+      listenable: Listenable.merge([
+        widget.store.ai,
+        widget.draft,
+        widget.store.ai.activity,
+      ]),
       builder: (context, _) {
         final analysis = widget.draft.analysis;
         final matches = current;
@@ -196,7 +238,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                   const SizedBox(height: 6),
                   Text(
                     widget.store.ai.connected
-                        ? 'Restart the updated relay and reconnect to enable photo analysis.'
+                        ? 'Reconnect AI in Settings to enable photo analysis.'
                         : 'Photo analysis needs an AI connection with developer API access. Uploading alone does not contact AI.',
                   ),
                   TextButton(
@@ -227,6 +269,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                 FilledButton.icon(
                   onPressed:
                       busy ||
+                          widget.store.ai.activity.active ||
                           !widget.store.ai.supportsAnalysis ||
                           widget.draft.state == DraftSaveState.failed
                       ? null
@@ -254,11 +297,20 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                   ),
                 if (widget.draft.state == DraftSaveState.failed)
                   TextButton(
-                    onPressed: busy
+                    onPressed: busy || widget.store.ai.activity.active
                         ? null
                         : () async {
+                            widget.store.ai.activity.begin(
+                              roomId: widget.draft.roomId,
+                              operation: 'Room analysis',
+                            );
+                            widget.store.ai.activity.update(AiStage.saving);
                             final saved = await widget.draft.save();
                             if (mounted) {
+                              widget.store.ai.activity.update(
+                                saved ? AiStage.completed : AiStage.saveFailed,
+                                detail: saved ? '' : 'Local saving still failed. No new AI request was sent.',
+                              );
                               setState(
                                 () => message = saved
                                     ? 'Analysis and room preferences saved locally.'
@@ -268,6 +320,35 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                           },
                     child: const Text('Retry saving analysis'),
                   ),
+                if (analysis != null &&
+                    matches &&
+                    !widget.draft.preciseEdit) ...[
+                  const SizedBox(height: 14),
+                  Text(
+                    'Choose your redesign options',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  SegmentedButton<int>(
+                    segments: const [
+                      ButtonSegment(value: 1, label: Text('1 design')),
+                      ButtonSegment(value: 2, label: Text('2 ideas')),
+                      ButtonSegment(value: 3, label: Text('3 ideas')),
+                    ],
+                    selected: {widget.draft.conceptCount},
+                    onSelectionChanged:
+                        busy ||
+                            widget.store.ai.activity.active ||
+                            widget.draft.state == DraftSaveState.failed
+                        ? null
+                        : (values) =>
+                              widget.draft.setConceptCount(values.first),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Review the brief below, then generate your options. Each image is a separate paid request. Choose a result with Use this design, then refine it. Selecting a count does not generate images.',
+                  ),
+                ],
                 if (analysis != null)
                   ExpansionTile(
                     initiallyExpanded: true,

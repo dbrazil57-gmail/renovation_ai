@@ -1,6 +1,5 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
@@ -148,7 +147,7 @@ void main() {
         ),
       ),
     );
-    await tester.tap(find.text('Add room photos'));
+    await tester.tap(find.text('Choose photos'));
     await tester.pumpAndSettle();
     expect(store.roomById(room.id)!.photoIds, hasLength(3));
     expect(find.text('Room photos (3/6)'), findsOneWidget);
@@ -162,4 +161,126 @@ void main() {
     expect(store.roomById(room.id)!.originalId, room.originalId);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('phone camera appends a saved original without opening gallery', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    var cameraCalls = 0;
+    var galleryCalls = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: ListenableBuilder(
+              listenable: store,
+              builder: (context, _) => RoomPhotosCard(
+                store: store,
+                room: store.roomById(room.id)!,
+                selectedPhotoId: room.originalId,
+                onView: (_) {},
+                includeContext: true,
+                onContextChanged: (_) {},
+                takePhoto: (remaining) async {
+                  cameraCalls++;
+                  expect(remaining, 5);
+                  return [image];
+                },
+                pickPhotos: (_) async {
+                  galleryCalls++;
+                  return null;
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Take photo'));
+    await tester.pumpAndSettle();
+    expect(cameraCalls, 1);
+    expect(galleryCalls, 0);
+    final saved = store.roomById(room.id)!;
+    expect(saved.photoIds, hasLength(2));
+    expect(saved.originalId, room.originalId);
+    expect(store.imageFor(saved.photoIds.last), orderedEquals(image));
+    final reopened = RenovisionStore(records: records, photos: photos);
+    expect(reopened.roomById(room.id)!.photoIds, saved.photoIds);
+    reopened.dispose();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('cancelled or failed phone capture preserves existing photos', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    var shouldFail = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: RoomPhotosCard(
+            store: store,
+            room: room,
+            selectedPhotoId: room.originalId,
+            onView: (_) {},
+            includeContext: false,
+            onContextChanged: null,
+            takePhoto: (_) async {
+              if (shouldFail) throw StateError('Camera unavailable');
+              return null;
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Take photo'));
+    await tester.pumpAndSettle();
+    expect(store.roomById(room.id)!.photoIds, [room.originalId]);
+    shouldFail = true;
+    await tester.tap(find.text('Take photo'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Photos could not be added. Existing photos are unchanged.'),
+      findsOneWidget,
+    );
+    expect(store.roomById(room.id)!.photoIds, [room.originalId]);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'phone source chooser offers camera and gallery without a request',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      bool? source;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () async =>
+                    source = await chooseRoomPhotoSource(context),
+                child: const Text('Add photos'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Add photos'));
+      await tester.pumpAndSettle();
+      expect(find.text('Take photo'), findsOneWidget);
+      expect(find.text('Choose photos'), findsOneWidget);
+      await tester.tap(find.text('Take photo'));
+      await tester.pumpAndSettle();
+      expect(source, isTrue);
+      await tester.tap(find.text('Add photos'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Choose photos'));
+      await tester.pumpAndSettle();
+      expect(source, isFalse);
+      expect(store.roomById(room.id)!.photoIds, [room.originalId]);
+    },
+  );
 }

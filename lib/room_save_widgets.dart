@@ -8,6 +8,7 @@ import 'project_backup.dart';
 import 'project_transfer_widgets.dart';
 import 'room_draft.dart';
 import 'store.dart';
+import 'context_help.dart';
 
 class RoomSaveControls extends StatefulWidget {
   final RenovisionStore store;
@@ -171,7 +172,15 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
           children: [
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Autosave'),
+              title: const Row(
+                children: [
+                  Expanded(child: Text('Autosave')),
+                  HelpIcon(
+                    title: 'Autosave',
+                    message: 'Autosave writes edits to this device after a short pause. Leaving a room also saves pending edits, even when Autosave is off. Save project creates a portable project file; opening a file reconnects its save destination. A running AI request or received result must finish saving before leaving.',
+                  ),
+                ],
+              ),
               subtitle: Text(
                 widget.draft.autosaveEnabled
                     ? 'On · saves edits after a short pause'
@@ -182,10 +191,6 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
               value: widget.draft.autosaveEnabled,
               onChanged: busy ? null : _toggle,
             ),
-            if (!widget.autosaveOnly)
-              const Text(
-                'Save on exit: on. Leaving this room saves pending edits, even with Autosave off.',
-              ),
             const SizedBox(height: 8),
             Semantics(liveRegion: true, child: Text(widget.draft.status)),
             if (widget.aiPending)

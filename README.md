@@ -3,7 +3,8 @@
 An existing Flutter renovation app with project/room creation, local Hive storage,
 photo import, zoom/pan, non-destructive crop/markup, imported design versions,
 approved baselines, favourites and before/after comparison. Optional in-app
-OpenAI editing uses a private local relay; manual AI handoff remains available.
+OpenAI analysis and editing can use your personal API key directly over HTTPS,
+without a laptop. The local relay remains optional; manual AI handoff is available.
 There is no production backend or payment integration.
 
 Existing local projects now open on Projects with a saved-room Continue card.
@@ -16,7 +17,7 @@ Explore now includes six labelled sample rooms with room/style filters, plus
 a separate chooser for all 19 styles and 12 colour palettes. The room picker
 offers 42 home/utility/outdoor space types with search and category filters.
 Choose a sample to start a room using your own photos and its style/palette,
-or use Projects > Import room photo for the new visual room picker. Samples do
+or use a project's Take photo / Choose photos actions for the room picker. Samples do
 not populate your saved projects automatically.
 
 Connected AI can now analyse room photos before generation: visible features,
@@ -61,7 +62,14 @@ be entered as an API key.
 Android phones are the target product. Chrome is a temporary preview of the same
 Flutter workflows; browser rendering is not Android device validation. Keep
 camera, file access, app lifecycle and AI transport behind platform boundaries.
-The PC relay is development infrastructure, not the final phone backend.
+For independent phone testing, open **Settings > AI connection and models**,
+disconnect an existing laptop relay connection, select **Internet API**, enter
+your OpenAI API key privately, and choose **Connect OpenAI over internet**.
+This checks available models without generating an image. Analysis and generation
+then use the internet directly. Android encrypts the saved key using Android
+Keystore; exported project files never contain it. Chrome keeps a direct key in
+memory for that session only. This is personal-key testing, not a shared key
+embedded in a distributed app. The optional PC relay is development infrastructure.
 
 1. Install Git for Windows, the Flutter SDK, VS Code Flutter extension and Chrome or Edge.
 2. Open the existing project in VS Code. Run:

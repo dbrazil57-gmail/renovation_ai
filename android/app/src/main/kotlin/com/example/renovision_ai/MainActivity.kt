@@ -13,6 +13,23 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        val vault = KeyVault(applicationContext)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "renovision/secrets")
+            .setMethodCallHandler { call, result ->
+                try {
+                    when (call.method) {
+                        "readOpenAiKey" -> result.success(vault.read())
+                        "writeOpenAiKey" -> {
+                            vault.write(call.argument<String>("key") ?: error("Missing key"))
+                            result.success(null)
+                        }
+                        "deleteOpenAiKey" -> { vault.delete(); result.success(null) }
+                        else -> result.notImplemented()
+                    }
+                } catch (_: Exception) {
+                    result.error("secure_storage", "The device could not access the saved API key. Re-enter it or try removing it in Settings.", null)
+                }
+            }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "renovision/files")
             .setMethodCallHandler { call, result ->
                 if (call.method != "save" && call.method != "openBackup") {

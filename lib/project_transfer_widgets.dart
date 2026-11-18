@@ -9,6 +9,35 @@ import 'file_transfer.dart';
 import 'models.dart';
 import 'project_backup.dart';
 import 'store.dart';
+import 'context_help.dart';
+
+Future<void> showProjectSaveDialog(
+  BuildContext context, {
+  required RenovisionStore store,
+  required String projectId,
+  Future<bool> Function()? beforeSave,
+}) => showDialog<void>(
+  context: context,
+  builder: (dialogContext) => AlertDialog(
+    title: const Text('Save project file'),
+    content: SizedBox(
+      width: 520,
+      child: SingleChildScrollView(
+        child: ProjectFileControls(
+          store: store,
+          projectId: projectId,
+          beforeSave: beforeSave,
+        ),
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(dialogContext),
+        child: const Text('Close'),
+      ),
+    ],
+  ),
+);
 
 String exportName(String title) {
   final cleaned = title
@@ -167,15 +196,17 @@ class _ProjectBackupCardState extends State<ProjectBackupCard> {
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: 10),
-              Text(
-                'Keep a copy of this project',
-                style: Theme.of(context).textTheme.titleMedium,
+              Expanded(
+                child: Text(
+                  'Keep a copy of this project',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              const HelpIcon(
+                title: 'Project backup',
+                message: 'Includes original photos, every saved version, instructions, favourites and approved baselines. Keep the backup private; it contains your photos and their original metadata.',
               ),
             ],
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Includes original photos, every saved version, instructions, favourites and approved baselines. Keep the backup private; it contains your photos and their original metadata.',
           ),
           const SizedBox(height: 12),
           FilledButton.tonalIcon(
@@ -352,12 +383,11 @@ class _ProjectFileControlsState extends State<ProjectFileControls> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Project file',
+            HelpHeading(
+              title: 'Project file',
               style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const Text(
-              'One file contains all rooms, original photos, designs and their saved instructions and choices. Keep it private. AI connection credentials are stored separately on this device.',
+              message:
+                  'One file contains all rooms, original photos, designs and their saved instructions and choices. Keep it private. AI connection credentials are stored separately on this device.\n\n${kIsWeb ? 'Chrome can update a file you choose while it is open here. After restarting the app, use Open project to reconnect that file. Other browsers may download a separate copy.' : 'App-local autosave keeps your work on this device. Save project writes a complete file using the system chooser; Open project loads a saved file.'}',
             ),
             const SizedBox(height: 10),
             Wrap(
@@ -382,17 +412,31 @@ class _ProjectFileControlsState extends State<ProjectFileControls> {
             Semantics(
               liveRegion: true,
               child: Text(
-                error ?? widget.store.documents.status(widget.projectId),
+                error ??
+                    compactProjectFileStatus(
+                      widget.store.documents.status(widget.projectId),
+                    ),
               ),
-            ),
-            Text(
-              kIsWeb
-                  ? 'Chrome can update a file you choose while it is open here. After restarting the app, use Open project to reconnect that file. Other browsers may download a separate copy.'
-                  : 'App-local autosave keeps your work on this device. Use Save project to save a complete file with the system chooser, and Open project to load a saved file.',
             ),
           ],
         ),
       ),
     ),
   );
+}
+
+String compactProjectFileStatus(String status) {
+  if (status ==
+      'Saved on this device. Save a project file to keep a portable copy.') {
+    return 'Saved on this device.';
+  }
+  if (status ==
+      'Project file saved. App-local autosave continues; use Save project to choose a destination for the next file copy.') {
+    return 'Project file saved.';
+  }
+  if (status ==
+      'Project file opened. Save updates this file during this session.') {
+    return 'Project file opened.';
+  }
+  return status; // Keep errors, pending changes and action-required feedback visible.
 }

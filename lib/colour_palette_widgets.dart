@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:material_ui/material_ui.dart';
 
+import 'context_help.dart';
+
 import 'design_palettes.dart';
 import 'models.dart';
 import 'store.dart';
@@ -357,6 +359,10 @@ class _RoomColourPaletteCardState extends State<RoomColourPaletteCard> {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),
+                const HelpIcon(
+                  title: 'Colour palette',
+                  message: 'Swipe or scroll sideways to see more palettes, or open Change palette for the full chooser. Colours guide copied and in-app AI prompts. They are visual references, not exact paint or material matches. Changing a palette affects the next design request; existing photos and approved designs stay unchanged.',
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -367,10 +373,6 @@ class _RoomColourPaletteCardState extends State<RoomColourPaletteCard> {
                       : 'Saved palette is unavailable'),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Choose a palette below. Scroll sideways for more colours, or open the full chooser.',
-            ),
-            const SizedBox(height: 10),
             AbsorbPointer(
               absorbing: busy,
               child: ColourPalettePicker(
@@ -379,10 +381,6 @@ class _RoomColourPaletteCardState extends State<RoomColourPaletteCard> {
                 horizontal: true,
                 scrollController: paletteScroll,
               ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Used as colour guidance in copied and in-app AI prompts. Changing this choice does not alter existing photos or approved designs.',
             ),
             const SizedBox(height: 10),
             OutlinedButton.icon(

@@ -20,6 +20,45 @@ const designStyles = <String, String>{
   'hotel': 'Boutique hotel',
 };
 
+const styleDesignCues = <String, String>{
+  'modern': 'clean contemporary lines, streamlined cabinetry and fittings, restrained detailing and integrated lighting',
+  'classic': 'balanced proportions, refined framed or panelled detailing where appropriate, timeless fittings and elegant layered finishes',
+  'minimalist':
+      'simple forms, visually quiet surfaces and discreet usable storage',
+  'scandinavian': 'pale natural timber, light neutral finishes and practical understated forms',
+  'coastal': 'light airy finishes, relaxed natural textures and gentle seaside-inspired tones',
+  'hamptons': 'light panelled cabinetry, tailored traditional details and relaxed coastal finishes',
+  'industrial': 'metal accents, robust tactile materials and purposeful utilitarian detailing',
+  'rustic': 'warm timber, tactile natural surfaces and restrained handcrafted character',
+  'japandi': 'warm minimalism, natural timber and quiet balanced detailing',
+  'mid_century':
+      'warm timber, simple geometric detailing and restrained retro accents',
+  'art_deco':
+      'refined geometric accents, rich contrast and elegant metal detailing',
+  'mediterranean':
+      'warm earthy finishes, natural texture and relaxed sunlit character',
+  'farmhouse': 'practical panelled joinery, warm natural materials and relaxed traditional detailing',
+  'cottage': 'comfortable small-scale traditional details and gently textured finishes',
+  'french_provincial': 'refined traditional joinery and muted natural finishes',
+  'bohemian': 'layered natural textures, personal decorative accents and relaxed coordination',
+  'eclectic': 'a deliberate balance of contrasting periods, textures and personal accents',
+  'transitional':
+      'clean contemporary forms balanced with restrained classic detailing',
+  'hotel': 'coordinated polished finishes, considered lighting and restrained luxurious accents',
+};
+
+String styleDirection(Iterable<String> ids, {String other = ''}) {
+  final styles = canonicalStyleIds(ids)
+      .where(designStyles.containsKey)
+      .toList();
+  final names = [
+    for (final id in styles) designStyles[id]!,
+    if (other.trim().isNotEmpty) other.trim(),
+  ];
+  if (names.isEmpty) return '';
+  return 'DESIGN STYLE: ${names.join(' + ')}. ${styles.length > 1 ? 'Blend these influences into one coherent design, rather than treating each as a separate output.' : 'Make this style visible in the unprotected finishes and details.'} Protected features and explicit Keep choices take priority.\nSTYLE DETAILS: ${styles.map((id) => styleDesignCues[id]).join('; ')}. Apply these cues only within the requested scope and palette; do not retain an outdated look simply because it appears in the working image.';
+}
+
 // Read legacy selections without rewriting existing room records or history.
 String canonicalStyleId(String id) => id == 'contemporary' ? 'modern' : id;
 List<String> canonicalStyleIds(Iterable<String> ids) =>

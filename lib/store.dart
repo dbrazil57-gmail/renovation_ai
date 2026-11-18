@@ -149,12 +149,23 @@ class RenovisionStore extends ChangeNotifier {
           .toList()
         ..sort((a, b) => b.created.compareTo(a.created));
 
-  List<DesignVersion> get allDesigns =>
+  List<DesignVersion> get _storedDesigns =>
       records.keys
           .where((key) => key.toString().startsWith('design:'))
           .map((key) => DesignVersion.fromMap(records.get(key) as Map))
           .toList()
         ..sort((a, b) => b.created.compareTo(a.created));
+
+  List<DesignVersion> get allDesigns =>
+      _storedDesigns.where((d) => !d.deleted).toList();
+
+  List<DesignVersion> deletedDesignsFor(String roomId) =>
+      _storedDesigns.where((d) => d.roomId == roomId && d.deleted).toList();
+
+  bool isDesignDeleted(String id) {
+    final value = records.get('design:$id');
+    return value is! Map || value['deleted'] == true;
+  }
 
   List<DesignVersion> designsFor(String roomId) =>
       allDesigns.where((d) => d.roomId == roomId).toList();
@@ -205,7 +216,7 @@ class RenovisionStore extends ChangeNotifier {
     if (raw is! Map) throw const BackupFailure('Project is unavailable.');
     final rooms = roomsFor(projectId);
     final roomIds = rooms.map((room) => room.id).toSet();
-    final designs = allDesigns
+    final designs = _storedDesigns
         .where((design) => roomIds.contains(design.roomId))
         .toList();
     final ids = <String>{
@@ -435,6 +446,8 @@ class RenovisionStore extends ChangeNotifier {
     required String otherStyle,
     required bool preciseEdit,
     required bool keepLayout,
+    int? conceptCount,
+    bool? compareStyles,
     RoomAnalysis? analysis,
     String? aiPrompt,
     bool? useAiPrompt,
@@ -455,6 +468,8 @@ class RenovisionStore extends ChangeNotifier {
         otherStyle: otherStyle,
         preciseEdit: preciseEdit,
         keepLayout: keepLayout,
+        conceptCount: conceptCount,
+        compareStyles: compareStyles,
         analysis: analysis,
         aiPrompt: aiPrompt,
         useAiPrompt: useAiPrompt,
@@ -574,10 +589,57 @@ class RenovisionStore extends ChangeNotifier {
   }
 
   Future<void> rateDesign(DesignVersion design, {required bool keep}) async {
+    final value = records.get('design:${design.id}');
+    if (value is! Map || value['deleted'] == true) {
+      throw const DesignChangeFailure(
+        'Restore this deleted design before reviewing it.',
+      );
+    }
     await records.put(
       'design:${design.id}',
-      design.copyWith(favourite: keep, rejected: !keep).toMap(),
+      DesignVersion.fromMap(value)
+          .copyWith(favourite: keep, rejected: !keep)
+          .toMap(),
     );
+    notifyListeners();
+  }
+
+  Future<void> trashDesign(String id) async {
+    if (ai.activity.active) {
+      throw const DesignChangeFailure(
+        'Wait for the current AI request to finish before deleting designs.',
+      );
+    }
+    final value = records.get('design:$id');
+    if (value is! Map) {
+      throw const DesignChangeFailure('This design is no longer available.');
+    }
+    final design = DesignVersion.fromMap(value);
+    final room = roomById(design.roomId);
+    if (room == null || room.photoIds.contains(design.imageId)) {
+      throw const DesignChangeFailure(
+        'Original room photos cannot be deleted here.',
+      );
+    }
+    if (room.approvedDesignId == id) {
+      throw const DesignChangeFailure(
+        'This is the approved baseline. Approve the original or another design before deleting it.',
+      );
+    }
+    if (design.deleted) return;
+    // Keep image bytes and ancestry: refinements/analysis may still reference them.
+    await records.put('design:$id', design.copyWith(deleted: true).toMap());
+    notifyListeners();
+  }
+
+  Future<void> restoreDesign(String id) async {
+    final value = records.get('design:$id');
+    if (value is! Map) {
+      throw const DesignChangeFailure('This deleted design is unavailable.');
+    }
+    final design = DesignVersion.fromMap(value);
+    if (!design.deleted) return;
+    await records.put('design:$id', design.copyWith(deleted: false).toMap());
     notifyListeners();
   }
 
@@ -616,7 +678,9 @@ class RenovisionStore extends ChangeNotifier {
       final value = records.get('design:$designId');
       if (value is! Map) throw StateError('Design no longer exists.');
       final design = DesignVersion.fromMap(value);
-      if (design.roomId != roomId || imageFor(design.imageId) == null) {
+      if (design.deleted ||
+          design.roomId != roomId ||
+          imageFor(design.imageId) == null) {
         throw StateError('Choose an available design from this room.');
       }
     }
@@ -627,4 +691,11 @@ class RenovisionStore extends ChangeNotifier {
       ),
     );
   }
+}
+
+class DesignChangeFailure implements Exception {
+  final String message;
+  const DesignChangeFailure(this.message);
+  @override
+  String toString() => message;
 }

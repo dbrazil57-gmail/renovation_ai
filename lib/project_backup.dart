@@ -132,11 +132,18 @@ class ProjectBackup {
                 (room['setupStep'] as int) > 3)) {
           throw const FormatException();
         }
+        if (room['conceptCount'] != null &&
+            (room['conceptCount'] is! int ||
+                (room['conceptCount'] as int) < 1 ||
+                (room['conceptCount'] as int) > 3)) {
+          throw const FormatException();
+        }
         for (final field in [
           'preciseEdit',
           'keepLayout',
           'useAiPrompt',
           'setupComplete',
+          'compareStyles',
         ]) {
           if (room[field] != null && room[field] is! bool) {
             throw const FormatException();
@@ -164,7 +171,9 @@ class ProjectBackup {
         ]) {
           _optionalText(design[field]);
         }
-        if (design['favourite'] is! bool || design['rejected'] is! bool) {
+        if (design['favourite'] is! bool ||
+            design['rejected'] is! bool ||
+            (design['deleted'] != null && design['deleted'] is! bool)) {
           throw const FormatException();
         }
       }
@@ -201,7 +210,8 @@ class ProjectBackup {
           throw const BackupFailure('Backup has an incomplete AI prompt.');
         }
         if (room.approvedDesignId != null &&
-            byDesign[room.approvedDesignId]?.roomId != room.id) {
+            (byDesign[room.approvedDesignId]?.roomId != room.id ||
+                byDesign[room.approvedDesignId]?.deleted == true)) {
           throw const BackupFailure('Backup has an invalid approved baseline.');
         }
       }

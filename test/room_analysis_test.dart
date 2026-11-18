@@ -143,6 +143,32 @@ void main() {
   }
 
   testWidgets(
+    'redesign choices appear after analysis and persist without generating',
+    (tester) async {
+      final draft = draftForTest();
+      await showCard(tester, draft);
+      expect(find.text('Choose your redesign options'), findsNothing);
+      await analyse(tester);
+      final choices = find.text('3 ideas');
+      await tester.ensureVisible(choices);
+      await tester.tap(choices);
+      await tester.pump(const Duration(milliseconds: 700));
+      expect(draft.conceptCount, 3);
+      expect(store.roomById(room.id)!.conceptCount, 3);
+      expect(analyses, 1);
+      expect(edits, 0);
+      expect(store.designsFor(room.id), isEmpty);
+      expect(find.text('Choose your redesign options'), findsOneWidget);
+      draft.changes.text = 'Different brief';
+      await tester.pumpAndSettle();
+      expect(find.text('Choose your redesign options'), findsNothing);
+      await tester.pumpWidget(const SizedBox());
+      await draft.save();
+      draft.dispose();
+    },
+  );
+
+  testWidgets(
     'upload has explicit unanalysed state; cancelling analysis sends nothing',
     (tester) async {
       final draft = draftForTest();
@@ -195,6 +221,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 700));
       final use = find.text('Use this AI prompt for the next design');
       await tester.ensureVisible(use);
+      await tester.pumpAndSettle();
       await tester.tap(use);
       await tester.pump(const Duration(milliseconds: 700));
       expect(
@@ -434,6 +461,7 @@ void main() {
       await tester.pumpAndSettle();
       final use = find.text('Use this AI prompt for the next design');
       await tester.ensureVisible(use);
+      await tester.pumpAndSettle();
       await tester.tap(use);
       await tester.pump(const Duration(milliseconds: 700));
       final generation = find.text('AI generation (optional)');

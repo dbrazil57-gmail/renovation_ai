@@ -1,7 +1,305 @@
 # Renovision next steps
 
-Updated 16 November 2026 (Australia/Sydney). Keep this as the single current work
+Updated 18 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
+
+## Current regroup: finish the core experience before adding features
+
+After-analysis redesign choices (source only, after 1.0.7): current whole-room
+analysis now shows 1 design / 2 ideas / 3 ideas, using the existing saved count.
+Setup continues with Choose redesign options; generation buttons show multiple
+output counts. Review the AI brief before the existing paid confirmation, then
+select a generated result with Use this design and refine from that version.
+Choosing a count must not issue an AI request or stale the analysis. No new APK
+requested in this batch; build only on the next explicit request.
+Validation: static analysis clean; all 176 tests pass. New coverage verifies
+count saving, no generation on selection and unchanged analysis freshness;
+existing confirmation, prompt use and multi-concept generation tests also pass.
+
+Latest requested APK: 1.0.7+8 / source `fa1e8d0319`, built in 75.3 seconds at
+`output/mobile-test/renovision-test-1.0.7.apk` and the existing latest alias.
+All 175 tests pass; static analysis clean. APK metadata verified and signing
+certificate matches 1.0.6, preserving update compatibility without uninstalling.
+Phone test next: open an existing saved project; take a new-room photo; add
+another camera angle in Room photos; choose multiple existing photos; cancel
+camera/gallery; restart and verify saved photos/settings. Direct AI generation
+remains a separate user-authorised paid test. Existing user data was not cleared.
+The HOMLY/Forma compact redesign and live-camera renovation are not in this APK.
+Only build subsequent APKs on another explicit request.
+
+Latest reference choice, 18 November: HOMLY is the user's functional/workflow
+reference; Forma is the styling reference (exact links and access limitations in
+`docs/PRODUCT_NOTES.md`). Combine these with the previously requested compact
+Planner 5D-inspired room/fine-tuning workflow. Target warm cream/taupe, charcoal
+text, earthy accents and large room imagery. Prominent camera/gallery entry,
+compact active control sections, selected-design refinement and nearby versions
+are Renovision's adaptation, not verified HOMLY animation details. Exact HOMLY
+motion still needs visual inspection before matching interactions. Preserve
+projects/data and existing contextual toolbar. Do not add budget/shop/contractor
+scope from the inspiration. This is the selected design specification, not a
+completed app redesign; no APK should be built until explicitly requested.
+
+Chosen visual/workspace direction — user feedback, 18 November: use Planner 5D's
+room-design presentation as inspiration, especially visual room choices and
+fine-tuning beside the result. Prefer one workspace with little page scrolling.
+Desktop target: large image/before-after canvas with a compact side panel and
+version thumbnails nearby; remove the centred long-form workspace constraint.
+Phone target: keep the image visible above a compact tabbed/expandable control
+area; accommodate keyboard and large text without clipping or nested scrolling.
+Organise controls as Room/photos, Style/colours, Refine and Versions; show only
+the active section, preserving drafts and in-flight jobs when switching.
+Keep capture/gallery entry obvious and retain a place for Camera Renovation View.
+Refine must use the selected saved design with a new instruction and retain its
+parent/history; do not merely append edits to the original-room brief. Keep paid
+request review, error feedback and real progress visible. Reuse the existing
+42 room types; visual examples must not imply every type has a real sample photo.
+This records the selected direction; the compact workspace is not implemented.
+
+Phone camera/gallery batch, 18 November (source only): make Take photo and Choose
+photos explicit on project entry; add camera capture to Room photos in setup and
+the workspace, preserving native gallery multi-select. Sample starts now offer
+source selection. Validate camera success/cancel/failure, local persistence and
+existing workflow before declaring ready. No APK requested or built. Physical
+S21 follow-up: capture a new room, add another camera angle, select gallery photos,
+cancel each picker and restart to confirm images/settings remain. Android activity
+destruction while the external picker is open still needs recovery work/testing.
+All 175 automated tests passed; camera/gallery routing, cancelled/failed capture
+and local-store reopening are covered without accessing a real camera or AI.
+
+Camera Renovation View priority — user clarification, 18 November: the key new
+experience is an embedded camera view, explicitly capture/generate from that
+view, then reveal the saved redesign with a before/after slider or opacity
+overlay and save/refine it. Prioritise a same-view camera prototype ahead of
+optional skins. The existing camera path only launches still capture; this new
+preview is not implemented. First milestone: smooth camera preview, explicit
+capture and paid generation with visible progress, frozen-frame comparison,
+immutable source/result saving and reopening. Next: manual return-to-view
+alignment with a clearly labelled approximate overlay. A static generated image
+cannot remain geometrically correct while walking around; tracked surfaces and
+consistent moving-camera whole-room rendering require separate AR research.
+Do not imply instantaneous generation, automatically send video/paid requests,
+or build an APK without an explicit request. See the camera workflow in
+`docs/PRODUCT_NOTES.md` for acceptance criteria and limits.
+
+Visual review, 18 November: three isolated interface previews (Warm Studio,
+Image Workspace, Editorial Home) are in ignored `output/design-review/`.
+Warm Studio is the recommended direction, with Image Workspace's selected-design
+refinement. Review this direction before broad Flutter layout changes; details
+and research links are in `docs/PRODUCT_NOTES.md`. Private phone testing is ready;
+public release still needs the acceptance/recovery/distribution work listed below.
+User preference: only build another APK on an explicit request. This batch changes
+research notes and previews only; no app code or project data changed.
+
+Contextual toolbar batch: version 1.0.6+7, source `3ffefb376a`. A shared toolbar
+defines icon meanings and ordering; each screen supplies only applicable actions.
+Save/setup/editing controls precede Settings, Rename, Finish later and Help.
+Narrow screens show up to three direct actions, with extras in More tools in
+the same order; desktop shows more actions directly. Project screens add Save
+and Settings beside Rename. Guided setup adds Save/Settings/Finish later, saving
+draft edits before settings navigation. Crop/markup add Save/Undo/Redo/Reset;
+image viewing retains zoom/fit only, and comparison adds Reset/Help. Root Settings
+does not show a redundant Settings action. Titles truncate safely on phones.
+Existing body controls remain available and share existing save/edit handlers.
+All 172 tests passed and static analysis is clean, including toolbar order,
+phone overflow/disabled actions, actual toolbar project-file saving, preserved
+setup edits, editor Undo and comparison reset. No paid calls made; physical S21
+visual/navigation acceptance remains a user check.
+Universal release APK built in 61.1s at
+`output/mobile-test/renovision-test-1.0.6.apk`, also the latest
+`renovision-test.apk`. Signature verified against 1.0.5, with unchanged package
+and signing identity and version code 7. Install as an update without uninstalling;
+prior APKs, projects, images and device connection settings are retained.
+
+Compact help UI: version 1.0.5+6, source `7944f6f4ea`. Repeated explanations on
+Project file/backup, palettes, design styles, workspace, AI instructions/generation,
+manual handoff, version history and autosave now sit behind labelled info icons.
+Hover reveals a tooltip on desktop; tap or keyboard activation opens a scrollable
+readable panel on phones/desktop. Project file shows its Save buttons and short
+success status. Errors, pending/action-required statuses, AI progress and paid-
+request consent remain visible. First-step room-photo guidance is unchanged.
+No storage/model/provider behaviour changed. All 166 tests passed, including
+hover, keyboard, large-text phone layout, unchanged saving/Autosave on help taps
+and preserved first-step guidance. No paid calls made. S21 visual review remains
+a user check.
+Universal 1.0.5 APK built in 395.4s at
+`output/mobile-test/renovision-test-1.0.5.apk`, also the latest
+`renovision-test.apk`. Static analysis clean; signature matches 1.0.4, with
+unchanged package identity and version code 6 for an in-place update. Prior APKs,
+projects, images and connection settings are retained.
+
+Design deletion batch: version 1.0.4+5, source `55b1bf7204`. Delete controls now
+exist on generated results, Explore, favourites and the version-history menu.
+Confirmation moves a design to Deleted designs, removing it from active lists;
+Undo and per-room Restore recover the same ID, bytes, metadata and favourite
+status. The selected deleted version falls back to the approved baseline/original.
+Original room photos and approved baselines are protected; choose another baseline
+before deleting the current approved one. Active AI requests block deletion.
+This is recoverable deletion: records/images remain in project storage and
+portable files so child versions and saved analyses keep valid source/parent
+references. Permanent purge is future work. Old project files default to active
+designs. All 160 tests passed and static analysis is clean, including cancelled
+confirmation, Undo, restart, storage failures, selected-image fallback and backup
+round trips with deleted parents/analysis sources. No paid calls made; physical
+S21 deletion/restore checks remain manual.
+Universal release APK built in 59.0s at
+`output/mobile-test/renovision-test-1.0.4.apk`, also copied to the latest
+`renovision-test.apk`. Signature verified against 1.0.3: same package/signing
+identity and higher version code 5, ready for in-place installation. Prior APKs
+and local user data are preserved.
+
+Multiple-concept/style batch: version 1.0.3+4, source `a198a37712`. Style chips
+intentionally support blending several influences into one design. Help text
+now makes this and the need to Generate again explicit; concrete style cues
+strengthen the prompt, with protections/scope/palette taking priority. Fresh
+whole-room attempts request a different interpretation and rotate design focus;
+precision prompts remain narrow. AI visual variation is not guaranteed.
+Multiple design ideas offers one confirmation covering 2 or 3 sequential paid
+requests from the same frozen working image/settings. Compare styles
+separately creates one selected style per concept; with two styles/three outputs,
+the third is a blend. Each result saves immediately as a sibling version with
+its actual prompt/source/provider metadata. The gallery supports full-screen
+viewing and Use this design; it does not approve a baseline. Stop after this
+image prevents later requests. Provider/local-save failures retain earlier
+results and stop the batch; retry-saving sends no provider request. Exact-byte
+duplicate outputs are flagged without automatic paid replacements. Saved room
+batch preferences survive portable project export/import; old files default to
+one result. All 152 tests passed and static analysis is clean. No paid calls were
+made by the agent. Real S21 style adherence/variety remains a user test.
+Universal APK built in 58.5s at `output/mobile-test/renovision-test-1.0.3.apk`
+(also copied to `renovision-test.apk`). Signature verified against 1.0.2, same
+package/signing identity and higher version code 4. Install as an update without
+uninstalling. Earlier APKs and all project/image data are retained.
+
+Crop/markup batch: version 1.0.2+3, source `e7b7ed2e66`. Crop has eight draggable
+corner/edge handles, inside-drag movement and bounds/minimum-size protection.
+Sketch adds pen, line, arrow, rectangle, ellipse, text notes, six colours and
+three widths. Multiple marks can coexist; Select / move supports repositioning,
+recolouring, width changes, note editing and whole-mark removal. Undo/redo covers
+these changes and clearing marks. Short touch drags are recognised within the
+canvas. Original photos remain unchanged. Crop processing uses a native isolate;
+markup preview/export share one renderer, with full-resolution metadata-free PNG
+output. Markup is editable only in the current editor session, then flattened
+into the saved reference; persistent editable layers remain future work.
+All 143 regression tests passed and static analysis is clean, including crop
+resize/move/tap retention and phone-width multi-colour shapes/notes/undo/export.
+Physical S21 gesture and visual checks remain a user test. No paid API calls made.
+Universal release APK built in 98.4s at
+`output/mobile-test/renovision-test-1.0.2.apk`, also copied to the latest
+`renovision-test.apk`. Package identity is unchanged; version code increased to
+3. Signature verified against 1.0.1: the same signing identity supports an
+in-place update. Earlier APK copies and all local project data are preserved.
+
+Phone image-viewer batch (version 1.0.1+2, source `4d0ef665b2`): user installed
+the first APK on a Samsung S21 after resolving a Company Portal installation
+restriction. Generated images now have a tappable full-screen preview, both in
+guided setup and beside the generation controls. Working images, Explore ideas,
+version thumbnails and favourites also open the shared viewer. Pinch/pan,
+double-tap zoom, zoom buttons and fit-to-screen use the full image bytes; the
+viewer adapts to portrait/landscape and refits after a size change. It honours
+Android Auto rotate rather than changing device orientation policy. Viewing
+does not edit images, approve baselines or call AI. All 140 tests passed and
+static analysis is clean; physical S21 viewing/rotation remains a user check.
+The gallery regression test now scrolls to Save idea in the expanded layout.
+Install the new APK over the current app to retain data and the device key.
+Release universal APK built in 67.3s at
+`output/mobile-test/renovision-test-1.0.1.apk` (also the latest
+`renovision-test.apk`). Signature verified against version 1.0.0: same signing
+identity, package and higher version code 2. Previous APK retained locally.
+The emulator stopped responding to read-only UI inspection, so no new native
+visual acceptance is claimed and its projects were not changed. Phone viewing
+and Auto rotate are the next manual checks; no paid requests were made.
+
+18 November direct internet API batch: Android now supports a personal OpenAI
+key with direct HTTPS requests for analysis and image generation. No Windows
+relay, adb reverse or tunnel is needed in Internet API mode. Settings provides
+the mode selector, obscured key field, model check and key removal. Android
+stores only encrypted key ciphertext, backed by Android Keystore; this secret
+is excluded from Android backup/device transfer and project exports. Chrome
+keeps direct keys in session memory only. Saved Android direct settings restore
+from the vault without a startup provider call. The optional relay still works.
+Full regression suite: 135 tests passed, including six mocked direct-API tests.
+Real key/billing/output verification remains a user test; no paid calls made.
+Android build `9d222d5de2` installed successfully with an in-place update. The
+existing saved project remains visible and the Internet API key form was checked
+on the emulator, including the Android keyboard. No adb reverse is configured.
+Web compilation passed and the matching preview is served at the unchanged
+http://localhost:7357 address. Static analysis: no issues.
+This supersedes relay-required instructions in the earlier batch notes below.
+
+Physical-phone handoff: user reports the direct internet API test worked.
+Prepared `output/mobile-test/renovision-test.apk`, source build `9d222d5de2`:
+release mode, universal Android processors, existing development signing key.
+Build succeeded in 142.4s and APK signature verification passed. This is a private
+sideload test package, not a Play Store release. Copy it to the phone and install;
+copy a saved project separately and enter the API key on that device. Physical
+phone installation, lifecycle, camera and generation checks remain user tests.
+
+18 November resume after PC reboot: AI activity feedback is now implemented.
+An elapsed timer and actual preparing/waiting/reading/saving/complete/error
+stages remain visible in a fixed strip in room workspaces and guided setup.
+There is no invented percentage. Activity notifications are separate from AI
+connection settings, so clock ticks do not rewrite credentials. Saving failures
+retain the received result; retry-saving updates activity without another paid
+request. Full suite: 129 tests passed; final static analysis checked separately.
+
+Previous progress-batch source/Chrome/Android build: `a793f4c30b`. Chrome restored at the same
+http://localhost:7357 address. The existing Android AVD was cold-booted without
+wiping data; the copied project file survived. Updated x86-64 debug APK built in
+103.7s, installed with `adb install -r`, and launched successfully. Native first
+screen, Projects and system Open project picker were observed; a saved room
+workspace was subsequently visible. Controlled full import/restart/camera/keyboard
+checks remain incomplete because emulator navigation changed during automation;
+avoid conflicting with the user testing it. A development adb reverse tunnel maps
+phone localhost:8787 to the Windows relay. The relay itself stopped at PC reboot
+and must be restarted with its key entered privately for real AI requests. No
+provider requests were made by these checks. Screenshots/logs remain ignored.
+
+Working: projects/rooms/photos, guided setup, style/palette/protections, OpenAI
+analysis and generation, saved versions/comparison, local autosave/reload and
+portable Open/Save project files. The user has produced successful live designs.
+
+Priority order:
+1. Visible AI activity (implemented in this batch; user visual verification next): real elapsed time, honest request/preparation/wait/save
+   stages, last update and clear timeout/error outcomes. Keep activity visible
+   while scrolling. Do not invent a percentage or retry a possibly billed request
+   automatically. Prompt assembly, remote analysis and image generation must be
+   distinguished; current service timeouts are 110s/210s, not expected durations.
+2. Finish Android emulator validation: updated debug x86-64 package `a793f4c30b`
+   is installed and launched, and a saved room workspace was observed. A copied
+   project is in emulator Downloads. Native navigation and picker presentation
+   work; complete controlled import/save/restart, keyboard, camera/permissions and
+   real-device checks without interfering with the user operating the emulator.
+   Do not call full Android acceptance complete.
+3. Implement the discussed Refine this design panel: selected result + new
+   instruction + Keep everything else, with parent/version history intact.
+4. Make active AI/prepared brief and stale inputs obvious; distinguish keeping
+   architecture from furniture placement during room-purpose conversion.
+5. Improve responsive workspace: wider image/compare pane on desktop, compact
+   controls and versions nearby, stacked touch layout on Android.
+
+Before release: persistent Android document updates, camera/permissions/lifecycle
+tests on a real device, robust interrupted-job recovery and a distribution/account
+strategy (personal keys or a managed service). Extra providers, AR and payments are later work. Git history still
+contains two private output files; clean that history before publishing it.
+Private SDK/build diagnostics remain ignored; no paid AI calls were made by the
+agent during emulator setup. No source-project photos or browser data cleared.
+
+Older entries below are historical batch notes; this section sets current order.
+
+Workspace/prompt review follow-up: desktop pages currently use a centred 950px
+Flutter ListView, not an HTML iframe. Plan a responsive image-led workspace:
+large image/compare area with a compact controls panel on wide screens; stacked
+touch controls on phones. Keep one shared Flutter implementation. Avoid making
+the design workspace depend on scrolling through every setup control.
+
+Prompt priorities from the read-only saved-project review: add the discussed
+Refine this design panel using the selected result plus a new-change instruction;
+clearly display whether a reviewed AI brief or prepared local brief is active;
+show which inputs made analysis stale; distinguish preserving architecture from
+preserving furniture positions during a room-purpose conversion; specify window
+trim/divisions and outside-view protection more clearly. Keep personal review
+photos, exported prompts and metadata only in ignored output folders. No paid
+AI requests or source-project modifications were made during the review.
 
 Manual-copy clarification: removed the ChatGPT/Gemini dropdown because both
 choices copied the identical prepared prompt and only changed the toast. There

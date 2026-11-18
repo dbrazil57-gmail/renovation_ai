@@ -1,13 +1,59 @@
-import 'dart:typed_data';
-
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'models.dart';
 import 'store.dart';
 
-Future<List<Uint8List>?> selectRoomPhotos({required int remaining}) async {
-  final files = await ImagePicker().pickMultiImage();
+bool get supportsRoomCamera =>
+    !kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS);
+
+Future<bool?> chooseRoomPhotoSource(BuildContext context) => showDialog<bool>(
+  context: context,
+  builder: (dialogContext) => SimpleDialog(
+    title: const Text('Add room photos'),
+    children: [
+      if (supportsRoomCamera)
+        SimpleDialogOption(
+          onPressed: () => Navigator.pop(dialogContext, true),
+          child: const ListTile(
+            leading: Icon(Icons.camera_alt_outlined),
+            title: Text('Take photo'),
+            subtitle: Text('Use your phone camera'),
+          ),
+        ),
+      SimpleDialogOption(
+        onPressed: () => Navigator.pop(dialogContext, false),
+        child: const ListTile(
+          leading: Icon(Icons.photo_library_outlined),
+          title: Text('Choose photos'),
+          subtitle: Text('Select existing photos from your device'),
+        ),
+      ),
+      SimpleDialogOption(
+        onPressed: () => Navigator.pop(dialogContext),
+        child: const Text('Cancel'),
+      ),
+    ],
+  ),
+);
+
+Future<List<Uint8List>?> selectRoomPhotos({
+  required int remaining,
+  bool camera = false,
+}) async {
+  if (remaining <= 0) {
+    throw ArgumentError('This room already has 6 photos.');
+  }
+  final picker = ImagePicker();
+  final captured = camera
+      ? await picker.pickImage(source: ImageSource.camera)
+      : null;
+  final files = camera
+      ? (captured == null ? <XFile>[] : [captured])
+      : await picker.pickMultiImage();
   if (files.isEmpty) return null;
   if (files.length > remaining) {
     throw ArgumentError(
@@ -36,6 +82,7 @@ class RoomPhotosCard extends StatefulWidget {
   final bool includeContext;
   final ValueChanged<bool>? onContextChanged;
   final Future<List<Uint8List>?> Function(int remaining)? pickPhotos;
+  final Future<List<Uint8List>?> Function(int remaining)? takePhoto;
   const RoomPhotosCard({
     super.key,
     required this.store,
@@ -45,6 +92,7 @@ class RoomPhotosCard extends StatefulWidget {
     required this.includeContext,
     required this.onContextChanged,
     this.pickPhotos,
+    this.takePhoto,
   });
   @override
   State<RoomPhotosCard> createState() => _RoomPhotosCardState();
@@ -53,7 +101,7 @@ class RoomPhotosCard extends StatefulWidget {
 class _RoomPhotosCardState extends State<RoomPhotosCard> {
   bool busy = false;
   String? message;
-  Future<void> _add() async {
+  Future<void> _add({bool camera = false}) async {
     setState(() {
       busy = true;
       message = null;
@@ -62,8 +110,10 @@ class _RoomPhotosCardState extends State<RoomPhotosCard> {
       final remaining =
           RenovisionStore.maxRoomPhotos - widget.room.photoIds.length;
       final images =
-          await (widget.pickPhotos?.call(remaining) ??
-              selectRoomPhotos(remaining: remaining));
+          await ((camera ? widget.takePhoto : widget.pickPhotos)?.call(
+                remaining,
+              ) ??
+              selectRoomPhotos(remaining: remaining, camera: camera));
       if (images == null) return;
       await widget.store.addRoomPhotos(widget.room.id, images);
       if (mounted) {
@@ -161,14 +211,32 @@ class _RoomPhotosCardState extends State<RoomPhotosCard> {
                 ),
             ],
           ),
-          OutlinedButton.icon(
-            onPressed:
-                busy ||
-                    widget.room.photoIds.length >= RenovisionStore.maxRoomPhotos
-                ? null
-                : _add,
-            icon: const Icon(Icons.add_photo_alternate_outlined),
-            label: Text(busy ? 'Saving photos…' : 'Add room photos'),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (supportsRoomCamera)
+                OutlinedButton.icon(
+                  onPressed:
+                      busy ||
+                          widget.room.photoIds.length >=
+                              RenovisionStore.maxRoomPhotos
+                      ? null
+                      : () => _add(camera: true),
+                  icon: const Icon(Icons.camera_alt_outlined),
+                  label: const Text('Take photo'),
+                ),
+              OutlinedButton.icon(
+                onPressed:
+                    busy ||
+                        widget.room.photoIds.length >=
+                            RenovisionStore.maxRoomPhotos
+                    ? null
+                    : () => _add(),
+                icon: const Icon(Icons.photo_library_outlined),
+                label: Text(busy ? 'Saving photos…' : 'Choose photos'),
+              ),
+            ],
           ),
           if (widget.room.photoIds.length > 1 &&
               widget.onContextChanged != null)
