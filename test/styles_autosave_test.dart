@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -174,19 +176,20 @@ void main() {
     );
     await tester.pumpAndSettle();
     final modern = find.widgetWithText(FilterChip, 'Modern / Contemporary');
-    await tester.scrollUntilVisible(
+    await revealFocusControl(
+      tester,
       modern,
       350,
       scrollable: find.byType(Scrollable).first,
     );
     await tester.pumpAndSettle();
-    await tester.ensureVisible(modern);
+    await ensureFocusVisible(tester, modern);
     await tester.tap(modern);
     final other = find.widgetWithText(
       TextField,
       'Other style / extra direction',
     );
-    await tester.ensureVisible(other);
+    await ensureFocusVisible(tester, other);
     await tester.enterText(
       other,
       'Warm charcoal and walnut, practical storage',
@@ -225,7 +228,8 @@ void main() {
     await tester.tap(find.text('Open room'));
     await tester.pumpAndSettle();
     final changes = find.widgetWithText(TextField, 'What should change?');
-    await tester.scrollUntilVisible(
+    await revealFocusControl(
+      tester,
       changes,
       350,
       scrollable: find.byType(Scrollable).first,

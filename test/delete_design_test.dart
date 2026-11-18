@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -235,11 +237,15 @@ void main() {
       );
       await tester.pumpAndSettle();
       final menu = find.byTooltip('Review options for Option A');
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         menu,
         400,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.pumpAndSettle();
+      await ensureFocusVisible(tester, menu);
+      await tester.pumpAndSettle();
       await tester.tap(menu);
       await tester.pumpAndSettle();
       await tester.tap(find.text('Delete design'));
@@ -252,7 +258,8 @@ void main() {
             w is DropdownButtonFormField<String> &&
             w.decoration.labelText == 'Working from',
       );
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         selector,
         -400,
         scrollable: find.byType(Scrollable).first,

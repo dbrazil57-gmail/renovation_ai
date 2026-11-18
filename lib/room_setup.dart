@@ -18,6 +18,7 @@ import 'store.dart';
 import 'image_viewer.dart';
 import 'design_delete_widgets.dart';
 import 'screen_toolbar.dart';
+import 'room_save_widgets.dart';
 
 class RoomSetupScreen extends StatefulWidget {
   final RenovisionStore store;
@@ -268,6 +269,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                       label: 'Room settings',
                       onPressed: busy ? null : openSettings,
                     ),
+                  autosaveMenuTool(context, widget.store, enabled: !busy),
                   ScreenTool(
                     ScreenAction.finishLater,
                     label: 'Finish later',

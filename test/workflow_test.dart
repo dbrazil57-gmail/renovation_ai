@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -47,7 +49,8 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(
+    await revealFocusControl(
+      tester,
       find.text('Working from the approved baseline.'),
       350,
       scrollable: find.byType(Scrollable).first,
@@ -63,6 +66,7 @@ void main() {
     await tester.pumpWidget(RenovisionApp(store: store));
     await tester.tap(find.text('Projects'));
     await tester.pumpAndSettle();
+    await revealFocusControl(tester, find.text('Create project'), 250);
     await tester.tap(find.text('Create project'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Claylands');
@@ -87,7 +91,7 @@ void main() {
     await tester.pumpWidget(RenovisionApp(store: store));
     await tester.tap(find.text('Explore'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Save idea'));
+    await ensureFocusVisible(tester, find.text('Save idea'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Save idea'));
     await tester.pumpAndSettle();
@@ -120,7 +124,8 @@ void main() {
             widget is DropdownButtonFormField<String> &&
             widget.decoration.labelText == 'Working from',
       );
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         workingImage,
         350,
         scrollable: find.byType(Scrollable).first,
@@ -131,13 +136,14 @@ void main() {
       );
       expect(selector.initialValue, approved.id);
       expect(find.text('Working from the approved baseline.'), findsOneWidget);
-      await tester.ensureVisible(workingImage);
+      await ensureFocusVisible(tester, workingImage);
       await tester.pumpAndSettle();
       await tester.tap(workingImage);
       await tester.pumpAndSettle();
       await tester.tap(find.textContaining('Original photograph').last);
       await tester.pumpAndSettle();
       expect(store.roomById(room.id)!.approvedDesignId, approved.id);
+      await ensureFocusVisible(tester, find.text('Approve as baseline'));
       await tester.tap(find.text('Approve as baseline'));
       await tester.pumpAndSettle();
       expect(store.roomById(room.id)!.approvedDesignId, isNull);
@@ -163,13 +169,14 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.byTooltip('Remove favourite'),
         400,
         scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.byTooltip('Remove favourite'));
+      await ensureFocusVisible(tester, find.byTooltip('Remove favourite'));
       await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Remove favourite'));
       await tester.pumpAndSettle();

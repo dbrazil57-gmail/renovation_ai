@@ -7,9 +7,12 @@ OpenAI analysis and editing can use your personal API key directly over HTTPS,
 without a laptop. The local relay remains optional; manual AI handoff is available.
 There is no production backend or payment integration.
 
-Existing local projects now open on Projects with a saved-room Continue card.
-On a design page, use the Settings gear for saving/export and AI setup; only
-Autosave and save status remain on the page. Global Settings includes project
+The selected Focus Canvas design is included in test APK **1.0.9+10**:
+a camera-first Projects home and a workspace with a persistent image/version
+strip and Room, Style, Refine and Ideas controls. Desktop uses a split layout.
+Saved projects retain their Continue shortcut. Use the Settings gear for
+saving/export and AI setup. Autosave is in More tools; compact save status stays
+visible. Global Settings includes project
 backup and Restore project backup. External backup files must be selected;
 the app does not automatically read files from Downloads.
 
@@ -41,6 +44,17 @@ project file. A restarted relay may need its new connection code.
 ## Project documents
 
 Keep day-to-day work in these four files; add new topics to an existing document.
+
+Folder cleanup completed 19 November 2026. App source, assets, tests, platform
+folders, local settings and recovered projects were retained. Generated build
+caches and disposable preview tooling were removed; Flutter recreates caches
+when needed. APK 1.0.9 and rollback APK 1.0.8 remain in `output/mobile-test/`.
+Selected design boards and actual UI captures remain in `output/design-review/`.
+Private photo reviews remain in `output/project-review-current/` and `output/imagegen/`.
+The `.dart_tool/chrome-device/` profile was preserved. Older disposable/uncertain
+preview profiles were archived in `.local_backups/browser-preview-history/`;
+source and original-document backups remain in `.local_backups/`. These private
+and generated directories remain excluded by `.gitignore`.
 
 - **README.md**: running the app and finding instructions.
 - [Project brief](RENOVISION_PROJECT_BRIEF.md): product requirements.

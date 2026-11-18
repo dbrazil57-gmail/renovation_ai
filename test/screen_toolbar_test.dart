@@ -33,7 +33,106 @@ class ToolbarFiles implements AppFiles {
   }
 }
 
+class FailAutosaveRecords extends MemoryBox {
+  bool failAutosave = false;
+  @override
+  Future<void> put(dynamic key, dynamic value) async {
+    if (failAutosave && key == 'settings:saving') {
+      throw StateError('Saving preference failed');
+    }
+    await super.put(key, value);
+  }
+}
+
 void main() {
+  for (final width in [390.0, 1000.0]) {
+    testWidgets('Autosave stays in the menu and persists at width $width', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(Size(width, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final records = MemoryBox();
+      final photos = MemoryBox();
+      final store = RenovisionStore(records: records, photos: photos);
+      addTearDown(store.dispose);
+      final project = await store.createProject('Home');
+      final room = await store.createRoom(
+        projectId: project.id,
+        name: 'Kitchen',
+        originalImage: img.encodePng(img.Image(width: 40, height: 30)),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WorkspaceScreen(store: store, roomId: room.id),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Autosave'), findsNothing);
+      expect(find.textContaining('Autosave on ·'), findsOneWidget);
+      await tester.tap(find.byTooltip('More tools'));
+      await tester.pumpAndSettle();
+      final autosave = find.byWidgetPredicate(
+        (widget) =>
+            widget is CheckedPopupMenuItem<ScreenAction> &&
+            widget.value == ScreenAction.autosave,
+      );
+      expect(
+        tester.widget<CheckedPopupMenuItem<ScreenAction>>(autosave).checked,
+        isTrue,
+      );
+      await tester.tap(find.text('Autosave'));
+      await tester.pumpAndSettle();
+      expect(store.autosaveEnabled, isFalse);
+      expect(find.textContaining('Autosave off ·'), findsOneWidget);
+      final reopened = RenovisionStore(records: records, photos: photos);
+      expect(reopened.autosaveEnabled, isFalse);
+      reopened.dispose();
+      await tester.tap(find.byTooltip('More tools'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<CheckedPopupMenuItem<ScreenAction>>(autosave).checked,
+        isFalse,
+      );
+      await tester.tap(find.text('Autosave'));
+      await tester.pumpAndSettle();
+      expect(store.autosaveEnabled, isTrue);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('failed Autosave menu change retains the old preference', (
+    tester,
+  ) async {
+    final records = FailAutosaveRecords();
+    final store = RenovisionStore(records: records, photos: MemoryBox());
+    addTearDown(store.dispose);
+    final project = await store.createProject('Home');
+    final room = await store.createRoom(
+      projectId: project.id,
+      name: 'Kitchen',
+      originalImage: img.encodePng(img.Image(width: 40, height: 30)),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        home: WorkspaceScreen(store: store, roomId: room.id),
+      ),
+    );
+    await tester.pumpAndSettle();
+    records.failAutosave = true;
+    await tester.tap(find.byTooltip('More tools'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Autosave'));
+    await tester.pumpAndSettle();
+    expect(store.autosaveEnabled, isTrue);
+    expect(
+      find.text(
+        'Could not change Autosave. Its previous setting is still active.',
+      ),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'shared order stays consistent when irrelevant tools are omitted',
     (tester) async {

@@ -9,6 +9,35 @@ import 'project_transfer_widgets.dart';
 import 'room_draft.dart';
 import 'store.dart';
 import 'context_help.dart';
+import 'screen_toolbar.dart';
+
+ScreenTool autosaveMenuTool(
+  BuildContext context,
+  RenovisionStore store, {
+  bool enabled = true,
+}) => ScreenTool(
+  ScreenAction.autosave,
+  label: 'Autosave',
+  menuOnly: true,
+  checked: store.autosaveEnabled,
+  onPressed: !enabled
+      ? null
+      : () async {
+          try {
+            await store.setAutosaveEnabled(!store.autosaveEnabled);
+          } catch (_) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Could not change Autosave. Its previous setting is still active.',
+                  ),
+                ),
+              );
+            }
+          }
+        },
+);
 
 class RoomSaveControls extends StatefulWidget {
   final RenovisionStore store;
@@ -164,91 +193,117 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: widget.draft,
-    builder: (context, _) => Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    builder: (context, _) {
+      if (widget.autosaveOnly) {
+        return Wrap(
+          spacing: 6,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Row(
-                children: [
-                  Expanded(child: Text('Autosave')),
-                  HelpIcon(
-                    title: 'Autosave',
-                    message: 'Autosave writes edits to this device after a short pause. Leaving a room also saves pending edits, even when Autosave is off. Save project creates a portable project file; opening a file reconnects its save destination. A running AI request or received result must finish saving before leaving.',
-                  ),
-                ],
+            const Icon(Icons.save_outlined, size: 16),
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                'Autosave ${widget.draft.autosaveEnabled ? 'on' : 'off'} · ${widget.draft.status}',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
-              subtitle: Text(
-                widget.draft.autosaveEnabled
-                    ? 'On · saves edits after a short pause'
-                    : widget.autosaveOnly
-                    ? 'Off · use Save now in room Settings'
-                    : 'Off · use Save now while editing',
-              ),
-              value: widget.draft.autosaveEnabled,
-              onChanged: busy ? null : _toggle,
             ),
-            const SizedBox(height: 8),
-            Semantics(liveRegion: true, child: Text(widget.draft.status)),
+            const HelpIcon(
+              title: 'Autosave',
+              message: 'Use More tools at the top right to turn Autosave on or off. Pending edits still save when leaving a room. Save now and project-file options are in Room settings.',
+            ),
             if (widget.aiPending)
               const Text(
-                'AI work or a received result is pending. Finish it or retry saving its result before leaving or making a copy.',
-              ),
-            const SizedBox(height: 8),
-            if (!widget.autosaveOnly)
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  FilledButton.icon(
-                    onPressed: busy || widget.aiPending ? null : _saveNow,
-                    icon: const Icon(Icons.save_outlined),
-                    label: Text(busy ? 'Saving…' : 'Save now'),
-                  ),
-                  OutlinedButton(
-                    onPressed: busy || widget.aiPending
-                        ? null
-                        : widget.saveAndClose,
-                    child: const Text('Save and close'),
-                  ),
-                  PopupMenuButton<String>(
-                    enabled: !busy && !widget.aiPending,
-                    onSelected: _saveAs,
-                    tooltip: 'Save as options',
-                    itemBuilder: (_) => [
-                      const PopupMenuItem(
-                        value: 'copy',
-                        child: Text('New project copy…'),
-                      ),
-                      PopupMenuItem(
-                        value: 'image',
-                        enabled: widget.store.files.supported,
-                        child: const Text('Image file…'),
-                      ),
-                      PopupMenuItem(
-                        value: 'backup',
-                        enabled: widget.store.files.supported,
-                        child: const Text('Project backup file…'),
-                      ),
-                    ],
-                    child: const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Text('Save as…'),
-                    ),
-                  ),
-                ],
-              ),
-            if (message != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(message!),
+                'AI work is pending. Keep this room open until its result is saved.',
               ),
           ],
+        );
+      }
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Row(
+                  children: [
+                    Expanded(child: Text('Autosave')),
+                    HelpIcon(
+                      title: 'Autosave',
+                      message: 'Autosave writes edits to this device after a short pause. Leaving a room also saves pending edits, even when Autosave is off. Save project creates a portable project file; opening a file reconnects its save destination. A running AI request or received result must finish saving before leaving.',
+                    ),
+                  ],
+                ),
+                subtitle: Text(
+                  widget.draft.autosaveEnabled
+                      ? 'On · saves edits after a short pause'
+                      : widget.autosaveOnly
+                      ? 'Off · use Save now in room Settings'
+                      : 'Off · use Save now while editing',
+                ),
+                value: widget.draft.autosaveEnabled,
+                onChanged: busy ? null : _toggle,
+              ),
+              const SizedBox(height: 8),
+              Semantics(liveRegion: true, child: Text(widget.draft.status)),
+              if (widget.aiPending)
+                const Text(
+                  'AI work or a received result is pending. Finish it or retry saving its result before leaving or making a copy.',
+                ),
+              const SizedBox(height: 8),
+              if (!widget.autosaveOnly)
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: busy || widget.aiPending ? null : _saveNow,
+                      icon: const Icon(Icons.save_outlined),
+                      label: Text(busy ? 'Saving…' : 'Save now'),
+                    ),
+                    OutlinedButton(
+                      onPressed: busy || widget.aiPending
+                          ? null
+                          : widget.saveAndClose,
+                      child: const Text('Save and close'),
+                    ),
+                    PopupMenuButton<String>(
+                      enabled: !busy && !widget.aiPending,
+                      onSelected: _saveAs,
+                      tooltip: 'Save as options',
+                      itemBuilder: (_) => [
+                        const PopupMenuItem(
+                          value: 'copy',
+                          child: Text('New project copy…'),
+                        ),
+                        PopupMenuItem(
+                          value: 'image',
+                          enabled: widget.store.files.supported,
+                          child: const Text('Image file…'),
+                        ),
+                        PopupMenuItem(
+                          value: 'backup',
+                          enabled: widget.store.files.supported,
+                          child: const Text('Project backup file…'),
+                        ),
+                      ],
+                      child: const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: Text('Save as…'),
+                      ),
+                    ),
+                  ],
+                ),
+              if (message != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(message!),
+                ),
+            ],
+          ),
         ),
-      ),
-    ),
+      );
+    },
   );
 }

@@ -105,6 +105,44 @@ void main() {
     );
   });
 
+  test(
+    'multiple options specify distinct major schemes within protections',
+    () {
+      final plans = planDesignConcepts(
+        prompt:
+            'Keep layout and windows. Replace cabinetry, floors and lights.',
+        precise: false,
+        count: 3,
+        styleIds: ['modern'],
+        compareStyles: false,
+      );
+      expect(plans.map((plan) => plan.label), [
+        'Clean & architectural',
+        'Warm & tactile',
+        'Bold & sculptural',
+      ]);
+      for (final (index, plan) in plans.indexed) {
+        expect(plan.prompt, contains('Render ONLY option ${index + 1}'));
+        expect(plan.prompt, contains('at least three'));
+        expect(plan.prompt, contains('Adding plants, ornaments, cushions'));
+        expect(plan.prompt, contains('not images you have already seen'));
+        expect(plan.prompt, contains('Only change elements authorised'));
+        expect(plan.prompt, contains('Keep layout and windows'));
+        for (final other in plans) {
+          expect(plan.prompt, contains(other.label));
+        }
+      }
+      final single = planDesignConcepts(
+        prompt: 'Keep the approved design; refresh lighting.',
+        precise: false,
+        count: 1,
+        styleIds: ['modern'],
+        compareStyles: false,
+      ).single;
+      expect(single.prompt, isNot(contains('DISTINCT REDESIGN OPTIONS')));
+    },
+  );
+
   late RenovisionStore store;
   late ConceptRecords records;
   late RenovationRoom room;

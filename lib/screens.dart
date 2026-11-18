@@ -28,6 +28,8 @@ import 'design_delete_widgets.dart';
 import 'context_help.dart';
 import 'image_viewer.dart';
 import 'screen_toolbar.dart';
+import 'focus_workspace.dart';
+import 'room_features.dart';
 
 Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
     room.setupComplete
@@ -49,6 +51,7 @@ Future<void> startRoomWithPhotos(
   RenovationProject? project,
   RoomStarter? starter,
   bool? camera,
+  String? initialRoomTypeId,
 }) async {
   try {
     String? newProjectName;
@@ -62,7 +65,10 @@ Future<void> startRoomWithPhotos(
     }
     final choice = await showDialog<RoomStartChoice>(
       context: context,
-      builder: (_) => RoomStartDialog(starter: starter),
+      builder: (_) => RoomStartDialog(
+        starter: starter,
+        initialRoomTypeId: initialRoomTypeId,
+      ),
     );
     if (choice == null || !context.mounted) return;
     final useCamera = camera ?? await chooseRoomPhotoSource(context);
@@ -251,7 +257,7 @@ class _AppShellState extends State<AppShell> {
   @override
   void initState() {
     super.initState();
-    selected = widget.store.projects.isEmpty ? 0 : 1;
+    selected = 1;
   }
 
   @override
@@ -287,7 +293,8 @@ class _AppShellState extends State<AppShell> {
               child: Center(
                 child: Text(
                   'PROTOTYPE',
-                  style: Theme.of(context).textTheme.labelSmall,
+                  style: Theme.of(context).textTheme.labelSmall
+                      ?.copyWith(color: Colors.white70),
                 ),
               ),
             ),
@@ -394,51 +401,129 @@ class EmptyMessage extends StatelessWidget {
 class ProjectsTab extends StatelessWidget {
   final RenovisionStore store;
   const ProjectsTab({super.key, required this.store});
+
+  Future<void> _start(
+    BuildContext context, {
+    bool? camera,
+    String? roomType,
+  }) async {
+    RenovationProject? project;
+    if (store.projects.length == 1) {
+      project = store.projects.single;
+    } else if (store.projects.length > 1) {
+      final id = await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => SimpleDialog(
+          title: const Text('Choose a project'),
+          children: [
+            for (final item in store.projects)
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(dialogContext, item.id),
+                child: Text(item.name),
+              ),
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(dialogContext, ''),
+              child: const Text('Create a new project'),
+            ),
+          ],
+        ),
+      );
+      if (id == null || !context.mounted) return;
+      if (id.isNotEmpty) project = store.projectById(id);
+    }
+    if (!context.mounted) return;
+    await startRoomWithPhotos(
+      context,
+      store,
+      project: project,
+      camera: camera,
+      initialRoomTypeId: roomType,
+    );
+  }
+
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: store,
     builder: (context, _) => PageFrame(
       children: [
+        FocusHomeHero(
+          image: store.resumeRoom == null
+              ? null
+              : store.imageFor(store.resumeRoom!.primaryId),
+          takePhoto: supportsRoomCamera
+              ? () => _start(context, camera: true)
+              : null,
+          choosePhotos: () => _start(context, camera: false),
+        ),
+        const SizedBox(height: 18),
+        if (store.resumeRoom case final room?) ...[
+          Card(
+            child: ListTile(
+              title: Text('Continue ${room.name}'),
+              subtitle: Text(
+                '${store.projectById(room.projectId)?.name ?? ''} / saved on this device',
+              ),
+              trailing: const Icon(Icons.play_arrow_outlined),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute<void>(builder: (_) => roomEntry(store, room)),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
+        Text('Room type', style: Theme.of(context).textTheme.titleLarge),
+        const Text('Example rooms - choose a type, then add your own photos.'),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 112,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              for (final sample
+                  in ['kitchen', 'living', 'bedroom', 'bathroom'].map(
+                    (id) => roomStarters.firstWhere(
+                      (sample) => sample.roomTypeId == id,
+                    ),
+                  ))
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: SizedBox(
+                    width: 110,
+                    child: InkWell(
+                      onTap: () => _start(context, roomType: sample.roomTypeId),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              sample.asset,
+                              height: 76,
+                              cacheWidth: 260,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Text(
+                            roomTypes[sample.roomTypeId] ?? sample.roomTypeId,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
         Text(
-          'My renovation projects',
+          'Saved projects',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 6),
         const Text('Your photos, designs and decisions stay on this device.'),
-        if (store.resumeRoom case final room?) ...[
-          const SizedBox(height: 12),
-          Card(
-            child: Column(
-              children: [
-                PhotoThumb(
-                  width: double.infinity,
-                  height: 180,
-                  bytes: store.imageFor(
-                    store
-                            .designsFor(room.id)
-                            .where((d) => d.id == room.approvedDesignId)
-                            .firstOrNull
-                            ?.imageId ??
-                        room.primaryId,
-                  ),
-                ),
-                ListTile(
-                  title: Text('Continue ${room.name}'),
-                  subtitle: Text(
-                    '${store.projectById(room.projectId)?.name ?? ''} · saved on this device',
-                  ),
-                  trailing: const Icon(Icons.play_arrow_outlined),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (_) => roomEntry(store, room),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
         const SizedBox(height: 16),
         Align(
           alignment: Alignment.centerLeft,
@@ -1073,6 +1158,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   bool get precise => draft.preciseEdit;
   late String selectedPhotoId;
   bool includeRoomContext = true;
+  FocusSection focusSection = FocusSection.room;
 
   RoomSaveControls _savingControls({
     bool compact = false,
@@ -1210,6 +1296,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     widget.store.documents.addListener(_updateExitGuard);
     WidgetsBinding.instance.addObserver(this);
     selectedId = widget.initialDesignId ?? room.approvedDesignId;
+    focusSection = selectedId == null ? FocusSection.room : FocusSection.refine;
     selectedPhotoId = room.primaryId;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
@@ -1532,6 +1619,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                     label: 'Guided room setup',
                     onPressed: aiPending ? null : _openSetup,
                   ),
+                  autosaveMenuTool(context, widget.store, enabled: !aiPending),
                   ScreenTool(
                     ScreenAction.settings,
                     label: 'Room settings',
@@ -1555,443 +1643,481 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
             activity: widget.store.ai.activity,
             roomId: room.id,
           ),
-          body: PageFrame(
-            children: [
-              HelpHeading(
-                title: 'Design workspace',
-                message: 'Choose a working image, make a crop or marked-up reference, then compare saved versions. Your original stays untouched. Tap images to open them full screen.',
-                style: Theme.of(context).textTheme.headlineSmall,
+          body: FocusWorkspace(
+            selected: focusSection,
+            onSelected: (section) => setState(() => focusSection = section),
+            imageBuilder: (height) => source == null
+                ? const Center(
+                    child: Icon(
+                      Icons.broken_image_outlined,
+                      color: Colors.white,
+                    ),
+                  )
+                : ExpandableImage(
+                    bytes: source,
+                    title: selectedId == null
+                        ? '${room.name} / room photo'
+                        : versions.firstWhere((v) => v.id == selectedId).title,
+                    height: height,
+                    inlineZoom: true,
+                    showHint: false,
+                  ),
+            imageTools: [
+              IconButton(
+                tooltip: 'Crop / focus',
+                onPressed: aiPending
+                    ? null
+                    : () => _editReference(room, sketch: false),
+                icon: const Icon(Icons.crop),
               ),
-              const SizedBox(height: 14),
-              RoomColourPaletteCard(
-                store: widget.store,
-                room: room,
-                preview: source,
+              IconButton(
+                tooltip: 'Sketch / markup',
+                onPressed: aiPending
+                    ? null
+                    : () => _editReference(room, sketch: true),
+                icon: const Icon(Icons.draw_outlined),
               ),
-              const SizedBox(height: 12),
-              _savingControls(compact: true),
-              const SizedBox(height: 14),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: aiPending ? null : _openSettings,
-                  icon: const Icon(Icons.settings_input_component_outlined),
-                  label: const Text('AI connection settings'),
-                ),
+              IconButton(
+                tooltip: 'Compare original',
+                onPressed: selectedId == null
+                    ? null
+                    : () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => CompareScreen(
+                            original: widget.store.imageFor(room.originalId)!,
+                            edited: source!,
+                          ),
+                        ),
+                      ),
+                icon: const Icon(Icons.compare),
               ),
-              const SizedBox(height: 14),
-              RoomAnalysisCard(
-                store: widget.store,
-                draft: draft,
-                buildRequest: () => _aiRequest(
-                  widget.store.roomById(widget.roomId)!,
-                  forAnalysis: true,
-                ),
-                onBusyChanged: (value) {
-                  setState(() => analysingRoom = value);
-                  _updateExitGuard();
-                },
+              IconButton(
+                tooltip: 'Refine selected design',
+                onPressed: selectedId == null || aiPending
+                    ? null
+                    : () {
+                        draft.setPrecise(true);
+                        setState(() => focusSection = FocusSection.refine);
+                      },
+                icon: const Icon(Icons.auto_fix_high_outlined),
               ),
-              const SizedBox(height: 14),
-              RoomPhotosCard(
-                store: widget.store,
-                room: room,
-                selectedPhotoId: selectedId == null ? selectedPhotoId : null,
-                onView: (id) => setState(() {
+            ],
+            thumbnails: [
+              FocusVersionThumbnail(
+                image: widget.store.imageFor(room.originalId),
+                title: 'Original',
+                selected:
+                    selectedId == null && selectedPhotoId == room.originalId,
+                onTap: () => setState(() {
                   selectedId = null;
-                  selectedPhotoId = id;
+                  selectedPhotoId = room.originalId;
                 }),
-                includeContext: includeRoomContext,
-                onContextChanged: (value) =>
-                    setState(() => includeRoomContext = value),
               ),
-              const SizedBox(height: 14),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DropdownButtonFormField<String>(
-                        key: ValueKey(selectedId ?? selectedPhotoId),
-                        initialValue:
-                            selectedId ??
-                            (selectedPhotoId == room.originalId
-                                ? null
-                                : 'photo:$selectedPhotoId'),
-                        isExpanded: true,
-                        decoration: const InputDecoration(
-                          labelText: 'Working from',
-                          border: OutlineInputBorder(),
+              for (final design in versions)
+                FocusVersionThumbnail(
+                  image: widget.store.imageFor(design.imageId),
+                  title: design.title,
+                  selected: selectedId == design.id,
+                  onTap: () => setState(() {
+                    selectedId = design.id;
+                    focusSection = FocusSection.refine;
+                  }),
+                ),
+            ],
+            saveStatus: _savingControls(compact: true),
+            sections: {
+              FocusSection.room: [
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        DropdownButtonFormField<String>(
+                          key: ValueKey(selectedId ?? selectedPhotoId),
+                          initialValue:
+                              selectedId ??
+                              (selectedPhotoId == room.originalId
+                                  ? null
+                                  : 'photo:$selectedPhotoId'),
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Working from',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: [
+                            const DropdownMenuItem<String>(
+                              value: null,
+                              child: Text('Original photograph — locked'),
+                            ),
+                            ...room.additionalPhotoIds.map(
+                              (id) => DropdownMenuItem<String>(
+                                value: 'photo:$id',
+                                child: Text(
+                                  'Room photo · View ${room.photoIds.indexOf(id) + 1}',
+                                ),
+                              ),
+                            ),
+                            ...versions.map(
+                              (v) => DropdownMenuItem<String>(
+                                value: v.id,
+                                child: Text(
+                                  v.title,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ],
+                          onChanged: (id) => setState(() {
+                            if (id == null || id.startsWith('photo:')) {
+                              selectedId = null;
+                              selectedPhotoId = id == null
+                                  ? room.originalId
+                                  : id.substring(6);
+                            } else {
+                              selectedId = id;
+                            }
+                          }),
                         ),
-                        items: [
-                          const DropdownMenuItem<String>(
-                            value: null,
-                            child: Text('Original photograph — locked'),
-                          ),
-                          ...room.additionalPhotoIds.map(
-                            (id) => DropdownMenuItem<String>(
-                              value: 'photo:$id',
-                              child: Text(
-                                'Room photo · View ${room.photoIds.indexOf(id) + 1}',
+                        const SizedBox(height: 14),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            Chip(
+                              avatar: const Icon(Icons.lock_outline, size: 18),
+                              label: Text(
+                                selectedId == null
+                                    ? (selectedPhotoId == room.originalId
+                                          ? 'Original photo'
+                                          : 'Room photo')
+                                    : 'Saved version',
                               ),
                             ),
-                          ),
-                          ...versions.map(
-                            (v) => DropdownMenuItem<String>(
-                              value: v.id,
-                              child: Text(
-                                v.title,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                        ],
-                        onChanged: (id) => setState(() {
-                          if (id == null || id.startsWith('photo:')) {
-                            selectedId = null;
-                            selectedPhotoId = id == null
-                                ? room.originalId
-                                : id.substring(6);
-                          } else {
-                            selectedId = id;
-                          }
-                        }),
-                      ),
-                      const SizedBox(height: 14),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          Chip(
-                            avatar: const Icon(Icons.lock_outline, size: 18),
-                            label: Text(
-                              selectedId == null
-                                  ? (selectedPhotoId == room.originalId
-                                        ? 'Original photo'
-                                        : 'Room photo')
-                                  : 'Saved version',
-                            ),
-                          ),
-                          if (selectedId == room.approvedDesignId &&
-                              (selectedId != null ||
-                                  selectedPhotoId == room.originalId))
-                            const Chip(
-                              avatar: Icon(Icons.verified_outlined, size: 18),
-                              label: Text('Approved baseline'),
-                            ),
-                          Chip(label: Text('${versions.length} versions')),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        selectedId == room.approvedDesignId &&
+                            if (selectedId == room.approvedDesignId &&
                                 (selectedId != null ||
-                                    selectedPhotoId == room.originalId)
-                            ? 'Working from the approved baseline.'
-                            : 'Viewing another image. Your approved baseline is unchanged.',
-                      ),
-                      const SizedBox(height: 10),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          FilledButton.tonalIcon(
-                            onPressed:
-                                selectedId == room.approvedDesignId ||
-                                    (selectedId == null &&
-                                        selectedPhotoId != room.originalId)
-                                ? null
-                                : () => _approveBaseline(room),
-                            icon: const Icon(Icons.verified_outlined),
-                            label: const Text('Approve as baseline'),
-                          ),
-                          OutlinedButton(
-                            onPressed:
-                                selectedId == room.approvedDesignId &&
-                                    (selectedId != null ||
-                                        selectedPhotoId == room.originalId)
-                                ? null
-                                : () => setState(() {
-                                    selectedId = room.approvedDesignId;
-                                    selectedPhotoId = room.originalId;
-                                  }),
-                            child: const Text('Return to approved baseline'),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 14),
-                      if (source != null)
-                        ExpandableImage(
-                          bytes: source,
-                          title: selectedId == null
-                              ? '${room.name} · room photo'
-                              : versions
-                                    .firstWhere((v) => v.id == selectedId)
-                                    .title,
-                          height: 320,
-                          inlineZoom: true,
-                        ),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          OutlinedButton.icon(
-                            onPressed: () =>
-                                _editReference(room, sketch: false),
-                            icon: const Icon(Icons.crop),
-                            label: const Text('Crop / focus'),
-                          ),
-                          OutlinedButton.icon(
-                            onPressed: () => _editReference(room, sketch: true),
-                            icon: const Icon(Icons.draw_outlined),
-                            label: const Text('Sketch / markup'),
-                          ),
-                          OutlinedButton.icon(
-                            onPressed: selectedId == null
-                                ? null
-                                : () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => CompareScreen(
-                                          original: widget.store.imageFor(
-                                            room.originalId,
-                                          )!,
-                                          edited: source!,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                            icon: const Icon(Icons.compare),
-                            label: const Text('Compare original'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              const HelpHeading(
-                title: 'AI instructions',
-                message: 'Whole-room renovation coordinates your goal, style, palette and Keep / Replace choices. Describe what should change and what must stay, then review the brief before generating.\n\nPrecise correction uses one narrow instruction on the selected Working from image. Your whole-room brief and style choices stay saved separately and are not reapplied. Explicit Keep choices still apply, and you can generate without analysing again.\n\nCrop and markup are visual references, not enforced masks. Review the returned image: AI can change details outside the requested area.',
-              ),
-              const SizedBox(height: 6),
-              Semantics(liveRegion: true, child: Text(draft.status)),
-              const SizedBox(height: 10),
-              const SizedBox(height: 8),
-              SegmentedButton<bool>(
-                segments: const [
-                  ButtonSegment(
-                    value: false,
-                    label: Text('Whole-room renovation'),
-                  ),
-                  ButtonSegment(value: true, label: Text('Precise correction')),
-                ],
-                selected: {precise},
-                onSelectionChanged: (v) => draft.setPrecise(v.first),
-              ),
-              if (!precise) ...[
-                const SizedBox(height: 12),
-                DesignStyleControls(draft: draft),
-                ExpansionTile(
-                  key: const ValueKey('advanced-room-controls'),
-                  title: const Text('Advanced Keep / Replace controls'),
-                  subtitle: const Text(
-                    'Optional saved overrides for the whole-room design.',
-                  ),
-                  maintainState: true,
-                  children: [RenovationScopeControls(draft: draft)],
-                ),
-              ] else ...[
-                const SizedBox(height: 8),
-                const Text(
-                  'Describe one specific correction to the working image.',
-                ),
-              ],
-              if (precise && looksLikeBroadRenovation(changes.text)) ...[
-                const SizedBox(height: 8),
-                const Text(
-                  'This is a broad renovation request. Choose Whole-room renovation to coordinate the selected changes; use Precise correction for a specific detail.',
-                ),
-                TextButton(
-                  onPressed: () => draft.setPrecise(false),
-                  child: const Text('Use whole-room renovation'),
-                ),
-              ],
-              const SizedBox(height: 12),
-              TextField(
-                key: ValueKey('instructions-$precise'),
-                controller: changes,
-                minLines: 2,
-                maxLines: 5,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: precise
-                      ? 'Specific correction'
-                      : 'What should change?',
-                  hintText: precise
-                      ? 'Remove only the cupboard handles; keep everything else.'
-                      : 'Modernise the whole kitchen; keep the layout.',
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: protected,
-                minLines: 2,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Keep exactly as is',
-                  hintText: 'Rear windows, ceiling, doorway, room proportions',
-                ),
-              ),
-              const SizedBox(height: 12),
-              ExpansionTile(
-                key: const ValueKey('prepared-prompt-preview'),
-                title: const Text('Preview prepared prompt'),
-                subtitle: Text(
-                  draft.useAiPrompt
-                      ? 'Your reviewed AI prompt plus current room requirements.'
-                      : 'Prepared from your choices on this device; not AI-written.',
-                ),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: SelectableText(_prompt(room)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              ExpansionTile(
-                key: const ValueKey('ai-generation'),
-                initiallyExpanded: widget.store.ai.connected,
-                title: const Text('AI generation (optional)'),
-                maintainState: true,
-                subtitle: const Text(
-                  'You can work with photos and versions without a key.',
-                ),
-                children: [
-                  AiEditCard(
-                    store: widget.store,
-                    draft: draft,
-                    onPendingChanged: (pending) {
-                      if (mounted) setState(() => editingRoom = pending);
-                      _updateExitGuard();
-                    },
-                    buildRequest: () => _aiRequest(room),
-                    onSaved: (design) {
-                      if (mounted) setState(() => selectedId = design.id);
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  FilledButton.icon(
-                    onPressed: () => _copyPrompt(room),
-                    icon: const Icon(Icons.copy),
-                    label: const Text('Copy AI prompt'),
-                  ),
-                  const HelpIcon(
-                    title: 'Manual AI handoff',
-                    message: 'Copy the prepared prompt into another AI app that supports image editing. Attach the working photo and selected supporting views yourself, then import its result. Copying does not connect a provider or make an API request.',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              const SizedBox(height: 18),
-              FilledButton.tonalIcon(
-                onPressed: () => _importResult(room),
-                icon: const Icon(Icons.add_photo_alternate_outlined),
-                label: const Text('Import generated AI result'),
-              ),
-              const SizedBox(height: 22),
-              const HelpHeading(
-                title: 'Version history',
-                message: 'Passed ideas stay in history. Use the review menu to return them to Explore or delete an unwanted design. Deleted designs below lets you restore it. Favourites and baseline approval are separate choices. Deleting a design keeps a recoverable copy and its source history.',
-              ),
-              const SizedBox(height: 6),
-              const SizedBox(height: 10),
-              if (versions.isEmpty)
-                const Text(
-                  'No design versions yet — the original photograph is safe.',
-                )
-              else
-                ...versions.map(
-                  (d) => Card(
-                    child: ListTile(
-                      selected: d.id == selectedId,
-                      leading: PhotoThumb(
-                        bytes: widget.store.imageFor(d.imageId),
-                        viewerTitle: d.title,
-                      ),
-                      title: Text(
-                        d.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Text(
-                        '${d.id == room.approvedDesignId ? 'Approved baseline • ' : ''}${d.favourite
-                            ? 'Favourite'
-                            : d.rejected
-                            ? 'Passed'
-                            : 'Awaiting review'}\n${d.parentId == null ? 'From original' : 'Branched version'} • ${d.created.toLocal().toString().substring(0, 16)}',
-                      ),
-                      onTap: () => setState(() => selectedId = d.id),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            tooltip: d.favourite
-                                ? 'Remove favourite'
-                                : 'Save favourite',
-                            icon: Icon(
-                              d.favourite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: d.favourite ? Colors.red : null,
-                            ),
-                            onPressed: () => widget.store.setFavourite(
-                              d,
-                              favourite: !d.favourite,
-                            ),
-                          ),
-                          PopupMenuButton<String>(
-                            enabled: !aiPending,
-                            tooltip: 'Review options for ${d.title}',
-                            onSelected: (action) => _reviewVersion(d, action),
-                            itemBuilder: (_) => [
-                              if (!d.rejected)
-                                const PopupMenuItem(
-                                  value: 'pass',
-                                  child: Text('Mark as passed'),
-                                ),
-                              if (d.rejected || d.favourite)
-                                const PopupMenuItem(
-                                  value: 'review',
-                                  child: Text('Return to review'),
-                                ),
-                              const PopupMenuItem(
-                                value: 'delete',
-                                child: Text('Delete design'),
+                                    selectedPhotoId == room.originalId))
+                              const Chip(
+                                avatar: Icon(Icons.verified_outlined, size: 18),
+                                label: Text('Approved baseline'),
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            Chip(label: Text('${versions.length} versions')),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          selectedId == room.approvedDesignId &&
+                                  (selectedId != null ||
+                                      selectedPhotoId == room.originalId)
+                              ? 'Working from the approved baseline.'
+                              : 'Viewing another image. Your approved baseline is unchanged.',
+                        ),
+                        const SizedBox(height: 10),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            FilledButton.tonalIcon(
+                              onPressed:
+                                  selectedId == room.approvedDesignId ||
+                                      (selectedId == null &&
+                                          selectedPhotoId != room.originalId)
+                                  ? null
+                                  : () => _approveBaseline(room),
+                              icon: const Icon(Icons.verified_outlined),
+                              label: const Text('Approve as baseline'),
+                            ),
+                            OutlinedButton(
+                              onPressed:
+                                  selectedId == room.approvedDesignId &&
+                                      (selectedId != null ||
+                                          selectedPhotoId == room.originalId)
+                                  ? null
+                                  : () => setState(() {
+                                      selectedId = room.approvedDesignId;
+                                      selectedPhotoId = room.originalId;
+                                    }),
+                              child: const Text('Return to approved baseline'),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                      ],
                     ),
                   ),
                 ),
-              DeletedDesignsCard(store: widget.store, roomId: room.id),
-              const SizedBox(height: 30),
-            ],
+                const SizedBox(height: 15),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: aiPending ? null : _openSettings,
+                    icon: const Icon(Icons.settings_input_component_outlined),
+                    label: const Text('AI connection settings'),
+                  ),
+                ),
+                RoomAnalysisCard(
+                  store: widget.store,
+                  draft: draft,
+                  onContinue: () =>
+                      setState(() => focusSection = FocusSection.refine),
+                  buildRequest: () => _aiRequest(
+                    widget.store.roomById(widget.roomId)!,
+                    forAnalysis: true,
+                  ),
+                  onBusyChanged: (value) {
+                    setState(() => analysingRoom = value);
+                    _updateExitGuard();
+                  },
+                ),
+                const SizedBox(height: 14),
+                RoomPhotosCard(
+                  store: widget.store,
+                  room: room,
+                  selectedPhotoId: selectedId == null ? selectedPhotoId : null,
+                  onView: (id) => setState(() {
+                    selectedId = null;
+                    selectedPhotoId = id;
+                  }),
+                  includeContext: includeRoomContext,
+                  onContextChanged: (value) =>
+                      setState(() => includeRoomContext = value),
+                ),
+                const SizedBox(height: 14),
+              ],
+              FocusSection.style: [
+                if (precise)
+                  const Text(
+                    'Style and colour choices are saved for whole-room renovation. Precise correction keeps the selected design and uses only your specific instruction.',
+                  ),
+                RoomColourPaletteCard(
+                  store: widget.store,
+                  room: room,
+                  preview: source,
+                ),
+                const SizedBox(height: 12),
+                if (!precise) ...[
+                  const SizedBox(height: 12),
+                  DesignStyleControls(draft: draft),
+                  ExpansionTile(
+                    key: const ValueKey('advanced-room-controls'),
+                    title: const Text('Advanced Keep / Replace controls'),
+                    subtitle: const Text(
+                      'Optional saved overrides for the whole-room design.',
+                    ),
+                    maintainState: true,
+                    children: [RenovationScopeControls(draft: draft)],
+                  ),
+                ],
+              ],
+              FocusSection.refine: [
+                if (precise && looksLikeBroadRenovation(changes.text)) ...[
+                  const SizedBox(height: 8),
+                  const Text(
+                    'This is a broad renovation request. Choose Whole-room renovation to coordinate the selected changes; use Precise correction for a specific detail.',
+                  ),
+                  TextButton(
+                    onPressed: () => draft.setPrecise(false),
+                    child: const Text('Use whole-room renovation'),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                TextField(
+                  key: ValueKey('instructions-$precise'),
+                  controller: changes,
+                  minLines: 1,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: precise
+                        ? 'Specific correction'
+                        : 'What should change?',
+                    hintText: precise
+                        ? 'Remove only the cupboard handles; keep everything else.'
+                        : 'Modernise the whole kitchen; keep the layout.',
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'AI generation (optional)',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                AiEditCard(
+                  compact: true,
+                  store: widget.store,
+                  draft: draft,
+                  onPendingChanged: (pending) {
+                    if (mounted) setState(() => editingRoom = pending);
+                    _updateExitGuard();
+                  },
+                  buildRequest: () => _aiRequest(room),
+                  onSaved: (design) {
+                    if (mounted) setState(() => selectedId = design.id);
+                  },
+                ),
+                ExpansionTile(
+                  key: const ValueKey('focus-edit-options'),
+                  maintainState: true,
+                  title: const Text('Edit mode & protected features'),
+                  children: [
+                    const HelpHeading(
+                      title: 'AI instructions',
+                      message: 'Whole-room renovation coordinates your goal, style, palette and Keep / Replace choices. Describe what should change and what must stay, then review the brief before generating.\n\nPrecise correction uses one narrow instruction on the selected Working from image. Your whole-room brief and style choices stay saved separately and are not reapplied. Explicit Keep choices still apply, and you can generate without analysing again.\n\nCrop and markup are visual references, not enforced masks. Review the returned image: AI can change details outside the requested area.',
+                    ),
+                    const SizedBox(height: 6),
+
+                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
+                    SegmentedButton<bool>(
+                      segments: const [
+                        ButtonSegment(
+                          value: false,
+                          label: Text('Whole-room renovation'),
+                        ),
+                        ButtonSegment(
+                          value: true,
+                          label: Text('Precise correction'),
+                        ),
+                      ],
+                      selected: {precise},
+                      onSelectionChanged: (v) => draft.setPrecise(v.first),
+                    ),
+                    TextField(
+                      controller: protected,
+                      minLines: 2,
+                      maxLines: 4,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Keep exactly as is',
+                        hintText:
+                            'Rear windows, ceiling, doorway, room proportions',
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                ),
+                ExpansionTile(
+                  key: const ValueKey('prepared-prompt-preview'),
+                  title: const Text('Preview prepared prompt'),
+                  subtitle: Text(
+                    draft.useAiPrompt
+                        ? 'Your reviewed AI prompt plus current room requirements.'
+                        : 'Prepared from your choices on this device; not AI-written.',
+                  ),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: SelectableText(_prompt(room)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+              ],
+              FocusSection.ideas: [
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: () => _copyPrompt(room),
+                      icon: const Icon(Icons.copy),
+                      label: const Text('Copy AI prompt'),
+                    ),
+                    const HelpIcon(
+                      title: 'Manual AI handoff',
+                      message: 'Copy the prepared prompt into another AI app that supports image editing. Attach the working photo and selected supporting views yourself, then import its result. Copying does not connect a provider or make an API request.',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const SizedBox(height: 18),
+                FilledButton.tonalIcon(
+                  onPressed: () => _importResult(room),
+                  icon: const Icon(Icons.add_photo_alternate_outlined),
+                  label: const Text('Import generated AI result'),
+                ),
+                const SizedBox(height: 22),
+                const HelpHeading(
+                  title: 'Version history',
+                  message: 'Passed ideas stay in history. Use the review menu to return them to Explore or delete an unwanted design. Deleted designs below lets you restore it. Favourites and baseline approval are separate choices. Deleting a design keeps a recoverable copy and its source history.',
+                ),
+                const SizedBox(height: 6),
+                const SizedBox(height: 10),
+                if (versions.isEmpty)
+                  const Text(
+                    'No design versions yet — the original photograph is safe.',
+                  )
+                else
+                  ...versions.map(
+                    (d) => Card(
+                      child: ListTile(
+                        selected: d.id == selectedId,
+                        leading: PhotoThumb(
+                          bytes: widget.store.imageFor(d.imageId),
+                          viewerTitle: d.title,
+                        ),
+                        title: Text(
+                          d.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          '${d.id == room.approvedDesignId ? 'Approved baseline • ' : ''}${d.favourite
+                              ? 'Favourite'
+                              : d.rejected
+                              ? 'Passed'
+                              : 'Awaiting review'}\n${d.parentId == null ? 'From original' : 'Branched version'} • ${d.created.toLocal().toString().substring(0, 16)}',
+                        ),
+                        onTap: () => setState(() => selectedId = d.id),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              tooltip: d.favourite
+                                  ? 'Remove favourite'
+                                  : 'Save favourite',
+                              icon: Icon(
+                                d.favourite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: d.favourite ? Colors.red : null,
+                              ),
+                              onPressed: () => widget.store.setFavourite(
+                                d,
+                                favourite: !d.favourite,
+                              ),
+                            ),
+                            PopupMenuButton<String>(
+                              enabled: !aiPending,
+                              tooltip: 'Review options for ${d.title}',
+                              onSelected: (action) => _reviewVersion(d, action),
+                              itemBuilder: (_) => [
+                                if (!d.rejected)
+                                  const PopupMenuItem(
+                                    value: 'pass',
+                                    child: Text('Mark as passed'),
+                                  ),
+                                if (d.rejected || d.favourite)
+                                  const PopupMenuItem(
+                                    value: 'review',
+                                    child: Text('Return to review'),
+                                  ),
+                                const PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text('Delete design'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                DeletedDesignsCard(store: widget.store, roomId: room.id),
+                const SizedBox(height: 30),
+              ],
+            },
           ),
         ),
       );

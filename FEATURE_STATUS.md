@@ -1,20 +1,90 @@
 # Renovision feature status
 
-Updated 18 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
+Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
-Post-analysis redesign choices (source change after APK 1.0.7): a current
+Folder cleanup, 19 November: removed 7.38 GiB of generated builds/caches, stale
+SDK download, temporary preview profiles/tooling and old diagnostic logs.
+31 older browser-preview profiles archived rather than deleted. App source,
+assets, tests, native platform projects, local settings, recovered projects,
+original document/source backups, important images and APKs 1.0.8/1.0.9 retained.
+125 protected file hashes verified unchanged; current Chrome profile preserved.
+No app-code changes, new APK, AI calls or repeat build/test run during cleanup.
+APK 1.0.9 retains its validated 185-test result; runtime phone acceptance remains
+the user's next test. Cache deletion means the next build regenerates its outputs.
+
+Latest requested APK: **1.0.9+10**, source `d67b148d3f`. All 185 tests pass;
+static analysis clean. Universal APK built in 104.2 seconds at
+`output/mobile-test/renovision-test-1.0.9.apk` (also `renovision-test.apk`).
+Package/version verified and signing certificate matches 1.0.8 for an in-place
+update. Includes Focus Canvas, compact controls, Autosave menu, camera/gallery,
+post-analysis counts and distinct-concept briefs. Further crop/markup compaction,
+expandable bottom-sheet gestures and live-camera renovation remain planned.
+No user data cleared and no paid AI calls made by the agent. Real S21 acceptance
+and actual AI image diversity remain user tests.
+
+Selected B / Focus Canvas (included in APK 1.0.9): camera-first Projects
+home with Take photo / Choose photos, saved-room Continue and four photographic
+room-type shortcuts (all 42 choices remain in the picker). Warm charcoal app bar
+and canvas, olive actions and light control panels replace the previous teal UI.
+The workspace keeps its image/tools/version strip visible and shows one retained
+Room / Style / Refine / Ideas panel at a time; desktop uses an image/control split.
+Refine puts the instruction and compact paid-count/generation controls first;
+edit mode, protections and prompt preview remain available below. Selected saved
+designs open on Refine; the explicit Refine selected design tool enters precision
+mode without overwriting the whole-room brief. Analysis has a continuation shortcut.
+Drafts, pending AI/save state, original photos, approvals and project files retain
+their existing storage and request paths. Image loading now has visible feedback.
+APK 1.0.8 does not include this layout or the later Autosave/distinct-design
+changes; update to 1.0.9. Native widget renders inspected with fictional
+photos; physical S21 and normal Chrome acceptance remain user checks.
+Validation: 185 automated tests cover current features, compact/narrow/large-text
+layouts, panel/draft retention and phone/desktop resize state. Static analysis
+is clean. The isolated web demo compiled; native widget review captures were
+inspected. Headless browser captures were blank, so browser visual acceptance
+has not been claimed. No paid provider requests or real photo changes made.
+
+Distinct multi-design briefs (included in APK 1.0.9): alternatives now use
+Clean & architectural, Warm & tactile and Bold & sculptural material/form/lighting
+directions. Each multi-image prompt includes the planned alternatives and asks
+for visibly different major renovation decisions within authorised scope; plants,
+ornaments or exposure changes are explicitly insufficient. Keep choices, style,
+palette and layout restrictions retain priority. Single results and precision
+retain their existing request flow; no extra API calls, automatic retries or
+charges are introduced. Visual diversity is requested, not verified automatically;
+only byte-identical output detection exists. A real provider test is still needed.
+APK 1.0.8 retains the earlier concept directions; 1.0.9 includes this correction.
+Static analysis clean and all 180 automated tests pass, including distinct
+planned briefs, scope protections, sequential generation and partial saves.
+
+Autosave menu shortcut (included in APK 1.0.9): the room workspace and
+guided setup expose a checked More tools > Autosave item on desktop and phone.
+The workspace's large Autosave switch/card is replaced by a compact save-status
+line and help icon. Full save controls remain in Room settings. Existing global
+preference storage, debounce and save-on-exit behaviour are retained. Failed
+preference writes keep the previous setting and show a message.
+Static analysis clean; all 179 tests pass, including menu persistence/failure,
+phone/desktop placement and existing save/exit flows.
+
+Previous APK: **1.0.8+9**, source `3e62d1b14e`, includes the post-analysis
+redesign choices. Static analysis clean; all 176 tests pass. Universal APK built
+in 72.3 seconds at `output/mobile-test/renovision-test-1.0.8.apk` (also the latest
+alias). Package/version checked; signing certificate matches 1.0.7 for an update
+without uninstalling. No real-camera or paid AI calls were made by the agent.
+HOMLY/Forma redesign examples are separate previews, not part of this APK.
+
+Post-analysis redesign choices (included in APK 1.0.8): a current
 whole-room analysis now offers 1 design / 2 ideas / 3 ideas. The choice uses the
 existing saved concept count; it does not generate images or invalidate the
 analysis. Guided setup's next action is Choose redesign options; multi-image
 generation labels show the requested count. Existing per-request confirmation,
 sequential generation, gallery selection and saved version history are reused.
 Stale analysis and precise correction do not offer this whole-room chooser.
-No newer APK built; 1.0.7 does not contain these post-analysis UI changes.
+APK 1.0.7 does not contain these changes; update to 1.0.8 to test them.
 Static analysis is clean and all 176 tests pass, including count persistence,
 no paid generation on selection, analysis freshness and reviewed-prompt sending.
 
-Requested mobile test build: version 1.0.7+8, source `fa1e8d0319`. Static analysis
+Previous mobile test build: version 1.0.7+8, source `fa1e8d0319`. Static analysis
 clean and all 175 tests passed. Universal APK built in 75.3 seconds at
 `output/mobile-test/renovision-test-1.0.7.apk` (also `renovision-test.apk`).
 Package/version verified; certificate matches 1.0.6 for an in-place update.

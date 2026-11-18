@@ -12,12 +12,14 @@ class RoomAnalysisCard extends StatefulWidget {
   final RoomDraft draft;
   final AiEditRequest Function() buildRequest;
   final ValueChanged<bool> onBusyChanged;
+  final VoidCallback? onContinue;
   const RoomAnalysisCard({
     super.key,
     required this.store,
     required this.draft,
     required this.buildRequest,
     required this.onBusyChanged,
+    this.onContinue,
   });
   @override
   State<RoomAnalysisCard> createState() => _RoomAnalysisCardState();
@@ -348,6 +350,14 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                   const Text(
                     'Review the brief below, then generate your options. Each image is a separate paid request. Choose a result with Use this design, then refine it. Selecting a count does not generate images.',
                   ),
+                  if (widget.onContinue != null)
+                    TextButton.icon(
+                      onPressed: busy || widget.store.ai.activity.active
+                          ? null
+                          : widget.onContinue,
+                      icon: const Icon(Icons.arrow_forward),
+                      label: const Text('Continue to design options'),
+                    ),
                 ],
                 if (analysis != null)
                   ExpansionTile(

@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -157,7 +159,8 @@ void main() {
       final thumbnail = find.byWidgetPredicate(
         (w) => w is PhotoThumb && w.viewerTitle == design.title,
       );
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         thumbnail,
         500,
         scrollable: find.byType(Scrollable).first,

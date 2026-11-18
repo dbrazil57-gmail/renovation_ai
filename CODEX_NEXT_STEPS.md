@@ -1,22 +1,130 @@
 # Renovision next steps
 
-Updated 18 November 2026 (Australia/Sydney). Keep this as the single current work
+Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
 ## Current regroup: finish the core experience before adding features
 
-After-analysis redesign choices (source only, after 1.0.7): current whole-room
+Project folder cleanup completed 19 November: 7.38 GiB of generated build/cache,
+old SDK download and transient preview/debug output removed. Archived 31 old
+preview profiles under `.local_backups/browser-preview-history/`; retained the
+`.dart_tool/chrome-device/` profile, recovered projects, private room-photo reviews,
+source/document history, local settings and APKs 1.0.8/1.0.9. 125 protected-file
+hashes verified unchanged; audit is `.local_backups/cleanup-2026-11-19.json`.
+No source edits or new APK required. Flutter regenerates removed build outputs.
+Keep the existing localhost address/profile when restarting Chrome testing.
+
+Latest requested phone build: **1.0.9+10**, source `d67b148d3f`, at
+`output/mobile-test/renovision-test-1.0.9.apk` and the existing latest alias.
+All 185 tests pass and analysis is clean. Built in 104.2 seconds; package/version
+checked and signing matches 1.0.8, supporting an update without uninstalling.
+Includes the selected Focus Canvas layout, compact refinement controls, Autosave
+menu shortcut, camera/gallery entry and stronger distinct-design briefs.
+
+Phone acceptance now: update existing app, open saved project, check photos and
+AI connection, try the four workspace tabs, compare/zoom and precise refinement,
+then generate 2/3 whole-room options and check meaningful differences. Restart
+and confirm settings/images/versions remain. Real requests require the normal
+paid confirmation. The further crop/markup compaction below and live-camera AR
+are not included. No user data or prior 1.0.8 APK cleared. Build future APKs only
+on explicit request; this batch was requested by the user.
+
+Next mobile UI priority (user feedback): one task's required inputs per phone
+screen. B is the workspace direction; compact crop/markup next. It still stacks
+all tools, colours, widths, guidance and duplicate body actions below the image.
+Use a stable image canvas, a compact tool strip, contextual colour/width/shape/
+note controls and reachable Save/Cancel; keep Undo/Redo in the shared toolbar.
+Horizontal browsing for styles/palettes/versions; a short vertical active panel
+and optional expansion with visible button. Avoid navigation swipes on the image
+because they conflict with editing gestures. Preserve large-text/keyboard access,
+non-destructive reference saving and active/pending-save protection. Compare
+Lightroom/Snapseed editor patterns and Homestyler/Planner room workflows; dated
+sources, screenshot/video references and scope limits are in PRODUCT_NOTES.
+This research-only follow-up implements no new gestures and builds no APK.
+
+User chose B / Focus Canvas; implemented in source after APK 1.0.8. Camera-first
+home, saved-room Continue, photo room-type shortcuts, charcoal/olive/cream theme,
+retained Room / Style / Refine / Ideas panels, fixed visible image/version strip
+and wide desktop split now replace the long workspace page. Compact Refine keeps
+the instruction and paid generation choice first; mode/protections/prompt details
+are expandable. Analysis can continue directly to design options. The explicit
+Refine selected design tool activates existing precision mode and preserves the
+whole-room brief. Storage/schema, originals, secure key handling and paid request
+confirmation/partial saves are reused. No account, shopping or contractor scope
+was added from the concept artwork. No APK built in this layout batch.
+
+Acceptance next: normal Chrome at the existing address/profile, then a requested
+new APK on S21. Test camera/gallery, all four tabs, field/scroll retention,
+analysis -> options, selected-design refinement, 2/3 concepts, comparison/zoom,
+delete/restore, keyboard/rotation, save/restart and unchanged connection settings.
+The demo uses separate boxes and fictional samples, not real projects/credentials.
+Native widget screenshots are `output/design-review/focus-native-*.png`; they are
+review captures, not evidence of physical Android acceptance. A headless browser
+capture remained blank despite a compiled demo; normal-browser visual review is
+still needed. Only build another APK when explicitly requested.
+Validation: all 185 tests and clean analysis; new layout tests include retained
+local state when crossing the desktop/phone breakpoint, large text and shortened
+viewports. The isolated web demo compiled. Native widget screenshots were
+inspected with sample images; device/browser acceptance above remains outstanding.
+
+Look/feel image choices now supplied: A Warm Studio, B Focus Canvas, C Room Journal,
+saved under ignored `output/design-review/app-look-*.png`. Exact prompts retained
+beside them. These are original generated UI concepts informed by the user's
+HOMLY/Forma preferences, not running app screens. Await the chosen option or blend,
+implement it while preserving current features/storage, then build a new APK when
+requested. This image batch builds no APK and changes no app code.
+
+Distinct alternatives correction (source only, after 1.0.8): the user's multiple
+designs must be different renovation schemes, not the same result with plants.
+Replaced weak material/light/texture directions with Clean & architectural,
+Warm & tactile and Bold & sculptural briefs, supplying all planned directions to
+each request. Require visibly different major surfaces/main furnishings or
+cabinetry/lighting where authorised; keep explicit protections and the palette.
+Counts, frozen source, sequential paid confirmation and partial-save handling
+are unchanged. No paid generation run here. On next requested APK, test one
+whole-room 3-option batch against the same original and compare substantive
+differences; don't loosen Keep choices or auto-retry charges to force variety.
+No newer APK built. Automatic perceptual diversity assessment remains unimplemented.
+Validation: static analysis clean; all 180 tests pass. No actual AI output quality
+or visual novelty claim follows from mocked provider tests.
+
+Autosave shortcut, source change after 1.0.8: More tools > Autosave now toggles the
+existing saved preference in workspace and guided setup; a check mark shows its
+state. Compact local-save status replaces the large workspace switch/card.
+Room settings retains Save now, file options and the full setting. Verify menu
+toggle/persistence/failure at phone and desktop widths and existing exit saving.
+No new APK requested for this change; the installed 1.0.8 retains the old control.
+Validation complete: analysis clean and all 179 tests pass. The deletion test
+now waits for page scrolling/layout before tapping its existing review menu.
+
+Latest requested mobile build: 1.0.8+9, source `3e62d1b14e`. Analysis clean,
+176 tests pass; build completed in 72.3 seconds. APK at
+`output/mobile-test/renovision-test-1.0.8.apk` and latest alias; package/version
+verified and signing certificate matches 1.0.7. Install over the existing app.
+Phone test: analyse a room, choose 2/3 ideas, review the brief, confirm the shown
+paid count, generate, select Use this design and check saved versions after a
+restart. Also check camera/gallery entry. No real AI calls made by the agent.
+
+Look/feel is next: review Warm Studio, Focus Canvas and Room Journal in the
+isolated `output/design-review/renovision-next-look.html` preview. Tabs, local
+refinement drafts, room/sample selection and layout bounds checked in headless
+Chrome at 320px content width and desktop width (19 checks each). Example images
+are existing fictional samples, not paid generations or a real camera stream.
+Choose a direction before broad source layout changes. Existing projects, photos,
+APK history and connection settings retained. Only build later APKs when asked.
+
+After-analysis redesign choices (now included in 1.0.8): current whole-room
 analysis now shows 1 design / 2 ideas / 3 ideas, using the existing saved count.
 Setup continues with Choose redesign options; generation buttons show multiple
 output counts. Review the AI brief before the existing paid confirmation, then
 select a generated result with Use this design and refine from that version.
-Choosing a count must not issue an AI request or stale the analysis. No new APK
-requested in this batch; build only on the next explicit request.
+Choosing a count must not issue an AI request or stale the analysis. The initial
+source batch was subsequently packaged on request as 1.0.8 above.
 Validation: static analysis clean; all 176 tests pass. New coverage verifies
 count saving, no generation on selection and unchanged analysis freshness;
 existing confirmation, prompt use and multi-concept generation tests also pass.
 
-Latest requested APK: 1.0.7+8 / source `fa1e8d0319`, built in 75.3 seconds at
+Previous requested APK: 1.0.7+8 / source `fa1e8d0319`, built in 75.3 seconds at
 `output/mobile-test/renovision-test-1.0.7.apk` and the existing latest alias.
 All 175 tests pass; static analysis clean. APK metadata verified and signing
 certificate matches 1.0.6, preserving update compatibility without uninstalling.

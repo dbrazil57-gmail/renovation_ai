@@ -5,6 +5,7 @@ import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 import 'screens.dart';
 import 'store.dart';
+import 'focus_workspace.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,18 +29,22 @@ class RenovisionApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF297A72),
+          seedColor: FocusColours.olive,
           brightness: Brightness.light,
         ),
-        scaffoldBackgroundColor: const Color(0xFFF6F7F6),
+        scaffoldBackgroundColor: FocusColours.paper,
         cardTheme: CardThemeData(
-          color: Colors.white,
+          color: FocusColours.panel,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
           ),
         ),
-        appBarTheme: const AppBarTheme(backgroundColor: Color(0xFFF6F7F6)),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: FocusColours.canvas,
+          foregroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+        ),
       ),
       home: AppShell(store: store),
     );

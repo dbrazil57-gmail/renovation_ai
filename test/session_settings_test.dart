@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
@@ -49,7 +51,7 @@ void main() {
   );
 
   testWidgets(
-    'room has autosave only; Settings holds saving, restore and AI controls without losing drafts',
+    'room has compact save status; Settings holds saving, restore and AI controls without losing drafts',
     (tester) async {
       final store = RenovisionStore(records: MemoryBox(), photos: MemoryBox());
       addTearDown(store.dispose);
@@ -66,16 +68,12 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
-        find.text('Autosave'),
-        250,
-        scrollable: find.byType(Scrollable).first,
-      );
-      expect(find.text('Autosave'), findsOneWidget);
+      expect(find.textContaining('Autosave off ·'), findsOneWidget);
       expect(find.text('Save now'), findsNothing);
       expect(find.text('Save as…'), findsNothing);
       final changes = find.widgetWithText(TextField, 'What should change?');
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         changes,
         350,
         scrollable: find.byType(Scrollable).first,
@@ -85,18 +83,20 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Save now'), findsOneWidget);
       expect(find.text('AI connection and models'), findsOneWidget);
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.text('Restore project backup'),
         200,
         scrollable: find.byType(Scrollable).last,
       );
       expect(find.text('Restore project backup'), findsOneWidget);
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.text('Save now'),
         -200,
         scrollable: find.byType(Scrollable).last,
       );
-      await tester.ensureVisible(find.text('Save now'));
+      await ensureFocusVisible(tester, find.text('Save now'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Save now'));
       await tester.pumpAndSettle();

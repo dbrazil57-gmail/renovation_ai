@@ -9,7 +9,75 @@ Proposals and the earlier roadmap are not completed features.
 
 ## Visual direction review — 18 November 2026
 
+### Mobile controls and scroll review — 18 November 2026
+
+User wants the required inputs for each task to fit one phone screen and asks
+about vertical/horizontal navigation, competitor images and videos. Current
+Focus Canvas workspace addresses section navigation; `reference_editor.dart`
+still uses a vertical ListView with stacked tool, colour and width Wraps,
+guidance and duplicate body Undo/Redo/Save controls. This is the next UI priority.
+
+Primary references checked (public documentation, screenshots/alt descriptions,
+demo text and tutorial transcript; no hands-on competitor-device claim):
+- [Lightroom mobile workspace, including labelled editor screenshot](https://helpx.adobe.com/lightroom/mobile/get-started/workspace-overview.html): image-focused Detail view with grouped editing tools and separate options menu.
+- [Adobe mobile masking video](https://www.adobe.com/learn/lightroom-cc/web/ai-assisted-masking-lightroom-mobile): around 01:08 the transcript describes managing masks and dragging the bottom tab to expand the panel. Relevant to panel design, not a claim Renovision already has AI masks.
+- [Snapseed tool workflow](https://support.google.com/snapseed/answer/6155517?hl=en) and [selective gestures](https://support.google.com/snapseed/answer/6157827?hl=en): explicit tools, hold-to-compare, pinch/pan; selective adjustment uses vertical choice and horizontal value changes. Gestures supplement visible actions.
+- [Homestyler photo/style workflow](https://www.homestyler.com/ai-room-design?lang=en_US): upload, illustrated style selection, room type where applicable, then generation.
+- [Planner 5D room-design demo](https://planner5d.com/use/ai-room-design): multiple transformation choices and before/after comparison; useful as a visual interaction reference, not proof every private editor option fits one screen.
+
+Recommended Renovision interaction: retain B's image-led workspace and compact
+first-time room steps. For crop/markup, reserve the canvas and fixed Save/Cancel
+actions; use a compact tool strip with contextual properties. Draw shows colour
+and width pickers; Shapes shows its small shape chooser; Notes shows text actions;
+Select exposes actions for the selected mark. Reuse the existing tools/history,
+not a new unrelated editor. Put secondary guidance behind the existing info icon.
+Keep Undo/Redo in the shared top toolbar instead of repeating body controls.
+
+Horizontal browsing suits image versions, style cards and palettes. Short vertical
+scrolling belongs inside the active control panel; expand/collapse it with both a
+visible button and an optional handle. Do not assign whole-screen navigation
+swipes over the image: they conflict with crop handles, drawing and panning.
+Preserve readable controls, keyboard access and large text; do not guarantee zero
+scrolling on every screen/device. Save/generation actions and errors must remain
+reachable and visible. This review records a proposal; it does not implement a
+new bottom sheet, editor layout or gesture scheme, and builds no APK.
+
 ### Selected references: HOMLY workflow + Forma styling
+
+User selected **B / Focus Canvas**. It is now implemented in the shared Flutter
+source: large persistent image and version thumbnails, compact retained control
+sections, desktop split, dark warm canvas/olive actions and camera-first project
+home. Existing room setup, photo selection, AI requests, approvals, save/restore,
+deletion and key storage remain the underlying implementation. Generated artwork
+was visual guidance; its illustrative account/share/duplicate controls were not
+added as unsupported features. The layout is included in requested APK 1.0.9;
+APK 1.0.8 retains the old layout.
+Actual Flutter widget review captures (fictional photos, disposable in-memory
+storage, local review font) are in `output/design-review/focus-native-*.png`.
+The generated boards below remain the original choice references.
+
+Image concepts requested on 18 November: three original raster UI boards generated
+with the built-in image tool and visually reviewed: A Warm Studio, B Focus Canvas,
+C Room Journal. Each shows room/camera entry and a design/refinement workspace.
+Copies are in ignored `output/design-review/app-look-a-warm-studio.png`,
+`app-look-b-focus-canvas.png` and `app-look-c-room-journal.png`; exact prompt set
+is `output/design-review/app-screen-image-prompts.txt`. These are illustrative
+concept images, not app screenshots or implemented screens. Illustrative account,
+notification/share/duplicate icons do not add those features to the product scope.
+Use existing supported tools when implementing the chosen direction. User choice
+is pending; A's room entry with B's image-focused workspace is a possible blend.
+No source UI change or APK build made in this image-concept batch.
+
+Review examples prepared with the requested APK 1.0.8 batch:
+`output/design-review/renovision-next-look.html` contains Warm Studio (split
+image/control layout), Focus Canvas (larger image and compact refinement area),
+and Room Journal (editorial project view with contextual controls). Room, Style,
+Refine and Ideas tabs work locally; refinement text survives switches, sample
+selection changes the preview and no AI requests or project writes occur.
+Images are existing fictional examples, not versions of the user's real room.
+Three layouts passed 19 browser checks at both 320px content width and desktop
+width; Warm Studio desktop and narrow screenshots were visually inspected.
+The actual app retains its current layout until the user chooses a direction.
 
 Latest user selection refines the earlier Planner 5D preference:
 [HOMLY — AI Interior Design App UI/UX & Motion Animation](https://dribbble.com/shots/27821170-HOMLY-AI-Interior-Design-App-UI-UX-Motion-Animation)
@@ -413,23 +481,20 @@ charcoal text, consistent spacing and borders, larger photo areas and clear
 selected/approved states. Retain sufficient contrast, text labels and keyboard
 focus. Reuse Flutter's Material controls and current data/services.
 
-### Local review prototype
+### Retained review files
 
-- [Desktop screen](../output/design-review/room-workspace-desktop.png)
-- [Phone screen](../output/design-review/room-workspace-mobile.png)
-- [Interactive layout proposal](../output/design-review/room-workspace-proposal.html)
+The earlier workspace prototype was superseded by the selected Focus Canvas
+implementation; its disposable files were removed during cleanup on 19 November.
+Current retained references:
 
-Checked in isolated Chrome at 1440px desktop and 390px phone width. Both fit the
-viewport without horizontal overflow. Preview checks passed for settings tabs,
-palette choice, request summary and the existing-image comparison slider. Image
-copy checksums match the originals. These checks validate the proposal, not the
-live Flutter UI or AI quality; the app source and database were not changed.
+- [Desktop widget capture](../output/design-review/focus-native-desktop.png)
+- [Phone widget capture](../output/design-review/focus-native-phone.png)
+- [Original selected B concept](../output/design-review/app-look-b-focus-canvas.png)
 
-The private files in output/design-review/ show this proposed layout using copies
-of the existing kitchen photo and an existing concept image. This is an interface
-proposal, not a second app, new generation, saving implementation, measured plan
-or completed multi-option feature. Its controls only change local preview state;
-the actual Flutter app, its database and the original image files are untouched.
+These captures use fictional sample photos and disposable in-memory storage.
+They are not evidence of physical-device acceptance or paid AI quality. Original
+kitchen photo/concept review copies are retained privately alongside them; the
+actual project data, source photos and Chrome profile were not cleared.
 
 The next implementation batch should cover the responsive workspace/navigation
 and existing-version comparison first, followed by the multi-result/precision

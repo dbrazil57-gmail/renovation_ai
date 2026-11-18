@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -31,7 +33,7 @@ void main() {
   tearDown(() => store.dispose());
 
   testWidgets(
-    'room palette is visible above photos and quick swatches save immediately',
+    'Style panel exposes palette and quick swatches save immediately',
     (tester) async {
       await store.setRoomPalette(room.id, '');
       await tester.pumpWidget(
@@ -40,7 +42,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('focus-section-style')));
+      await tester.pumpAndSettle();
       expect(find.text('Colour palette').hitTestable(), findsOneWidget);
+      await ensureFocusVisible(tester, find.byKey(const ValueKey('quick-palette-warm_neutrals')));
       expect(
         find.byKey(const ValueKey('quick-palette-warm_neutrals')).hitTestable(),
         findsOneWidget,
@@ -64,15 +69,17 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('focus-section-style')));
+    await tester.pumpAndSettle();
     expect(find.text('Colour palette').hitTestable(), findsOneWidget);
     final quick = find.byKey(const ValueKey('quick-palette-charcoal_walnut'));
     final horizontal = find.byWidgetPredicate(
       (widget) =>
           widget is Scrollable && widget.axisDirection == AxisDirection.right,
     );
-    await tester.scrollUntilVisible(quick, 170, scrollable: horizontal.first);
+    await tester.scrollUntilVisible(quick, 170, scrollable: horizontal.last);
     await tester.pumpAndSettle();
-    await tester.ensureVisible(quick);
+    await ensureFocusVisible(tester, quick);
     await tester.tap(quick);
     await tester.pumpAndSettle();
     expect(store.roomById(room.id)!.colourPaletteId, 'charcoal_walnut');
@@ -199,7 +206,8 @@ void main() {
       await tester.tap(find.text('Choose'));
       await tester.pumpAndSettle();
       expect(find.byType(Image), findsOneWidget);
-      await tester.ensureVisible(
+      await ensureFocusVisible(
+        tester,
         find.byKey(const ValueKey('palette-charcoal_walnut')),
       );
       await tester.pumpAndSettle();
@@ -260,23 +268,26 @@ void main() {
         TextField,
         'What should change?',
       );
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         instructions,
         350,
         scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
       await tester.enterText(instructions, 'Change only the island cupboards');
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.text('Change palette'),
         -250,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.ensureVisible(find.text('Change palette'));
+      await ensureFocusVisible(tester, find.text('Change palette'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Change palette'));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(
+      await ensureFocusVisible(
+        tester,
         find.byKey(const ValueKey('palette-charcoal_walnut')),
       );
       await tester.pumpAndSettle();
@@ -284,13 +295,14 @@ void main() {
       await tester.tap(find.text('Use palette'));
       await tester.pumpAndSettle();
       expect(store.roomById(room.id)!.colourPaletteId, 'charcoal_walnut');
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.text('Copy AI prompt'),
         300,
         scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Copy AI prompt'));
+      await ensureFocusVisible(tester, find.text('Copy AI prompt'));
       await tester.tap(find.text('Copy AI prompt'));
       await tester.pumpAndSettle();
       expect(copied, contains('COLOUR PALETTE: Charcoal & walnut'));

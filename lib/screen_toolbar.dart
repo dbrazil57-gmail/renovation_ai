@@ -5,6 +5,7 @@ import 'context_help.dart';
 /// Shared left-to-right order. Screens supply only their applicable tools.
 enum ScreenAction {
   save,
+  autosave,
   setup,
   undo,
   redo,
@@ -23,12 +24,16 @@ class ScreenTool {
   final String label;
   final VoidCallback? onPressed;
   final String? helpTitle, helpMessage;
+  final bool menuOnly;
+  final bool? checked;
   const ScreenTool(
     this.action, {
     required this.label,
     required this.onPressed,
     this.helpTitle,
     this.helpMessage,
+    this.menuOnly = false,
+    this.checked,
   });
   factory ScreenTool.help(
     BuildContext context, {
@@ -43,6 +48,7 @@ class ScreenTool {
   );
   IconData get icon => switch (action) {
     ScreenAction.save => Icons.save_outlined,
+    ScreenAction.autosave => Icons.sync,
     ScreenAction.setup => Icons.format_list_numbered,
     ScreenAction.undo => Icons.undo,
     ScreenAction.redo => Icons.redo,
@@ -65,8 +71,11 @@ class ScreenToolbar extends StatelessWidget {
     final ordered = [...tools]
       ..sort((a, b) => a.action.index.compareTo(b.action.index));
     final limit = MediaQuery.sizeOf(context).width < 600 ? 3 : 6;
-    final visible = ordered.take(limit).toList();
-    final overflow = ordered.skip(limit).toList();
+    final visible = ordered
+        .where((tool) => !tool.menuOnly)
+        .take(limit)
+        .toList();
+    final overflow = ordered.where((tool) => !visible.contains(tool)).toList();
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -90,22 +99,30 @@ class ScreenToolbar extends StatelessWidget {
                 ?.call(),
             itemBuilder: (_) => [
               for (final tool in overflow)
-                PopupMenuItem(
-                  value: tool.action,
-                  enabled: tool.onPressed != null,
-                  child: Row(
-                    children: [
-                      Icon(
-                        tool.icon,
-                        color: tool.onPressed == null
-                            ? Theme.of(context).disabledColor
-                            : Theme.of(context).colorScheme.onSurface,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(child: Text(tool.label)),
-                    ],
+                if (tool.checked != null)
+                  CheckedPopupMenuItem(
+                    value: tool.action,
+                    checked: tool.checked!,
+                    enabled: tool.onPressed != null,
+                    child: Text(tool.label),
+                  )
+                else
+                  PopupMenuItem(
+                    value: tool.action,
+                    enabled: tool.onPressed != null,
+                    child: Row(
+                      children: [
+                        Icon(
+                          tool.icon,
+                          color: tool.onPressed == null
+                              ? Theme.of(context).disabledColor
+                              : Theme.of(context).colorScheme.onSurface,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(child: Text(tool.label)),
+                      ],
+                    ),
                   ),
-                ),
             ],
           ),
       ],

@@ -1,5 +1,26 @@
 # Testing and storage reference
 
+Focus Canvas / chosen B is included in **APK 1.0.9**. It changes the home
+and workspace layout. Use Room for photos/analysis/source/approval, Style for palettes/style/Keep
+choices, Refine for instructions/generation, and Ideas for history/import/delete.
+The image, crop/markup/compare/refinement tools and version thumbnails stay visible.
+On desktop, controls sit beside the canvas; on phone they sit below it. Advanced
+edit mode and protected-feature fields are expandable in Refine. Autosave remains
+in More tools; local status remains visible. Check drafts and active AI work survive
+section switches, and restart retains photos, approvals and AI connection settings.
+Physical S21 and normal-browser visual acceptance remain manual checks.
+
+Latest requested phone test package: **1.0.9+10**, source `d67b148d3f`, at
+`output/mobile-test/renovision-test-1.0.9.apk`. Install as an update without
+uninstalling; package identity is unchanged and signing matches 1.0.8.
+185 automated tests pass and analysis is clean. The post-analysis chooser
+offers 1 design / 2 ideas / 3 ideas without starting generation. Review the brief,
+continue to final options and confirm the separate paid request count. Generate,
+use a chosen result, then reopen the project to verify settings and versions.
+Real-camera, provider quality and phone acceptance remain user checks. The
+selected B layout, Autosave shortcut and stronger distinct-concept briefs are
+included. Further crop/markup layout changes and live-camera overlays are not.
+
 Consolidated 15 November 2026. Detailed instructions formerly spread across
 three files. Run commands from the project root, `C:\Dev\renovision_ai`.
 See [current next steps](../CODEX_NEXT_STEPS.md) for what to test next and

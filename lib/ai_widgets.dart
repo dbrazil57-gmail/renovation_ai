@@ -339,6 +339,7 @@ class AiEditCard extends StatefulWidget {
   final ValueChanged<DesignVersion> onSaved;
   final ValueChanged<bool>? onPendingChanged;
   final bool showSavedPreview;
+  final bool compact;
   final RoomDraft? draft;
   const AiEditCard({
     super.key,
@@ -347,6 +348,7 @@ class AiEditCard extends StatefulWidget {
     required this.onSaved,
     this.onPendingChanged,
     this.showSavedPreview = true,
+    this.compact = false,
     this.draft,
   });
   @override
@@ -482,7 +484,7 @@ class _AiEditCardState extends State<AiEditCard>
                   const SizedBox(height: 12),
                   if (requests.length > 1)
                     const Text(
-                      'The same starting image and settings are used for every concept. Each result is saved before the next request. Stop after this image prevents further requests; the current request may still be billed.',
+                      'Each option starts from the same room but requests a distinct renovation scheme, not accessory changes. Your Keep choices and layout restrictions still apply. Each result saves before the next request. Stop after this image prevents further requests; the current request may still be billed.',
                     ),
                   for (final item in requests)
                     if (requests.length == 1)
@@ -663,50 +665,78 @@ class _AiEditCardState extends State<AiEditCard>
       ]),
       builder: (context, _) => Card(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(widget.compact ? 10 : 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const HelpHeading(
-                title: 'Generate inside Renovision',
-                message: 'The image selected in Working from is sent as the reference. Select an original room photo for fresh alternatives, or a saved design for variations on it. AI variation is requested, not guaranteed.\n\nMultiple design ideas makes 2 or 3 separate paid image requests from the same starting image. Compare styles separately uses one selected style per image; an extra concept blends them. With comparison off, every concept blends the selected influences. Each result saves before the next request; you can stop after the current image.',
-              ),
-              const SizedBox(height: 8),
-              Text(
-                widget.store.ai.connected
-                    ? 'OpenAI · ${widget.store.ai.model} · ${widget.store.ai.quality} quality. Uses the image currently selected in “Working from”.'
-                    : 'Connect AI in Settings to generate and save a result here.',
-              ),
-              const SizedBox(height: 10),
-              CheckboxListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Multiple design ideas'),
-                subtitle: Text(
-                  precise
-                      ? 'One image in precise correction mode.'
-                      : '2–3 images; each is a separate paid request.',
+              if (!widget.compact)
+                const HelpHeading(
+                  title: 'Generate inside Renovision',
+                  message: 'The image selected in Working from is sent as the reference. Select an original room photo for fresh alternatives, or a saved design for variations on it. AI variation is requested, not guaranteed.\n\nMultiple design ideas makes 2 or 3 separate paid image requests from the same starting image. Compare styles separately uses one selected style per image; an extra concept blends them. With comparison off, every concept blends the selected influences. Each result saves before the next request; you can stop after the current image.',
                 ),
-                value: count > 1,
-                onChanged:
-                    busy ||
-                        pending != null ||
-                        precise ||
-                        widget.store.ai.activity.active
-                    ? null
-                    : (value) => setCount(value == true ? 3 : 1),
-              ),
-              if (count > 1) ...[
+              if (!widget.compact) const SizedBox(height: 8),
+              if (!widget.compact)
+                Text(
+                  widget.store.ai.connected
+                      ? 'OpenAI · ${widget.store.ai.model} · ${widget.store.ai.quality} quality. Uses the image currently selected in “Working from”.'
+                      : 'Connect AI in Settings to generate and save a result here.',
+                ),
+              if (widget.compact) ...[
                 SegmentedButton<int>(
                   segments: const [
-                    ButtonSegment(value: 2, label: Text('2 concepts')),
-                    ButtonSegment(value: 3, label: Text('3 concepts')),
+                    ButtonSegment(value: 1, label: Text('1 design')),
+                    ButtonSegment(value: 2, label: Text('2 ideas')),
+                    ButtonSegment(value: 3, label: Text('3 ideas')),
                   ],
                   selected: {count},
                   onSelectionChanged:
-                      busy || pending != null || widget.store.ai.activity.active
+                      busy ||
+                          pending != null ||
+                          precise ||
+                          widget.store.ai.activity.active
                       ? null
                       : (values) => setCount(values.first),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    '$count paid image request${count == 1 ? '' : 's'} · confirm before sending',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ],
+              if (!widget.compact) const SizedBox(height: 10),
+              if (!widget.compact)
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Multiple design ideas'),
+                  subtitle: Text(
+                    precise ? 'One image in precise correction mode.' : '2–3 distinct renovation schemes, not accessory changes. Each is a separate paid request.',
+                  ),
+                  value: count > 1,
+                  onChanged:
+                      busy ||
+                          pending != null ||
+                          precise ||
+                          widget.store.ai.activity.active
+                      ? null
+                      : (value) => setCount(value == true ? 3 : 1),
+                ),
+              if (count > 1) ...[
+                if (!widget.compact)
+                  SegmentedButton<int>(
+                    segments: const [
+                      ButtonSegment(value: 2, label: Text('2 concepts')),
+                      ButtonSegment(value: 3, label: Text('3 concepts')),
+                    ],
+                    selected: {count},
+                    onSelectionChanged:
+                        busy ||
+                            pending != null ||
+                            widget.store.ai.activity.active
+                        ? null
+                        : (values) => setCount(values.first),
+                  ),
                 if ((widget.draft?.styleIds.length ?? 0) > 1)
                   CheckboxListTile(
                     contentPadding: EdgeInsets.zero,
@@ -742,7 +772,8 @@ class _AiEditCardState extends State<AiEditCard>
                   ),
                   child: const Text('Set up AI connection'),
                 ),
-              if (pending == null)
+              if (pending == null &&
+                  (!widget.compact || widget.store.ai.connected))
                 FilledButton.icon(
                   onPressed:
                       busy ||

@@ -25,7 +25,8 @@ class RoomStartChoice {
 
 class RoomStartDialog extends StatefulWidget {
   final RoomStarter? starter;
-  const RoomStartDialog({super.key, this.starter});
+  final String? initialRoomTypeId;
+  const RoomStartDialog({super.key, this.starter, this.initialRoomTypeId});
   @override
   State<RoomStartDialog> createState() => _RoomStartDialogState();
 }
@@ -40,7 +41,11 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
   void initState() {
     super.initState();
     starter = widget.starter;
-    type = starter?.roomTypeId ?? 'kitchen';
+    type =
+        starter?.roomTypeId ??
+        (roomTypes.containsKey(widget.initialRoomTypeId)
+            ? widget.initialRoomTypeId!
+            : 'kitchen');
     name = TextEditingController(text: roomTypes[type]);
   }
 

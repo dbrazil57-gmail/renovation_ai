@@ -107,7 +107,10 @@ void main() {
     final fromOlderName = await store.restoreBackup(store.backupFor(again.id));
     expect(fromOlderName.name, 'Claylands (restored)');
     expect(store.projects, hasLength(4));
-    expect(store.imageFor(store.roomsFor(fromOlderName.id).single.originalId), orderedEquals(original));
+    expect(
+      store.imageFor(store.roomsFor(fromOlderName.id).single.originalId),
+      orderedEquals(original),
+    );
   });
 
   test('backup round trip preserves exact originals, approvals and branch metadata', () async {

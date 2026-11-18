@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'dart:convert';
 import 'dart:async';
 import 'dart:typed_data';
@@ -120,7 +122,7 @@ void main() {
 
   Future<void> confirm(WidgetTester tester) async {
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Generate AI design'));
+    await ensureFocusVisible(tester, find.text('Generate AI design'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Generate AI design'));
     await tester.pumpAndSettle();
@@ -144,12 +146,13 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.text('Generate AI design'),
         350,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.ensureVisible(find.text('Generate AI design'));
+      await ensureFocusVisible(tester, find.text('Generate AI design'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Generate AI design'));
       await tester.pumpAndSettle();
@@ -160,16 +163,18 @@ void main() {
       );
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.text('Use whole-room renovation'),
         -350,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.ensureVisible(find.text('Use whole-room renovation'));
+      await ensureFocusVisible(tester, find.text('Use whole-room renovation'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Use whole-room renovation'));
       await tester.pump(const Duration(milliseconds: 700));
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.text('Generate AI design'),
         350,
         scrollable: find.byType(Scrollable).first,
@@ -269,12 +274,13 @@ void main() {
       );
       await tester.tap(find.text('Open room'));
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.text('Generate AI design'),
         350,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.ensureVisible(find.text('Generate AI design'));
+      await ensureFocusVisible(tester, find.text('Generate AI design'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Generate AI design'));
       await tester.pumpAndSettle();
@@ -322,7 +328,8 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.text('Generate AI design'),
         350,
         scrollable: find.byType(Scrollable).first,
@@ -371,7 +378,8 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.text('Generate AI design'),
         350,
         scrollable: find.byType(Scrollable).first,
@@ -472,7 +480,7 @@ void main() {
     expect(store.designsFor(room.id), isEmpty);
     expect(find.text('Retry saving result'), findsOneWidget);
     records.failDesignWrites = false;
-    await tester.ensureVisible(find.text('Retry saving result'));
+    await ensureFocusVisible(tester, find.text('Retry saving result'));
     await tester.tap(find.text('Retry saving result'));
     await tester.pumpAndSettle();
     expect(edits, 1);

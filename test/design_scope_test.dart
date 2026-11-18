@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -89,12 +91,13 @@ void main() {
     Finder target, {
     bool up = false,
   }) async {
-    await tester.scrollUntilVisible(
+    await revealFocusControl(
+      tester,
       target,
       up ? -300 : 300,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(target);
+    await ensureFocusVisible(tester, target);
     await tester.pumpAndSettle();
   }
 

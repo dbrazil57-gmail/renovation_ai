@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -150,7 +152,7 @@ void main() {
       expect(find.text('Choose your redesign options'), findsNothing);
       await analyse(tester);
       final choices = find.text('3 ideas');
-      await tester.ensureVisible(choices);
+      await ensureFocusVisible(tester, choices);
       await tester.tap(choices);
       await tester.pump(const Duration(milliseconds: 700));
       expect(draft.conceptCount, 3);
@@ -213,14 +215,14 @@ void main() {
         TextField,
         'AI-prepared design prompt (editable)',
       );
-      await tester.ensureVisible(field);
+      await ensureFocusVisible(tester, field);
       await tester.enterText(
         field,
         'Edited AI prompt: retain the wide window.',
       );
       await tester.pump(const Duration(milliseconds: 700));
       final use = find.text('Use this AI prompt for the next design');
-      await tester.ensureVisible(use);
+      await ensureFocusVisible(tester, use);
       await tester.pumpAndSettle();
       await tester.tap(use);
       await tester.pump(const Duration(milliseconds: 700));
@@ -265,7 +267,7 @@ void main() {
       expect(draft.analysis, isNotNull);
       expect(store.roomById(room.id)!.analysis, isNull);
       records.fail = false;
-      await tester.ensureVisible(find.text('Retry saving analysis'));
+      await ensureFocusVisible(tester, find.text('Retry saving analysis'));
       await tester.tap(find.text('Retry saving analysis'));
       await tester.pumpAndSettle();
       expect(store.roomById(room.id)!.analysis, isNotNull);
@@ -359,19 +361,21 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.text('Analyse room photos'),
         250,
         scrollable: find.byType(Scrollable).first,
       );
       gate = Completer<void>();
-      await tester.ensureVisible(find.text('Analyse room photos'));
+      await ensureFocusVisible(tester, find.text('Analyse room photos'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Analyse room photos'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send photos for analysis'));
       await tester.pump(const Duration(milliseconds: 300));
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         find.text('AI instructions'),
         400,
         scrollable: find.byType(Scrollable).first,
@@ -448,31 +452,33 @@ void main() {
       );
       await tester.pumpAndSettle();
       final analyseButton = find.text('Analyse room photos');
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         analyseButton,
         250,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.ensureVisible(analyseButton);
+      await ensureFocusVisible(tester, analyseButton);
       await tester.pumpAndSettle();
       await tester.tap(analyseButton);
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send photos for analysis'));
       await tester.pumpAndSettle();
       final use = find.text('Use this AI prompt for the next design');
-      await tester.ensureVisible(use);
+      await ensureFocusVisible(tester, use);
       await tester.pumpAndSettle();
       await tester.tap(use);
       await tester.pump(const Duration(milliseconds: 700));
       final generation = find.text('AI generation (optional)');
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         generation,
         400,
         scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
       // Connected AI controls are expanded by default.
-      await tester.ensureVisible(find.text('Generate AI design'));
+      await ensureFocusVisible(tester, find.text('Generate AI design'));
       await tester.tap(find.text('Generate AI design'));
       await tester.pumpAndSettle();
       expect(find.text('Send this edit to OpenAI?'), findsOneWidget);
@@ -490,7 +496,7 @@ void main() {
       expect(store.designsFor(room.id).single.prompt, submitted!['prompt']);
       // Switch back to the original viewpoint, then change the user brief.
       // Any selected new design already counts as a stale source.
-      await tester.ensureVisible(find.text('Generate AI design'));
+      await ensureFocusVisible(tester, find.text('Generate AI design'));
       await tester.tap(find.text('Generate AI design'));
       await tester.pumpAndSettle();
       expect(find.textContaining('no longer matches'), findsOneWidget);

@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -80,13 +82,14 @@ void main() {
         TextField,
         'What should change?',
       );
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         instructions,
         350,
         scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
-      await tester.ensureVisible(instructions);
+      await ensureFocusVisible(tester, instructions);
       await tester.enterText(instructions, 'Unsaved skirting instructions');
       await tester.tap(find.byTooltip('Rename room'));
       await tester.pumpAndSettle();
@@ -129,13 +132,14 @@ void main() {
       );
       await tester.pumpAndSettle();
       final menu = find.byTooltip('Review options for ${design.title}');
-      await tester.scrollUntilVisible(
+      await revealFocusControl(
+        tester,
         menu,
         350,
         scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
-      await tester.ensureVisible(menu);
+      await ensureFocusVisible(tester, menu);
       await tester.pumpAndSettle();
       expect(find.textContaining('Approved baseline • Passed'), findsOneWidget);
       await tester.tap(menu);

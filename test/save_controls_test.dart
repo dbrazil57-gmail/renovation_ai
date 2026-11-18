@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
@@ -113,7 +115,8 @@ void main() {
     await tester.tap(find.text('Open room'));
     await tester.pumpAndSettle();
     final changes = find.widgetWithText(TextField, 'What should change?');
-    await tester.scrollUntilVisible(
+    await revealFocusControl(
+      tester,
       changes,
       400,
       scrollable: find.byType(Scrollable).first,

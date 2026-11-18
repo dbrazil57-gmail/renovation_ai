@@ -21,12 +21,14 @@ class ExpandableImage extends StatelessWidget {
   final String title;
   final double height;
   final bool inlineZoom;
+  final bool showHint;
   const ExpandableImage({
     super.key,
     required this.bytes,
     required this.title,
     this.height = 260,
     this.inlineZoom = false,
+    this.showHint = true,
   });
 
   @override
@@ -37,6 +39,19 @@ class ExpandableImage extends StatelessWidget {
       cacheWidth: 1200,
       gaplessPlayback: true,
       excludeFromSemantics: true,
+      frameBuilder: (context, child, frame, synchronous) =>
+          synchronous || frame != null
+          ? child
+          : Center(
+              child: Material(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(8),
+                child: const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Loading photo…'),
+                ),
+              ),
+            ),
     );
     void open() => openImageViewer(context, bytes, title: title);
     return Column(
@@ -78,10 +93,11 @@ class ExpandableImage extends StatelessWidget {
             ),
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.only(top: 6),
-          child: Text('Tap image to enlarge and zoom'),
-        ),
+        if (showHint)
+          const Padding(
+            padding: EdgeInsets.only(top: 6),
+            child: Text('Tap image to enlarge and zoom'),
+          ),
       ],
     );
   }
