@@ -4,11 +4,9 @@ import 'package:material_ui/material_ui.dart';
 
 import 'models.dart';
 import 'store.dart';
+import 'room_camera.dart';
 
-bool get supportsRoomCamera =>
-    !kIsWeb &&
-    (defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.iOS);
+bool get supportsRoomCamera => supportsLiveRoomCamera;
 
 Future<bool?> chooseRoomPhotoSource(BuildContext context) => showDialog<bool>(
   context: context,
@@ -21,7 +19,7 @@ Future<bool?> chooseRoomPhotoSource(BuildContext context) => showDialog<bool>(
           child: const ListTile(
             leading: Icon(Icons.camera_alt_outlined),
             title: Text('Take photo'),
-            subtitle: Text('Use your phone camera'),
+            subtitle: Text('Open the live camera preview'),
           ),
         ),
       SimpleDialogOption(
@@ -43,9 +41,16 @@ Future<bool?> chooseRoomPhotoSource(BuildContext context) => showDialog<bool>(
 Future<List<Uint8List>?> selectRoomPhotos({
   required int remaining,
   bool camera = false,
+  Future<Uint8List?> Function()? capture,
 }) async {
   if (remaining <= 0) {
     throw ArgumentError('This room already has 6 photos.');
+  }
+  if (camera && capture != null) {
+    final image = await capture();
+    if (image == null) return null;
+    validateRoomCapture(image);
+    return [image];
   }
   final picker = ImagePicker();
   final captured = camera
@@ -113,7 +118,11 @@ class _RoomPhotosCardState extends State<RoomPhotosCard> {
           await ((camera ? widget.takePhoto : widget.pickPhotos)?.call(
                 remaining,
               ) ??
-              selectRoomPhotos(remaining: remaining, camera: camera));
+              selectRoomPhotos(
+                remaining: remaining,
+                camera: camera,
+                capture: () => captureRoomPhoto(context),
+              ));
       if (images == null) return;
       await widget.store.addRoomPhotos(widget.room.id, images);
       if (mounted) {

@@ -3,6 +3,28 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
+19 November camera source update (not packaged in APK 1.0.9): embedded live
+preview, still capture/retake, immutable room-photo saving, capture-to-design
+navigation, frozen before/after slider and an opt-in manual live overlay.
+Only in-app designs with a recorded source for the chosen saved view are offered.
+Align the original ghost image, then show the design and adjust opacity; moving
+breaks alignment. Backgrounding/rotation resets the overlay. Permission errors
+offer retry; camera resources close on background/exit. Save failures retain the
+capture for local retry or explicit discard. Six-photo limits remain. Project
+exports include captures/designs/provenance; connection credentials stay separate.
+No continuous frame upload, automatic AI spending, tracked AR or new APK.
+Camera lifecycle/storage/widget tests use synthetic photos and fake devices;
+physical S21 camera/rotation, normal Chrome permissions and provider quality
+remain manual acceptance checks. See the camera test checklist.
+Validation: **199 tests pass** (14 camera tests), static analysis clean, web
+release compilation passed. Isolated Chrome widget tests stalled during Flutter
+bootstrap before any test ran, with browser runtime errors; cancelled that run.
+This is not a passing browser/camera acceptance result. Existing 1.0.9 APK hash
+is unchanged.
+Android's release manifest task also passed: camera permission present, camera
+hardware optional, unused microphone/external-storage write permissions removed. This
+checks native permission merging without packaging an APK or testing hardware.
+
 Folder cleanup, 19 November: removed 7.38 GiB of generated builds/caches, stale
 SDK download, temporary preview profiles/tooling and old diagnostic logs.
 31 older browser-preview profiles archived rather than deleted. App source,
@@ -19,7 +41,8 @@ static analysis clean. Universal APK built in 104.2 seconds at
 Package/version verified and signing certificate matches 1.0.8 for an in-place
 update. Includes Focus Canvas, compact controls, Autosave menu, camera/gallery,
 post-analysis counts and distinct-concept briefs. Further crop/markup compaction,
-expandable bottom-sheet gestures and live-camera renovation remain planned.
+expandable bottom-sheet gestures remain planned. Camera source work above is
+newer than this APK.
 No user data cleared and no paid AI calls made by the agent. Real S21 acceptance
 and actual AI image diversity remain user tests.
 
@@ -103,12 +126,10 @@ Packaged in requested 1.0.7 APK; physical S21 acceptance and picker process-kill
 remain to be checked. All 175 automated tests passed, including camera/gallery
 routing, cancellation/failure and persistence on reopening the local store.
 
-Camera Renovation View (priority updated 18 November): requested as the main new
-experience, ahead of optional skins. Existing still-camera capture and saved
-before/after comparison can be reused. Embedded live camera preview, capture-to-
-generation screen, camera overlays and tracked AR are not implemented. First
-target is explicit capture/generation followed by frozen-view slider comparison;
-instantaneous whole-room transformation while moving remains a research goal.
+Camera Renovation View: first prototype implemented in 19 November source as
+described above. Saved capture/design comparison and manual same-view blending
+are available; moving-camera tracking and instantaneous whole-room transformation
+remain research goals. This supersedes the earlier still-camera-only source path.
 
 Contextual toolbars (1.0.6+7 / `3ffefb376a`): shared icons/order across project,
 room setup/workspace, editors, viewing/comparison and relevant root/settings
@@ -441,9 +462,9 @@ rooms/backups without this optional preference remain readable.
 - Payments, credits/subscriptions, purchase verification and production billing.
 - Public hosting, customer authentication and public API service.
 - Play Store release, signing/distribution and launch compliance work.
-- Consistent moving-camera whole-room AR/video transformation. Same-view camera
-  capture/comparison and later manual alignment overlays are now prioritised
-  prototypes, not implemented features.
+- Consistent moving-camera whole-room AR/video transformation. Saved-view
+  comparison and manual overlays now have a source prototype; tracked rendering
+  is deferred.
 - Tradie/client/job features, branded exports and team/enterprise roles.
 - iOS build/device verification and release.
 

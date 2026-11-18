@@ -510,7 +510,10 @@ class RenovisionStore extends ChangeNotifier {
     }
   }
 
-  Future<void> addRoomPhotos(String roomId, List<Uint8List> images) async {
+  Future<List<String>> addRoomPhotos(
+    String roomId,
+    List<Uint8List> images,
+  ) async {
     final room = roomById(roomId);
     if (room == null) throw StateError('Room is unavailable.');
     _validateRoomPhotos(images, existingCount: room.photoIds.length);
@@ -530,6 +533,7 @@ class RenovisionStore extends ChangeNotifier {
           additionalPhotoIds: [...latest.additionalPhotoIds, ...ids],
         ),
       );
+      return ids;
     } catch (_) {
       for (final id in ids) {
         try {

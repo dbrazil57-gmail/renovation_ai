@@ -3,6 +3,29 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
+## Current camera batch — 19 November, source after APK 1.0.9
+
+Implemented embedded preview/still capture, saved-view AI workflow, frozen
+before/after slider and opt-in manual live overlay. Take photo now uses the
+embedded camera; the room workspace's camera tool opens Camera renovation.
+Capture new view -> Design saved view -> analyse/review/generate normally ->
+Back -> compare or Live view -> Enable manual overlay -> Align original ->
+Show design. Changing sliders/modes does not call AI. Captures reuse existing
+room photos/exports; originals, approvals and device AI settings are preserved.
+Failed saves retain the capture for retry; linked project files save on exit.
+Resources close on background and exit; alignment resets on background/rotation.
+
+Next: normal Chrome camera permission at the existing address/profile, then a
+requested APK and S21 preview/capture/rotation/background/save/restart acceptance.
+Use docs/TESTING_GUIDE.md's camera checklist. No APK built in this batch and no
+paid AI calls made. Real-time generation, tracked surfaces/pose, moving-camera
+AR and saved composite exports are separate future work; this is a manually
+aligned flat-image overlay. Never send continuous video or silently retry AI.
+Validation: 199 VM/widget tests pass, clean static analysis and successful web
+release compile. Isolated Chrome tests hit the existing Flutter bootstrap/runtime
+failure before any test ran and were cancelled; normal-browser acceptance is
+still required. APK 1.0.9 SHA256 verified unchanged.
+
 ## Current regroup: finish the core experience before adding features
 
 Project folder cleanup completed 19 November: 7.38 GiB of generated build/cache,
@@ -178,8 +201,8 @@ Camera Renovation View priority — user clarification, 18 November: the key new
 experience is an embedded camera view, explicitly capture/generate from that
 view, then reveal the saved redesign with a before/after slider or opacity
 overlay and save/refine it. Prioritise a same-view camera prototype ahead of
-optional skins. The existing camera path only launches still capture; this new
-preview is not implemented. First milestone: smooth camera preview, explicit
+optional skins. This proposal's first milestone is now implemented in 19 November
+source, with physical-device acceptance pending: smooth camera preview, explicit
 capture and paid generation with visible progress, frozen-frame comparison,
 immutable source/result saving and reopening. Next: manual return-to-view
 alignment with a clearly labelled approximate overlay. A static generated image
@@ -621,7 +644,7 @@ these gaps distinct from features merely needing live/device verification.
 | Fast tool navigation with visible progress | Synchronous editor decode identified; asynchronous preview change partly applied | Finish editor tests and image loading states, measure large-image behaviour, validate/build before release |
 | More visual workspace | Sample gallery/room cards implemented | Photo-led desktop/phone workspace redesign remains a proposal |
 | Reference images / kitchen design board | Ordinary multi-angle images and sketch/crop exist | Separate inspiration/material/sketch roles and design-board export missing |
-| Camera preview, snapshots, refine | Still-camera entry point exists, Android unverified | Embedded preview, saved camera composites and same-view overlay missing; tracked AR later |
+| Camera preview, snapshots, refine | Embedded preview, saved capture/design flow, frozen comparison and manual live overlay in 19 November source | Chrome/S21 camera acceptance, composite export and tracked AR remain; no new APK |
 | Competitor/pricing lessons | Research and priorities recorded in existing reference | Convert into verified workflows; no billing or competitor quality benchmark yet |
 | Progress/continuity | Analysis/generation have waiting states; room saving status exists | Finish editor states and clearer stage feedback. Agent updates cannot replace the client's thinking UI or guarantee client reconnection |
 
@@ -782,8 +805,8 @@ the private relay launcher, never chat/source. Do not run paid requests silently
 - Project search/filtering, safe deletion/undo and richer version review.
 - Android setup and real device tests: capture, permissions, gestures, pickers,
   saved projects after restart, interrupted operations and backup round trips.
-- Camera path: verify existing still capture, then an explicitly approximate
-  same-view comparison overlay. Moving-camera whole-room AR is separate future
+- Camera path: verify the new embedded preview, capture/design comparison and
+  explicitly approximate manual overlay. Moving-camera whole-room AR is separate future
   research; a generated flat image is not a tracked room model.
 - Keep billing/public hosting/store release deferred. A$4.99 starter / A$9.99
   room packs are price hypotheses only; measure analysis, outputs, refinements,

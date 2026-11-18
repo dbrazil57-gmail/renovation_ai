@@ -607,9 +607,11 @@ price will not compensate for lost projects or repeated unwanted changes.
 
 
 Recorded 14 November 2026; priority updated 18 November following the user's
-clarification. Camera Renovation View is now the main proposed new experience,
-ahead of optional skins. Embedded camera preview and overlays remain unimplemented;
-continuous, consistent whole-room AR is a separate research milestone.
+clarification. Camera Renovation View is the main new experience, ahead of
+optional skins. Its first embedded-preview/capture/design/frozen-comparison and
+manual-overlay prototype is implemented in 19 November source (after APK 1.0.9).
+Physical-device acceptance is pending. Continuous, consistent whole-room AR
+is a separate research milestone; composite exports are not yet implemented.
 
 ### Updated first milestone and acceptance
 

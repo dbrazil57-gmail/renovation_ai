@@ -7,6 +7,14 @@ OpenAI analysis and editing can use your personal API key directly over HTTPS,
 without a laptop. The local relay remains optional; manual AI handoff is available.
 There is no production backend or payment integration.
 
+Camera update (19 November, source after APK 1.0.9): Take photo opens an
+embedded preview. In a room, use the camera-view tool to capture/save a view,
+design it through the existing analysis/confirmation workflow, then return for
+a before/after slider or manually aligned live overlay. Captures and AI results
+use existing project storage/backups. The overlay is a flat image for a matching
+viewpoint; it does not track movement or generate video. Chrome needs camera
+permission on localhost/HTTPS. No new APK built; S21 acceptance is still needed.
+
 The selected Focus Canvas design is included in test APK **1.0.9+10**:
 a camera-first Projects home and a workspace with a persistent image/version
 strip and Room, Style, Refine and Ideas controls. Desktop uses a split layout.

@@ -1,5 +1,49 @@
 # Testing and storage reference
 
+## Camera renovation prototype — 19 November source, after APK 1.0.9
+
+No APK built for this camera batch. Do not expect these controls in the existing
+1.0.9 install. Chrome uses the same localhost address/profile; allow camera
+access (remote browser addresses require HTTPS). Camera tests use synthetic
+photos/fake feeds; real S21 and normal Chrome acceptance remain to be done.
+199 VM/widget tests pass, including 14 camera tests; analysis is clean and the
+web release compiles. An isolated Chrome test run stalled during Flutter startup
+with browser runtime errors before any test ran, and was cancelled. Do not treat
+the VM tests or successful compile as physical camera or browser acceptance.
+Android `:app:processReleaseMainManifest` passed without building an APK. The
+merged manifest permits camera use, keeps camera hardware optional, and contains
+no microphone or external-storage write permission for this still-image flow.
+
+1. Take photo from a project: embedded preview, Capture photo, Retake, Use photo.
+   Cancel and denied permission must preserve existing work; gallery still works.
+2. Open a room; choose the **Camera renovation view** tool beside crop/markup.
+   Live preview should open without an AI request. Capture new view saves a new
+   room photo, without replacing the original, primary photo or approved baseline.
+3. Choose **Design saved view**. Check Working from shows the chosen View, then
+   analyse, review the brief and confirm paid generation through the usual flow.
+   Choose a result and go Back (or use the camera tool) to return to comparison.
+4. Compare reveals that capture and its design with the slider. Live view ->
+   Enable manual overlay -> Align original: match the real camera to the ghost
+   photo, keep still, then Show design and adjust opacity. It is approximate,
+   with no pose tracking; moving changes perspective and breaks alignment.
+5. Rotate, background/resume, deny/reallow camera and leave/reopen the screen.
+   Resources should release, Retry should recover, and overlays stay off until
+   explicitly enabled again. Preview must not stretch or request microphone use.
+6. Retry a failed capture save locally, without recapturing or calling AI; Back
+   must offer explicit discard while unsaved. Six saved photos prevent additional
+   captures, while saved-view comparison/design still work. Linked project files
+   flush on exit; Settings is available to reconnect/change file destinations.
+7. Save/Open project and restart: captures, generated versions, prompts/settings
+   and recorded source links remain. AI credentials remain on this device. Older
+   imports without source provenance, crop/markup descendants and deleted results
+   are not overlay choices; use a full saved photo for the camera design workflow.
+
+The live feed stays on device. Only an explicit, separately confirmed analysis
+or generation sends a saved photo. No automatic video upload, instantaneous
+regeneration, tracked AR or composited-image export is implemented. Unfinished
+captures exist in memory until saved; force-killing during a failed save cannot
+recover them. Existing images/files are retained.
+
 Focus Canvas / chosen B is included in **APK 1.0.9**. It changes the home
 and workspace layout. Use Room for photos/analysis/source/approval, Style for palettes/style/Keep
 choices, Refine for instructions/generation, and Ideas for history/import/delete.

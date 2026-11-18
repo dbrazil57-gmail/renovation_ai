@@ -30,6 +30,8 @@ import 'image_viewer.dart';
 import 'screen_toolbar.dart';
 import 'focus_workspace.dart';
 import 'room_features.dart';
+import 'room_camera.dart';
+import 'camera_room_view.dart';
 
 Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
     room.setupComplete
@@ -73,7 +75,11 @@ Future<void> startRoomWithPhotos(
     if (choice == null || !context.mounted) return;
     final useCamera = camera ?? await chooseRoomPhotoSource(context);
     if (useCamera == null || !context.mounted) return;
-    final images = await selectRoomPhotos(remaining: 6, camera: useCamera);
+    final images = await selectRoomPhotos(
+      remaining: 6,
+      camera: useCamera,
+      capture: () => captureRoomPhoto(context),
+    );
     if (images == null || images.isEmpty || !context.mounted) return;
     final destination = project ?? await store.createProject(newProjectName!);
     final room = await store.createRoom(
@@ -1131,11 +1137,15 @@ class WorkspaceScreen extends StatefulWidget {
   final RenovisionStore store;
   final String roomId;
   final String? initialDesignId;
+  final String? initialPhotoId;
+  final ValueChanged<String?>? onDesignSelected;
   const WorkspaceScreen({
     super.key,
     required this.store,
     required this.roomId,
     this.initialDesignId,
+    this.initialPhotoId,
+    this.onDesignSelected,
   });
   @override
   State<WorkspaceScreen> createState() => _WorkspaceScreenState();
@@ -1295,9 +1305,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     draft.addListener(_updateExitGuard);
     widget.store.documents.addListener(_updateExitGuard);
     WidgetsBinding.instance.addObserver(this);
-    selectedId = widget.initialDesignId ?? room.approvedDesignId;
+    final cameraPhoto = room.photoIds.contains(widget.initialPhotoId);
+    selectedId = cameraPhoto
+        ? null
+        : widget.initialDesignId ?? room.approvedDesignId;
+    if (cameraPhoto) draft.setPrecise(false);
     focusSection = selectedId == null ? FocusSection.room : FocusSection.refine;
-    selectedPhotoId = room.primaryId;
+    selectedPhotoId = cameraPhoto ? widget.initialPhotoId! : room.primaryId;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       try {
@@ -1366,6 +1380,47 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   Future<void> _saveAndClose() async {
     if (aiPending) return;
     if (await _save() && !draft.dirty && mounted) Navigator.maybePop(context);
+  }
+
+  void _selectDesign(String? id) {
+    setState(() => selectedId = id);
+    widget.onDesignSelected?.call(id);
+  }
+
+  Future<void> _openCameraRoom() async {
+    if (aiPending || !await _save() || !mounted) return;
+    if (widget.initialPhotoId != null) {
+      await Navigator.maybePop(context);
+      return;
+    }
+    final room = widget.store.roomById(widget.roomId)!;
+    final photoId =
+        roomPhotoForDesign(
+          room,
+          widget.store.designsFor(room.id),
+          selectedId,
+        ) ??
+        selectedPhotoId;
+    // Replace this workspace so two independent room drafts cannot overwrite
+    // each other when the camera opens its own design workspace.
+    await Navigator.pushReplacement<void, void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CameraRoomView(
+          store: widget.store,
+          roomId: room.id,
+          initialPhotoId: photoId,
+          initialDesignId: selectedId,
+          settingsBuilder: (_) => settingsPage(widget.store),
+          workspace: (photo, onSelected) => WorkspaceScreen(
+            store: widget.store,
+            roomId: room.id,
+            initialPhotoId: photo,
+            onDesignSelected: onSelected,
+          ),
+        ),
+      ),
+    );
   }
 
   String _templatePrompt(RenovationRoom room) =>
@@ -1522,8 +1577,14 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       title: title,
       prompt: _prompt(room),
       parentId: selectedId,
+      sourceImageId: selectedId == null
+          ? selectedPhotoId
+          : widget.store
+                .designsFor(room.id)
+                .firstWhere((d) => d.id == selectedId)
+                .imageId,
     );
-    if (mounted) setState(() => selectedId = d.id);
+    if (mounted) _selectDesign(d.id);
   }
 
   Future<void> _editReference(
@@ -1545,8 +1606,14 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       title: sketch ? 'Annotated reference' : 'Focus crop',
       prompt: _prompt(room),
       parentId: selectedId,
+      sourceImageId: selectedId == null
+          ? selectedPhotoId
+          : widget.store
+                .designsFor(room.id)
+                .firstWhere((d) => d.id == selectedId)
+                .imageId,
     );
-    if (mounted) setState(() => selectedId = newVersion.id);
+    if (mounted) _selectDesign(newVersion.id);
   }
 
   @override
@@ -1663,6 +1730,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                     showHint: false,
                   ),
             imageTools: [
+              if (supportsLiveRoomCamera)
+                IconButton(
+                  tooltip: 'Camera renovation view',
+                  onPressed: aiPending ? null : _openCameraRoom,
+                  icon: const Icon(Icons.videocam_outlined),
+                ),
               IconButton(
                 tooltip: 'Crop / focus',
                 onPressed: aiPending
@@ -1721,6 +1794,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   selected: selectedId == design.id,
                   onTap: () => setState(() {
                     selectedId = design.id;
+                    widget.onDesignSelected?.call(design.id);
                     focusSection = FocusSection.refine;
                   }),
                 ),
@@ -1778,6 +1852,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                             } else {
                               selectedId = id;
                             }
+                            widget.onDesignSelected?.call(selectedId);
                           }),
                         ),
                         const SizedBox(height: 14),
@@ -1952,7 +2027,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   },
                   buildRequest: () => _aiRequest(room),
                   onSaved: (design) {
-                    if (mounted) setState(() => selectedId = design.id);
+                    if (mounted) _selectDesign(design.id);
                   },
                 ),
                 ExpansionTile(
@@ -2069,7 +2144,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                               ? 'Passed'
                               : 'Awaiting review'}\n${d.parentId == null ? 'From original' : 'Branched version'} • ${d.created.toLocal().toString().substring(0, 16)}',
                         ),
-                        onTap: () => setState(() => selectedId = d.id),
+                        onTap: () => _selectDesign(d.id),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
