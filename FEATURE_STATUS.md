@@ -3,6 +3,19 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
+Home cover correction (19 November source, after APK 1.0.9): the opening hero
+previously displayed the most recently opened room's primary photo. It now uses
+the bundled fictional coastal living-room sample by default. Wallpaper control
+on the banner and Settings > Home cover offer six app examples and saved project
+photos/designs, plus Use default. The explicit choice persists on this device
+and no longer follows room navigation. Missing/deleted choices fall back to an
+app sample. No real room photo is added to bundled assets, deleted or overwritten;
+project/AI settings and resume behaviour are preserved. No new APK built.
+Validation: 205 tests pass, including six cover/default/persistence/failure/layout
+checks, with clean static analysis. Banner content can grow for large text instead
+of clipping its controls on narrow phones.
+Web release build passed. Normal Chrome and S21 visual acceptance remain manual.
+
 19 November camera source update (not packaged in APK 1.0.9): embedded live
 preview, still capture/retake, immutable room-photo saving, capture-to-design
 navigation, frozen before/after slider and an opt-in manual live overlay.

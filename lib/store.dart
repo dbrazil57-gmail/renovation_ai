@@ -12,6 +12,7 @@ import 'design_palettes.dart';
 import 'design_styles.dart';
 import 'room_features.dart';
 import 'project_documents.dart';
+import 'room_starters.dart';
 
 /// Stage 1 local-only prototype storage. Photos are kept in a dedicated box.
 /// For production-scale image libraries, move large originals to app-private
@@ -94,6 +95,59 @@ class RenovisionStore extends ChangeNotifier {
   Future<void> rememberRoom(String roomId) async {
     if (roomById(roomId) == null) return;
     await records.put('settings:resume', {'roomId': roomId});
+    notifyListeners();
+  }
+
+  static const defaultHomeCoverSampleId = 'coastal_living';
+
+  String get homeCoverSampleId {
+    final saved = records.get('settings:home_cover');
+    final id = saved is Map ? saved['sampleId'] : null;
+    return roomStarters.any((sample) => sample.id == id)
+        ? id as String
+        : defaultHomeCoverSampleId;
+  }
+
+  String get homeCoverAsset =>
+      roomStarters.firstWhere((sample) => sample.id == homeCoverSampleId).asset;
+
+  bool _validHomeCoverImage(String roomId, String imageId) {
+    final room = roomById(roomId);
+    return room != null &&
+        projectById(room.projectId) != null &&
+        imageFor(imageId) != null &&
+        (room.photoIds.contains(imageId) ||
+            designsFor(roomId).any((design) => design.imageId == imageId));
+  }
+
+  String? get homeCoverImageId {
+    final saved = records.get('settings:home_cover');
+    if (saved is! Map ||
+        saved['roomId'] is! String ||
+        saved['imageId'] is! String) {
+      return null;
+    }
+    return _validHomeCoverImage(saved['roomId'], saved['imageId'])
+        ? saved['imageId'] as String
+        : null;
+  }
+
+  Future<void> setHomeCoverSample(String id) async {
+    if (!roomStarters.any((sample) => sample.id == id)) {
+      throw ArgumentError('Choose an app example.');
+    }
+    await records.put('settings:home_cover', {'sampleId': id});
+    notifyListeners();
+  }
+
+  Future<void> setHomeCoverImage(String roomId, String imageId) async {
+    if (!_validHomeCoverImage(roomId, imageId)) {
+      throw ArgumentError('Choose an available room photo or design.');
+    }
+    await records.put('settings:home_cover', {
+      'roomId': roomId,
+      'imageId': imageId,
+    });
     notifyListeners();
   }
 

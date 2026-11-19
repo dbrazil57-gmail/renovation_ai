@@ -7,6 +7,12 @@ OpenAI analysis and editing can use your personal API key directly over HTTPS,
 without a laptop. The local relay remains optional; manual AI handoff is available.
 There is no production backend or payment integration.
 
+Home cover (source after APK 1.0.9): the opening banner defaults to the bundled,
+fictional coastal living-room sample instead of the last-opened room's original.
+Use the banner's wallpaper button or Settings > Home cover to choose an app
+example or a saved room photo/design. This device preference survives restart;
+it does not change room originals, approval, the Continue shortcut or AI settings.
+
 Camera update (19 November, source after APK 1.0.9): Take photo opens an
 embedded preview. In a room, use the camera-view tool to capture/save a view,
 design it through the existing analysis/confirmation workflow, then return for

@@ -3,6 +3,18 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
+Home cover correction (19 November, source after APK 1.0.9): opening banner now
+defaults to the fictional bundled coastal-living sample. Change home cover on
+the banner or in Settings selects an app example or saved project photo/design;
+Use default restores the app sample. Choice is device-local and independent of
+Continue/last-opened room; no room images, primary photos, approval or AI settings
+are changed. Save failures keep the previous choice; unavailable images fall
+back to the sample. Include this with camera changes in the next requested APK.
+Validation: all 205 tests pass and static analysis is clean. Six new cover tests
+include saved-choice restart, unchanged room data, missing/deleted choices,
+failed-save preservation and narrow-screen large-text behaviour.
+Web release build passed; verify the new cover on normal Chrome/S21 when testing.
+
 ## Current camera batch — 19 November, source after APK 1.0.9
 
 Implemented embedded preview/still capture, saved-view AI workflow, frozen

@@ -271,30 +271,39 @@ class FocusVersionThumbnail extends StatelessWidget {
 
 class FocusHomeHero extends StatelessWidget {
   final Uint8List? image;
+  final String imageAsset;
   final VoidCallback? takePhoto;
+  final VoidCallback? changeCover;
   final VoidCallback choosePhotos;
   const FocusHomeHero({
     super.key,
     this.image,
+    this.imageAsset = 'assets/inspiration/coastal-living.png',
     this.takePhoto,
+    this.changeCover,
     required this.choosePhotos,
   });
   @override
   Widget build(BuildContext context) => ClipRRect(
     borderRadius: BorderRadius.circular(20),
-    child: SizedBox(
-      height: 300 * MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          image == null
-              ? Image.asset(
-                  'assets/inspiration/charcoal-kitchen.png',
+    child: Stack(
+      children: [
+        Positioned.fill(
+          child: image == null
+              ? Image.asset(imageAsset, cacheWidth: 1000, fit: BoxFit.cover)
+              : Image.memory(
+                  image!,
                   cacheWidth: 1000,
                   fit: BoxFit.cover,
-                )
-              : Image.memory(image!, cacheWidth: 1000, fit: BoxFit.cover),
-          const DecoratedBox(
+                  errorBuilder: (_, _, _) => Image.asset(
+                    imageAsset,
+                    cacheWidth: 1000,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+        ),
+        const Positioned.fill(
+          child: DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -307,26 +316,46 @@ class FocusHomeHero extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
+        ),
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 300),
+          child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Capture your room',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w600,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: const Text(
+                        'Capture your room',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 30,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    if (changeCover != null)
+                      IconButton(
+                        tooltip: 'Change home cover',
+                        onPressed: changeCover,
+                        style: IconButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.black45,
+                        ),
+                        icon: const Icon(Icons.wallpaper_outlined),
+                      ),
+                  ],
                 ),
                 Text(
                   image == null
                       ? 'Sample room · start with your own photo'
-                      : 'Your saved room · ready for another idea',
+                      : 'Your chosen cover',
                   style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
-                const Spacer(),
+                const SizedBox(height: 96),
                 if (takePhoto != null) ...[
                   SizedBox(
                     width: double.infinity,
@@ -349,8 +378,8 @@ class FocusHomeHero extends StatelessWidget {
               ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     ),
   );
 }

@@ -1,5 +1,18 @@
 # Testing and storage reference
 
+## Home cover — source after APK 1.0.9
+
+Start with an existing saved project: the first banner should show the bundled
+fictional coastal living room, not the last-opened room's original photograph.
+Continue should still open the saved room. Choose the banner's wallpaper control
+or Settings > Home cover; select an app example or use My projects to choose a
+saved photo/design. Reopen the app and visit another room: the chosen cover must
+remain. Use default returns to the app sample without deleting any photos.
+Check small screens/large text, cancel and save-failure retry. A deleted/missing
+design should fall back to the sample. Cover preferences are saved only on this
+device/profile, separately from project exports and AI credentials. This update
+does not build an APK or include any real room photo in the shipped assets.
+
 ## Camera renovation prototype — 19 November source, after APK 1.0.9
 
 No APK built for this camera batch. Do not expect these controls in the existing

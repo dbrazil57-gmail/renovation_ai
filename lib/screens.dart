@@ -32,6 +32,7 @@ import 'focus_workspace.dart';
 import 'room_features.dart';
 import 'room_camera.dart';
 import 'camera_room_view.dart';
+import 'home_cover_widgets.dart';
 
 Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
     room.setupComplete
@@ -453,9 +454,11 @@ class ProjectsTab extends StatelessWidget {
     builder: (context, _) => PageFrame(
       children: [
         FocusHomeHero(
-          image: store.resumeRoom == null
+          image: store.homeCoverImageId == null
               ? null
-              : store.imageFor(store.resumeRoom!.primaryId),
+              : store.imageFor(store.homeCoverImageId!),
+          imageAsset: store.homeCoverAsset,
+          changeCover: () => chooseHomeCover(context, store),
           takePhoto: supportsRoomCamera
               ? () => _start(context, camera: true)
               : null,
@@ -1061,6 +1064,7 @@ class SettingsTab extends StatelessWidget {
           title: const Text('AI connection and models'),
           children: [AiConnectionCard(ai: store.ai)],
         ),
+        HomeCoverSettingsCard(store: store),
         ?roomSaving,
         Text('Save and restore', style: Theme.of(context).textTheme.titleLarge),
         const Text(
