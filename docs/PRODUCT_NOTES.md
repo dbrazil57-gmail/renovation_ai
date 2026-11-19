@@ -1,5 +1,122 @@
 # Product and research reference
 
+## Whole-project design audit — 19 November 2026
+
+Reviewed the original product brief, substantive conversation requests, source
+through `a948da0`, platform integration and existing test evidence. This section
+is the current assessment. Later research entries are dated records; their old
+implementation statements, provider catalogues and pricing are not current
+verification. No competitor pricing or model recommendation was freshly researched
+for this audit. Use [feature status](../FEATURE_STATUS.md) and
+[next steps](../CODEX_NEXT_STEPS.md) for current implementation and priorities.
+
+### Product position
+
+Renovision has progressed beyond a static UI prototype: users can capture/import,
+analyse, generate options directly on Android, select/refine, compare and resume
+saved work. The user reports successful AI generation, project auto-reload and
+useful camera overlays. Keep the existing work. The original differentiation is
+still controlled changes to real rooms, and mask/compositor enforcement is the
+largest missing part of that promise. Reliability comes before subscriptions or
+claiming continuous AR.
+
+Latest source is ahead of installed APK 1.0.11. An unchanged APK cannot demonstrate
+the recent caption/room-entry/camera-handoff/layout/theme/backup fixes. The next
+requested package needs phone acceptance; this audit produced no APK.
+
+### Rendered interface evidence
+
+Eleven current-source views were rendered using fictional rooms and fake services,
+not the user's live projects: 390×844 phone and 1440×900 desktop, real view metrics
+and fonts. PNGs are retained locally in ignored `output/design-audit/`:
+`projects-mobile`, `rooms-mobile`, `room-chooser-mobile`, `explore-mobile`,
+`library-mobile`, `settings-mobile`, `workspace-room-mobile`,
+`workspace-style-mobile`, `workspace-refine-mobile`, `workspace-ideas-mobile`
+and `workspace-desktop`. This is layout evidence, not interactive Chrome/S21 testing.
+
+The selected **Focus Canvas B** is cohesive. The large persistent image, warm
+panels, consistent top tools and desktop split are worth keeping. The remaining
+work is largely hierarchy and states, rather than another skin or full redesign.
+
+| Screen | Assessment | Recommended improvement, not implemented in this audit |
+| --- | --- | --- |
+| Projects | Attractive cover and clear camera/photo entry; saved work remains relatively far down for a returning user | Move Continue/saved projects above discovery; shorten returning-user hero; keep most catalogue browsing in Explore |
+| Rooms and spaces | Cleaner source now opens onto rooms/actions without the large Save panel | Keep this; fix singular/plural captions and verify save-failure feedback on phone |
+| Room chooser | Compact photo tiles and readable labels; Camera/Photos/Live choices remain available | Add more representative photos over time; retain icon fallback and search rather than making every tile bigger |
+| Workspace Room | Image context is clear but strip/dropdown/baseline chips and explanations repeat | One active-source/baseline header; put photos/analysis and their state above optional management controls |
+| Workspace Style | First phone panel is largely the palette carousel; the chosen palette can initially be offscreen | Compact selected style + palette/swatches summary; bottom sheet or expandable picker for the full catalogue; scroll to the selected choice |
+| Workspace Refine | Brief, output count and Generate fit well together | Distinguish Create concepts from Refine selected; show active source/edit mode without opening advanced controls |
+| Workspace Ideas | Version captions are improved; copy/import comes before history | Put saved options/selection first and manual handoff in secondary tools |
+| Explore | User-result review and inspiration share one destination, and empty-review text pushes samples down | Clarify its two purposes with a compact switch/sections; avoid making returning users pass an empty panel to browse samples |
+| Library | Full-width image/caption/actions fix the narrow-column problem | Keep this layout; add search/filter/storage management only as library size justifies it |
+| Settings | Theme choices, collapsed AI/privacy and cover controls are clearer | Keep global preferences here; use a selected-project file panel instead of an increasingly long list of project export panels |
+| Desktop workspace | Large image plus separate controls is balanced and recognisably the same app | Keep adaptive split; preserve scroll position/focus and keyboard access rather than stretching a phone panel |
+
+Do not reduce all type again to solve these priorities. Keep adequate touch targets,
+system text scaling, accessible contrast and TalkBack semantics. Phone help must
+open on tap/long-press, not depend on hover. Verify landscape, keyboard, long labels
+and reduced-height screens on S21. A small amount of vertical scrolling remains
+appropriate; horizontal tabs choose tasks, rather than hiding required fields in
+unlabelled horizontal swipes or nested scrolling regions.
+
+### Suggested final workflow
+
+1. **Resume or start:** existing projects/Continue first; Camera, Photos and Live
+   design remain equally available. Let users name/confirm the room type.
+2. **Understand:** save original views, analyse with consent, show concise visible
+   facts and unresolved questions. Cache facts for those images independently of
+   style changes; don't invent a scan percentage or measured dimensions.
+3. **Direct:** selected style/palette and a plain-language brief in a short summary.
+   Whole-room defaults remain; advanced Keep/Replace controls are optional.
+4. **Create:** confirm one/two/three clearly different directions and their actual
+   model/quality/request count. Show stages and elapsed time, save each success.
+5. **Choose:** history/options first, with full-screen zoom, compare, favourite,
+   approval and recoverable delete. Preserve the exact recipe per result.
+6. **Refine selected:** a dedicated correction input against that image and its
+   recipe. Start narrow mode explicitly and create a child; never silently replace
+   the approved baseline or reuse an unrelated image's settings.
+7. **Resume later:** local autosave plus an understandable portable document.
+   Open resumes the same document; Restore copy is a deliberate separate action.
+
+These are refinements of the present architecture, not a proposed replacement app.
+Camera-first users can stay in the viewer through steps 2–5, see the saved overlay,
+then choose Continue to refine. New palette/style requests still take model time.
+
+### What the supplied kitchen images show
+
+The original photo and restrained redesigns preserve a U-shaped kitchen, sink
+window, peninsula and tall appliance tower. The better charcoal/walnut examples
+coordinate more surfaces and remove visual clutter. The user's preferred dining
+presentation also has broader framing, pendants, stools/table, lighting and changed
+glazing/scene treatment. It demonstrates the desired atmosphere and material
+coordination; it does not establish that every architectural change matches the
+real room. A conservative preserve-everything prompt can suppress those richer
+choices, while a very open prompt can invent structure.
+
+The product should distinguish **layout-preserving renovation**, **broader concept
+exploration** and **local correction**, then carry explicit retained elements into
+each. A material/design board should be typed as inspiration, not another camera
+view used to infer geometry. No image analysis proves concealed structure,
+buildability or plan dimensions. Explain visible observations and uncertainties
+before turning them into design instructions.
+
+### Architecture and release assessment
+
+One Flutter app shares UI/domain logic across web/Android. Platform boundaries
+already exist for files, camera, credentials and API transport. Modules cover
+drafts/prompts, analysis, concepts, project files, backup crypto and image tools.
+Keep those boundaries. Large UI/store files and eager image storage deserve
+incremental extraction/profiling when their related features change; a generic
+architecture rewrite would add risk without solving the known user problems.
+
+Before wider private testing, prioritize document identity/reopen, immutable
+per-version recipes, less redundant analysis, precise edit enforcement and measured
+startup/image/export performance. Local encryption, OS backup policy and recovery
+need an explicit design preserving old data. Commercial backend/credits, production
+signing/identity, privacy policy and store/iOS validation belong to a later release.
+Historical competitor promises should not be used as validated capabilities or
+as a basis for fixed pricing without current evidence and measured usage.
+
 ## Settings protection decisions — 19 November
 
 App appearance is a device preference, separate from renovation palettes and
@@ -207,11 +324,13 @@ layout changes were made in this research batch. Build an APK only when requeste
 
 ## AI model choice
 
-Checked against official provider documentation on 15 November 2026. Start with
-the existing OpenAI integration; another provider, local GPU model or 3D engine
-is not required for the basic photo-analysis/design/refinement app. These are
-recommended test candidates, not measured claims that one model wins for the
-user's kitchen.
+Historical model research recorded 15 November 2026, retained below. Model IDs,
+availability, documentation claims and subscription/credit offers were not
+reverified in the 19 November audit; do not treat the table as a current buying
+recommendation. The app filters its configured image-model catalogue against
+account access, but that is not a capability/quality benchmark. Start testing
+with the existing working OpenAI route; another provider, local GPU or 3D engine
+is not required for the basic photo-analysis/design/refinement app.
 
 | Job | First test candidate | Reason / limitation |
 | --- | --- | --- |
@@ -249,9 +368,10 @@ an automatic unlimited API allowance.
 
 
 
-User requirement recorded 14 November 2026. Photo analysis and editable AI prompt
-drafting are now wired to the local relay and tested with simulated responses.
-Live vision quality is unverified. Multiple-result generation remains planned.
+User requirement recorded 14 November 2026; implementation reconciled 19 November.
+Photo analysis, editable AI prompt drafting and one/two/three concept requests
+exist through direct OpenAI HTTPS or the optional relay. The user reports working
+phone AI generation; systematic quality/diversity benchmarking is still pending.
 
 1. Add photos of the same room; choose the primary view, colours and preferences.
 2. Describe the desired changes in ordinary language and identify what must stay.
@@ -259,8 +379,9 @@ Live vision quality is unverified. Multiple-result generation remains planned.
 4. Show the proposed prompt to the user for editing and approval. Surface unclear
    or contradictory instructions rather than silently inventing requirements.
 5. Let the user choose how many design alternatives to request. Show the count,
-   provider/model and cost information before submission. Never generate paid
-   alternatives automatically merely because a prompt was drafted.
+   provider/model and quality before submission; actual billed-cost information
+   is not yet implemented. Never generate paid alternatives automatically merely
+   because a prompt was drafted.
 6. Show the returned designs together with individual status/error information,
    useful titles, zoom/compare controls and keep/pass selection. Preserve successful
    results if another option fails; do not automatically retry billable requests.
@@ -303,30 +424,28 @@ uneditable single image.
 
 ### Implementation sequence
 
-1. Implemented: local relay photo-analysis endpoint and room review panel with
-   observations, questions, editable prompt, autosave and explicit use selection.
-2. Implemented: photo previews/consent, private relay key, no automatic calls or
-   retries, stale-input checks and local-save retry. Verify against the actual
-   Claylands room with API access next. In-flight cancellation is not implemented;
-   normal Back waits for completion. Browser shutdown can still lose the response.
-3. Add bounded multi-design requests and an option-comparison screen. Request
-   limits, partial completion and billing acknowledgement must be explicit.
-4. Record each batch, prompt revision, source/supporting image IDs, provider/model,
-   request IDs, result and selected baseline. Keep legacy records readable and
-   include the new records in backups with a versioned format where needed.
-5. Verify with the Claylands kitchen case, then validate Android behaviour.
+1. Implemented: photo analysis/review, editable prompt, autosave and explicit use
+   selection, direct internet API plus optional private relay.
+2. Implemented: photo previews/consent, stale-input checks, storage-only retry,
+   distinct bounded concept directions, sequential saves and partial-success
+   handling. In-flight cancellation/recovery is not implemented; normal Back
+   waits and a process kill can still lose a billed response.
+3. Next: immutable per-version structured settings and analysis snapshots, plus
+   separation of photo-fact caching from changed design preferences.
+4. Benchmark real-room preservation, diversity, refinement, time and usage on
+   the same inputs before claiming one provider/model is better or cheaper.
 
 ### Current implementation
 
-The offline fallback still builds prompts from a deterministic template. A connected
-vision model can now analyse the room photos and draft an editable prompt. The
-user must select that prompt for generation; current user requirements remain
-attached. Results retain input photo IDs, input preferences, model/request ID and
-date, and survive project backup/restore. Only the latest analysis is kept per room.
-The local relay requests one generated image at a time. Multiple input photos are supported;
-multiple returned design options are a different capability and remain planned.
-Manual edits, saved versions, favourites, approval and version branching already
-exist and should be reused rather than replaced.
+The offline fallback builds a labelled deterministic template. A connected vision
+model can analyse photos and draft an editable prompt. Choosing it for generation
+retains the authoritative current room requirements. The room stores its latest
+analysis and current choices; each design stores the final prompt, source/parent/
+supporting images, provider/model and request ID. It does not yet freeze every
+structured setting or historical analysis. These records survive project backups.
+One/two/three concepts are separate sequential image requests from the same source,
+with explicit varied directions. Manual edits, saved versions, favourites, approval
+and branching already exist and should be reused rather than replaced.
 
 ## Competitor review
 
@@ -469,6 +588,9 @@ reference roles and tested region edits follow as functional work.
 
 ### Current Renovision strengths
 
+This is the dated competitor-review snapshot. The current inventory is in
+FEATURE_STATUS.md; later source has added several items listed below as gaps.
+
 - Original photographs are separate from generated/imported versions. Approved
   baseline, branches, favourites and before/after comparison already exist.
 - Up to six same-room views, palettes, room types and individual Keep/Replace
@@ -500,6 +622,9 @@ use. More controls, styles or marketing badges alone will not solve unwanted
 image changes or browser-session confusion.
 
 ### Current interface audit
+
+Historical interface review before Focus Canvas. The current rendered assessment
+is the whole-project audit at the beginning of this document.
 
 Based on the actual Flutter widgets in lib/screens.dart and related controls:
 
@@ -657,12 +782,13 @@ price will not compensate for lost projects or repeated unwanted changes.
 
 
 
-Recorded 14 November 2026; priority updated 18 November following the user's
-clarification. Camera Renovation View is the main new experience, ahead of
-optional skins. Its first embedded-preview/capture/design/frozen-comparison and
-manual-overlay prototype is implemented in 19 November source (after APK 1.0.9).
-Physical-device acceptance is pending. Continuous, consistent whole-room AR
-is a separate research milestone; composite exports are not yet implemented.
+Recorded 14 November 2026; reconciled 19 November. Embedded camera capture,
+frozen comparison, manual same-view overlay and consented Live design are
+implemented and packaged through 1.0.11. Later source fixes the main camera
+handoff/automatic result overlay and adds room-first Live entry. The user reports
+useful overlays; those later fixes need a requested APK and phone acceptance.
+Continuous, consistent whole-room AR is a separate milestone; composite exports
+are not yet implemented.
 
 ### Updated first milestone and acceptance
 
@@ -711,11 +837,13 @@ Avoid claiming camera input is unique or that competitors offer only uploads.
 
 ### What exists in this repository
 
-`lib/screens.dart` uses `image_picker` with `ImageSource.camera` for room
-creation. This delegates taking a still photo; it is not an embedded camera
-preview. Native camera capture still needs Android device testing. There is no
-camera stream, pose tracking, AR room model or live renovation renderer in the
-current dependencies/implementation.
+`room_camera.dart` wraps the camera package for embedded preview/capture and
+serialized lifecycle operations. `camera_room_view.dart` provides capture,
+comparison and manually aligned flat overlays. `live_design_screen.dart` keeps
+consented automatic still capture/analysis, options, confirmed image generation
+and saved result overlay in the viewer, then explicitly continues to refinement.
+Image picking/gallery import remains available. There is no continuous frame
+analysis pipeline, pose/depth tracking, AR room model or moving-view renderer.
 
 Original photos, supporting room views, preferences, AI analysis, generated
 versions and approved-baseline refinement already provide much of the storage
@@ -724,22 +852,22 @@ two or three sequential saved image requests; it is not continuous video generat
 
 ### Suggested stages
 
-1. **Camera capture into the existing room workflow.** Verify the current still
+1. **Camera capture into the existing room workflow (implemented, acceptance ongoing).** Verify the current still
    camera path first. Design a guided capture/review screen, then show visible
    analysis and editable preferences. Generate explicitly bounded alternatives,
    choose one and refine from that selected design. Save each result immediately
    to its room; keep draft autosave behaviour and explicit save controls.
-2. **Return-to-view comparison.** Display a saved design with adjustable opacity
+2. **Return-to-view comparison (implemented as a manual same-view overlay).** Display a saved design with adjustable opacity
    over the camera to help the user return to the original viewpoint. Start with
    a clearly labelled manual alignment aid. It is an approximate 2D comparison;
    moving to a different angle does not reveal a valid new design view. Pause or
    prompt to realign when the view no longer matches. Never describe this as a
    measured 3D model or reliable tracked AR.
-3. **Tracked surface previews.** Investigate wall/floor selection, camera pose,
+3. **Tracked surface previews (future).** Investigate wall/floor selection, camera pose,
    surface mapping and material projection on supported Android hardware.
    Preserve openings and handle objects blocking surfaces. Validate tracking
    loss, occlusion, lighting and scale before claiming realistic live preview.
-4. **Consistent whole-room AR.** A separate later investigation into room
+4. **Consistent whole-room AR (future).** A separate later investigation into room
    geometry, a persistent approved design and rendering from new viewpoints.
    Independent AI edits of successive frames can change the design between
    views. A successful image edit does not prove consistent moving-camera AR.
@@ -774,11 +902,10 @@ real camera behaviour and any later tracking; desktop Chrome does not establish
 phone AR performance. Retain gallery upload as an equivalent entry point for
 existing photos and devices without the camera/AR capability.
 
-Preserve reliable saving and the in-app photo-to-refinement journey while
-prioritising the same-view Camera Renovation View prototype described above.
-Validate embedded capture and frozen-frame comparison before choosing an AR
-dependency. The later manual camera overlay and tracked rendering remain
-separate milestones; optional cosmetic skins should follow this priority.
+Preserve reliable saving and the in-app photo-to-refinement journey. Validate
+the latest same-view camera handoff/overlay on the phone before selecting an AR
+dependency. Tracked rendering and clean composite export remain future work;
+the existing manual overlay and five app themes are already implemented.
 
 ## Earlier roadmap
 

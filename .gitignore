@@ -83,6 +83,7 @@ service-account*.json
 
 # Portable customer projects and local databases contain private photos/settings.
 *.renovision.json
+*.renovision
 *.hive
 *.hivec
 *.sqlite
