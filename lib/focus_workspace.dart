@@ -107,7 +107,7 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
     child: Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+          padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
           child: Row(
             children: [
               for (final section in FocusSection.values)
@@ -125,7 +125,7 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
                             : Colors.transparent,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 2,
-                          vertical: 12,
+                          vertical: 8,
                         ),
                         minimumSize: const Size(44, 44),
                       ),
@@ -146,7 +146,7 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
           child: SingleChildScrollView(
             key: const ValueKey('focus-controls-scroll'),
             controller: scroll,
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -326,9 +326,9 @@ class FocusHomeHero extends StatelessWidget {
           ),
         ),
         ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 300),
+          constraints: const BoxConstraints(minHeight: 260),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -340,7 +340,7 @@ class FocusHomeHero extends StatelessWidget {
                         'Capture your room',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 30,
+                          fontSize: 24,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -363,7 +363,7 @@ class FocusHomeHero extends StatelessWidget {
                       : 'Your chosen cover',
                   style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
-                const SizedBox(height: 96),
+                const SizedBox(height: 56),
                 if (takePhoto != null) ...[
                   SizedBox(
                     width: double.infinity,

@@ -357,6 +357,7 @@ class _AppShellState extends State<AppShell> {
       ),
       body: tabs[selected],
       bottomNavigationBar: NavigationBar(
+        height: MediaQuery.textScalerOf(context).scale(12) > 16 ? 80 : 64,
         selectedIndex: selected,
         onDestinationSelected: (i) => setState(() => selected = i),
         destinations: const [
@@ -389,7 +390,7 @@ class PageFrame extends StatelessWidget {
   Widget build(BuildContext context) => Center(
     child: ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 950),
-      child: ListView(padding: const EdgeInsets.all(20), children: children),
+      child: ListView(padding: const EdgeInsets.all(12), children: children),
     ),
   );
 }
@@ -409,11 +410,11 @@ class EmptyMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(
     child: Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          Icon(icon, size: 48, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(height: 14),
+          Icon(icon, size: 36, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(height: 10),
           Text(
             title,
             style: Theme.of(context).textTheme.titleLarge,
@@ -487,7 +488,7 @@ class ProjectsTab extends StatelessWidget {
               : null,
           choosePhotos: () => _start(context, camera: false),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 12),
         if (store.resumeRoom case final room?) ...[
           Card(
             child: ListTile(
@@ -2421,13 +2422,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   ],
                 ),
                 const SizedBox(height: 8),
-                const SizedBox(height: 18),
+                const SizedBox(height: 12),
                 FilledButton.tonalIcon(
                   onPressed: () => _importResult(room),
                   icon: const Icon(Icons.add_photo_alternate_outlined),
                   label: const Text('Import generated AI result'),
                 ),
-                const SizedBox(height: 22),
+                const SizedBox(height: 14),
                 const HelpHeading(
                   title: 'Version history',
                   message: 'Passed ideas stay in history. Use the review menu to return them to Explore or delete an unwanted design. Deleted designs below lets you restore it. Favourites and baseline approval are separate choices. Deleting a design keeps a recoverable copy and its source history.',
@@ -2441,7 +2442,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 else
                   ...versions.map((design) => _historyCard(room, design)),
                 DeletedDesignsCard(store: widget.store, roomId: room.id),
-                const SizedBox(height: 30),
+                const SizedBox(height: 16),
               ],
             },
           ),

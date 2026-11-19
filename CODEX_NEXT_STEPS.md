@@ -3,6 +3,20 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
+## Compact text across tabs — source after APK 1.0.11
+
+Added one shared compact theme for Projects/Explore/Library/Settings, room setup,
+workspace and Live design: 13px body text, 14px inputs, 15–18px section titles and
+20px page headings. Reduced button/chip padding, page/card margins and workspace
+section gaps. The Projects cover is shorter; navigation uses less space at normal
+text sizes and grows for enlarged text. Button touch areas stay padded and system
+text scaling is preserved. Controls, stored choices and image previews are retained.
+New layout checks measure less scrolling in Room/Style/Refine/Ideas against default
+typography and exercise all main tabs at 320px with 1x/1.8x text. No new APK.
+All 239 tests pass, static analysis is clean, and the existing APK checksum is unchanged.
+Next S21 check after a requested build: readability/scrolling across all tabs,
+keyboard/long labels and selecting styles/palettes with the existing images.
+
 ## Project opening and live-room labels — source after APK 1.0.11
 
 Rooms and spaces now opens directly onto room actions/list. Removed the inline

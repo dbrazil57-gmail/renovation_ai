@@ -1,5 +1,18 @@
 # Testing and storage reference
 
+## Compact typography and spacing — source after APK 1.0.11
+
+Check Projects, Explore, Library, Settings, setup, workspace and Live design:
+smaller body/input text, restrained headings, tighter cards/chips/page margins
+and less vertical space in the Projects cover/navigation. Verify long labels
+wrap, buttons remain easy to tap, and system text size is still honoured.
+Try all main tabs at normal/large text, and Room/Style/Refine/Ideas with the
+keyboard open. Controls, saved style/palette choices and image tools must remain.
+Added widget checks compare real workspace scroll extents with default typography
+and visit every main tab at 320px using 1x/1.8x text. Test S21 readability after
+an explicitly requested build; the existing APK 1.0.11 is unchanged.
+All 239 tests pass and static analysis is clean. No real AI requests were made.
+
 ## Opening projects and naming live rooms — source after APK 1.0.11
 
 Select Claylands in Saved projects. Rooms and spaces should show room actions

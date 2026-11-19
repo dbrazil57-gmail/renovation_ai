@@ -3,6 +3,15 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
+Compact typography (source after APK 1.0.11): shared smaller body/input/heading
+styles across the app, tighter button/chip/page/card spacing, shorter Projects
+cover and compact normal-size navigation. Large-text settings are respected;
+the navigation expands and padded button touch areas remain. Workspace tests
+measure lower scroll extents in Room, Style, Refine and Ideas; narrow-phone main
+tab checks cover normal and enlarged text. No controls/data/settings removed and
+no new APK built. Physical phone readability acceptance remains.
+All 239 tests pass and static analysis is clean; existing APK checksum unchanged.
+
 Project opening polish (source after APK 1.0.11): removed inline project-save and
 duplicate settings controls from Rooms and spaces. Toolbar save/export/settings
 remain; pending/failed file saves keep compact feedback. Generic live-created

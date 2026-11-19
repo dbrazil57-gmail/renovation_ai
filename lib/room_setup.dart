@@ -289,7 +289,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
               constraints: const BoxConstraints(maxWidth: 950),
               child: ListView(
                 controller: scroll,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(12),
                 children: [
                   Text(
                     'Step ${step + 1} of 4 · ${steps[step]}',

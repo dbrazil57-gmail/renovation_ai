@@ -663,7 +663,7 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
   }
 
   Widget _controls() => Padding(
-    padding: const EdgeInsets.all(12),
+    padding: const EdgeInsets.all(10),
     child: Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
