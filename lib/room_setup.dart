@@ -244,7 +244,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
         child: Scaffold(
           appBar: AppBar(
             title: Text(
-              'Set up ${current.name}',
+              'Set up ${current.displayName}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -345,7 +345,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                     if (step == 3)
                       ExpandableImage(
                         bytes: widget.store.imageFor(current.primaryId)!,
-                        title: '${current.name} · original',
+                        title: '${current.displayName} · original',
                         height: 220,
                       ),
                     SegmentedButton<bool>(

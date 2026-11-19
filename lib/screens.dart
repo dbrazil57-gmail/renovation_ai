@@ -491,7 +491,7 @@ class ProjectsTab extends StatelessWidget {
         if (store.resumeRoom case final room?) ...[
           Card(
             child: ListTile(
-              title: Text('Continue ${room.name}'),
+              title: Text('Continue ${room.displayName}'),
               subtitle: Text(
                 '${store.projectById(room.projectId)?.name ?? ''} / saved on this device',
               ),
@@ -680,7 +680,7 @@ class ProjectScreen extends StatelessWidget {
             ScreenTool.help(
               context,
               title: 'Project tools',
-              message: 'Save keeps a portable project file. Settings contains saving and AI options. Rename changes the project name without changing rooms or images.',
+              message: 'Rooms, original photos and saved designs are kept on this device. You do not need to save again just to open a project. Use Save for a portable project file or to update a linked file. Settings contains saving and AI options. Rename changes the project name without changing rooms or images.',
             ),
           ],
         ),
@@ -694,12 +694,28 @@ class ProjectScreen extends StatelessWidget {
             'Rooms and spaces',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          ProjectFileControls(store: store, projectId: project.id),
-          const SizedBox(height: 8),
-          const Text(
-            'Take a room photo or choose several photos from your device. Originals are saved in your project; designs are stored separately.',
+          ListenableBuilder(
+            listenable: store.documents,
+            builder: (context, _) {
+              final status = store.documents.status(project.id);
+              if (!store.documents.hasPending(project.id) &&
+                  !status.contains('failed') &&
+                  !status.contains('Local work is retained')) {
+                return const SizedBox.shrink();
+              }
+              return Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    status,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              );
+            },
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -763,15 +779,6 @@ class ProjectScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 18),
-          OutlinedButton.icon(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute<void>(builder: (_) => settingsPage(store)),
-            ),
-            icon: const Icon(Icons.settings_outlined),
-            label: const Text('Save, restore and AI settings'),
-          ),
-          const SizedBox(height: 18),
           if (store.roomsFor(project.id).isEmpty)
             const EmptyMessage(
               icon: Icons.photo_library_outlined,
@@ -788,7 +795,7 @@ class ProjectScreen extends StatelessWidget {
                       leading: PhotoThumb(
                         bytes: store.imageFor(room.originalId),
                       ),
-                      title: Text(room.name),
+                      title: Text(room.displayName),
                       subtitle: Text(
                         '${room.photoIds.length} photos · ${store.designsFor(room.id).length} design versions',
                       ),
@@ -1029,7 +1036,7 @@ class LibraryTab extends StatelessWidget {
                                                   room.projectId,
                                                 );
                                           final description =
-                                              '${d.title}\n${[project?.name, room?.name].whereType<String>().join(' / ')}';
+                                              '${d.title}\n${[project?.name, room?.displayName].whereType<String>().join(' / ')}';
                                           final bytes = store.imageFor(
                                             d.imageId,
                                           );
@@ -1117,7 +1124,7 @@ class LibraryTab extends StatelessWidget {
                                                                 [
                                                                       project
                                                                           ?.name,
-                                                                      room?.name,
+                                                                      room?.displayName,
                                                                     ]
                                                                     .whereType<
                                                                       String
@@ -1977,7 +1984,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
         child: Scaffold(
           appBar: AppBar(
             title: Text(
-              room.name,
+              room.displayName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -2031,7 +2038,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 : ExpandableImage(
                     bytes: source,
                     title: selectedId == null
-                        ? '${room.name} / room photo'
+                        ? '${room.displayName} / room photo'
                         : versions.firstWhere((v) => v.id == selectedId).title,
                     height: height,
                     inlineZoom: true,

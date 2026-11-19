@@ -59,6 +59,18 @@ class RenovationRoom {
   final Map<String, String> roomItemChoices;
   List<String> get photoIds => [originalId, ...additionalPhotoIds];
   String get primaryId => primaryPhotoId ?? originalId;
+  String get displayName {
+    if (!const {'live room', 'live view'}.contains(name.trim().toLowerCase())) {
+      return name;
+    }
+    final typeName = switch (roomTypeId) {
+      'living' => 'Living room',
+      '' || 'other' => 'Room',
+      _ => roomTypes[roomTypeId] ?? 'Room',
+    };
+    return '$typeName (Live view)';
+  }
+
   final DateTime created;
 
   RenovationRoom({

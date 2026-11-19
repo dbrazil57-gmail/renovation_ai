@@ -3,6 +3,16 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
+Project opening polish (source after APK 1.0.11): removed inline project-save and
+duplicate settings controls from Rooms and spaces. Toolbar save/export/settings
+remain; pending/failed file saves keep compact feedback. Generic live-created
+placeholder names now display Room type (Live view), e.g. Living room (Live view),
+using the confirmed type. Unknown types are labelled Room (Live view); custom
+names are kept. Shared display labels improve old rooms without changing stored
+records, backups or originals. No new APK or settings/data migration.
+All 236 tests pass and static analysis is clean; opening/export/failure feedback,
+type-based labels, custom rename and data preservation are covered.
+
 Room-first Live design (source after APK 1.0.11): the room chooser now offers
 Camera, Photos and Live design before Continue, whichever entry action opened it.
 Selection carries the room name/type and any starting style/palette into the

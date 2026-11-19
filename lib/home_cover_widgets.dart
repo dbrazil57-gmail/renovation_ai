@@ -73,7 +73,7 @@ class _HomeCoverDialogState extends State<_HomeCoverDialog> {
             (
               roomId: room.id,
               imageId: room.photoIds[i],
-              title: '${room.name} · View ${i + 1}',
+              title: '${room.displayName} · View ${i + 1}',
               detail: project.name,
             ),
           for (final design in store.designsFor(room.id))
@@ -81,7 +81,7 @@ class _HomeCoverDialogState extends State<_HomeCoverDialog> {
               roomId: room.id,
               imageId: design.imageId,
               title: design.title,
-              detail: '${project.name} / ${room.name}',
+              detail: '${project.name} / ${room.displayName}',
             ),
         ],
     ].where((item) => store.imageFor(item.imageId) != null).toList();

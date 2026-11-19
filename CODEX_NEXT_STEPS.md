@@ -3,6 +3,22 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
+## Project opening and live-room labels — source after APK 1.0.11
+
+Rooms and spaces now opens directly onto room actions/list. Removed the inline
+project-file/save panel, duplicate settings button and guidance paragraph. Save /
+Save as remain in the toolbar's Save project file dialog; Settings stays in the
+toolbar. Pending file changes/save failures still have compact status feedback.
+Opening a local project never requires another manual save.
+Generic Live room/Live view names display the confirmed room type first, e.g.
+Living room (Live view); unknown types show Room (Live view). This is display-only
+across room lists, Continue, workspace/setup and library/cover labels. Custom names,
+stored names, backups, originals and AI settings are preserved; no migration.
+Validation: all 236 tests pass, static analysis clean; existing APK checksum unchanged.
+Next phone test after a requested APK: open Claylands, verify the compact room
+list, toolbar export/settings, typed live labels and custom room rename.
+No new APK built; installed 1.0.11 is unchanged.
+
 ## Live design from room selection — source after APK 1.0.11
 
 Choose your room now keeps Camera / Photos / Live design choices above Continue,

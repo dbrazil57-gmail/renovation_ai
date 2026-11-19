@@ -1,5 +1,20 @@
 # Testing and storage reference
 
+## Opening projects and naming live rooms — source after APK 1.0.11
+
+Select Claylands in Saved projects. Rooms and spaces should show room actions
+and the room list without a save panel/duplicate settings button. Save project
+file in the toolbar still opens Save/Save as; Settings opens saving/AI setup.
+Opening alone must not export anything. A pending/failed file write should still
+show compact status feedback, and a failed export must leave local images intact.
+Existing generic Live room/Live view entries use the confirmed type, e.g. Living
+room (Live view). No type yet means Room (Live view). Check Continue, workspace,
+Library and cover labels agree; selecting another type updates a generic label,
+while renaming to Front lounge keeps that custom name. Exported records retain
+their actual saved names and photo IDs; no migration or original replacement.
+No new APK built; test on S21 after an explicitly requested build.
+All 236 tests pass and static analysis is clean. Existing APK checksum unchanged.
+
 ## Live design after choosing a room — source after APK 1.0.11
 
 Start from Take photo, Choose photos or a home room shortcut. In Choose your room,

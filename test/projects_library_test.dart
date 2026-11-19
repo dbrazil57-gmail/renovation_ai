@@ -8,6 +8,8 @@ import 'package:renovision_ai/focus_workspace.dart';
 import 'package:renovision_ai/image_viewer.dart';
 import 'package:renovision_ai/live_design_screen.dart';
 import 'package:renovision_ai/models.dart';
+import 'package:renovision_ai/project_backup.dart';
+import 'package:renovision_ai/project_transfer_widgets.dart';
 import 'package:renovision_ai/room_camera.dart';
 import 'package:renovision_ai/room_start_widgets.dart';
 import 'package:renovision_ai/screens.dart';
@@ -18,7 +20,9 @@ import 'support/focus_navigation.dart';
 
 class ProjectTestFiles implements AppFiles {
   Uint8List? opening;
-  int picks = 0;
+  int picks = 0, saves = 0;
+  bool failSave = false;
+  Uint8List? saved;
   @override
   bool get supported => true;
   @override
@@ -32,7 +36,12 @@ class ProjectTestFiles implements AppFiles {
     Uint8List bytes, {
     required String name,
     required String mimeType,
-  }) async => FileSaveResult.saved;
+  }) async {
+    saves++;
+    if (failSave) throw StateError('Synthetic file save failure');
+    saved = bytes;
+    return FileSaveResult.saved;
+  }
 }
 
 void main() {
@@ -96,6 +105,117 @@ void main() {
       expect(store.roomsFor(project.id).single.id, room.id);
       expect(store.imageFor(room.originalId), image);
       expect(find.byType(ProjectScreen), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'opening a saved project shows rooms without a save panel; the toolbar still exports the complete project',
+    (tester) async {
+      final room = await store.createRoom(
+        projectId: project.id,
+        name: 'Live room',
+        roomTypeId: 'living',
+        originalImage: image,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: ProjectsTab(store: store)),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text('Claylands'),
+        280,
+        scrollable: find.byWidgetPredicate(
+          (widget) =>
+              widget is Scrollable &&
+              widget.axisDirection == AxisDirection.down,
+        ),
+      );
+      await tap(tester, find.text('Claylands'));
+      expect(find.byType(ProjectScreen), findsOneWidget);
+      expect(find.text('Rooms and spaces'), findsOneWidget);
+      expect(find.text('Living room (Live view)'), findsOneWidget);
+      expect(find.byType(ProjectFileControls), findsNothing);
+      expect(find.text('Save, restore and AI settings'), findsNothing);
+      expect(files.saves, 0);
+      await tap(tester, find.byTooltip('Save project file'));
+      expect(find.byType(ProjectFileControls), findsOneWidget);
+      await tap(tester, find.text('Save project'));
+      expect(files.saves, 1);
+      final backup = ProjectBackup.decode(files.saved!);
+      expect(backup.rooms.single.name, 'Live room');
+      expect(backup.rooms.single.roomTypeId, 'living');
+      expect(backup.photos[room.originalId], image);
+      await tap(tester, find.text('Close'));
+      expect(store.roomById(room.id)!.name, 'Live room');
+      expect(store.imageFor(room.originalId), image);
+      files.failSave = true;
+      await tap(tester, find.byTooltip('Save project file'));
+      await tap(tester, find.text('Save project'));
+      await tap(tester, find.text('Close'));
+      expect(find.textContaining('Project file save failed.'), findsOneWidget);
+      expect(store.imageFor(room.originalId), image);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'generic live labels follow the confirmed room type while custom names, saved records and originals stay intact',
+    (tester) async {
+      final living = await store.createRoom(
+        projectId: project.id,
+        name: 'Live view',
+        roomTypeId: 'living',
+        originalImage: image,
+      );
+      await store.createRoom(
+        projectId: project.id,
+        name: 'Live room',
+        roomTypeId: 'kitchen',
+        originalImage: image,
+      );
+      final unknown = await store.createRoom(
+        projectId: project.id,
+        name: 'Live room',
+        roomTypeId: 'other',
+        originalImage: image,
+      );
+      final custom = await store.createRoom(
+        projectId: project.id,
+        name: 'Guest retreat',
+        roomTypeId: 'bedroom',
+        originalImage: image,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ProjectScreen(store: store, project: project),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Living room (Live view)'), findsOneWidget);
+      expect(find.text('Kitchen (Live view)'), findsOneWidget);
+      expect(find.text('Room (Live view)'), findsOneWidget);
+      expect(find.text('Guest retreat'), findsOneWidget);
+      await store.updateRoom(unknown.copyWith(roomTypeId: 'office'));
+      await tester.pumpAndSettle();
+      expect(find.text('Office (Live view)'), findsOneWidget);
+      expect(find.text('Room (Live view)'), findsNothing);
+      await tap(tester, find.text('Living room (Live view)'));
+      expect(find.byType(WorkspaceScreen), findsOneWidget);
+      expect(find.text('Living room (Live view)'), findsOneWidget);
+      await store.renameRoom(living.id, 'Front lounge');
+      await store.updateRoom(
+        store.roomById(living.id)!.copyWith(roomTypeId: 'kitchen'),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Front lounge'), findsOneWidget);
+      expect(store.roomById(custom.id)!.name, 'Guest retreat');
+      expect(store.roomById(unknown.id)!.name, 'Live room');
+      expect(store.roomById(living.id)!.photoIds, [living.originalId]);
+      expect(store.imageFor(living.originalId), image);
+      expect(files.saves, 0);
+      expect(tester.takeException(), isNull);
     },
   );
 
