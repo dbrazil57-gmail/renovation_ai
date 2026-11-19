@@ -12,17 +12,20 @@ existing app and Focus Canvas interface; a rewrite is not justified.
 
 | Item | Verified position |
 | --- | --- |
-| Latest existing APK | **1.0.11+12**, source stamp `5a37fa0234`; `output/mobile-test/renovision-test-1.0.11.apk`, also `renovision-test.apk` |
-| APK contents | Focus Canvas, embedded camera, manual same-view overlay, Live design, compact Projects controls and Library captions |
-| Newer source only | Camera-result handoff/automatic overlay fixes, version-history captions, smaller photo-backed room chooser, Live design from room selection, simpler Rooms page, typed live-room labels, compact typography, five app themes, storage details and protected backups |
-| Latest source checks | **249 tests passed**, static analysis clean, web release build passed in 54.9 seconds in the preceding settings batch |
-| This audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. No new APK, data migration or paid AI call |
+| Latest existing APK | **1.0.12+13**, source stamp `3cb94c972c`; `output/mobile-test/renovision-test-1.0.12.apk`, also `renovision-test.apk` |
+| APK contents | Focus Canvas, embedded camera, manual same-view overlay, Live design and all completed source follow-ups below |
+| New in 1.0.12 | Camera-result handoff/automatic overlay fixes, version-history captions, smaller photo-backed room chooser, Live design from room selection, simpler Rooms page, typed live-room labels, compact typography, five app themes, storage details and protected backups |
+| Latest checks | **249 tests rerun and passed**, static analysis clean, Android release build passed in 139.1 seconds; previous web build passed in 54.9 seconds |
+| Earlier audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. The subsequent requested APK build made no paid AI call or data migration |
 | Real user evidence | User reports successful phone installation, direct AI analysis/generation, good generated designs, project auto-reload and useful comparison/camera overlay. This does not validate every newer source change |
 
 APK SHA256:
-`D698CE3EC2CDB9E340E063BE40A3279F63C35EE1268A379F66C38EC37EBC11AE`.
-The existing APK remains unchanged. Its release-mode build uses the development
-signing key and example application ID; it is a private-test package.
+`CD3A047F2D84C515B279F2686B506017AB1A46199A00038A23B410799A88CB99`.
+Size: 76,231,742 bytes. Signature matches 1.0.11; its checksum and rollback
+packages remain unchanged. Camera hardware is optional, ARM64 is included, and
+no microphone/storage-write permission or private project/credential files are
+bundled. Its release-mode build uses the development signing key and example
+application ID; it is a private-test package. S21 acceptance remains.
 
 ## Features present in the code
 
@@ -154,10 +157,11 @@ The audit checked source, tests/logs, platform files, the brief and conversation
 Eleven fixture screens were rendered at 390×844 phone / 1440×900 desktop using
 real view metrics and fonts; outputs are private under `output/design-audit/`.
 They are layout evidence, not an interactive Chrome/S21 acceptance run.
-The preceding 249-test/analyser/web-build results remain the application baseline;
-they were not rerun after documentation and ignore-only edits.
+The suite/analyser were not repeated for documentation-only changes, but all 249
+tests and static analysis were rerun successfully for the subsequent requested
+1.0.12 Android build. The earlier web result remains separate evidence.
 
 See [the ordered task list](CODEX_NEXT_STEPS.md) and
-[testing/storage instructions](docs/TESTING_GUIDE.md). Build the next phone
-package only when requested, then validate the latest source on the S21 before
-claiming those fixes are delivered.
+[testing/storage instructions](docs/TESTING_GUIDE.md). APK 1.0.12 now packages the
+completed source changes; validate them on the S21 before claiming device acceptance.
+Build further phone packages only when requested.

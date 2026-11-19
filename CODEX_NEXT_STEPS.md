@@ -12,12 +12,12 @@ concepts → select → refine → compare → save workflow, with direct intern
 on Android and a same-view camera overlay. The user has successfully tested
 phone generation and project auto-reload. The chosen Focus Canvas design stays.
 
-Latest source baseline: `a948da0`, 249 tests passed, analyser clean, web build
-passed. Latest existing phone package: **1.0.11+12**, source `5a37fa0234`.
-The newer camera handoff, history captions, room chooser/live entry, compact
-layouts, themes and protected-backup changes are **source only**. The audit
-updated documents and ignored protected export files; it built no APK and made
-no paid API calls.
+Application baseline audited through `a948da0` is packaged in **1.0.12+13**,
+source `3cb94c972c`. All 249 tests were rerun and passed, analyser clean, Android
+release build passed in 139.1 seconds. The preceding web build also passed.
+Camera handoff, history captions, room chooser/live entry, compact layouts,
+themes and protected backups are now in the requested APK. Physical S21
+acceptance remains. No paid API calls or user-data reset.
 
 ## Completed audit batch
 
@@ -48,15 +48,30 @@ failures. Source history archive: `.local_backups/archives/`. No application-cod
 changes, paid AI calls or new APK. Removed caches regenerate on the next build;
 rerunning the application suite solely for cleanup would recreate those caches.
 
+## Completed requested APK — 1.0.12+13
+
+- [x] Bump package version, rerun all 249 tests/static analysis and build Android.
+- [x] Verify application ID/version, matching 1.0.11 signing identity, ARM64 support,
+  optional camera, internet permission and no microphone/storage-write permission.
+- [x] Check bundled assets match fictional samples and no local project/credential
+  files are packaged; verify source stamp and preserve older APK checksums.
+- [x] Write `output/mobile-test/renovision-test-1.0.12.apk`, its checksum and latest
+  alias `renovision-test.apk`. Retain previous packages and verification records.
+
+Source stamp `3cb94c972c`; SHA256
+`CD3A047F2D84C515B279F2686B506017AB1A46199A00038A23B410799A88CB99`.
+Install as an update without uninstalling. No device installation or paid generation
+was performed by this build. The next action is the phone acceptance below.
+
 ## Recommended implementation order
 
 Each numbered batch needs its own validation and local commit. This is a backlog,
 not a claim that the following changes were implemented during the audit.
 
-### 1. Deliver and accept the already completed source changes
+### 1. Accept the newly packaged source changes on S21
 
-- [ ] **Only on the user's next explicit APK request:** build a new version with
-  the existing application ID/signature so it updates without uninstalling.
+- [x] Build the explicitly requested **1.0.12+13** with the existing application
+  ID/signature so it updates without uninstalling. Future APKs only when requested.
 - [ ] On S21, check the camera result remains in the live viewer and automatically
   overlays, including delayed camera startup and keyboard opening/closing.
 - [ ] Verify history captions, small room tiles, all three Camera/Photos/Live
@@ -209,10 +224,10 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 | New look B / all controls close to image | Focus Canvas implemented; compact selected-style/palette summary pending |
 | Stock/custom home image | Implemented; separate from last-opened project/image |
 | Camera/gallery as primary inputs | Implemented, plus Live design choice in room setup |
-| Design in viewer, immediately overlay, keep camera open | Flow implemented; automatic-overlay/handoff corrections are source after 1.0.11 |
+| Design in viewer, immediately overlay, keep camera open | Automatic-overlay/handoff corrections packaged in 1.0.12; phone acceptance pending |
 | Live scan, moving-camera renovation, snapshot to refine | Still capture + generated overlay/refine exists; true tracked live transformation/composite export pending |
-| Library/history captions below image | Library in 1.0.11; version-history correction source only |
-| Smaller room icons, type-based Live room label | Completed in newer source; awaiting requested APK acceptance |
+| Library/history captions below image | Both packaged in 1.0.12; phone acceptance pending |
+| Smaller room icons, type-based Live room label | Packaged in 1.0.12; phone acceptance pending |
 | Themes and settings storage/encryption TODOs | Five themes, storage details, encrypted export completed; internal encryption/OS backup policy pending |
 | Competitor/review/pricing research | Dated notes retained; no fresh pricing verification or promise to undercut costs |
 | Cleanup, minimal docs, Git ignore, commits | Four root/two guide documents; generated/private data ignored; local verified commits, no push |

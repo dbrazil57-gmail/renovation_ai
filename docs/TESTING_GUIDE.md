@@ -7,19 +7,28 @@ instructions have been consolidated here; no real project data was changed.
 
 ## Current source and phone package
 
-Latest existing APK: **1.0.11+12**, source `5a37fa0234`:
-`output/mobile-test/renovision-test-1.0.11.apk`, alias `renovision-test.apk`.
-SHA256: `D698CE3EC2CDB9E340E063BE40A3279F63C35EE1268A379F66C38EC37EBC11AE`.
-It uses the same application ID/signature as 1.0.10 for an in-place update.
-Cleanup retained 1.0.10 as the rollback package; obsolete APKs 1.0.8/1.0.9 were
-removed. Its development signing is not public-release signing.
+Latest test APK: **1.0.12+13**, source `3cb94c972c`:
+`output/mobile-test/renovision-test-1.0.12.apk`, alias `renovision-test.apk`.
+SHA256: `CD3A047F2D84C515B279F2686B506017AB1A46199A00038A23B410799A88CB99`.
+Size: 76,231,742 bytes. Its application ID/signature match 1.0.11 for an in-place
+update. Previous APKs 1.0.11/1.0.10 are retained with unchanged checksums;
+obsolete 1.0.8/1.0.9 were removed during cleanup. Development signing is not
+public-release signing. ARM64, optional camera and internet are verified; no
+microphone/storage-write permission or private project/credential assets.
 
-Source through `a948da0` is newer. It adds camera handoff/automatic overlay fixes,
-version-history captions, compact room selection/live entry, simpler room lists,
-smaller typography, five themes, storage details and password-protected backups.
-These changes need a newly requested package and S21 acceptance. **Do not build
-another APK unless the user asks.** User reports of successful AI and camera use
-are useful evidence, but do not validate the later source automatically.
+Packages the completed source through `a948da0`: camera handoff/automatic overlay
+fixes, version-history captions, compact room selection/live entry, simpler room
+lists, smaller typography, five themes, storage details and optional password-
+protected backups. All 249 tests rerun and passed, analyser clean, Android build
+passed in 139.1 seconds. S21 acceptance remains. **Do not build another APK unless
+the user asks.** No real AI calls or stored-user-data changes during packaging.
+
+Start the phone test by installing over the existing app, opening the existing
+project and checking its photos/versions/AI connection. Then test Camera → Live
+design → analysis/options → generation → immediate overlay without leaving the
+viewer → Continue to refine. Also check history captions, compact room choices
+and Settings themes/plain/protected project backups. Confirm prompts before
+paid requests; storage/theme tests need no AI calls.
 
 ## Windows preview
 
@@ -234,8 +243,8 @@ Install a requested new APK as an update with the matching ID/signature. Do not
 uninstall/clear data as a routine update. This app does not require Play Store
 publication for private APK testing.
 
-Use the latest source package when available; testing 1.0.11 cannot prove the
-later fixes. Acceptance checklist:
+Use **1.0.12** for these fixes; testing the older 1.0.11 cannot establish their
+acceptance. Checklist:
 
 - Existing projects/images/settings survive upgrade, normal exit, restart and
   background/resume. Plain/protected file pickers behave as documented.
@@ -259,10 +268,12 @@ later fixes. Acceptance checklist:
 
 ## Verification
 
-Preceding settings batch: **249 tests passed**, `flutter analyze` clean and web
-release build passed in 54.9 seconds. Logs are private under `output/`:
-`settings-batch-regression.log`, `settings-batch-analysis.log`,
-`settings-batch-web-build.log`. These were not rerun after audit-only docs/ignore edits.
+Requested 1.0.12 package: **249 tests rerun and passed**, `flutter analyze` clean,
+Android release build passed in 139.1 seconds. Logs and package verification are
+private under `output/mobile-test/`: `test-1.0.12.log`, `analysis-1.0.12.log`,
+`build-1.0.12.log`, `metadata-1.0.12.log` and `signing-1.0.12.log`.
+The preceding web build passed in 54.9 seconds; its settings-batch logs remain
+under `output/`. Web compilation was not repeated for the package-version change.
 
 The audit rendered eleven fictional-fixture screens with correct view metrics,
 fonts and fake AI/file services: Projects, Rooms, room chooser, Explore, Library,
@@ -275,11 +286,12 @@ surface size where required; changing test surface size alone can leave an
 incorrect MediaQuery width and exercise the wrong adaptive layout.
 
 The subsequent workspace cleanup removed generated Android/test/tool caches and
-superseded logs while retaining the latest web build, these four baseline logs,
+superseded logs while retaining the then-current web build, settings/audit logs,
 current/rollback APK verification records and all project/recovery/browser data.
 The loose audit fixture generator and old source/tool snapshots are retained in
 one SHA256-verified archive under `.local_backups/archives/`. Cleanup changed no
-application code, so the suite/build were not rerun simply to regenerate caches.
+application code, so checks were not repeated solely for cleanup. The subsequent
+requested APK build reran tests/analysis and recreated the necessary caches.
 
 For implementation changes, run relevant tests and the required suite/analyser:
 

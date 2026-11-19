@@ -20,9 +20,10 @@ still controlled changes to real rooms, and mask/compositor enforcement is the
 largest missing part of that promise. Reliability comes before subscriptions or
 claiming continuous AR.
 
-Latest source is ahead of installed APK 1.0.11. An unchanged APK cannot demonstrate
-the recent caption/room-entry/camera-handoff/layout/theme/backup fixes. The next
-requested package needs phone acceptance; this audit produced no APK.
+At audit time source was ahead of APK 1.0.11. The subsequent requested **1.0.12+13**
+package now includes the caption/room-entry/camera-handoff/layout/theme/backup
+fixes, source stamp `3cb94c972c`. All 249 tests and static analysis passed again;
+phone acceptance remains. The audit itself produced no APK or paid AI call.
 
 ### Rendered interface evidence
 
@@ -166,7 +167,8 @@ action uses this viewer; the workspace editor is an explicit separate tool.
 Saved results appear automatically over the camera (or wait for it to become
 ready), with a toggle on the image. Keyboard visibility must not reset the
 overlay. Continue to refine explicitly opens the selected result for precision
-editing, preserving the whole-room brief. This correction is not yet in an APK.
+editing, preserving the whole-room brief. This correction is packaged in the
+requested 1.0.12 APK; physical phone acceptance remains.
 
 Consolidated 15 November 2026. Supporting notes, not another current task list.
 Use the [project brief](../RENOVISION_PROJECT_BRIEF.md) for requirements,
@@ -784,9 +786,9 @@ price will not compensate for lost projects or repeated unwanted changes.
 
 Recorded 14 November 2026; reconciled 19 November. Embedded camera capture,
 frozen comparison, manual same-view overlay and consented Live design are
-implemented and packaged through 1.0.11. Later source fixes the main camera
-handoff/automatic result overlay and adds room-first Live entry. The user reports
-useful overlays; those later fixes need a requested APK and phone acceptance.
+implemented initially through 1.0.11. APK 1.0.12 also packages the main camera
+handoff/automatic result overlay fixes and room-first Live entry. The user reports
+useful earlier overlays; these later fixes still need phone acceptance.
 Continuous, consistent whole-room AR is a separate milestone; composite exports
 are not yet implemented.
 

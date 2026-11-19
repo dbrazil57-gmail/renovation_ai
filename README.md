@@ -23,16 +23,18 @@ for continued private testing, with project-file identity, complete per-version
 settings, precise edit enforcement and larger-project reliability still to finish.
 No public backend, payment system or store-ready release is included.
 
-Latest source baseline `a948da0`: **249 tests passed**, static analysis clean,
-web release compilation passed. The audit reviewed 11 rendered fixture screens
-and changed documents/private-export ignores only; it did not rerun that suite,
-build an APK or call paid AI.
+Application code audited through `a948da0` is now packaged in the requested
+**1.0.12+13** update. All **249 tests were rerun and passed**, static analysis is
+clean and the Android release build passed in 139.1 seconds. The earlier web
+release build and 11-screen fixture audit remain useful separate evidence.
 
-Latest existing test package: **1.0.11+12**, source `5a37fa0234`, at
-`output/mobile-test/renovision-test-1.0.11.apk` (also `renovision-test.apk`).
-Newer source includes automatic camera-overlay/handoff fixes, history captions,
-room-entry/layout changes, five app themes, storage details and encrypted backups.
-**Those follow-ups are not in the existing APK.** Build APKs only when requested.
+Latest test package: **1.0.12+13**, source `3cb94c972c`, at
+`output/mobile-test/renovision-test-1.0.12.apk` (also `renovision-test.apk`).
+Includes automatic camera-overlay/handoff fixes, history captions, room-entry/
+layout changes, five app themes, storage details and optional encrypted backups.
+The application ID/signature match 1.0.11; install over the existing app without
+uninstalling. Physical S21 acceptance remains. No paid AI calls or user-data reset.
+Build further APKs only when requested.
 
 ## Project documents
 
