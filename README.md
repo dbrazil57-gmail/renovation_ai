@@ -7,27 +7,28 @@ OpenAI analysis and editing can use your personal API key directly over HTTPS,
 without a laptop. The local relay remains optional; manual AI handoff is available.
 There is no production backend or payment integration.
 
-Next-release interface source (after APK 1.0.10): Saved projects is compact,
+Interface refinements (included in APK 1.0.11): Saved projects is compact,
 with its guidance in an information control. Create project and Open project
 file are grouped; tap listed projects to resume, or restore a backup in Settings.
 Library previews have full-width captions below them, full title/context on
 hover/long-press, full-screen viewing and separate edit/delete actions. Wide
 screens use two columns and only nearby rows load. Room setup labels the camera
-and gallery destinations correctly. These changes are not in APK 1.0.10 yet.
+and gallery destinations correctly.
 
-Live design (source after APK 1.0.10): Project > Live design, or the Live design
+Live design (included in APK 1.0.11): Project > Live design, or the Live design
 tool in Camera renovation, keeps reference capture, analysis, direction and
 preview tuning in the camera viewer. After consent, one reference captures
 automatically and is analysed. Room/style, Palette and Brief panels sit underneath;
 each Generate/Update preview confirms one image request. Palette changes reuse
 photo observations. Results autosave as versions; Save and continue opens the
 normal workspace. Generation still takes model time; no tracked/video-rate AR
-or room-coverage scan percentage is implemented. Not in the existing 1.0.10 APK.
+or room-coverage scan percentage is implemented.
 
-Latest test APK: **1.0.10+11**, source `a18caebdc6`, at
-`output/mobile-test/renovision-test-1.0.10.apk` (also `renovision-test.apk`).
-Signature matches 1.0.9: install as an update without uninstalling. Includes
-the home-cover picker and camera prototype. All 205 tests pass; analysis clean.
+Latest test APK: **1.0.11+12**, source `5a37fa0234`, at
+`output/mobile-test/renovision-test-1.0.11.apk` (also `renovision-test.apk`).
+Signature matches 1.0.10: install as an update without uninstalling. Includes
+Live design, Projects/Library refinements and previous cover/camera features.
+All 220 tests pass; analysis clean. Old APKs retained; physical S21 acceptance pending.
 
 Home cover (included in APK 1.0.10): the opening banner defaults to the bundled,
 fictional coastal living-room sample instead of the last-opened room's original.

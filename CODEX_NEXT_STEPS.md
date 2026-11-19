@@ -3,7 +3,26 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
-## Next-release Projects/Library refinements — source after APK 1.0.10
+## Current phone test: APK 1.0.11+12
+
+Requested build completed at `output/mobile-test/renovision-test-1.0.11.apk`
+(also `renovision-test.apk`), source `5a37fa0234`. Includes Live design in the
+viewer plus compact project controls, readable library captions and source-aware
+camera/gallery labels. All 220 tests pass, analysis clean; Android release build
+took 102.3 seconds. Version/package/signature and camera permissions verified;
+signature matches 1.0.10. Install over the existing app. Earlier APKs and local
+data/settings retained; no private room assets bundled or paid AI calls made.
+
+Test next: open a project > Live design > Start live design > Start and analyse;
+hold the view while its reference captures/analyses. Confirm room/style/palette/
+brief, Generate preview, then change palette and confirm Update preview. Verify
+the viewer stays open, analysis is reused, and Save and continue opens the selected
+design. Check compact Saved projects/info/file opening, Library captions/zoom/edit,
+camera/gallery labels, backgrounding/rotation and restart persistence. No true
+spatial scan, instant video generation or movement tracking is claimed. Future
+APKs only on explicit request.
+
+## Projects/Library refinements — included in APK 1.0.11
 
 Implemented compact Saved projects with hover/tap information, grouped Create /
 Open project file controls and directly openable local project rows. Removed the
@@ -13,13 +32,13 @@ Library captions now span beneath the preview, with full title/context on hover
 or long-press, full-screen viewing and edit/delete actions below. Responsive one/
 two-column rows load lazily. Camera/gallery room setup labels match the next
 destination (generic Continue when the source is chosen afterwards).
-220 tests pass, static analysis clean. No user-data changes or new APK. Include
-these changes with Live design in the next explicitly requested Android build;
+220 tests pass, static analysis clean. No user-data changes. Included
+with Live design in the requested 1.0.11 Android build;
 check Saved projects help/file opening, Library readability and camera/gallery
 copy on normal Chrome and S21.
 Web release build passed; existing APK 1.0.10 checksum verified unchanged.
 
-## Live design in the viewer — source after APK 1.0.10
+## Live design in the viewer — included in APK 1.0.11
 
 User clarification implemented as a separate Live design route from projects and
 Camera renovation. No prior room photo/shutter step: Start and analyse consents
@@ -34,13 +53,13 @@ mode; bounded paid live sessions are a future option, with no automatic spend lo
 Existing APK 1.0.10 checksum verified unchanged. Ten mocked tests cover consent,
 automatic capture, reused analysis, single-request limits, save failures, backup/continuation,
 originals/approval, backgrounding, large text and rotation during generation.
-No real AI call, user-data change or new APK. Next: requested APK and normal
-Chrome/S21 acceptance using the Live design checklist. Existing 1.0.10 APK lacks
-this new route. Preparation progress is real elapsed preparation/request stages,
+No real AI call or user-data change. Next: normal Chrome/S21 acceptance using
+the Live design checklist and APK 1.0.11. Existing 1.0.10 lacks this new route.
+Preparation progress is real elapsed preparation/request stages,
 not room coverage. Generation still waits for the provider; no streaming partial
 previews, 3D scanning, pose tracking or instant video transformation implemented.
 
-## Current phone test: APK 1.0.10+11
+## Previous phone test: APK 1.0.10+11
 
 Requested build completed: `output/mobile-test/renovision-test-1.0.10.apk`
 (also `renovision-test.apk`), source `a18caebdc6`. Includes both the home cover

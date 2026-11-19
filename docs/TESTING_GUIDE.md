@@ -1,6 +1,16 @@
 # Testing and storage reference
 
-## Projects/Library refinements — next-release source after APK 1.0.10
+## Current phone package: APK 1.0.11+12
+
+Install `output/mobile-test/renovision-test-1.0.11.apk` over the existing app
+without uninstalling. Source `5a37fa0234`; package remains
+`com.example.renovision_ai`, signature matches 1.0.10. All 220 tests pass, analysis
+clean; universal release APK built and verified. Existing 1.0.10 APK retained.
+Includes both checklists below. Camera optional, no microphone/storage write
+permission and only bundled app sample assets. No user data cleared or real AI
+requests made by the agent. Physical S21/provider acceptance remains manual.
+
+## Projects/Library refinements — included in APK 1.0.11
 
 - Saved projects: guidance stays behind the information control (hover or tap).
   Create project works; tap a listed project to resume it. Open project file
@@ -16,9 +26,9 @@
   without a chosen source say Continue, then offer camera/gallery selection.
 
 220 automated tests pass and analysis is clean. Existing projects, originals,
-favourites and AI settings are preserved. This batch builds no new APK.
+favourites and AI settings are preserved. Included in APK 1.0.11.
 
-## Live design — source after APK 1.0.10, not packaged yet
+## Live design — included in APK 1.0.11
 
 1. Open a project > Live design, or Camera renovation > Live design tool. Camera
    opening/cancelling must not capture, create room data or send an AI request.
@@ -41,13 +51,13 @@ favourites and AI settings are preserved. This batch builds no new APK.
    resizing resets the overlay. Check large text, keyboard, settings camera release,
    permissions and the six-photo cap (start a new room if the old room is full).
 
-215 tests pass, including ten mocked Live design tests; analysis clean. No real
-camera/provider acceptance is implied. Current APK 1.0.10 has the earlier workflow.
+220 tests pass, including ten mocked Live design tests; analysis clean. No real
+camera/provider acceptance is implied. Previous APK 1.0.10 has the earlier workflow.
 Generation still takes provider time; partial streaming, tracked movement, 3D
 scanning and video-rate transformation are not implemented. All paid results
 autosave; Save and continue completes the camera workflow.
 
-## Current phone package: APK 1.0.10+11
+## Previous phone package: APK 1.0.10+11
 
 Install `output/mobile-test/renovision-test-1.0.10.apk` over the existing app
 without uninstalling. Source `a18caebdc6`; package remains

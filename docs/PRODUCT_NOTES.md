@@ -13,7 +13,8 @@ Current image generation can take time; partial streaming is a possible next
 latency improvement, not an implemented feature. Provider capabilities/limits:
 [OpenAI image generation](https://developers.openai.com/api/docs/guides/image-generation).
 Geometric room scanning, pose tracking and continuous video transformation are
-separate research/engineering work. No real AI calls or new APK in this batch.
+separate research/engineering work. The source batch made no real AI calls or
+APK; it is now packaged in the requested 1.0.11 test build.
 
 Consolidated 15 November 2026. Supporting notes, not another current task list.
 Use the [project brief](../RENOVISION_PROJECT_BRIEF.md) for requirements,

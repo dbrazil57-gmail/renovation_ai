@@ -3,7 +3,17 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
-Projects/Library polish for next release (source after 1.0.10): Saved projects
+Latest requested test APK: **1.0.11+12**, source `5a37fa0234`, at
+`output/mobile-test/renovision-test-1.0.11.apk` (also `renovision-test.apk`).
+Includes same-viewer Live design and all Projects/Library/camera-entry refinements.
+All 220 tests pass; analysis clean; Android release build passed in 102.3 seconds.
+Package/version/signature verified against 1.0.10 for an in-place update. Camera
+hardware optional, no microphone/storage write permission, only app sample assets
+bundled. Existing APKs retained and 1.0.10 hash unchanged. No local work/settings
+cleared or real AI calls made. Physical S21 acceptance remains pending.
+SHA256: `D698CE3EC2CDB9E340E063BE40A3279F63C35EE1268A379F66C38EC37EBC11AE`.
+
+Projects/Library polish (included in 1.0.11): Saved projects
 uses a compact heading with hover/tap information instead of inline paragraphs;
 Create project/Open project file actions are grouped. Restore-copy remains in
 Settings, and saved project rows open directly. File import stays available and
@@ -12,12 +22,12 @@ captions beneath their images, full title/project/room tooltips, full-screen ima
 viewing and separate edit/delete controls. Phone layout is one column, wide
 layout two; rows load lazily. Camera entry says Continue to camera; gallery says
 Continue to photos; an undecided source says Continue before source selection.
-No data/settings changes or new APK. 220 tests pass, static analysis clean;
+No data/settings changes. Packaged in APK 1.0.11. 220 tests pass, static analysis clean;
 file-open preservation, capture cancellation, large text, image/edit navigation
 and lazy image loading covered. Normal Chrome/S21 visual acceptance remains.
 Web release build passed; existing APK 1.0.10 checksum verified unchanged.
 
-Live design source update (after APK 1.0.10, 19 November): project entry works
+Live design (included in APK 1.0.11, 19 November): project entry works
 without previously importing a room photo. Start and analyse confirms one automatic
 reference capture + paid analysis. The camera stays open; Room/style, Palette and
 Brief panels sit below it. Generate/Update preview separately confirms exactly one
@@ -28,13 +38,13 @@ existing workspace. Original photos/approval/model and quality settings persist.
 Reference/analysis/image save retries reuse received data without duplicate calls.
 Backgrounding cancels preparation and resets overlays; pending paid results remain
 guarded. Narrow/large-text progress overflow fixed. All 215 tests pass (ten new
-mocked Live design tests), analysis clean. No real AI calls or new APK built.
+mocked Live design tests), analysis clean. No real AI calls; now packaged in 1.0.11.
 Web release compilation also passed; APK 1.0.10 checksum verified unchanged.
 Normal Chrome/S21 acceptance remains. Instant generation, partial-image streaming,
 spatial room scanning and movement tracking are not implemented; this stays a
 same-view image overlay. Bounded paid live sessions remain a future option.
 
-Latest requested APK: **1.0.10+11**, source `a18caebdc6`, at
+Previous test APK: **1.0.10+11**, source `a18caebdc6`, at
 `output/mobile-test/renovision-test-1.0.10.apk` and `renovision-test.apk`.
 Includes embedded camera capture/design/compare/manual overlay and the home-cover
 picker. All 205 tests pass, analysis clean; Android release build passed in
