@@ -3,6 +3,18 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
+Camera handoff correction (source after APK 1.0.11): **Design in live camera**
+now keeps the main camera-design journey in Live design, with analysis/options
+and results in the viewer. Compare reuses its saved reference without capturing
+another photo; Live view captures after consent. The old workspace editor is a
+separate toolbar action. Saved results request an immediate overlay, or wait for
+camera readiness, with a persistent viewer toggle. Keyboard insets no longer
+reset it; genuinely resizing/backgrounding still resets alignment. **Continue
+to refine** explicitly opens precision editing of the selected saved version,
+preserving the whole-room brief. No new APK built for this correction.
+All 226 tests pass, including 16 Live design tests; static analysis clean and
+web release compilation passed. Existing APK 1.0.11 checksum is unchanged.
+
 Latest requested test APK: **1.0.11+12**, source `5a37fa0234`, at
 `output/mobile-test/renovision-test-1.0.11.apk` (also `renovision-test.apk`).
 Includes same-viewer Live design and all Projects/Library/camera-entry refinements.

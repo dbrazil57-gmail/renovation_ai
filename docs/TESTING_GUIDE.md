@@ -1,5 +1,35 @@
 # Testing and storage reference
 
+## Camera result handoff — source after APK 1.0.11
+
+This correction needs a later APK requested by the user; the existing 1.0.11
+package below has not changed.
+
+1. Open a saved room > camera tool > **Design in live camera** while viewing the
+   live feed. Stay in Live design for consent, reference capture, analysis,
+   options and confirmed image generation. The normal workspace must not open.
+2. Once the result saves, it appears over the live camera automatically. If the
+   camera is still opening, it appears when ready. The image-area button toggles
+   **Show camera only / Show saved design on camera** without scrolling controls,
+   taking another photo or making another AI request. A previous zero-opacity
+   selection must not make a newly generated result invisible.
+3. Open/close the keyboard to change the brief: the current overlay stays. Real
+   rotation/resizing or backgrounding resets alignment; use the viewer button
+   to show the result again. Palette updates still need generation confirmation.
+4. **Continue to refine** is the explicit exit to the normal workspace, selecting
+   the saved design in precision mode. Enter a small correction there: its source
+   is the selected design, and the original whole-room instructions remain saved.
+5. Repeat from Camera renovation's **Compare** view. Design in live camera reuses
+   that saved source; consent sends it for analysis without taking a new photo.
+   This works at the six-photo limit. Opening/cancelling alone sends nothing;
+   matching saved observations can be reused. **Edit saved view in workspace**
+   is the separate legacy editing action, rather than the main design button.
+
+All 226 tests pass, including sixteen mocked Live design tests covering these
+paths and the existing consent, save-retry, original-data, lifecycle and rotation
+cases. Static analysis is clean and the web release build passed. Physical phone
+camera, overlay alignment and real provider quality still require manual acceptance.
+
 ## Current phone package: APK 1.0.11+12
 
 Install `output/mobile-test/renovision-test-1.0.11.apk` over the existing app

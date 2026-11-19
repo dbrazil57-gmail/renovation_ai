@@ -24,7 +24,7 @@ import 'store.dart';
 class LiveDesignScreen extends StatefulWidget {
   final RenovisionStore store;
   final String projectId;
-  final String? roomId;
+  final String? roomId, initialPhotoId;
   final RoomCameraFeed? feed;
   final WidgetBuilder? settingsBuilder;
   final Widget Function(String roomId, String? designId) workspace;
@@ -35,6 +35,7 @@ class LiveDesignScreen extends StatefulWidget {
     required this.projectId,
     required this.workspace,
     this.roomId,
+    this.initialPhotoId,
     this.feed,
     this.settingsBuilder,
     this.settleDuration = const Duration(seconds: 2),
@@ -60,6 +61,9 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
       overlay = false,
       original = false,
       settingsOpen = false;
+  bool overlayRequested = false;
+  bool analysisAttempted = false;
+  Size? lastViewSize;
   int ticks = 0, totalTicks = 1, panel = 0;
   double opacity = .9;
   bool get busy =>
@@ -98,6 +102,15 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
     guard = createPageExitGuard(() {
       draft?.save();
     });
+    final savedRoom = room;
+    if (savedRoom != null &&
+        savedRoom.photoIds.contains(widget.initialPhotoId) &&
+        widget.store.imageFor(widget.initialPhotoId!) != null) {
+      sourceId = widget.initialPhotoId;
+      draft = RoomDraft(widget.store, savedRoom);
+      draft!.setPrecise(false);
+      draft!.addListener(_changed);
+    }
     widget.store.addListener(_changed);
     widget.store.ai.addListener(_changed);
     widget.store.documents.addListener(_changed);
@@ -119,9 +132,42 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
   void _cameraChanged() {
     if (!mounted) return;
     setState(() {
-      if (feed.phase != RoomCameraPhase.ready) overlay = false;
+      overlay =
+          overlayRequested &&
+          foreground &&
+          !settingsOpen &&
+          feed.phase == RoomCameraPhase.ready;
     });
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    lastViewSize ??= View.of(context).physicalSize;
+  }
+
+  void _showSavedDesignOnCamera() {
+    if (!mounted || selectedDesign == null) return;
+    setState(() {
+      overlayRequested = true;
+      original = false;
+      overlay =
+          foreground && !settingsOpen && feed.phase == RoomCameraPhase.ready;
+      if (opacity <= .05) opacity = .9;
+    });
+    if (foreground &&
+        !settingsOpen &&
+        feed.phase != RoomCameraPhase.ready &&
+        feed.phase != RoomCameraPhase.opening) {
+      unawaited(feed.start().catchError((Object _) {}));
+    }
+  }
+
+  void _showCameraOnly() => setState(() {
+    overlayRequested = false;
+    overlay = false;
+    original = false;
+  });
 
   Future<void> _stopCamera() async {
     try {
@@ -133,7 +179,16 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     foreground = state == AppLifecycleState.resumed;
     if (foreground) {
-      if (!settingsOpen) unawaited(feed.start());
+      if (!settingsOpen) {
+        unawaited(
+          feed
+              .start()
+              .then((_) {
+                if (mounted) _cameraChanged();
+              })
+              .catchError((Object _) {}),
+        );
+      }
     } else if (!(state == AppLifecycleState.inactive &&
         feed.phase == RoomCameraPhase.opening)) {
       final wasSettling = settle != null;
@@ -141,6 +196,7 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
       settle = null;
       if (mounted) {
         setState(() {
+          overlayRequested = false;
           overlay = false;
           if (wasSettling) {
             message = 'Preparation paused. Start again when ready.';
@@ -154,7 +210,15 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
 
   @override
   void didChangeMetrics() {
-    if (mounted) setState(() => overlay = false);
+    if (!mounted) return;
+    final size = View.of(context).physicalSize;
+    if (size != lastViewSize) {
+      setState(() {
+        overlayRequested = false;
+        overlay = false;
+      });
+    }
+    lastViewSize = size;
   }
 
   @override
@@ -179,13 +243,17 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
           title: Text(
             sourceId == null
                 ? 'Start live design?'
-                : 'Analyse this view again?',
+                : analysisAttempted
+                ? 'Analyse this view again?'
+                : 'Analyse this saved view?',
           ),
           content: SingleChildScrollView(
             child: Text(
               sourceId == null
                   ? 'The app will automatically capture one reference frame and save it in this project. One photo and the room brief are sent to your connected AI for a paid analysis. Video stays on this device. Each design or palette update is a separate request that you confirm.'
-                  : 'Send the saved reference and brief for one more paid analysis. A failed request may already have been charged; check provider usage before retrying. No new camera frame is captured.',
+                  : analysisAttempted
+                  ? 'Send the saved reference and brief for one more paid analysis. A failed request may already have been charged; check provider usage before retrying. No new camera frame is captured.'
+                  : 'Send this saved reference and brief for one paid analysis while staying in the camera viewer. No new camera frame is captured. Image generation has its own confirmation.',
             ),
           ),
           actions: [
@@ -346,6 +414,7 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
         operation: 'Live room analysis',
       );
       started = true;
+      analysisAttempted = true;
       final result = await widget.store.ai.analyse(
         image: widget.store.imageFor(sourceId!)!,
         context: context,
@@ -412,6 +481,7 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
   }
 
   Future<bool> _saveChoices() async {
+    FocusManager.instance.primaryFocus?.unfocus();
     final saved = await draft!.save();
     if (saved &&
         !generating &&
@@ -623,12 +693,16 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
           Text(
             analysing
                 ? 'Analysing the reference…'
-                : 'Reference saved. Analysis can be retried with confirmation.',
+                : analysisAttempted
+                ? 'Reference saved. Analysis can be retried with confirmation.'
+                : 'Saved view selected. Analyse it here while the camera stays open.',
           ),
           if (!busy)
             OutlinedButton(
               onPressed: _retryAnalysis,
-              child: const Text('Retry analysis'),
+              child: Text(
+                analysisAttempted ? 'Retry analysis' : 'Analyse saved view',
+              ),
             ),
         ] else ...[
           Wrap(
@@ -786,10 +860,9 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
                 setState(() {
                   selectedDesignId = design.id;
                   appliedSettings = settingsKey;
-                  overlay = foreground && feed.phase == RoomCameraPhase.ready;
-                  original = false;
-                  message = 'Preview saved. Adjust the direction here or save and continue.';
+                  message = 'Design saved. View it over the live camera here; continue to refine when ready.';
                 });
+                _showSavedDesignOnCamera();
               }
             },
           ),
@@ -800,15 +873,13 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
                 ChoiceChip(
                   label: const Text('Live camera'),
                   selected: !overlay && !original,
-                  onSelected: (_) => setState(() {
-                    overlay = false;
-                    original = false;
-                  }),
+                  onSelected: (_) => _showCameraOnly(),
                 ),
                 ChoiceChip(
                   label: const Text('Reference'),
                   selected: original,
                   onSelected: (_) => setState(() {
+                    overlayRequested = false;
                     original = true;
                     overlay = false;
                   }),
@@ -816,10 +887,7 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
                 ChoiceChip(
                   label: const Text('Design overlay'),
                   selected: overlay,
-                  onSelected: (_) => setState(() {
-                    overlay = true;
-                    original = false;
-                  }),
+                  onSelected: (_) => _showSavedDesignOnCamera(),
                 ),
               ],
             ),
@@ -833,8 +901,8 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
               onPressed: busy || appliedSettings != settingsKey
                   ? null
                   : _continue,
-              icon: const Icon(Icons.save_outlined),
-              label: const Text('Save and continue'),
+              icon: const Icon(Icons.edit_outlined),
+              label: const Text('Continue to refine'),
             ),
           ],
         ],
@@ -933,6 +1001,7 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
                           if (overlay && result != null)
                             IgnorePointer(
                               child: Opacity(
+                                key: const ValueKey('live-design-overlay'),
                                 opacity: opacity,
                                 child: Image.memory(
                                   result,
@@ -953,15 +1022,45 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
                             top: 8,
                             left: 8,
                             right: 8,
-                            child: Text(
-                              overlay
-                                  ? 'Preview overlay · keep the same viewpoint'
-                                  : 'Camera stays on device · one reference sent after confirmation',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                backgroundColor: Colors.black87,
-                              ),
-                              textAlign: TextAlign.center,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    overlay
+                                        ? 'Live camera + saved design · match the reference view'
+                                        : original
+                                        ? 'Saved reference photo'
+                                        : overlayRequested && result != null
+                                        ? 'Design saved · waiting for camera'
+                                        : 'Live camera · on this device',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      backgroundColor: Colors.black87,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (result != null)
+                                  IconButton(
+                                    tooltip: overlay
+                                        ? 'Show camera only'
+                                        : 'Show saved design on camera',
+                                    onPressed: overlay
+                                        ? _showCameraOnly
+                                        : _showSavedDesignOnCamera,
+                                    style: IconButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: Colors.black54,
+                                    ),
+                                    icon: Icon(
+                                      overlay
+                                          ? Icons.visibility_off_outlined
+                                          : Icons.layers_outlined,
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                         ],

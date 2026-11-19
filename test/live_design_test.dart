@@ -6,12 +6,15 @@ import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
 import 'package:renovision_ai/ai_activity.dart';
 import 'package:renovision_ai/ai_service.dart';
+import 'package:renovision_ai/ai_widgets.dart';
 import 'package:renovision_ai/colour_palette_widgets.dart';
+import 'package:renovision_ai/camera_room_view.dart';
 import 'package:renovision_ai/live_design_screen.dart';
 import 'package:renovision_ai/models.dart';
 import 'package:renovision_ai/project_backup.dart';
 import 'package:renovision_ai/room_analysis.dart';
 import 'package:renovision_ai/room_camera.dart';
+import 'package:renovision_ai/screens.dart';
 import 'package:renovision_ai/store.dart';
 
 import 'support/memory_box.dart';
@@ -87,6 +90,7 @@ class LiveTestAi extends AiService {
 class LiveTestFeed extends RoomCameraFeed {
   int captures = 0, starts = 0, stops = 0;
   bool closed = false;
+  bool waitUntilReady = false;
   final bytes = picture(20);
   RoomCameraPhase state = RoomCameraPhase.paused;
   @override
@@ -101,7 +105,12 @@ class LiveTestFeed extends RoomCameraFeed {
   @override
   Future<void> start() async {
     starts++;
-    state = RoomCameraPhase.ready;
+    state = waitUntilReady ? RoomCameraPhase.opening : RoomCameraPhase.ready;
+    notifyListeners();
+  }
+
+  void setPhase(RoomCameraPhase phase) {
+    state = phase;
     notifyListeners();
   }
 
@@ -166,6 +175,7 @@ void main() {
     WidgetTester tester, {
     String? roomId,
     double scale = 1,
+    bool realWorkspace = false,
     Duration settleDuration = const Duration(milliseconds: 100),
   }) async {
     await tester.pumpWidget(
@@ -187,8 +197,14 @@ void main() {
                     roomId: roomId,
                     feed: feed,
                     settleDuration: settleDuration,
-                    workspace: (id, design) =>
-                        Scaffold(body: Text('Continue $id $design')),
+                    workspace: (id, design) => realWorkspace
+                        ? WorkspaceScreen(
+                            store: store,
+                            roomId: id,
+                            initialDesignId: design,
+                            startInPrecision: true,
+                          )
+                        : Scaffold(body: Text('Continue $id $design')),
                   ),
                 ),
               ),
@@ -255,7 +271,25 @@ void main() {
       final room = store.roomsFor(project.id).single;
       expect(ai.edits, 1);
       expect(find.text('Design overlay'), findsOneWidget);
+      expect(
+        tester
+            .widget<ChoiceChip>(
+              find.widgetWithText(ChoiceChip, 'Design overlay'),
+            )
+            .selected,
+        isTrue,
+      );
+      expect(find.byKey(const ValueKey('live-design-overlay')), findsOneWidget);
+      expect(find.byType(LiveDesignScreen), findsOneWidget);
+      expect(find.byType(WorkspaceScreen), findsNothing);
       expect(feed.stops, 0);
+      await tap(tester, 'Live camera');
+      final showSaved = find.byTooltip('Show saved design on camera');
+      expect(showSaved.hitTestable(), findsOneWidget);
+      await tester.tap(showSaved);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('live-design-overlay')), findsOneWidget);
+      expect(ai.edits, 1);
       await tap(tester, 'Palette');
       expect(
         tester
@@ -301,11 +335,210 @@ void main() {
       );
       final backup = ProjectBackup.decode(store.backupFor(project.id).encode());
       expect(backup.designs, hasLength(2));
-      await tap(tester, 'Save and continue');
+      await tap(tester, 'Continue to refine');
       expect(find.textContaining('Continue ${room.id}'), findsOneWidget);
       expect(feed.closed, isTrue);
     },
   );
+
+  testWidgets(
+    'saved result waits for a restarting camera and then overlays without navigation or another request',
+    (tester) async {
+      await show(tester);
+      await start(tester);
+      ai.holdEdit = Completer<void>();
+      await tap(tester, 'Generate preview');
+      await tester.tap(find.text('Send to OpenAI'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 250));
+      feed.waitUntilReady = true;
+      feed.setPhase(RoomCameraPhase.paused);
+      ai.holdEdit!.complete();
+      await tester.pumpAndSettle();
+      expect(
+        store.designsFor(store.roomsFor(project.id).single.id),
+        hasLength(1),
+      );
+      expect(find.byKey(const ValueKey('live-design-overlay')), findsNothing);
+      expect(
+        find.byTooltip('Show saved design on camera').hitTestable(),
+        findsOneWidget,
+      );
+      feed.setPhase(RoomCameraPhase.ready);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('live-design-overlay')), findsOneWidget);
+      expect(find.byType(LiveDesignScreen), findsOneWidget);
+      expect(ai.edits, 1);
+      expect(ai.analyses, 1);
+      expect(feed.captures, 1);
+    },
+  );
+
+  testWidgets('keyboard metrics keep a saved design over the live camera', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetViewInsets);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await show(tester);
+    await start(tester);
+    await generate(tester);
+    expect(find.byKey(const ValueKey('live-design-overlay')), findsOneWidget);
+    tester.view.viewInsets = const FakeViewPadding(bottom: 200);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('live-design-overlay')), findsOneWidget);
+    tester.view.resetViewInsets();
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('live-design-overlay')), findsOneWidget);
+    expect(ai.edits, 1);
+    expect(feed.phase, RoomCameraPhase.ready);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'a new saved result is visible even if the previous opacity was zero',
+    (tester) async {
+      await show(tester);
+      await start(tester);
+      await generate(tester);
+      final slider = find.byType(Slider);
+      await tester.ensureVisible(slider);
+      await tester.pumpAndSettle();
+      await tester.drag(slider, const Offset(-700, 0));
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<Opacity>(find.byKey(const ValueKey('live-design-overlay')))
+            .opacity,
+        0,
+      );
+      await generate(tester, update: true);
+      expect(
+        tester
+            .widget<Opacity>(find.byKey(const ValueKey('live-design-overlay')))
+            .opacity,
+        greaterThan(.05),
+      );
+      expect(find.byType(WorkspaceScreen), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'only Continue to refine leaves the viewer and starts correction of the selected saved design',
+    (tester) async {
+      final room = await store.createRoom(
+        projectId: project.id,
+        name: 'Kitchen',
+        originalImage: picture(7),
+      );
+      await store.updateRoom(
+        room.copyWith(
+          instructions: 'Modernise the kitchen with walnut cupboards.',
+        ),
+      );
+      await show(tester, roomId: room.id, realWorkspace: true);
+      await start(tester);
+      await generate(tester);
+      final saved = store.designsFor(room.id).single;
+      expect(find.byType(WorkspaceScreen), findsNothing);
+      expect(find.byKey(const ValueKey('live-design-overlay')), findsOneWidget);
+      await tap(tester, 'Continue to refine');
+      expect(
+        tester
+            .widget<WorkspaceScreen>(find.byType(WorkspaceScreen))
+            .initialDesignId,
+        saved.id,
+      );
+      final edit = tester.widget<AiEditCard>(find.byType(AiEditCard));
+      expect(edit.draft!.preciseEdit, isTrue);
+      edit.draft!.correction.text = 'Change only the pendant light.';
+      final request = edit.buildRequest();
+      expect(request.precise, isTrue);
+      expect(request.sourceImageId, saved.imageId);
+      expect(
+        store.roomById(room.id)!.instructions,
+        'Modernise the kitchen with walnut cupboards.',
+      );
+      expect(ai.edits, 1);
+      expect(feed.closed, isTrue);
+      await edit.draft!.save();
+    },
+  );
+
+  for (final savedReference in [false, true]) {
+    testWidgets(
+      'camera primary action designs ${savedReference ? 'a saved reference' : 'the live view'} without opening the workspace',
+      (tester) async {
+        final room = await store.createRoom(
+          projectId: project.id,
+          name: 'Kitchen',
+          roomTypeId: 'kitchen',
+          originalImage: picture(3),
+        );
+        if (savedReference) {
+          await store.addRoomPhotos(room.id, [
+            picture(4),
+            picture(5),
+            picture(6),
+            picture(7),
+            picture(8),
+          ]);
+        }
+        final oldFeed = LiveTestFeed();
+        await tester.pumpWidget(
+          MaterialApp(
+            home: CameraRoomView(
+              store: store,
+              roomId: room.id,
+              feed: oldFeed,
+              workspace: (_, _) =>
+                  const Scaffold(body: Text('Separate saved-view editor')),
+              liveDesignBuilder: (photoId) => LiveDesignScreen(
+                store: store,
+                projectId: project.id,
+                roomId: room.id,
+                initialPhotoId: photoId,
+                feed: feed,
+                settleDuration: const Duration(milliseconds: 100),
+                workspace: (id, design) =>
+                    Scaffold(body: Text('Continue $id $design')),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.byTooltip('Edit saved view in workspace'), findsOneWidget);
+        if (savedReference) await tap(tester, 'Compare');
+        await tap(tester, 'Design in live camera');
+        expect(find.byType(LiveDesignScreen), findsOneWidget);
+        expect(find.text('Separate saved-view editor'), findsNothing);
+        expect(oldFeed.closed, isTrue);
+        expect(ai.analyses, 0);
+        if (savedReference) {
+          await tap(tester, 'Analyse saved view');
+          await tap(tester, 'Start and analyse');
+        } else {
+          await start(tester);
+        }
+        await generate(tester);
+        expect(
+          find.byKey(const ValueKey('live-design-overlay')),
+          findsOneWidget,
+        );
+        expect(find.byType(WorkspaceScreen), findsNothing);
+        expect(ai.analyses, 1);
+        expect(ai.edits, 1);
+        expect(feed.captures, savedReference ? 0 : 1);
+        expect(
+          store.roomById(room.id)!.photoIds,
+          hasLength(savedReference ? 6 : 2),
+        );
+        expect(store.roomById(room.id)!.originalId, room.originalId);
+      },
+    );
+  }
 
   testWidgets(
     'failed reference save retries the same frame before any AI call',

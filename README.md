@@ -24,6 +24,16 @@ photo observations. Results autosave as versions; Save and continue opens the
 normal workspace. Generation still takes model time; no tracked/video-rate AR
 or room-coverage scan percentage is implemented.
 
+Camera follow-up (source after APK 1.0.11): Camera renovation's main **Design in
+live camera** action now opens that viewer instead of the saved-photo workspace.
+From Compare it reuses the selected saved reference; from Live view it captures
+a fresh reference after consent. A saved result automatically overlays the camera,
+including when the camera finishes restarting. An always-visible viewer button
+toggles camera/design; opening or closing the keyboard keeps the overlay. Only
+**Continue to refine** leaves for precision editing of the selected saved design.
+The separate **Edit saved view in workspace** tool retains the older editor path.
+No updated APK has been built for this follow-up.
+
 Latest test APK: **1.0.11+12**, source `5a37fa0234`, at
 `output/mobile-test/renovision-test-1.0.11.apk` (also `renovision-test.apk`).
 Signature matches 1.0.10: install as an update without uninstalling. Includes

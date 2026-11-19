@@ -3,7 +3,7 @@
 ## Camera-first design clarification — 19 November
 
 User wants the reference acquisition, analysis, direction questions, generated
-overlay and palette tuning in one viewer, then Save and continue into normal
+overlay and palette tuning in one viewer, then Continue to refine into normal
 editing. This supersedes a capture-first navigation requirement, while retaining
 the existing comparison mode. The new source implements that workflow with one
 automatically captured reference and separately confirmed preview requests. The
@@ -15,6 +15,13 @@ latency improvement, not an implemented feature. Provider capabilities/limits:
 Geometric room scanning, pose tracking and continuous video transformation are
 separate research/engineering work. The source batch made no real AI calls or
 APK; it is now packaged in the requested 1.0.11 test build.
+
+Follow-up source after 1.0.11: Camera renovation's primary Design in live camera
+action uses this viewer; the workspace editor is an explicit separate tool.
+Saved results appear automatically over the camera (or wait for it to become
+ready), with a toggle on the image. Keyboard visibility must not reset the
+overlay. Continue to refine explicitly opens the selected result for precision
+editing, preserving the whole-room brief. This correction is not yet in an APK.
 
 Consolidated 15 November 2026. Supporting notes, not another current task list.
 Use the [project brief](../RENOVISION_PROJECT_BRIEF.md) for requirements,

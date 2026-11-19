@@ -58,7 +58,7 @@ class CameraRoomView extends StatefulWidget {
   final String? initialPhotoId, initialDesignId;
   final RoomCameraFeed? feed;
   final WidgetBuilder? settingsBuilder;
-  final WidgetBuilder? liveDesignBuilder;
+  final Widget Function(String? photoId)? liveDesignBuilder;
   final Widget Function(String photoId, ValueChanged<String?> onSelected)
   workspace;
   const CameraRoomView({
@@ -331,7 +331,7 @@ class _CameraRoomViewState extends State<CameraRoomView>
     if (live) await feed.start();
   }
 
-  Future<void> _liveDesign() async {
+  Future<void> _liveDesign({bool useSavedView = false}) async {
     if (busy ||
         designing ||
         pendingCapture != null ||
@@ -350,7 +350,10 @@ class _CameraRoomViewState extends State<CameraRoomView>
       if (mounted) {
         await Navigator.pushReplacement<void, void>(
           context,
-          MaterialPageRoute(builder: widget.liveDesignBuilder!),
+          MaterialPageRoute(
+            builder: (_) =>
+                widget.liveDesignBuilder!(useSavedView ? photoId : null),
+          ),
         );
       }
     } catch (_) {
@@ -591,9 +594,17 @@ class _CameraRoomViewState extends State<CameraRoomView>
                   ),
                 ),
               OutlinedButton.icon(
-                onPressed: busy ? null : _designView,
+                onPressed: busy
+                    ? null
+                    : widget.liveDesignBuilder == null
+                    ? _designView
+                    : () => _liveDesign(useSavedView: !live),
                 icon: const Icon(Icons.auto_awesome_outlined),
-                label: const Text('Design saved view'),
+                label: Text(
+                  widget.liveDesignBuilder == null
+                      ? 'Design saved view'
+                      : 'Design in live camera',
+                ),
               ),
             ],
           ),
@@ -654,6 +665,12 @@ class _CameraRoomViewState extends State<CameraRoomView>
               tooltip: 'Live design',
               onPressed: busy || pendingCapture != null ? null : _liveDesign,
               icon: const Icon(Icons.auto_awesome_outlined),
+            ),
+          if (widget.liveDesignBuilder != null)
+            IconButton(
+              tooltip: 'Edit saved view in workspace',
+              onPressed: busy || pendingCapture != null ? null : _designView,
+              icon: const Icon(Icons.edit_outlined),
             ),
           if (widget.settingsBuilder != null)
             IconButton(

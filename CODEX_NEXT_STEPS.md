@@ -3,6 +3,29 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
+## Camera result handoff — source after APK 1.0.11
+
+Fixed the main Camera renovation action: **Design in live camera** now opens
+Live design rather than the normal workspace. A frozen Compare view reuses its
+saved source, including in a room with six photos; Live view starts a fresh
+automatic reference after consent. Saved-photo editing remains an explicit
+**Edit saved view in workspace** toolbar action. Generation saves a version and
+automatically overlays it without navigating; a restarting camera applies the
+waiting result once ready. The viewer's camera/design toggle stays visible, and
+keyboard changes no longer clear the overlay. **Continue to refine** is the
+explicit departure to precision editing of that saved design, preserving the
+whole-room instructions. Background/actual size changes still reset alignment.
+
+Validation: all 226 tests pass (16 Live design tests), static analysis is clean,
+and the web release build passed. APK 1.0.11 checksum is unchanged.
+
+Next phone check, after an explicitly requested APK: Camera renovation >
+Design in live camera > analyse/choose/confirm generation. Remain in the viewer,
+see the saved result over the camera, toggle it there, then Continue to refine.
+Also test Compare > Design in live camera without another capture and keyboard/
+background/rotation behaviour. Existing APK 1.0.11 is unchanged and does not
+contain this correction. Preserve local projects/settings; no real AI calls made.
+
 ## Current phone test: APK 1.0.11+12
 
 Requested build completed at `output/mobile-test/renovision-test-1.0.11.apk`

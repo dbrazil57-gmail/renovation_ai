@@ -696,6 +696,7 @@ class ProjectScreen extends StatelessWidget {
                           store: store,
                           roomId: roomId,
                           initialDesignId: designId,
+                          startInPrecision: true,
                         ),
                       ),
                     ),
@@ -1293,6 +1294,7 @@ class WorkspaceScreen extends StatefulWidget {
   final String? initialDesignId;
   final String? initialPhotoId;
   final ValueChanged<String?>? onDesignSelected;
+  final bool startInPrecision;
   const WorkspaceScreen({
     super.key,
     required this.store,
@@ -1300,6 +1302,7 @@ class WorkspaceScreen extends StatefulWidget {
     this.initialDesignId,
     this.initialPhotoId,
     this.onDesignSelected,
+    this.startInPrecision = false,
   });
   @override
   State<WorkspaceScreen> createState() => _WorkspaceScreenState();
@@ -1464,6 +1467,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
         ? null
         : widget.initialDesignId ?? room.approvedDesignId;
     if (cameraPhoto) draft.setPrecise(false);
+    if (widget.startInPrecision && selectedId != null) draft.setPrecise(true);
     focusSection = selectedId == null ? FocusSection.room : FocusSection.refine;
     selectedPhotoId = cameraPhoto ? widget.initialPhotoId! : room.primaryId;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -1566,15 +1570,17 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
           initialPhotoId: photoId,
           initialDesignId: selectedId,
           settingsBuilder: (_) => settingsPage(widget.store),
-          liveDesignBuilder: (_) => LiveDesignScreen(
+          liveDesignBuilder: (photoId) => LiveDesignScreen(
             store: widget.store,
             projectId: room.projectId,
             roomId: room.id,
+            initialPhotoId: photoId,
             settingsBuilder: (_) => settingsPage(widget.store),
             workspace: (roomId, designId) => WorkspaceScreen(
               store: widget.store,
               roomId: roomId,
               initialDesignId: designId,
+              startInPrecision: true,
             ),
           ),
           workspace: (photo, onSelected) => WorkspaceScreen(
