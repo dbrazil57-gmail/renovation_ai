@@ -3,6 +3,20 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
+Settings follow-up (source after APK 1.0.11): five app themes with immediate
+preview and device persistence, separate from room-design palettes. Workspace
+colours follow the selected theme; drafts and linked-project save state survive.
+Storage/privacy details show actual native store paths or browser origin, plus
+export-location and API-key protection facts. Outdated release TODO cards removed.
+Password-protected `.renovision` backups use AES-256-GCM with a per-file salt,
+nonce, authenticated header and PBKDF2-HMAC-SHA256 password derivation. Open and
+Restore unlock these files while retaining support for normal JSON project files;
+protected files cannot be silently overwritten by plaintext autosave. Passwords
+are not remembered. Existing local photos/records are preserved, with no added
+database encryption or data migration. No new APK or production-service rollout.
+All 249 tests pass, analysis clean and web release build passed. Existing APK
+checksum unchanged. Real Chrome/S21 file-picker/cross-device acceptance remains.
+
 Compact typography (source after APK 1.0.11): shared smaller body/input/heading
 styles across the app, tighter button/chip/page/card spacing, shorter Projects
 cover and compact normal-size navigation. Large-text settings are respected;

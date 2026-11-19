@@ -80,6 +80,7 @@ class _WebFiles
                       'description': 'Renovision project',
                       'accept': {
                         'application/json': ['.json'],
+                        'application/octet-stream': ['.renovision'],
                       },
                     },
                   ],
@@ -132,7 +133,13 @@ class _WebFiles
                           ? 'PNG image'
                           : 'Renovision project backup',
                       'accept': {
-                        mimeType: [mimeType == 'image/png' ? '.png' : '.json'],
+                        mimeType: [
+                          mimeType == 'image/png'
+                              ? '.png'
+                              : mimeType == 'application/json'
+                              ? '.json'
+                              : '.renovision',
+                        ],
                       },
                     },
                   ],
@@ -165,7 +172,7 @@ class _WebFiles
     final result = Completer<Uint8List?>();
     final input = web.HTMLInputElement()
       ..type = 'file'
-      ..accept = '.json,application/json';
+      ..accept = '.json,.renovision,application/json,application/octet-stream';
     input.style.display = 'none';
     input.addEventListener(
       'cancel',

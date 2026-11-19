@@ -34,6 +34,8 @@ import 'room_camera.dart';
 import 'camera_room_view.dart';
 import 'home_cover_widgets.dart';
 import 'live_design_screen.dart';
+import 'app_appearance_widgets.dart';
+import 'storage_privacy_widgets.dart';
 
 Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
     room.setupComplete
@@ -1240,11 +1242,13 @@ class SettingsTab extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 12),
+        AppAppearanceSettingsCard(store: store),
         ExpansionTile(
           title: const Text('AI connection and models'),
           children: [AiConnectionCard(ai: store.ai)],
         ),
         HomeCoverSettingsCard(store: store),
+        StoragePrivacyCard(store: store),
         ?roomSaving,
         Text('Save and restore', style: Theme.of(context).textTheme.titleLarge),
         const Text(
@@ -1275,43 +1279,6 @@ class SettingsTab extends StatelessWidget {
           ),
         ],
         StorageStatusCard(store: store),
-        const Card(
-          child: ListTile(
-            leading: Icon(Icons.phonelink_lock_outlined),
-            title: Text('Local-first prototype'),
-            subtitle: Text(
-              'Projects and images are saved in this device/browser profile. Optional in-app AI sends your selected photo and prompt to OpenAI only after you confirm an edit.',
-            ),
-          ),
-        ),
-        if (kIsWeb)
-          const Card(
-            child: ListTile(
-              leading: Icon(Icons.language_outlined),
-              title: Text('Browser storage warning'),
-              subtitle: Text(
-                'Use Back up project and Restore project backup here. Browser storage belongs to this exact address and profile; backup files are not automatically read from Downloads. Keep originals separately.',
-              ),
-            ),
-          ),
-        const Card(
-          child: ListTile(
-            leading: Icon(Icons.generating_tokens_outlined),
-            title: Text('Manual AI handoff is also available'),
-            subtitle: Text(
-              'Copy a carefully scoped prompt, then upload the relevant photo or marked reference in your existing AI provider app. Import its output as a new design version.',
-            ),
-          ),
-        ),
-        const Card(
-          child: ListTile(
-            leading: Icon(Icons.shield_outlined),
-            title: Text('Before public release'),
-            subtitle: Text(
-              'Add robust backups, encrypted local storage where appropriate, secure API integration, a privacy policy, testing and purchase verification.',
-            ),
-          ),
-        ),
       ],
     ),
   );

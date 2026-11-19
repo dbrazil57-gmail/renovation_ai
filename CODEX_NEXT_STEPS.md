@@ -3,6 +3,36 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
+## Settings themes, storage and protected backups — source after APK 1.0.11
+
+Added five device-local app themes with immediate preview, restart persistence,
+failure rollback and matching workspace/room-choice colours. Theme changes do
+not alter room palettes, drafts, project records or linked-file save revisions.
+Settings > Storage and privacy replaces stale release TODO/information cards:
+actual native Hive paths or browser origin/IndexedDB, copyable location details,
+file-chooser/download behaviour, API-key handling and current encryption limits.
+
+Back up project now uses the supported destination chooser. Optional
+Password-protected backup writes `.renovision` files using AES-256-GCM,
+PBKDF2-HMAC-SHA256 (600,000 iterations), fresh 16-byte salt/12-byte nonce and
+authenticated metadata. Native work runs off the UI isolate; browsers use the
+crypto library's web implementation. Passwords stay out of settings/exports.
+Open/Restore accepts encrypted and existing JSON files. Wrong passwords, invalid
+headers or tampering fail before project writes; protected files are never linked
+to plaintext autosave. Original local records/images are not migrated or encrypted.
+
+Next Chrome/S21 acceptance after an explicitly requested APK: select themes and
+restart; inspect/copy storage details; save plain and protected project copies to
+chosen locations; reopen across browser/phone, cancel or enter a wrong password,
+then restore with the correct one and check all room images/choices/versions.
+Full local-database/photo encryption with safe key recovery/migration remains a
+separate task. Public-release privacy policy, backend/billing and purchase checks
+remain on the existing backlog. No APK built or real AI calls made in this batch.
+Validation: all 249 tests pass; static analysis clean; web release build passed
+in 54.9 seconds. Existing APK 1.0.11 checksum unchanged. Tests cover all five
+themes, restart/failure/draft retention, encryption/tamper/password cases and
+protected export/open/restore without plaintext autosave linkage.
+
 ## Compact text across tabs — source after APK 1.0.11
 
 Added one shared compact theme for Projects/Explore/Library/Settings, room setup,

@@ -13,6 +13,7 @@ import 'design_styles.dart';
 import 'room_features.dart';
 import 'project_documents.dart';
 import 'room_starters.dart';
+import 'app_appearance.dart';
 
 /// Stage 1 local-only prototype storage. Photos are kept in a dedicated box.
 /// For production-scale image libraries, move large originals to app-private
@@ -26,6 +27,13 @@ class RenovisionStore extends ChangeNotifier {
   int _sequence = 0;
   bool _restoringAi = false;
   Future<void> _aiSettingsQueue = Future.value();
+  late final ValueNotifier<AppThemeChoice> appearance;
+
+  Future<void> setAppTheme(AppThemeChoice choice) async {
+    await records.put('settings:appearance', {'theme': choice.name});
+    // Device appearance is not a project edit or a portable-file revision.
+    appearance.value = choice;
+  }
 
   RenovisionStore({
     required this.records,
@@ -34,6 +42,17 @@ class RenovisionStore extends ChangeNotifier {
     AppFiles? files,
   }) : ai = ai ?? AiService(),
        files = files ?? createAppFiles() {
+    final savedAppearance = records.get('settings:appearance');
+    appearance = ValueNotifier(
+      AppThemeChoice.values
+              .where(
+                (choice) =>
+                    choice.name ==
+                    (savedAppearance is Map ? savedAppearance['theme'] : null),
+              )
+              .firstOrNull ??
+          AppThemeChoice.warmOlive,
+    );
     documents = ProjectDocuments(
       encode: (id) => backupFor(id).encode(),
       autosave: () => autosaveEnabled,
@@ -72,6 +91,7 @@ class RenovisionStore extends ChangeNotifier {
 
   @override
   void dispose() {
+    appearance.dispose();
     ai.removeListener(_rememberAiConnection);
     removeListener(documents.changed);
     documents.dispose();

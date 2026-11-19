@@ -1,5 +1,33 @@
 # Product and research reference
 
+## Settings protection decisions — 19 November
+
+App appearance is a device preference, separate from renovation palettes and
+project-file revisions. Five coordinated light-page themes preserve the selected
+compact layout. No appearance preference or API credential enters project exports.
+
+Optional protected backups use the maintained
+[cryptography AES-GCM implementation](https://pub.dev/documentation/cryptography/latest/cryptography/AesGcm-class.html)
+and [PBKDF2 API](https://pub.dev/documentation/cryptography/latest/cryptography/Pbkdf2-class.html).
+Version 1 envelope: ASCII `RVENC01\n`, big-endian uint32 JSON-header byte length,
+header, ciphertext, 16-byte authentication tag. Header contains cipher/KDF names,
+600,000 iterations, 16-byte random salt and 12-byte random nonce. The complete
+prefix/header is authenticated associated data. Decoder validates file/header
+limits and fixed supported parameters before derivation, then authenticates before
+returning plaintext. Binary packaging avoids adding another base64 expansion to
+the existing JSON/photo payload. File limit remains 100 MB. Filenames remain visible.
+
+Protected files are opened as separate local projects without linking their file
+handles to ordinary plaintext autosave. Normal JSON export remains a separate
+explicit choice. Passwords are not saved, resettable or recoverable; a lost one
+does not affect the existing local project. Native encryption runs in an isolate;
+the browser uses the package's web crypto implementation. No cloud processing.
+
+This does not add encryption to the existing Hive photo/metadata boxes. A future
+local-store migration needs separate key management/recovery and interruption
+testing, preserving current work. Android API-key protection already uses Keystore;
+browser keys remain session-only. Public-release privacy/billing work remains.
+
 ## Camera-first design clarification — 19 November
 
 User wants the reference acquisition, analysis, direction questions, generated

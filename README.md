@@ -7,6 +7,16 @@ OpenAI analysis and editing can use your personal API key directly over HTTPS,
 without a laptop. The local relay remains optional; manual AI handoff is available.
 There is no production backend or payment integration.
 
+Settings follow-up (source after APK 1.0.11): App appearance offers Warm olive,
+Ocean blue, Forest green, Terracotta and Slate, previewed immediately and saved
+on this device. Room-design palettes are separate. Storage and privacy shows
+the actual local store/origin and explains export locations and current protection.
+Use **Password-protected backup** for an encrypted `.renovision` project copy;
+Open project/Restore asks for its password. Normal `.renovision.json` files stay
+compatible and readable. Keep the password separately: it is not stored or
+recoverable. Local photo/database storage has no added app-level encryption yet;
+the new protection applies to exported backups. No existing data is migrated.
+
 Room entry (source after APK 1.0.11): choose Camera, Photos or Live design in the
 room chooser, then Continue to that destination. Your chosen name, room type and
 starting style/palette follow into Live design. Capture/AI still wait for consent.

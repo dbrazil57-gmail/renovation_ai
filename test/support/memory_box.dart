@@ -5,6 +5,8 @@ import 'package:hive_ce/hive_ce.dart';
 class MemoryBox extends Fake implements Box<dynamic> {
   final Map<dynamic, dynamic> entries = {};
   @override
+  String? get path => null;
+  @override
   Iterable<dynamic> get keys => entries.keys;
   @override
   dynamic get(dynamic key, {dynamic defaultValue}) =>

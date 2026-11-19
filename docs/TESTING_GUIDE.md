@@ -1,5 +1,35 @@
 # Testing and storage reference
 
+## App themes, storage details and protected backups — source after APK 1.0.11
+
+1. Settings > App appearance: try Warm olive, Ocean blue, Forest green,
+   Terracotta and Slate. Colours update in the current screen/workspace; restart
+   retains the selection. A pending room draft and its room palette must survive.
+   Enlarged text still fits. An appearance write failure keeps the previous theme.
+2. Expand Storage and privacy: native builds show actual project/photo-store
+   paths; Chrome shows its origin/profile store. Copy storage locations works.
+   Portable files use the chosen location, or browser Downloads fallback. The
+   local store is unchanged; it has no app-level photo/database encryption yet.
+3. Under the project backup card, Password-protected backup asks for a matching
+   password of 12+ characters. Choose a destination and wait for encryption/save.
+   It writes `.renovision`; Back up project/Save project can still create ordinary
+   `.renovision.json` copies. Passwords are never saved or included in exports;
+   keep them separately. Forgotten passwords cannot unlock protected backups.
+4. Open project or Restore project backup accepts the protected file and asks
+   for its password. Cancel/wrong-password leaves local data untouched. A valid
+   restore creates a separate project; check every room/photo, design, favourite,
+   prompt and choice. The protected source file stays unchanged and is never
+   linked to normal plaintext autosave. Create another protected backup to update it.
+5. Test Chrome-to-Android and Android-to-Chrome restores when a new APK is
+   explicitly requested. Also check file chooser cancellation and export failure.
+   Existing JSON backups remain supported; API credentials remain device-local.
+
+Automated checks cover randomised encryption, exact-byte round trips, wrong
+passwords, modified ciphertext/header, bounded format parameters, encrypted
+export/restore, no plaintext linkage, theme persistence/failure and draft retention.
+Physical phone/file-picker acceptance is still required. Existing APK unchanged.
+All 249 tests pass; static analysis clean and web release compilation passed.
+
 ## Compact typography and spacing — source after APK 1.0.11
 
 Check Projects, Explore, Library, Settings, setup, workspace and Live design:

@@ -2,15 +2,9 @@ import 'dart:typed_data';
 
 import 'package:material_ui/material_ui.dart';
 
-enum FocusSection { room, style, refine, ideas }
+import 'app_appearance.dart';
 
-abstract final class FocusColours {
-  static const canvas = Color(0xFF26251F);
-  static const paper = Color(0xFFF1ECE3);
-  static const panel = Color(0xFFFCF9F3);
-  static const olive = Color(0xFF706B3E);
-  static const ink = Color(0xFF292A24);
-}
+enum FocusSection { room, style, refine, ideas }
 
 /// Keeps all control groups mounted so switching tabs cannot discard drafts,
 /// a running paid request, or a received result waiting for a local save.
@@ -66,7 +60,7 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
   }
 
   Widget canvas({required bool compact}) => ColoredBox(
-    color: FocusColours.canvas,
+    color: AppAppearance.of(context).canvas,
     child: Padding(
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
       child: Column(
@@ -101,7 +95,7 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
   );
 
   Widget controls(BuildContext context) => Material(
-    color: FocusColours.paper,
+    color: AppAppearance.of(context).paper,
     borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
     clipBehavior: Clip.antiAlias,
     child: Column(
@@ -119,9 +113,9 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
                       style: TextButton.styleFrom(
                         foregroundColor: section == widget.selected
                             ? Colors.white
-                            : FocusColours.ink,
+                            : AppAppearance.of(context).ink,
                         backgroundColor: section == widget.selected
-                            ? FocusColours.olive
+                            ? AppAppearance.of(context).accent
                             : Colors.transparent,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 2,
@@ -183,7 +177,7 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
           ? (bounds.maxHeight * .28).clamp(48.0, 105.0)
           : (bounds.maxHeight * .52).clamp(150.0, 440.0);
       return ColoredBox(
-        color: FocusColours.canvas,
+        color: AppAppearance.of(context).canvas,
         child: Flex(
           direction: desktop ? Axis.horizontal : Axis.vertical,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -229,7 +223,9 @@ class FocusVersionThumbnail extends StatelessWidget {
             width: 128,
             padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
-              color: selected ? FocusColours.olive : FocusColours.canvas,
+              color: selected
+                  ? AppAppearance.of(context).accent
+                  : AppAppearance.of(context).canvas,
               border: Border.all(
                 color: selected ? Colors.white : Colors.white38,
                 width: 2,

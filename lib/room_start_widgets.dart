@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import 'app_appearance.dart';
+
 import 'colour_palette_widgets.dart';
 import 'design_palettes.dart';
 import 'design_styles.dart';
@@ -315,7 +317,7 @@ class _RoomChoiceTile extends StatelessWidget {
       selected: selected,
       button: true,
       child: Material(
-        color: const Color(0xFF383A32),
+        color: AppAppearance.of(context).canvas,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(

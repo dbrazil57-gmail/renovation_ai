@@ -5,7 +5,7 @@ import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 import 'screens.dart';
 import 'store.dart';
-import 'focus_workspace.dart';
+import 'app_appearance.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,30 +23,37 @@ class RenovisionApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Renovision AI',
-      debugShowCheckedModeBanner: false,
-      theme: buildRenovisionTheme(),
-      home: AppShell(store: store),
+    return ValueListenableBuilder<AppThemeChoice>(
+      valueListenable: store.appearance,
+      builder: (context, choice, _) => MaterialApp(
+        title: 'Renovision AI',
+        debugShowCheckedModeBanner: false,
+        theme: buildRenovisionTheme(choice: choice),
+        home: AppShell(store: store),
+      ),
     );
   }
 }
 
-ThemeData buildRenovisionTheme() {
+ThemeData buildRenovisionTheme({
+  AppThemeChoice choice = AppThemeChoice.warmOlive,
+}) {
+  final colours = choice.colours;
   final base = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: FocusColours.olive,
+      seedColor: colours.accent,
       brightness: Brightness.light,
     ),
-    scaffoldBackgroundColor: FocusColours.paper,
+    extensions: [colours],
+    scaffoldBackgroundColor: colours.paper,
     cardTheme: CardThemeData(
-      color: FocusColours.panel,
+      color: colours.panel,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
     ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: FocusColours.canvas,
+    appBarTheme: AppBarTheme(
+      backgroundColor: colours.canvas,
       foregroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
       toolbarHeight: 52,

@@ -10,6 +10,8 @@ import 'models.dart';
 import 'project_backup.dart';
 import 'store.dart';
 import 'context_help.dart';
+import 'protected_backup.dart';
+import 'backup_password_dialog.dart';
 
 Future<void> showProjectSaveDialog(
   BuildContext context, {
@@ -147,12 +149,24 @@ class ProjectBackupCard extends StatefulWidget {
 class _ProjectBackupCardState extends State<ProjectBackupCard> {
   bool busy = false;
   String? message;
-  Future<void> _backup() async {
+  Future<void> _backup({bool protected = false}) async {
+    if (busy) return;
+    final password = protected
+        ? await askBackupPassword(context, creating: true)
+        : null;
+    if (!mounted || (protected && password == null)) return;
     setState(() {
       busy = true;
       message = null;
     });
     try {
+      final destination = await chooseSaveDestination(
+        widget.store.files,
+        name:
+            '${exportName(widget.project.name)}${protected ? '.renovision' : '.renovision.json'}',
+        mimeType: protected ? 'application/octet-stream' : 'application/json',
+      );
+      if (destination == null || !mounted) return;
       if (widget.beforeSave != null && !await widget.beforeSave!()) {
         if (mounted) {
           setState(
@@ -162,12 +176,16 @@ class _ProjectBackupCardState extends State<ProjectBackupCard> {
         }
         return;
       }
-      final bytes = widget.store.backupFor(widget.project.id).encode();
-      final result = await widget.store.files.save(
-        bytes,
-        name: '${exportName(widget.project.name)}.renovision.json',
-        mimeType: 'application/json',
+      if (!mounted) return;
+      setState(
+        () => message = protected
+            ? 'Encrypting backup…'
+            : 'Preparing project copy…',
       );
+      var bytes = widget.store.backupFor(widget.project.id).encode();
+      if (protected) bytes = await protectBackup(bytes, password!);
+      if (!mounted) return;
+      final result = await destination.write(bytes);
       if (mounted) setState(() => message = saveMessage(result));
     } catch (error) {
       if (mounted) {
@@ -210,10 +228,20 @@ class _ProjectBackupCardState extends State<ProjectBackupCard> {
           ),
           const SizedBox(height: 12),
           FilledButton.tonalIcon(
-            onPressed: busy || !widget.store.files.supported ? null : _backup,
+            onPressed: busy || !widget.store.files.supported
+                ? null
+                : () => _backup(),
             icon: const Icon(Icons.download),
             label: Text(busy ? 'Preparing backup…' : 'Back up project'),
           ),
+          OutlinedButton.icon(
+            onPressed: busy || !widget.store.files.supported
+                ? null
+                : () => _backup(protected: true),
+            icon: const Icon(Icons.lock_outline),
+            label: const Text('Password-protected backup'),
+          ),
+          if (busy) const LinearProgressIndicator(),
           if (message != null)
             Padding(
               padding: const EdgeInsets.only(top: 10),
@@ -254,7 +282,15 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
           ? opened?.bytes
           : await files.pickBackup();
       if (bytes == null || !mounted) return;
-      final backup = ProjectBackup.decode(bytes);
+      final protected = isProtectedBackup(bytes);
+      var plain = bytes;
+      if (protected) {
+        final password = await askBackupPassword(context, creating: false);
+        if (password == null || !mounted) return;
+        plain = await unlockBackup(bytes, password);
+      }
+      if (!mounted) return;
+      final backup = ProjectBackup.decode(plain);
       final approved = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
@@ -264,7 +300,7 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
                 : 'Restore a project copy?',
           ),
           content: Text(
-            '${backup.project.name}\n${backup.rooms.length} rooms · ${backup.designs.length} versions · ${backup.photos.length} images\n\nA separate restored project will be added. Existing projects will not be replaced.',
+            '${backup.project.name}\n${backup.rooms.length} rooms · ${backup.designs.length} versions · ${backup.photos.length} images\n\nA separate restored project will be added. Existing projects will not be replaced.${protected ? '\n\nThe protected file stays unchanged. Make another password-protected backup to update it.' : ''}',
           ),
           actions: [
             TextButton(
@@ -285,10 +321,11 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
         backup,
         projectName: widget.openDocument ? backup.project.name : null,
       );
-      if (opened?.destination case final destination?) {
+      // A protected backup is never linked to plaintext project-file autosave.
+      if (!protected && opened?.destination != null) {
         await widget.store.documents.link(
           restored.id,
-          destination,
+          opened!.destination!,
           alreadySaved: true,
         );
       }
