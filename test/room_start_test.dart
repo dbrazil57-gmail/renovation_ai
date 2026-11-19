@@ -242,6 +242,94 @@ void main() {
     },
   );
 
+  for (final scale in [1.0, 1.8]) {
+    testWidgets(
+      'compact room tiles fit long labels on a 320px phone at text scale $scale',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = const Size(320, 700);
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        RoomStartChoice? chosen;
+        await tester.pumpWidget(
+          MaterialApp(
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: TextScaler.linear(scale)),
+              child: child!,
+            ),
+            home: Builder(
+              builder: (context) => Scaffold(
+                body: TextButton(
+                  onPressed: () async {
+                    chosen = await showDialog<RoomStartChoice>(
+                      context: context,
+                      builder: (_) => const RoomStartDialog(),
+                    );
+                  },
+                  child: const Text('Start'),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('Start'));
+        await tester.pumpAndSettle();
+        final kitchen = find.byKey(const ValueKey('room-type-kitchen'));
+        final bathroom = find.byKey(const ValueKey('room-type-bathroom'));
+        final kitchenBounds = tester.getRect(kitchen);
+        final bathroomBounds = tester.getRect(bathroom);
+        if (scale == 1) {
+          expect(kitchenBounds.height, lessThan(95));
+          expect(bathroomBounds.top, kitchenBounds.top);
+          expect(bathroomBounds.left, greaterThan(kitchenBounds.right));
+        } else {
+          expect(bathroomBounds.top, greaterThan(kitchenBounds.bottom));
+        }
+        final ink = tester.widgetList<Ink>(
+          find.descendant(of: kitchen, matching: find.byType(Ink)),
+        );
+        expect(
+          ink
+              .map((widget) => widget.decoration)
+              .whereType<BoxDecoration>()
+              .any((decoration) => decoration.image?.image is ResizeImage),
+          isTrue,
+        );
+        for (final type in ['living', 'wardrobe', 'sunroom', 'pool']) {
+          final tile = find.byKey(ValueKey('room-type-$type'));
+          await tester.ensureVisible(tile);
+          await tester.pumpAndSettle();
+          final label = find.descendant(
+            of: tile,
+            matching: find.text(roomTypes[type]!),
+          );
+          final tileBounds = tester.getRect(tile),
+              labelBounds = tester.getRect(label);
+          expect(labelBounds.left, greaterThanOrEqualTo(tileBounds.left));
+          expect(labelBounds.right, lessThanOrEqualTo(tileBounds.right));
+          expect(labelBounds.bottom, lessThanOrEqualTo(tileBounds.bottom));
+          expect(tester.takeException(), isNull);
+        }
+        final search = find.byKey(const ValueKey('room-search'));
+        await tester.ensureVisible(search);
+        await tester.enterText(search, 'wardrobe');
+        tester.testTextInput.hide();
+        await tester.pumpAndSettle();
+        final wardrobe = find.byKey(const ValueKey('room-type-wardrobe'));
+        await tester.ensureVisible(wardrobe);
+        await tester.tap(wardrobe);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Continue to photos'));
+        await tester.pumpAndSettle();
+        expect(chosen!.roomTypeId, 'wardrobe');
+        expect(chosen!.name, roomTypes['wardrobe']);
+        expect(chosen!.starter, isNull);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets(
     'sample gallery filters, shows empty combinations and passes the selected preset',
     (tester) async {

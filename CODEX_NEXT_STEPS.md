@@ -3,6 +3,19 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
+## Compact room chooser — source after APK 1.0.11
+
+Choose your room now uses smaller 20px icons, 13px room labels, compact inputs
+and narrower dialog margins. Photo-backed tiles reuse bundled kitchen/bathroom/
+bedroom/living/office examples; unmatched spaces use a plain icon tile. Photos
+are decorative and never apply a style/palette or enter project storage.
+The grid adapts from one to three columns with available width and system text
+size; long labels wrap without fixed-height clipping. All 42 types, search,
+categories, custom names and camera/gallery routing are retained. No new APK.
+Validation: all 230 tests pass, static analysis clean; APK 1.0.11 checksum unchanged.
+Next phone check: narrow/enlarged-text chooser, long room names, selection marker
+and search/category selection. Existing projects/settings and APK are unchanged.
+
 ## Version-history captions — source after APK 1.0.11
 
 The earlier caption fix covered Library, not Ideas > Version history. History

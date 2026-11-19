@@ -3,6 +3,14 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
+Room chooser polish (source after APK 1.0.11): compact icons/text/inputs and
+narrower margins; adaptive one-to-three-column tiles keep long labels readable.
+Main room types use bundled example-photo backgrounds; other spaces use small
+icons. Illustrations never change room preferences or become project images.
+All 42 space types/search/categories remain. No new APK or local-data changes.
+All 230 tests pass and static analysis is clean, including narrow-phone long-label
+checks at normal and enlarged text sizes. Existing APK checksum is unchanged.
+
 Version-history caption correction (source after APK 1.0.11): Ideas > Version
 history now shows the title and version details below a wider preview. Actions
 wrap separately, leaving the caption the card width. Full details are available

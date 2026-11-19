@@ -1,5 +1,18 @@
 # Testing and storage reference
 
+## Compact room chooser — source after APK 1.0.11
+
+Open Take photo or Choose photos > Choose your room. Check smaller icons/labels,
+photo-backed common room types and clear selection markers. At normal phone
+text size, tiles should fit side by side; larger text uses fewer columns and
+long names wrap without clipping. Test Walk-in wardrobe / dressing room, Pool /
+outdoor entertaining and Sunroom / conservatory. Search/category selection and
+custom room names still work, and Continue opens the correct camera/gallery path.
+Selecting an illustrated tile must not apply its example's style/palette or
+import its photo. Two added checks cover 320px width at 1x and 1.8x text size.
+All 230 tests pass and static analysis is clean. No paid AI requests were made.
+Source only: existing APK 1.0.11 is unchanged until a later requested build.
+
 ## Version-history captions — source after APK 1.0.11
 
 Open a saved room > Ideas > Version history. Titles and status/source/date should

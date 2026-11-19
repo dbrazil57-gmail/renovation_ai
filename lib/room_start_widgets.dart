@@ -13,6 +13,10 @@ const _roomIcons = <String, IconData>{
   'living': Icons.weekend_outlined,
   'office': Icons.desk_outlined,
   'laundry': Icons.local_laundry_service_outlined,
+  'pantry': Icons.shelves,
+  'storage': Icons.inventory_2_outlined,
+  'garage': Icons.garage_outlined,
+  'outdoor': Icons.yard_outlined,
   'exterior': Icons.yard_outlined,
   'other': Icons.home_work_outlined,
 };
@@ -79,7 +83,11 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Choose your room'),
+    insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+    titlePadding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+    contentPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+    actionsPadding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
+    title: const Text('Choose your room', style: TextStyle(fontSize: 20)),
     content: SizedBox(
       width: 560,
       child: SingleChildScrollView(
@@ -93,14 +101,19 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
                   : widget.camera == false
                   ? 'Choose a room type, then choose photos from your device.'
                   : 'Choose a room type, then choose how to add photos.',
+              style: const TextStyle(fontSize: 13),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             TextField(
               key: const ValueKey('room-name'),
               controller: name,
               maxLength: 80,
+              style: const TextStyle(fontSize: 14),
               decoration: InputDecoration(
                 labelText: 'Room name',
+                labelStyle: const TextStyle(fontSize: 13),
+                isDense: true,
+                counterText: '',
                 errorText: error,
                 border: const OutlineInputBorder(),
               ),
@@ -109,9 +122,12 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
             const SizedBox(height: 10),
             TextField(
               key: const ValueKey('room-search'),
+              style: const TextStyle(fontSize: 14),
               decoration: const InputDecoration(
                 labelText: 'Search rooms and spaces',
-                prefixIcon: Icon(Icons.search),
+                labelStyle: TextStyle(fontSize: 13),
+                isDense: true,
+                prefixIcon: Icon(Icons.search, size: 20),
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) =>
@@ -121,8 +137,12 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
             DropdownButtonFormField<String>(
               initialValue: category,
               isExpanded: true,
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(fontSize: 14),
               decoration: const InputDecoration(
                 labelText: 'Room category',
+                labelStyle: TextStyle(fontSize: 13),
+                isDense: true,
                 border: OutlineInputBorder(),
               ),
               items: [
@@ -135,52 +155,50 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
               ],
               onChanged: (value) => setState(() => category = value ?? ''),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 10),
             LayoutBuilder(
-              builder: (context, constraints) => Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final entry in roomTypes.entries)
-                    if ((category.isEmpty ||
-                            roomCategories[category]!.contains(entry.key)) &&
-                        (query.isEmpty ||
-                            entry.value.toLowerCase().contains(query) ||
-                            entry.key.contains(query)))
+              builder: (context, constraints) {
+                final textScale =
+                    MediaQuery.textScalerOf(context).scale(13) / 13;
+                final columns =
+                    ((constraints.maxWidth + 8) / (124 * textScale + 8))
+                        .floor()
+                        .clamp(1, 3);
+                final width =
+                    (constraints.maxWidth - 8 * (columns - 1)) / columns;
+                final choices = roomTypes.entries
+                    .where(
+                      (entry) =>
+                          (category.isEmpty ||
+                              roomCategories[category]!.contains(entry.key)) &&
+                          (query.isEmpty ||
+                              entry.value.toLowerCase().contains(query) ||
+                              entry.key.contains(query)),
+                    )
+                    .toList();
+                if (choices.isEmpty) {
+                  return const Text(
+                    'No rooms match. Try another search or category.',
+                  );
+                }
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final entry in choices)
                       SizedBox(
-                        width: (constraints.maxWidth - 8) / 2,
-                        child: Semantics(
+                        width: width,
+                        child: _RoomChoiceTile(
+                          key: ValueKey('room-type-${entry.key}'),
+                          type: entry.key,
+                          label: entry.value,
                           selected: type == entry.key,
-                          child: OutlinedButton(
-                            key: ValueKey('room-type-${entry.key}'),
-                            style: OutlinedButton.styleFrom(
-                              backgroundColor: type == entry.key
-                                  ? Theme.of(context)
-                                        .colorScheme
-                                        .primaryContainer
-                                  : null,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 14,
-                              ),
-                            ),
-                            onPressed: () => select(entry.key),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  _roomIcons[roomFeatureProfile(entry.key)] ??
-                                      Icons.home_work_outlined,
-                                  size: 28,
-                                ),
-                                const SizedBox(height: 6),
-                                Text(entry.value, textAlign: TextAlign.center),
-                              ],
-                            ),
-                          ),
+                          onTap: () => select(entry.key),
                         ),
                       ),
-                ],
-              ),
+                  ],
+                );
+              },
             ),
             if (starter != null) ...[
               const SizedBox(height: 8),
@@ -210,6 +228,116 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
       ),
     ],
   );
+}
+
+class _RoomChoiceTile extends StatelessWidget {
+  final String type, label;
+  final bool selected;
+  final VoidCallback onTap;
+  const _RoomChoiceTile({
+    super.key,
+    required this.type,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // These bundled examples decorate the chooser; selecting a type never
+    // imports an example or applies its style/palette to the user's room.
+    final photoType = switch (type) {
+      'main_bedroom' || 'guest_bedroom' => 'bedroom',
+      'ensuite' => 'bathroom',
+      'family' => 'living',
+      'study' => 'office',
+      _ => type,
+    };
+    final sample = roomStarters
+        .where((s) => s.roomTypeId == photoType)
+        .firstOrNull;
+    return Semantics(
+      selected: selected,
+      button: true,
+      child: Material(
+        color: const Color(0xFF383A32),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: selected
+                ? Theme.of(context).colorScheme.primary
+                : Colors.white24,
+            width: selected ? 2 : 1,
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Stack(
+            children: [
+              if (sample != null)
+                Positioned.fill(
+                  child: Ink.image(
+                    image: ResizeImage(AssetImage(sample.asset), width: 360),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              Positioned.fill(
+                child: Ink(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0x66000000), Color(0xDD000000)],
+                    ),
+                  ),
+                ),
+              ),
+              ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 80),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            _roomIcons[roomFeatureProfile(type)] ??
+                                Icons.home_work_outlined,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                          const Spacer(),
+                          if (selected)
+                            const Icon(
+                              Icons.check_circle,
+                              size: 20,
+                              color: Colors.white,
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        label,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          height: 1.2,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class InspirationGallery extends StatefulWidget {
