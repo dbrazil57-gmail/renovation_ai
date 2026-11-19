@@ -7,6 +7,11 @@ OpenAI analysis and editing can use your personal API key directly over HTTPS,
 without a laptop. The local relay remains optional; manual AI handoff is available.
 There is no production backend or payment integration.
 
+Room entry (source after APK 1.0.11): choose Camera, Photos or Live design in the
+room chooser, then Continue to that destination. Your chosen name, room type and
+starting style/palette follow into Live design. Capture/AI still wait for consent.
+This follow-up is not yet in an APK.
+
 Interface refinements (included in APK 1.0.11): Saved projects is compact,
 with its guidance in an information control. Create project and Open project
 file are grouped; tap listed projects to resume, or restore a backup in Settings.

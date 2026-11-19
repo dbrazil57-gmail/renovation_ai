@@ -76,8 +76,29 @@ Future<void> startRoomWithPhotos(
       ),
     );
     if (choice == null || !context.mounted) return;
-    final useCamera = camera ?? await chooseRoomPhotoSource(context);
-    if (useCamera == null || !context.mounted) return;
+    if (choice.method == RoomStartMethod.liveDesign) {
+      final destination = project ?? await store.createProject(newProjectName!);
+      if (!context.mounted) return;
+      await Navigator.push<void>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => LiveDesignScreen(
+            store: store,
+            projectId: destination.id,
+            initialRoomChoice: choice,
+            settingsBuilder: (_) => settingsPage(store),
+            workspace: (roomId, designId) => WorkspaceScreen(
+              store: store,
+              roomId: roomId,
+              initialDesignId: designId,
+              startInPrecision: true,
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+    final useCamera = choice.method == RoomStartMethod.camera;
     final images = await selectRoomPhotos(
       remaining: 6,
       camera: useCamera,

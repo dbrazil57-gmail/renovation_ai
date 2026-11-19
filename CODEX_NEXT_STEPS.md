@@ -3,6 +3,21 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
+## Live design from room selection — source after APK 1.0.11
+
+Choose your room now keeps Camera / Photos / Live design choices above Continue,
+including starts from Take photo, Choose photos, room shortcuts and sample styles.
+The starting action is preselected; generic room starts default to camera when
+available. Continue names its destination. There is no extra source-only dialog
+for new rooms. Live design carries the chosen room name/type and any selected
+style/palette into its consented reference capture and analysis; opening/leaving
+the viewer creates no room or paid request. Camera-first Project > Live design
+still works directly. Existing photo-addition controls are unchanged.
+Validation: all 234 tests pass, static analysis clean; existing APK checksum unchanged.
+Next S21 test after a requested APK: switch each room-entry route to Live design,
+confirm name/type/starting style, generate an overlay and Continue to refine.
+No new APK built; installed 1.0.11 and existing local data/settings are unchanged.
+
 ## Compact room chooser — source after APK 1.0.11
 
 Choose your room now uses smaller 20px icons, 13px room labels, compact inputs

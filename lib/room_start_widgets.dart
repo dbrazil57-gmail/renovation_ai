@@ -4,6 +4,7 @@ import 'colour_palette_widgets.dart';
 import 'design_palettes.dart';
 import 'design_styles.dart';
 import 'room_features.dart';
+import 'room_camera.dart';
 import 'room_starters.dart';
 
 const _roomIcons = <String, IconData>{
@@ -21,17 +22,25 @@ const _roomIcons = <String, IconData>{
   'other': Icons.home_work_outlined,
 };
 
+enum RoomStartMethod { camera, photos, liveDesign }
+
 class RoomStartChoice {
   final String name, roomTypeId;
   final RoomStarter? starter;
-  const RoomStartChoice(this.name, this.roomTypeId, this.starter);
+  final RoomStartMethod method;
+  const RoomStartChoice(
+    this.name,
+    this.roomTypeId,
+    this.starter, {
+    this.method = RoomStartMethod.photos,
+  });
 }
 
 class RoomStartDialog extends StatefulWidget {
   final RoomStarter? starter;
   final String? initialRoomTypeId;
 
-  /// True opens camera, false chooses existing photos, null chooses the source next.
+  /// Initial source choice; users can switch before continuing.
   final bool? camera;
   const RoomStartDialog({
     super.key,
@@ -46,12 +55,16 @@ class RoomStartDialog extends StatefulWidget {
 class _RoomStartDialogState extends State<RoomStartDialog> {
   late final TextEditingController name;
   late String type;
+  late RoomStartMethod method;
   RoomStarter? starter;
   String? error;
   String query = '', category = '';
   @override
   void initState() {
     super.initState();
+    method = !supportsLiveRoomCamera || widget.camera == false
+        ? RoomStartMethod.photos
+        : RoomStartMethod.camera;
     starter = widget.starter;
     type =
         starter?.roomTypeId ??
@@ -78,7 +91,10 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
       setState(() => error = 'Use a room name between 1 and 80 characters.');
       return;
     }
-    Navigator.pop(context, RoomStartChoice(value, type, starter));
+    Navigator.pop(
+      context,
+      RoomStartChoice(value, type, starter, method: method),
+    );
   }
 
   @override
@@ -95,14 +111,13 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.camera == true
-                  ? 'Choose a room type, then open the camera.'
-                  : widget.camera == false
-                  ? 'Choose a room type, then choose photos from your device.'
-                  : 'Choose a room type, then choose how to add photos.',
-              style: const TextStyle(fontSize: 13),
-            ),
+            Text(switch (method) {
+              RoomStartMethod.camera =>
+                'Choose a room type, then open the camera.',
+              RoomStartMethod.photos =>
+                'Choose a room type, then choose photos from your device.',
+              RoomStartMethod.liveDesign => 'Choose a room type, then analyse and design it in the camera viewer.',
+            }, style: const TextStyle(fontSize: 13)),
             const SizedBox(height: 10),
             TextField(
               key: const ValueKey('room-name'),
@@ -212,18 +227,58 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
       ),
     ),
     actions: [
-      TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: const Text('Cancel'),
-      ),
-      FilledButton(
-        onPressed: submit,
-        child: Text(
-          widget.camera == true
-              ? 'Continue to camera'
-              : widget.camera == false
-              ? 'Continue to photos'
-              : 'Continue',
+      SizedBox(
+        width: 560,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              spacing: 6,
+              runSpacing: 2,
+              children: [
+                for (final option in RoomStartMethod.values)
+                  if (supportsLiveRoomCamera ||
+                      option == RoomStartMethod.photos)
+                    ChoiceChip(
+                      key: ValueKey('room-start-method-${option.name}'),
+                      label: Text(switch (option) {
+                        RoomStartMethod.camera => 'Camera',
+                        RoomStartMethod.photos => 'Photos',
+                        RoomStartMethod.liveDesign => 'Live design',
+                      }),
+                      avatar: Icon(switch (option) {
+                        RoomStartMethod.camera => Icons.camera_alt_outlined,
+                        RoomStartMethod.photos => Icons.photo_library_outlined,
+                        RoomStartMethod.liveDesign =>
+                          Icons.auto_awesome_outlined,
+                      }, size: 18),
+                      labelStyle: const TextStyle(fontSize: 13),
+                      selected: method == option,
+                      onSelected: (_) => setState(() => method = option),
+                    ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            OverflowBar(
+              alignment: MainAxisAlignment.end,
+              spacing: 8,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: submit,
+                  child: Text(switch (method) {
+                    RoomStartMethod.camera => 'Continue to camera',
+                    RoomStartMethod.photos => 'Continue to photos',
+                    RoomStartMethod.liveDesign => 'Continue to live design',
+                  }),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     ],

@@ -14,6 +14,8 @@ import 'package:renovision_ai/models.dart';
 import 'package:renovision_ai/project_backup.dart';
 import 'package:renovision_ai/room_analysis.dart';
 import 'package:renovision_ai/room_camera.dart';
+import 'package:renovision_ai/room_start_widgets.dart';
+import 'package:renovision_ai/room_starters.dart';
 import 'package:renovision_ai/screens.dart';
 import 'package:renovision_ai/store.dart';
 
@@ -176,6 +178,7 @@ void main() {
     String? roomId,
     double scale = 1,
     bool realWorkspace = false,
+    RoomStartChoice? initialChoice,
     Duration settleDuration = const Duration(milliseconds: 100),
   }) async {
     await tester.pumpWidget(
@@ -195,6 +198,7 @@ void main() {
                     store: store,
                     projectId: project.id,
                     roomId: roomId,
+                    initialRoomChoice: initialChoice,
                     feed: feed,
                     settleDuration: settleDuration,
                     workspace: (id, design) => realWorkspace
@@ -237,6 +241,41 @@ void main() {
     await tap(tester, update ? 'Update preview' : 'Generate preview');
     await tap(tester, 'Send to OpenAI');
   }
+
+  testWidgets(
+    'room-first live capture retains name, room type and selected sample preferences through analysis and generation',
+    (tester) async {
+      final starter = roomStarters.first;
+      await show(
+        tester,
+        initialChoice: RoomStartChoice(
+          'Dining-side kitchen',
+          'kitchen',
+          starter,
+          method: RoomStartMethod.liveDesign,
+        ),
+      );
+      expect(store.roomsFor(project.id), isEmpty);
+      expect(feed.captures, 0);
+      expect(ai.analyses, 0);
+      await start(tester);
+      final room = store.roomsFor(project.id).single;
+      expect(room.name, 'Dining-side kitchen');
+      expect(room.roomTypeId, 'kitchen');
+      expect(room.colourPaletteId, starter.paletteId);
+      expect(room.designStyleIds, [starter.styleId]);
+      expect(room.analysis!.context, contains('Kitchen'));
+      expect(room.photoIds, hasLength(1));
+      expect(store.imageFor(room.originalId), feed.bytes);
+      await generate(tester);
+      expect(ai.analyses, 1);
+      expect(ai.edits, 1);
+      expect(ai.prompts.single, contains('Kitchen'));
+      expect(ai.prompts.single, contains('Charcoal'));
+      expect(store.designsFor(room.id), hasLength(1));
+      expect(find.byKey(const ValueKey('live-design-overlay')), findsOneWidget);
+    },
+  );
 
   testWidgets(
     'opening/cancelling sends nothing; consent automatically captures and analyses once without a shutter',

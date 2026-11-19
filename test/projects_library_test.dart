@@ -6,6 +6,7 @@ import 'package:renovision_ai/context_help.dart';
 import 'package:renovision_ai/file_transfer.dart';
 import 'package:renovision_ai/focus_workspace.dart';
 import 'package:renovision_ai/image_viewer.dart';
+import 'package:renovision_ai/live_design_screen.dart';
 import 'package:renovision_ai/models.dart';
 import 'package:renovision_ai/room_camera.dart';
 import 'package:renovision_ai/room_start_widgets.dart';
@@ -128,6 +129,72 @@ void main() {
           await tap(tester, find.text('Cancel'));
         }
         expect(store.roomsFor(project.id), isEmpty);
+      },
+    );
+  }
+
+  for (final camera in <bool?>[true, false, null]) {
+    testWidgets(
+      'room chooser can switch from ${camera == null
+          ? 'room shortcut'
+          : camera
+          ? 'camera'
+          : 'gallery'} into live design without losing room choices',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+        addTearDown(() => debugDefaultTargetPlatformOverride = null);
+        await tester.binding.setSurfaceSize(const Size(390, 844));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.pumpWidget(
+          MaterialApp(
+            home: camera == null
+                ? Scaffold(body: ProjectsTab(store: store))
+                : ProjectScreen(store: store, project: project),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tap(
+          tester,
+          find.text(
+            camera == null
+                ? 'Kitchen'
+                : camera
+                ? 'Take photo'
+                : 'Choose photos',
+          ),
+        );
+        await tester.enterText(
+          find.byKey(const ValueKey('room-name')),
+          'My sunny retreat',
+        );
+        await tester.enterText(
+          find.byKey(const ValueKey('room-search')),
+          'sunroom',
+        );
+        await tester.pumpAndSettle();
+        await tap(tester, find.byKey(const ValueKey('room-type-sunroom')));
+        await tap(
+          tester,
+          find.byKey(const ValueKey('room-start-method-liveDesign')),
+        );
+        await tap(tester, find.text('Continue to live design'));
+        final viewer = tester.widget<LiveDesignScreen>(
+          find.byType(LiveDesignScreen),
+        );
+        expect(viewer.initialRoomChoice!.name, 'My sunny retreat');
+        expect(viewer.initialRoomChoice!.roomTypeId, 'sunroom');
+        expect(viewer.initialRoomChoice!.method, RoomStartMethod.liveDesign);
+        expect(store.roomsFor(project.id), isEmpty);
+        expect(store.photos.keys, isEmpty);
+        expect(store.ai.activity.active, isFalse);
+        expect(find.byType(RoomCaptureScreen), findsNothing);
+        expect(find.byType(WorkspaceScreen), findsNothing);
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        expect(find.byType(LiveDesignScreen), findsNothing);
+        expect(store.projects, hasLength(1));
+        expect(store.roomsFor(project.id), isEmpty);
+        expect(tester.takeException(), isNull);
       },
     );
   }

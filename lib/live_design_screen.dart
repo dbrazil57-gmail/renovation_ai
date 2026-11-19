@@ -17,6 +17,7 @@ import 'room_camera.dart';
 import 'room_draft.dart';
 import 'room_features.dart';
 import 'room_prompt.dart';
+import 'room_start_widgets.dart';
 import 'store.dart';
 
 /// One camera reference, one consented analysis, then separately confirmed
@@ -25,6 +26,7 @@ class LiveDesignScreen extends StatefulWidget {
   final RenovisionStore store;
   final String projectId;
   final String? roomId, initialPhotoId;
+  final RoomStartChoice? initialRoomChoice;
   final RoomCameraFeed? feed;
   final WidgetBuilder? settingsBuilder;
   final Widget Function(String roomId, String? designId) workspace;
@@ -36,6 +38,7 @@ class LiveDesignScreen extends StatefulWidget {
     required this.workspace,
     this.roomId,
     this.initialPhotoId,
+    this.initialRoomChoice,
     this.feed,
     this.settingsBuilder,
     this.settleDuration = const Duration(seconds: 2),
@@ -348,11 +351,17 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
   Future<void> _saveFrame() async {
     final bytes = pendingFrame!;
     if (roomId == null) {
+      final choice = widget.initialRoomChoice;
+      final starter = choice?.starter;
       final created = await widget.store.createRoom(
         projectId: widget.projectId,
-        name: 'Live room',
+        name: choice?.name ?? 'Live room',
         originalImage: bytes,
-        roomTypeId: 'other',
+        roomTypeId: choice?.roomTypeId ?? 'other',
+        colourPaletteId: starter?.paletteId ?? '',
+        designStyleIds: starter == null || starter.styleId.isEmpty
+            ? []
+            : [starter.styleId],
       );
       roomId = created.id;
       sourceId = created.originalId;

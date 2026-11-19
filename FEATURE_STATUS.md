@@ -3,6 +3,16 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
+Room-first Live design (source after APK 1.0.11): the room chooser now offers
+Camera, Photos and Live design before Continue, whichever entry action opened it.
+Selection carries the room name/type and any starting style/palette into the
+live viewer and its captured room. Capture/analysis still wait for consent;
+there are no placeholder rooms/sample-photo imports or automatic paid requests.
+Direct camera/gallery starts and the separate project Live design entry remain.
+No new APK or data/settings migration.
+All 234 tests pass and static analysis is clean; all three room-entry routes and
+preservation of room choices through live analysis/generation are covered.
+
 Room chooser polish (source after APK 1.0.11): compact icons/text/inputs and
 narrower margins; adaptive one-to-three-column tiles keep long labels readable.
 Main room types use bundled example-photo backgrounds; other spaces use small

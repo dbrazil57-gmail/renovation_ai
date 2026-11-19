@@ -1,5 +1,19 @@
 # Testing and storage reference
 
+## Live design after choosing a room — source after APK 1.0.11
+
+Start from Take photo, Choose photos or a home room shortcut. In Choose your room,
+set a type/name, choose Live design above Continue, then Continue to live design.
+The viewer opens without capturing/sending anything; Back creates no room.
+After Start and analyse consent, confirm the captured room retains the chosen
+name/type and any sample-style palette, rather than reverting to Live room/Other.
+Generate a preview and check it stays over the camera; Continue to refine opens
+that saved version. Also switch back to Camera/Photos and verify Continue opens
+the selected destination. Direct Project > Live design still opens the viewer.
+Three new routing tests and one capture/analysis/generation test use disposable
+data and mocked AI. Existing APK 1.0.11 is unchanged until a requested new build.
+All 234 tests pass and static analysis is clean; no real AI requests made.
+
 ## Compact room chooser — source after APK 1.0.11
 
 Open Take photo or Choose photos > Choose your room. Check smaller icons/labels,
