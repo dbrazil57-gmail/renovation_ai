@@ -124,3 +124,20 @@ under `output/design-review/`, audit renders under `output/design-audit/` and
 validated recovery files under `recovered_projects/`. Preserve the existing
 `.dart_tool/chrome-device/` data and normal test profile. Do not delete uncertain
 user files during cleanup. No remote push is part of the normal local workflow.
+
+## Workspace cleanup — 19 November 2026
+
+Removed approximately **2.02 GB (1.89 GiB)** of reproducible Android/test/tool
+build caches, superseded test logs and APKs 1.0.8/1.0.9. Kept current APK 1.0.11,
+its convenience filename and rollback APK 1.0.10 with their verification records.
+The latest web build, application source/assets/tests, platform folders, SDK
+configuration, browser profiles, recovered projects and all private images remain.
+
+Consolidated 107 old source copies and one-off tools into one ignored archive
+under `.local_backups/archives/`, verifying every archived file by SHA256 before
+removing loose copies. Original documentation and browser/recovery archives stay
+separate. The private cleanup manifest is
+`.local_backups/cleanup-2026-11-19-refresh.json`; all 14 retained-file checksum
+checks passed. The latest application test/analyser/web-build logs were kept.
+No application code or stored user data changed and no new APK was built.
+The next build/test will recreate the removed caches and may take longer once.

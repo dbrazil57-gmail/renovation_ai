@@ -30,6 +30,24 @@ no paid API calls.
 - [x] Add `*.renovision` to Git ignores alongside plain project exports.
 - [x] Preserve all local records, private images, settings and existing APKs.
 
+## Completed workspace cleanup — 19 November 2026
+
+- [x] Remove about 2.02 GB (1.89 GiB) of generated build/tool/test caches,
+  superseded logs and obsolete APKs 1.0.8/1.0.9.
+- [x] Keep current APK 1.0.11 plus its alias, rollback 1.0.10, the latest web build,
+  application verification logs and current visual-review evidence.
+- [x] Consolidate 107 legacy source/tool copies into one ignored ZIP, verifying
+  every entry byte-for-byte before removing loose copies.
+- [x] Confirm 14 retained-file hashes unchanged, including APKs, recovered exports,
+  original brief, package configuration and local SDK/editor configuration.
+- [x] Preserve all application source/assets/tests/platforms, project photos,
+  local settings, browser profiles and original document/recovery archives.
+
+Cleanup manifest: `.local_backups/cleanup-2026-11-19-refresh.json`, no unresolved
+failures. Source history archive: `.local_backups/archives/`. No application-code
+changes, paid AI calls or new APK. Removed caches regenerate on the next build;
+rerunning the application suite solely for cleanup would recreate those caches.
+
 ## Recommended implementation order
 
 Each numbered batch needs its own validation and local commit. This is a backlog,

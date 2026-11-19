@@ -11,7 +11,8 @@ Latest existing APK: **1.0.11+12**, source `5a37fa0234`:
 `output/mobile-test/renovision-test-1.0.11.apk`, alias `renovision-test.apk`.
 SHA256: `D698CE3EC2CDB9E340E063BE40A3279F63C35EE1268A379F66C38EC37EBC11AE`.
 It uses the same application ID/signature as 1.0.10 for an in-place update.
-Old APKs are retained. Its development signing is not public-release signing.
+Cleanup retained 1.0.10 as the rollback package; obsolete APKs 1.0.8/1.0.9 were
+removed. Its development signing is not public-release signing.
 
 Source through `a948da0` is newer. It adds camera handoff/automatic overlay fixes,
 version-history captions, compact room selection/live entry, simpler room lists,
@@ -272,6 +273,13 @@ These captures establish layout only, not interactive browser/device acceptance.
 When adding layout checks, set both view physical size/devicePixelRatio and
 surface size where required; changing test surface size alone can leave an
 incorrect MediaQuery width and exercise the wrong adaptive layout.
+
+The subsequent workspace cleanup removed generated Android/test/tool caches and
+superseded logs while retaining the latest web build, these four baseline logs,
+current/rollback APK verification records and all project/recovery/browser data.
+The loose audit fixture generator and old source/tool snapshots are retained in
+one SHA256-verified archive under `.local_backups/archives/`. Cleanup changed no
+application code, so the suite/build were not rerun simply to regenerate caches.
 
 For implementation changes, run relevant tests and the required suite/analyser:
 
