@@ -3,6 +3,14 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
+Version-history caption correction (source after APK 1.0.11): Ideas > Version
+history now shows the title and version details below a wider preview. Actions
+wrap separately, leaving the caption the card width. Full details are available
+on hover/long-press; image zoom, selection, favourites and recoverable deletion
+are retained. Small version-strip labels now use two lines and scale their
+height with system text size. No data/settings changes or new APK built.
+All 228 tests pass and static analysis is clean; APK 1.0.11 checksum unchanged.
+
 Camera handoff correction (source after APK 1.0.11): **Design in live camera**
 now keeps the main camera-design journey in Live design, with analysis/options
 and results in the viewer. Compare reuses its saved reference without capturing

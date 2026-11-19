@@ -89,7 +89,7 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
           ),
           if (!compact && widget.thumbnails.isNotEmpty)
             SizedBox(
-              height: 72,
+              height: 60 + MediaQuery.textScalerOf(context).scale(12) * 2.6,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(children: widget.thumbnails),
@@ -226,7 +226,7 @@ class FocusVersionThumbnail extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(10),
           child: Container(
-            width: 100,
+            width: 128,
             padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
               color: selected ? FocusColours.olive : FocusColours.canvas,
@@ -248,17 +248,25 @@ class FocusVersionThumbnail extends StatelessWidget {
                           borderRadius: BorderRadius.circular(5),
                           child: Image.memory(
                             image!,
-                            width: 90,
+                            width: 118,
                             cacheWidth: 240,
                             fit: BoxFit.cover,
                           ),
                         ),
                 ),
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Colors.white, fontSize: 11),
+                SizedBox(
+                  height: MediaQuery.textScalerOf(context).scale(12) * 2.6,
+                  child: Text(
+                    title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      height: 1.3,
+                    ),
+                  ),
                 ),
               ],
             ),

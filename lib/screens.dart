@@ -1545,6 +1545,122 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     widget.onDesignSelected?.call(id);
   }
 
+  Widget _historyCard(RenovationRoom room, DesignVersion design) {
+    final selected = design.id == selectedId;
+    final status = [
+      if (design.id == room.approvedDesignId) 'Approved baseline',
+      design.favourite
+          ? 'Favourite'
+          : design.rejected
+          ? 'Passed'
+          : 'Awaiting review',
+    ].join(' • ');
+    final source = design.parentId == null
+        ? 'From original'
+        : 'Branched version';
+    final created = design.created.toLocal().toString().substring(0, 16);
+    final details = '${design.title}\n$status\n$source · $created';
+    return Semantics(
+      selected: selected,
+      child: Card(
+        key: ValueKey('history-design-${design.id}'),
+        color: selected
+            ? Theme.of(context).colorScheme.secondaryContainer
+            : null,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => _selectDesign(design.id),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Tooltip(
+                  message: details,
+                  constraints: const BoxConstraints(maxWidth: 360),
+                  child: PhotoThumb(
+                    bytes: widget.store.imageFor(design.imageId),
+                    width: double.infinity,
+                    height: 128,
+                    viewerTitle: design.title,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Tooltip(
+                  message: details,
+                  constraints: const BoxConstraints(maxWidth: 360),
+                  child: Text(
+                    design.title,
+                    key: ValueKey('history-caption-${design.id}'),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(status, style: Theme.of(context).textTheme.bodySmall),
+                Text(
+                  '$source · $created',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  key: ValueKey('history-actions-${design.id}'),
+                  spacing: 8,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: () => _selectDesign(design.id),
+                      icon: Icon(selected ? Icons.check : Icons.edit_outlined),
+                      label: Text(selected ? 'Selected' : 'Use design'),
+                    ),
+                    IconButton(
+                      tooltip: design.favourite
+                          ? 'Remove favourite'
+                          : 'Save favourite',
+                      icon: Icon(
+                        design.favourite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: design.favourite ? Colors.red : null,
+                      ),
+                      onPressed: () => widget.store.setFavourite(
+                        design,
+                        favourite: !design.favourite,
+                      ),
+                    ),
+                    PopupMenuButton<String>(
+                      enabled: !aiPending,
+                      tooltip: 'Review options for ${design.title}',
+                      onSelected: (action) => _reviewVersion(design, action),
+                      itemBuilder: (_) => [
+                        if (!design.rejected)
+                          const PopupMenuItem(
+                            value: 'pass',
+                            child: Text('Mark as passed'),
+                          ),
+                        if (design.rejected || design.favourite)
+                          const PopupMenuItem(
+                            value: 'review',
+                            child: Text('Return to review'),
+                          ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Text('Delete design'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _openCameraRoom() async {
     if (aiPending || !await _save() || !mounted) return;
     if (widget.initialPhotoId != null) {
@@ -2295,71 +2411,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                     'No design versions yet — the original photograph is safe.',
                   )
                 else
-                  ...versions.map(
-                    (d) => Card(
-                      child: ListTile(
-                        selected: d.id == selectedId,
-                        leading: PhotoThumb(
-                          bytes: widget.store.imageFor(d.imageId),
-                          viewerTitle: d.title,
-                        ),
-                        title: Text(
-                          d.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Text(
-                          '${d.id == room.approvedDesignId ? 'Approved baseline • ' : ''}${d.favourite
-                              ? 'Favourite'
-                              : d.rejected
-                              ? 'Passed'
-                              : 'Awaiting review'}\n${d.parentId == null ? 'From original' : 'Branched version'} • ${d.created.toLocal().toString().substring(0, 16)}',
-                        ),
-                        onTap: () => _selectDesign(d.id),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              tooltip: d.favourite
-                                  ? 'Remove favourite'
-                                  : 'Save favourite',
-                              icon: Icon(
-                                d.favourite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: d.favourite ? Colors.red : null,
-                              ),
-                              onPressed: () => widget.store.setFavourite(
-                                d,
-                                favourite: !d.favourite,
-                              ),
-                            ),
-                            PopupMenuButton<String>(
-                              enabled: !aiPending,
-                              tooltip: 'Review options for ${d.title}',
-                              onSelected: (action) => _reviewVersion(d, action),
-                              itemBuilder: (_) => [
-                                if (!d.rejected)
-                                  const PopupMenuItem(
-                                    value: 'pass',
-                                    child: Text('Mark as passed'),
-                                  ),
-                                if (d.rejected || d.favourite)
-                                  const PopupMenuItem(
-                                    value: 'review',
-                                    child: Text('Return to review'),
-                                  ),
-                                const PopupMenuItem(
-                                  value: 'delete',
-                                  child: Text('Delete design'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  ...versions.map((design) => _historyCard(room, design)),
                 DeletedDesignsCard(store: widget.store, roomId: room.id),
                 const SizedBox(height: 30),
               ],

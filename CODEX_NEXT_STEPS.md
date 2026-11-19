@@ -3,6 +3,21 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
+## Version-history captions — source after APK 1.0.11
+
+The earlier caption fix covered Library, not Ideas > Version history. History
+cards now place the title/status/source/date beneath a full-width preview, with
+selection, favourite and review/delete actions on a separate wrapping row.
+Hover or long-press the image/title for full details; tapping the image still
+opens the full-screen viewer. The version strip also has wider two-line labels
+whose height follows text scaling. No project/image/settings format changes.
+All 228 tests pass, static analysis is clean, and the existing APK checksum is
+unchanged. Long-title mobile/desktop geometry, tooltips, zoom and baseline
+preservation are covered by the added regression cases.
+Test next on S21 after a requested APK: long titles/large text, image zoom,
+Use design, favourite/review/delete and unchanged approved baseline. Existing
+APK 1.0.11 is unchanged and does not include this fix or the camera fix below.
+
 ## Camera result handoff — source after APK 1.0.11
 
 Fixed the main Camera renovation action: **Design in live camera** now opens

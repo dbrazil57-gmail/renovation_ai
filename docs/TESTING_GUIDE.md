@@ -1,5 +1,18 @@
 # Testing and storage reference
 
+## Version-history captions — source after APK 1.0.11
+
+Open a saved room > Ideas > Version history. Titles and status/source/date should
+sit below each preview across the card width; Use design, favourite and review
+actions wrap below them. Test a long title at narrow phone width and large text,
+and the desktop control panel. Hover/long-press the preview/title for the full
+details. Tap the preview to zoom; Use design changes the working image without
+changing the approved baseline. Favourite, review/delete/restore still work.
+Check the wider two-line captions in the horizontal version strip as well.
+All 228 tests pass, including long-title layout/tooltip/zoom/baseline checks;
+static analysis is clean. Existing status wording/review controls are preserved.
+Existing APK 1.0.11 is unchanged: these changes require a later requested build.
+
 ## Camera result handoff — source after APK 1.0.11
 
 This correction needs a later APK requested by the user; the existing 1.0.11
