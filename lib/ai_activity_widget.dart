@@ -99,7 +99,18 @@ class _AiActivityStripState extends State<AiActivityStrip> {
                     ),
                   ),
                 ),
-                Text('$elapsed elapsed', key: const ValueKey('ai-elapsed')),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Text(
+                      '$elapsed elapsed',
+                      key: const ValueKey('ai-elapsed'),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                ),
                 if (!activity.active)
                   IconButton(
                     tooltip: 'Dismiss activity',

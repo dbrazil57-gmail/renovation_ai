@@ -340,6 +340,10 @@ class AiEditCard extends StatefulWidget {
   final ValueChanged<bool>? onPendingChanged;
   final bool showSavedPreview;
   final bool compact;
+  final bool singleConcept;
+  final bool enabled;
+  final Future<bool> Function()? beforeSend;
+  final String? buttonLabel;
   final RoomDraft? draft;
   const AiEditCard({
     super.key,
@@ -349,6 +353,10 @@ class AiEditCard extends StatefulWidget {
     this.onPendingChanged,
     this.showSavedPreview = true,
     this.compact = false,
+    this.singleConcept = false,
+    this.enabled = true,
+    this.beforeSend,
+    this.buttonLabel,
     this.draft,
   });
   @override
@@ -371,7 +379,9 @@ class _AiEditCardState extends State<AiEditCard>
   bool duplicate = false;
   final received = <DesignVersion>[];
   bool get precise => widget.draft?.preciseEdit ?? false;
-  int get count => precise ? 1 : widget.draft?.conceptCount ?? localCount;
+  int get count => precise || widget.singleConcept
+      ? 1
+      : widget.draft?.conceptCount ?? localCount;
   bool get compare => widget.draft?.compareStyles ?? localCompare;
   void setCount(int value) => setState(() {
     localCount = value;
@@ -381,7 +391,12 @@ class _AiEditCardState extends State<AiEditCard>
       '${plannedCount == 1 ? 'AI result saved as a new version. Compare it before approving a new baseline.' : 'Saved ${received.length} of $plannedCount concepts as separate versions. Choose a design below to use it.'}${received.length < plannedCount ? ' Remaining concepts were not requested. Generating again starts a new batch.' : ''}${duplicate ? ' An output is byte-for-byte identical to an existing image. It was retained for history; no automatic replacement was requested.' : ''}';
 
   Future<void> _generate() async {
-    if (busy || pending != null || widget.store.ai.activity.active) return;
+    if (!widget.enabled ||
+        busy ||
+        pending != null ||
+        widget.store.ai.activity.active) {
+      return;
+    }
     final imageModel = widget.store.ai.model;
     final imageQuality = widget.store.ai.quality;
     late AiEditRequest captured;
@@ -511,6 +526,14 @@ class _AiEditCardState extends State<AiEditCard>
         ),
       );
       if (confirmed != true || !mounted) return;
+      if (widget.beforeSend != null && !await widget.beforeSend!()) {
+        if (mounted) {
+          setState(
+            () => message = 'Save the current choices successfully before generating. No AI request was sent.',
+          );
+        }
+        return;
+      }
       if (widget.store.ai.activity.active) return;
       widget.store.ai.activity.begin(
         roomId: captured.roomId,
@@ -681,7 +704,7 @@ class _AiEditCardState extends State<AiEditCard>
                       ? 'OpenAI · ${widget.store.ai.model} · ${widget.store.ai.quality} quality. Uses the image currently selected in “Working from”.'
                       : 'Connect AI in Settings to generate and save a result here.',
                 ),
-              if (widget.compact) ...[
+              if (widget.compact && !widget.singleConcept) ...[
                 SegmentedButton<int>(
                   segments: const [
                     ButtonSegment(value: 1, label: Text('1 design')),
@@ -776,7 +799,8 @@ class _AiEditCardState extends State<AiEditCard>
                   (!widget.compact || widget.store.ai.connected))
                 FilledButton.icon(
                   onPressed:
-                      busy ||
+                      !widget.enabled ||
+                          busy ||
                           !widget.store.ai.connected ||
                           widget.store.ai.activity.active
                       ? null
@@ -785,9 +809,10 @@ class _AiEditCardState extends State<AiEditCard>
                   label: Text(
                     busy
                         ? 'Generating…'
-                        : count > 1
-                        ? 'Generate $count redesign options'
-                        : 'Generate AI design',
+                        : widget.buttonLabel ??
+                              (count > 1
+                                  ? 'Generate $count redesign options'
+                                  : 'Generate AI design'),
                   ),
                 ),
               if (pending != null) ...[

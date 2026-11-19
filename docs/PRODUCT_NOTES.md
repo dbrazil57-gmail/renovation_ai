@@ -1,5 +1,20 @@
 # Product and research reference
 
+## Camera-first design clarification — 19 November
+
+User wants the reference acquisition, analysis, direction questions, generated
+overlay and palette tuning in one viewer, then Save and continue into normal
+editing. This supersedes a capture-first navigation requirement, while retaining
+the existing comparison mode. The new source implements that workflow with one
+automatically captured reference and separately confirmed preview requests. The
+user chose confirmation per request; bounded paid live sessions interest them as
+a later option. Never imply a timer measures room coverage or silently send video.
+Current image generation can take time; partial streaming is a possible next
+latency improvement, not an implemented feature. Provider capabilities/limits:
+[OpenAI image generation](https://developers.openai.com/api/docs/guides/image-generation).
+Geometric room scanning, pose tracking and continuous video transformation are
+separate research/engineering work. No real AI calls or new APK in this batch.
+
 Consolidated 15 November 2026. Supporting notes, not another current task list.
 Use the [project brief](../RENOVISION_PROJECT_BRIEF.md) for requirements,
 [feature status](../FEATURE_STATUS.md) for actual implementation and

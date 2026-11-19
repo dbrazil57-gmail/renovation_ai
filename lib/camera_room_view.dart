@@ -58,6 +58,7 @@ class CameraRoomView extends StatefulWidget {
   final String? initialPhotoId, initialDesignId;
   final RoomCameraFeed? feed;
   final WidgetBuilder? settingsBuilder;
+  final WidgetBuilder? liveDesignBuilder;
   final Widget Function(String photoId, ValueChanged<String?> onSelected)
   workspace;
   const CameraRoomView({
@@ -69,6 +70,7 @@ class CameraRoomView extends StatefulWidget {
     this.initialDesignId,
     this.feed,
     this.settingsBuilder,
+    this.liveDesignBuilder,
   });
   @override
   State<CameraRoomView> createState() => _CameraRoomViewState();
@@ -327,6 +329,41 @@ class _CameraRoomViewState extends State<CameraRoomView>
     if (!mounted) return;
     setState(() => designing = false);
     if (live) await feed.start();
+  }
+
+  Future<void> _liveDesign() async {
+    if (busy ||
+        designing ||
+        pendingCapture != null ||
+        widget.liveDesignBuilder == null) {
+      return;
+    }
+    setState(() {
+      designing = true;
+      aligned = false;
+    });
+    try {
+      if (widget.store.documents.hasPending(room.projectId)) {
+        await widget.store.documents.save(room.projectId);
+      }
+      await _stop();
+      if (mounted) {
+        await Navigator.pushReplacement<void, void>(
+          context,
+          MaterialPageRoute(builder: widget.liveDesignBuilder!),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(
+          () => message =
+              'Save the project file successfully before starting Live design.',
+        );
+        if (live) await feed.start();
+      }
+    } finally {
+      if (mounted) setState(() => designing = false);
+    }
   }
 
   Widget _image(Uint8List bytes) => Image.memory(
@@ -612,6 +649,12 @@ class _CameraRoomViewState extends State<CameraRoomView>
     child: Scaffold(
       appBar: AppBar(
         actions: [
+          if (widget.liveDesignBuilder != null)
+            IconButton(
+              tooltip: 'Live design',
+              onPressed: busy || pendingCapture != null ? null : _liveDesign,
+              icon: const Icon(Icons.auto_awesome_outlined),
+            ),
           if (widget.settingsBuilder != null)
             IconButton(
               tooltip: 'Settings',

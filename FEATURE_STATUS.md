@@ -3,6 +3,23 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
+Live design source update (after APK 1.0.10, 19 November): project entry works
+without previously importing a room photo. Start and analyse confirms one automatic
+reference capture + paid analysis. The camera stays open; Room/style, Palette and
+Brief panels sit below it. Generate/Update preview separately confirms exactly one
+image request, even for a room normally configured for three concepts. Palette
+changes reuse that reference's observations, without another analysis. Received
+previews autosave as versions; Save and continue opens the selected result in the
+existing workspace. Original photos/approval/model and quality settings persist.
+Reference/analysis/image save retries reuse received data without duplicate calls.
+Backgrounding cancels preparation and resets overlays; pending paid results remain
+guarded. Narrow/large-text progress overflow fixed. All 215 tests pass (ten new
+mocked Live design tests), analysis clean. No real AI calls or new APK built.
+Web release compilation also passed; APK 1.0.10 checksum verified unchanged.
+Normal Chrome/S21 acceptance remains. Instant generation, partial-image streaming,
+spatial room scanning and movement tracking are not implemented; this stays a
+same-view image overlay. Bounded paid live sessions remain a future option.
+
 Latest requested APK: **1.0.10+11**, source `a18caebdc6`, at
 `output/mobile-test/renovision-test-1.0.10.apk` and `renovision-test.apk`.
 Includes embedded camera capture/design/compare/manual overlay and the home-cover

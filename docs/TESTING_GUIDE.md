@@ -1,5 +1,34 @@
 # Testing and storage reference
 
+## Live design — source after APK 1.0.10, not packaged yet
+
+1. Open a project > Live design, or Camera renovation > Live design tool. Camera
+   opening/cancelling must not capture, create room data or send an AI request.
+2. Aim/hold the view. Start and analyse confirms one paid photo analysis. A short
+   preparation bar advances, the reference captures automatically, saves and is
+   analysed. This is preparation time, not measured room-scan coverage.
+3. Confirm Room & style; choose Palette/Brief below the viewer. Review observations
+   and questions in Brief. Generate preview has a separate confirmation and sends
+   exactly one image request, regardless of the room's normal multi-design count.
+4. The result overlays the camera and saves as a version. Keep the same viewpoint.
+   Palette/style selection alone must not send anything or repeat analysis. Update
+   preview confirms another image request; retain the last result while waiting.
+5. Save and continue opens the selected design in the normal workspace. Verify
+   source/prompt/choices/version backups and unchanged originals/primary/baseline.
+6. Test storage failure before analysis, after analysis and after generation:
+   retain the frame/result, retry saving without another paid call, and guard Back.
+   Failed analysis needs explicit confirmation to retry; no automatic retry.
+7. Background during preparation must cancel capture; resume never starts AI.
+   Rotate during generation: retain and save the pending result. Backgrounding or
+   resizing resets the overlay. Check large text, keyboard, settings camera release,
+   permissions and the six-photo cap (start a new room if the old room is full).
+
+215 tests pass, including ten mocked Live design tests; analysis clean. No real
+camera/provider acceptance is implied. Current APK 1.0.10 has the earlier workflow.
+Generation still takes provider time; partial streaming, tracked movement, 3D
+scanning and video-rate transformation are not implemented. All paid results
+autosave; Save and continue completes the camera workflow.
+
 ## Current phone package: APK 1.0.10+11
 
 Install `output/mobile-test/renovision-test-1.0.10.apk` over the existing app

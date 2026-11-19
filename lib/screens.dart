@@ -33,6 +33,7 @@ import 'room_features.dart';
 import 'room_camera.dart';
 import 'camera_room_view.dart';
 import 'home_cover_widgets.dart';
+import 'live_design_screen.dart';
 
 Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
     room.setupComplete
@@ -702,6 +703,26 @@ class ProjectScreen extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
+              if (supportsRoomCamera)
+                FilledButton.tonalIcon(
+                  onPressed: () => Navigator.push<void>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LiveDesignScreen(
+                        store: store,
+                        projectId: project.id,
+                        settingsBuilder: (_) => settingsPage(store),
+                        workspace: (roomId, designId) => WorkspaceScreen(
+                          store: store,
+                          roomId: roomId,
+                          initialDesignId: designId,
+                        ),
+                      ),
+                    ),
+                  ),
+                  icon: const Icon(Icons.auto_awesome_outlined),
+                  label: const Text('Live design'),
+                ),
               if (supportsRoomCamera)
                 FilledButton.icon(
                   onPressed: () => _addRoom(context, camera: true),
@@ -1416,6 +1437,17 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
           initialPhotoId: photoId,
           initialDesignId: selectedId,
           settingsBuilder: (_) => settingsPage(widget.store),
+          liveDesignBuilder: (_) => LiveDesignScreen(
+            store: widget.store,
+            projectId: room.projectId,
+            roomId: room.id,
+            settingsBuilder: (_) => settingsPage(widget.store),
+            workspace: (roomId, designId) => WorkspaceScreen(
+              store: widget.store,
+              roomId: roomId,
+              initialDesignId: designId,
+            ),
+          ),
           workspace: (photo, onSelected) => WorkspaceScreen(
             store: widget.store,
             roomId: room.id,

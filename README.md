@@ -7,6 +7,15 @@ OpenAI analysis and editing can use your personal API key directly over HTTPS,
 without a laptop. The local relay remains optional; manual AI handoff is available.
 There is no production backend or payment integration.
 
+Live design (source after APK 1.0.10): Project > Live design, or the Live design
+tool in Camera renovation, keeps reference capture, analysis, direction and
+preview tuning in the camera viewer. After consent, one reference captures
+automatically and is analysed. Room/style, Palette and Brief panels sit underneath;
+each Generate/Update preview confirms one image request. Palette changes reuse
+photo observations. Results autosave as versions; Save and continue opens the
+normal workspace. Generation still takes model time; no tracked/video-rate AR
+or room-coverage scan percentage is implemented. Not in the existing 1.0.10 APK.
+
 Latest test APK: **1.0.10+11**, source `a18caebdc6`, at
 `output/mobile-test/renovision-test-1.0.10.apk` (also `renovision-test.apk`).
 Signature matches 1.0.9: install as an update without uninstalling. Includes

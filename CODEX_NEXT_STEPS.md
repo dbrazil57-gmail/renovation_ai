@@ -3,6 +3,27 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
+## Live design in the viewer — source after APK 1.0.10
+
+User clarification implemented as a separate Live design route from projects and
+Camera renovation. No prior room photo/shutter step: Start and analyse consents
+to one automatic reference capture + analysis. Room/style, Palette and Brief stay
+under the viewer; Generate/Update preview confirms one image request and overlays
+the returned result. Palette changes reuse observations rather than reanalysing.
+Every result autosaves; Save and continue opens the existing workspace. The earlier
+capture/compare mode stays available. Confirmation per request is the user's chosen
+mode; bounded paid live sessions are a future option, with no automatic spend loop.
+
+215 tests pass, static analysis clean and web release compilation passed.
+Existing APK 1.0.10 checksum verified unchanged. Ten mocked tests cover consent,
+automatic capture, reused analysis, single-request limits, save failures, backup/continuation,
+originals/approval, backgrounding, large text and rotation during generation.
+No real AI call, user-data change or new APK. Next: requested APK and normal
+Chrome/S21 acceptance using the Live design checklist. Existing 1.0.10 APK lacks
+this new route. Preparation progress is real elapsed preparation/request stages,
+not room coverage. Generation still waits for the provider; no streaming partial
+previews, 3D scanning, pose tracking or instant video transformation implemented.
+
 ## Current phone test: APK 1.0.10+11
 
 Requested build completed: `output/mobile-test/renovision-test-1.0.10.apk`
@@ -673,7 +694,7 @@ these gaps distinct from features merely needing live/device verification.
 | Fast tool navigation with visible progress | Synchronous editor decode identified; asynchronous preview change partly applied | Finish editor tests and image loading states, measure large-image behaviour, validate/build before release |
 | More visual workspace | Sample gallery/room cards implemented | Photo-led desktop/phone workspace redesign remains a proposal |
 | Reference images / kitchen design board | Ordinary multi-angle images and sketch/crop exist | Separate inspiration/material/sketch roles and design-board export missing |
-| Camera preview, snapshots, refine | Embedded preview, saved capture/design flow, frozen comparison and manual live overlay in 19 November source | Chrome/S21 camera acceptance, composite export and tracked AR remain; no new APK |
+| Camera preview, snapshots, refine | 1.0.10 has capture/compare/manual overlay; newer source adds automatic reference analysis and tuning in the viewer | Requested APK + Chrome/S21 Live design acceptance; streaming, composite export, spatial scans and tracked AR remain |
 | Competitor/pricing lessons | Research and priorities recorded in existing reference | Convert into verified workflows; no billing or competitor quality benchmark yet |
 | Progress/continuity | Analysis/generation have waiting states; room saving status exists | Finish editor states and clearer stage feedback. Agent updates cannot replace the client's thinking UI or guarantee client reconnection |
 
