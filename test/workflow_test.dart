@@ -74,6 +74,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Claylands'), findsOneWidget);
     expect(store.projects.single.name, 'Claylands');
+    await ensureFocusVisible(tester, find.text('Claylands'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Claylands'));
     await tester.pumpAndSettle();
     expect(find.text('Choose photos'), findsOneWidget);
@@ -98,7 +100,7 @@ void main() {
     await tester.tap(find.text('Library'));
     await tester.pumpAndSettle();
     expect(find.text('Charcoal office'), findsOneWidget);
-    expect(find.text('Office'), findsOneWidget);
+    expect(find.text('Claylands / Office'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

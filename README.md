@@ -7,6 +7,14 @@ OpenAI analysis and editing can use your personal API key directly over HTTPS,
 without a laptop. The local relay remains optional; manual AI handoff is available.
 There is no production backend or payment integration.
 
+Next-release interface source (after APK 1.0.10): Saved projects is compact,
+with its guidance in an information control. Create project and Open project
+file are grouped; tap listed projects to resume, or restore a backup in Settings.
+Library previews have full-width captions below them, full title/context on
+hover/long-press, full-screen viewing and separate edit/delete actions. Wide
+screens use two columns and only nearby rows load. Room setup labels the camera
+and gallery destinations correctly. These changes are not in APK 1.0.10 yet.
+
 Live design (source after APK 1.0.10): Project > Live design, or the Live design
 tool in Camera renovation, keeps reference capture, analysis, direction and
 preview tuning in the camera viewer. After consent, one reference captures

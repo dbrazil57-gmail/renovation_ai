@@ -72,6 +72,7 @@ Future<void> startRoomWithPhotos(
       builder: (_) => RoomStartDialog(
         starter: starter,
         initialRoomTypeId: initialRoomTypeId,
+        camera: camera,
       ),
     );
     if (choice == null || !context.mounted) return;
@@ -528,80 +529,59 @@ class ProjectsTab extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        Text(
-          'Saved projects',
-          style: Theme.of(context).textTheme.headlineSmall,
+        HelpHeading(
+          title: 'Saved projects',
+          message:
+              'Tap a project below to open work already saved on this device. Your photos, designs and decisions stay with it.\n\nOpen project file loads a saved .renovision.json file with its rooms, photos and design choices. Restore a separate backup copy from Settings. AI credentials stay on this device.\n\n${kIsWeb ? 'Keep using the same browser address/profile (http://localhost:7357 for local testing) to see the same saved projects.' : 'Install app updates over the existing app to keep your local work.'}',
         ),
         const SizedBox(height: 6),
-        const Text('Your photos, designs and decisions stay on this device.'),
-        const SizedBox(height: 16),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: FilledButton.icon(
-            onPressed: () async {
-              final name = await askText(
-                context,
-                title: 'New project',
-                hint: 'For example: Claylands',
-              );
-              if (name != null) await store.createProject(name);
-            },
-            icon: const Icon(Icons.add),
-            label: const Text('Create project'),
-          ),
-        ),
-        const SizedBox(height: 16),
-        RestoreProjectButton(
-          store: store,
-          openDocument: true,
-          onRestored: (project) => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ProjectScreen(store: store, project: project),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        RestoreProjectButton(
-          store: store,
-          onRestored: (project) => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ProjectScreen(store: store, project: project),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        const Text(
-          kIsWeb
-              ? 'Use Open project to load a saved .renovision.json file with its rooms, photos and design choices. Keep using http://localhost:7357 for this app.'
-              : 'Use Open project to load a saved project file with its rooms, photos and design choices. Your working projects are saved on this device.',
-        ),
-        const SizedBox(height: 16),
-        if (store.projects.isEmpty)
-          const EmptyMessage(
-            icon: Icons.home_outlined,
-            title: 'Start with your first house',
-            explanation: 'Create a project, add a room and import its original photograph.',
-          )
-        else
-          ...store.projects.map(
-            (project) => Card(
-              child: ListTile(
-                leading: const CircleAvatar(child: Icon(Icons.home_outlined)),
-                title: Text(project.name),
-                subtitle: Text('${store.roomsFor(project.id).length} rooms'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => Navigator.push(
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            FilledButton.icon(
+              onPressed: () async {
+                final name = await askText(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        ProjectScreen(store: store, project: project),
-                  ),
+                  title: 'New project',
+                  hint: 'For example: Claylands',
+                );
+                if (name != null) await store.createProject(name);
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Create project'),
+            ),
+            RestoreProjectButton(
+              store: store,
+              openDocument: true,
+              label: 'Open project file…',
+              onRestored: (project) => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ProjectScreen(store: store, project: project),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ...store.projects.map(
+          (project) => Card(
+            child: ListTile(
+              dense: true,
+              leading: const CircleAvatar(child: Icon(Icons.home_outlined)),
+              title: Text(project.name),
+              subtitle: Text('${store.roomsFor(project.id).length} rooms'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ProjectScreen(store: store, project: project),
                 ),
               ),
             ),
           ),
+        ),
       ],
     ),
   );
@@ -977,57 +957,206 @@ class LibraryTab extends StatelessWidget {
     listenable: store,
     builder: (context, _) {
       final saved = store.allDesigns.where((d) => d.favourite).toList();
-      return PageFrame(
-        children: [
-          Text(
-            'Favourite designs',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Your saved ideas remain associated with their original room.',
-          ),
-          const SizedBox(height: 16),
-          if (saved.isEmpty)
-            const EmptyMessage(
-              icon: Icons.favorite_outline,
-              title: 'No favourites yet',
-              explanation: 'Save a design in Explore or a room workspace.',
-            )
-          else
-            ...saved.map((d) {
-              final room = store.roomById(d.roomId);
-              return Card(
-                child: ListTile(
-                  leading: PhotoThumb(
-                    bytes: store.imageFor(d.imageId),
-                    viewerTitle: d.title,
-                  ),
-                  title: Text(d.title),
-                  subtitle: Text(room?.name ?? 'Room'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      DeleteDesignButton(store: store, design: d),
-                      const Icon(Icons.chevron_right),
-                    ],
-                  ),
-                  onTap: room == null
-                      ? null
-                      : () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => WorkspaceScreen(
-                              store: store,
-                              roomId: room.id,
-                              initialDesignId: d.id,
-                            ),
-                          ),
+      return LayoutBuilder(
+        builder: (context, available) {
+          final columns = available.maxWidth >= 740 ? 2 : 1;
+          return PageFrame(
+            children: [
+              Text(
+                'Favourite designs',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Your saved ideas remain associated with their original room.',
+              ),
+              const SizedBox(height: 16),
+              if (saved.isEmpty)
+                const EmptyMessage(
+                  icon: Icons.favorite_outline,
+                  title: 'No favourites yet',
+                  explanation: 'Save a design in Explore or a room workspace.',
+                )
+              else
+                for (var row = 0; row < saved.length; row += columns)
+                  LayoutBuilder(
+                    builder: (context, bounds) {
+                      final width =
+                          (bounds.maxWidth - 12 * (columns - 1)) / columns;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            for (
+                              var index = row;
+                              index < row + columns;
+                              index++
+                            ) ...[
+                              if (index > row) const SizedBox(width: 12),
+                              Expanded(
+                                child: index >= saved.length
+                                    ? const SizedBox.shrink()
+                                    : Builder(
+                                        builder: (context) {
+                                          final d = saved[index];
+                                          final room = store.roomById(d.roomId);
+                                          final project = room == null
+                                              ? null
+                                              : store.projectById(
+                                                  room.projectId,
+                                                );
+                                          final description =
+                                              '${d.title}\n${[project?.name, room?.name].whereType<String>().join(' / ')}';
+                                          final bytes = store.imageFor(
+                                            d.imageId,
+                                          );
+                                          void open() {
+                                            if (room != null) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      WorkspaceScreen(
+                                                        store: store,
+                                                        roomId: room.id,
+                                                        initialDesignId: d.id,
+                                                      ),
+                                                ),
+                                              );
+                                            }
+                                          }
+
+                                          return Card(
+                                            key: ValueKey(
+                                              'library-design-${d.id}',
+                                            ),
+                                            clipBehavior: Clip.antiAlias,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.stretch,
+                                              children: [
+                                                if (bytes != null)
+                                                  Tooltip(
+                                                    message: description,
+                                                    constraints:
+                                                        const BoxConstraints(
+                                                          maxWidth: 360,
+                                                        ),
+                                                    child: ExpandableImage(
+                                                      bytes: bytes,
+                                                      title: d.title,
+                                                      height: (width / 1.5)
+                                                          .clamp(160.0, 240.0),
+                                                      showHint: false,
+                                                    ),
+                                                  ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                    12,
+                                                  ),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .stretch,
+                                                    children: [
+                                                      Tooltip(
+                                                        message: description,
+                                                        constraints:
+                                                            const BoxConstraints(
+                                                              maxWidth: 360,
+                                                            ),
+                                                        child: InkWell(
+                                                          onTap: room == null
+                                                              ? null
+                                                              : open,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .stretch,
+                                                            children: [
+                                                              Text(
+                                                                d.title,
+                                                                key: ValueKey(
+                                                                  'library-caption-${d.id}',
+                                                                ),
+                                                                maxLines: 2,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: Theme.of(
+                                                                  context,
+                                                                ).textTheme.titleMedium,
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 4,
+                                                              ),
+                                                              Text(
+                                                                [
+                                                                      project
+                                                                          ?.name,
+                                                                      room?.name,
+                                                                    ]
+                                                                    .whereType<
+                                                                      String
+                                                                    >()
+                                                                    .join(
+                                                                      ' / ',
+                                                                    ),
+                                                                maxLines: 2,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: Theme.of(
+                                                                  context,
+                                                                ).textTheme.bodySmall,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      Wrap(
+                                                        spacing: 8,
+                                                        runSpacing: 6,
+                                                        children: [
+                                                          OutlinedButton.icon(
+                                                            onPressed:
+                                                                room == null
+                                                                ? null
+                                                                : open,
+                                                            icon: const Icon(
+                                                              Icons
+                                                                  .edit_outlined,
+                                                            ),
+                                                            label: const Text(
+                                                              'Edit design',
+                                                            ),
+                                                          ),
+                                                          DeleteDesignButton(
+                                                            store: store,
+                                                            design: d,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                              ),
+                            ],
+                          ],
                         ),
-                ),
-              );
-            }),
-        ],
+                      );
+                    },
+                  ),
+            ],
+          );
+        },
       );
     },
   );

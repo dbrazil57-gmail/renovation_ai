@@ -1,5 +1,23 @@
 # Testing and storage reference
 
+## Projects/Library refinements — next-release source after APK 1.0.10
+
+- Saved projects: guidance stays behind the information control (hover or tap).
+  Create project works; tap a listed project to resume it. Open project file
+  loads a portable file without replacing existing local work. Restore backup
+  copy stays available in Settings. No large empty-state panel is shown here.
+- Library: captions sit below larger previews and use the card width. Hover or
+  long-press the image/caption for full title/project/room details. Tap an image
+  to view full screen, Edit design to open the same version, and check recoverable
+  Delete behaviour. Test narrow/large-text layouts and the two-column wide layout;
+  a long library should only load nearby rows.
+- Take photo: room setup says Continue to camera and opens the embedded camera;
+  cancellation creates no room. Choose photos says Continue to photos. Starts
+  without a chosen source say Continue, then offer camera/gallery selection.
+
+220 automated tests pass and analysis is clean. Existing projects, originals,
+favourites and AI settings are preserved. This batch builds no new APK.
+
 ## Live design — source after APK 1.0.10, not packaged yet
 
 1. Open a project > Live design, or Camera renovation > Live design tool. Camera

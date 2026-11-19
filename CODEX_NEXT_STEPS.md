@@ -3,6 +3,22 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
+## Next-release Projects/Library refinements — source after APK 1.0.10
+
+Implemented compact Saved projects with hover/tap information, grouped Create /
+Open project file controls and directly openable local project rows. Removed the
+duplicate inline guidance/restore block; restore-copy stays in Settings. The file
+opener is retained because the local list cannot load portable project files.
+Library captions now span beneath the preview, with full title/context on hover
+or long-press, full-screen viewing and edit/delete actions below. Responsive one/
+two-column rows load lazily. Camera/gallery room setup labels match the next
+destination (generic Continue when the source is chosen afterwards).
+220 tests pass, static analysis clean. No user-data changes or new APK. Include
+these changes with Live design in the next explicitly requested Android build;
+check Saved projects help/file opening, Library readability and camera/gallery
+copy on normal Chrome and S21.
+Web release build passed; existing APK 1.0.10 checksum verified unchanged.
+
 ## Live design in the viewer — source after APK 1.0.10
 
 User clarification implemented as a separate Live design route from projects and

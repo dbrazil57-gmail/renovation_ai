@@ -229,11 +229,13 @@ class RestoreProjectButton extends StatefulWidget {
   final RenovisionStore store;
   final ValueChanged<RenovationProject> onRestored;
   final bool openDocument;
+  final String? label;
   const RestoreProjectButton({
     super.key,
     required this.store,
     required this.onRestored,
     this.openDocument = false,
+    this.label,
   });
   @override
   State<RestoreProjectButton> createState() => _RestoreProjectButtonState();
@@ -313,9 +315,10 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
     label: Text(
       busy
           ? 'Opening…'
-          : widget.openDocument
-          ? 'Open project…'
-          : 'Restore project backup',
+          : widget.label ??
+                (widget.openDocument
+                    ? 'Open project…'
+                    : 'Restore project backup'),
     ),
   );
 }

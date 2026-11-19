@@ -26,7 +26,15 @@ class RoomStartChoice {
 class RoomStartDialog extends StatefulWidget {
   final RoomStarter? starter;
   final String? initialRoomTypeId;
-  const RoomStartDialog({super.key, this.starter, this.initialRoomTypeId});
+
+  /// True opens camera, false chooses existing photos, null chooses the source next.
+  final bool? camera;
+  const RoomStartDialog({
+    super.key,
+    this.starter,
+    this.initialRoomTypeId,
+    this.camera = false,
+  });
   @override
   State<RoomStartDialog> createState() => _RoomStartDialogState();
 }
@@ -79,7 +87,13 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Choose a room type, then add your own photos.'),
+            Text(
+              widget.camera == true
+                  ? 'Choose a room type, then open the camera.'
+                  : widget.camera == false
+                  ? 'Choose a room type, then choose photos from your device.'
+                  : 'Choose a room type, then choose how to add photos.',
+            ),
             const SizedBox(height: 12),
             TextField(
               key: const ValueKey('room-name'),
@@ -184,7 +198,16 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
         onPressed: () => Navigator.pop(context),
         child: const Text('Cancel'),
       ),
-      FilledButton(onPressed: submit, child: const Text('Continue to photos')),
+      FilledButton(
+        onPressed: submit,
+        child: Text(
+          widget.camera == true
+              ? 'Continue to camera'
+              : widget.camera == false
+              ? 'Continue to photos'
+              : 'Continue',
+        ),
+      ),
     ],
   );
 }

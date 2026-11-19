@@ -3,6 +3,20 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
+Projects/Library polish for next release (source after 1.0.10): Saved projects
+uses a compact heading with hover/tap information instead of inline paragraphs;
+Create project/Open project file actions are grouped. Restore-copy remains in
+Settings, and saved project rows open directly. File import stays available and
+is explicitly distinguished from the local list. Favourite previews have readable
+captions beneath their images, full title/project/room tooltips, full-screen image
+viewing and separate edit/delete controls. Phone layout is one column, wide
+layout two; rows load lazily. Camera entry says Continue to camera; gallery says
+Continue to photos; an undecided source says Continue before source selection.
+No data/settings changes or new APK. 220 tests pass, static analysis clean;
+file-open preservation, capture cancellation, large text, image/edit navigation
+and lazy image loading covered. Normal Chrome/S21 visual acceptance remains.
+Web release build passed; existing APK 1.0.10 checksum verified unchanged.
+
 Live design source update (after APK 1.0.10, 19 November): project entry works
 without previously importing a room photo. Start and analyse confirms one automatic
 reference capture + paid analysis. The camera stays open; Room/style, Palette and
