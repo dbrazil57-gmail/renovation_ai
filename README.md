@@ -7,21 +7,26 @@ OpenAI analysis and editing can use your personal API key directly over HTTPS,
 without a laptop. The local relay remains optional; manual AI handoff is available.
 There is no production backend or payment integration.
 
-Home cover (source after APK 1.0.9): the opening banner defaults to the bundled,
+Latest test APK: **1.0.10+11**, source `a18caebdc6`, at
+`output/mobile-test/renovision-test-1.0.10.apk` (also `renovision-test.apk`).
+Signature matches 1.0.9: install as an update without uninstalling. Includes
+the home-cover picker and camera prototype. All 205 tests pass; analysis clean.
+
+Home cover (included in APK 1.0.10): the opening banner defaults to the bundled,
 fictional coastal living-room sample instead of the last-opened room's original.
 Use the banner's wallpaper button or Settings > Home cover to choose an app
 example or a saved room photo/design. This device preference survives restart;
 it does not change room originals, approval, the Continue shortcut or AI settings.
 
-Camera update (19 November, source after APK 1.0.9): Take photo opens an
+Camera update (19 November, included in APK 1.0.10): Take photo opens an
 embedded preview. In a room, use the camera-view tool to capture/save a view,
 design it through the existing analysis/confirmation workflow, then return for
 a before/after slider or manually aligned live overlay. Captures and AI results
 use existing project storage/backups. The overlay is a flat image for a matching
 viewpoint; it does not track movement or generate video. Chrome needs camera
-permission on localhost/HTTPS. No new APK built; S21 acceptance is still needed.
+permission on localhost/HTTPS. Physical S21 acceptance is still needed.
 
-The selected Focus Canvas design is included in test APK **1.0.9+10**:
+The selected Focus Canvas design is included in test APK **1.0.10+11**:
 a camera-first Projects home and a workspace with a persistent image/version
 strip and Room, Style, Refine and Ideas controls. Desktop uses a split layout.
 Saved projects retain their Continue shortcut. Use the Settings gear for

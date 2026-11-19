@@ -1,6 +1,15 @@
 # Testing and storage reference
 
-## Home cover — source after APK 1.0.9
+## Current phone package: APK 1.0.10+11
+
+Install `output/mobile-test/renovision-test-1.0.10.apk` over the existing app
+without uninstalling. Source `a18caebdc6`; package remains
+`com.example.renovision_ai` and signature matches 1.0.9. All 205 tests pass,
+analysis clean; universal release APK built and verified. Old APKs retained.
+Camera hardware optional, no microphone/storage write permission, only bundled
+app sample assets. Physical S21 camera and provider acceptance remain manual.
+
+## Home cover — included in APK 1.0.10
 
 Start with an existing saved project: the first banner should show the bundled
 fictional coastal living room, not the last-opened room's original photograph.
@@ -11,15 +20,14 @@ remain. Use default returns to the app sample without deleting any photos.
 Check small screens/large text, cancel and save-failure retry. A deleted/missing
 design should fall back to the sample. Cover preferences are saved only on this
 device/profile, separately from project exports and AI credentials. This update
-does not build an APK or include any real room photo in the shipped assets.
+does not include any real room photo in the shipped assets.
 
-## Camera renovation prototype — 19 November source, after APK 1.0.9
+## Camera renovation prototype — included in APK 1.0.10
 
-No APK built for this camera batch. Do not expect these controls in the existing
-1.0.9 install. Chrome uses the same localhost address/profile; allow camera
+These controls require APK 1.0.10 or later. Chrome uses the same localhost address/profile; allow camera
 access (remote browser addresses require HTTPS). Camera tests use synthetic
 photos/fake feeds; real S21 and normal Chrome acceptance remain to be done.
-199 VM/widget tests pass, including 14 camera tests; analysis is clean and the
+205 VM/widget tests pass, including 14 camera tests; analysis is clean and the
 web release compiles. An isolated Chrome test run stalled during Flutter startup
 with browser runtime errors before any test ran, and was cancelled. Do not treat
 the VM tests or successful compile as physical camera or browser acceptance.
@@ -67,7 +75,7 @@ in More tools; local status remains visible. Check drafts and active AI work sur
 section switches, and restart retains photos, approvals and AI connection settings.
 Physical S21 and normal-browser visual acceptance remain manual checks.
 
-Latest requested phone test package: **1.0.9+10**, source `d67b148d3f`, at
+Previous phone test package: **1.0.9+10**, source `d67b148d3f`, at
 `output/mobile-test/renovision-test-1.0.9.apk`. Install as an update without
 uninstalling; package identity is unchanged and signing matches 1.0.8.
 185 automated tests pass and analysis is clean. The post-analysis chooser

@@ -3,13 +3,30 @@
 Updated 19 November 2026 (Australia/Sydney). Keep this as the single current work
 list; update existing documents rather than creating one file per idea.
 
+## Current phone test: APK 1.0.10+11
+
+Requested build completed: `output/mobile-test/renovision-test-1.0.10.apk`
+(also `renovision-test.apk`), source `a18caebdc6`. Includes both the home cover
+picker and embedded camera/manual overlay. All 205 tests pass, analysis clean;
+Android release build took 142.0 seconds. Package/version/signature verified;
+signature matches 1.0.9, so update without uninstalling. Old APKs preserved.
+No local projects/settings cleared, private images bundled or paid AI calls made.
+
+S21 next: verify app-sample opening cover, change/reset cover and restart. Open
+a saved room -> camera tool -> Capture new view -> Design saved view -> normal
+analyse/review/confirmed generation -> Back -> Compare. Then Live view -> Enable
+manual overlay -> Align original -> Show design. Match the viewpoint and keep
+still: there is no pose tracking or continuous AI video. Check rotation,
+background/resume, permissions, saved captures/designs and unchanged AI connection.
+Only build future APKs on explicit request.
+
 Home cover correction (19 November, source after APK 1.0.9): opening banner now
 defaults to the fictional bundled coastal-living sample. Change home cover on
 the banner or in Settings selects an app example or saved project photo/design;
 Use default restores the app sample. Choice is device-local and independent of
 Continue/last-opened room; no room images, primary photos, approval or AI settings
 are changed. Save failures keep the previous choice; unavailable images fall
-back to the sample. Include this with camera changes in the next requested APK.
+back to the sample. Included with camera changes in the requested 1.0.10 APK.
 Validation: all 205 tests pass and static analysis is clean. Six new cover tests
 include saved-choice restart, unchanged room data, missing/deleted choices,
 failed-save preservation and narrow-screen large-text behaviour.
@@ -27,10 +44,10 @@ room photos/exports; originals, approvals and device AI settings are preserved.
 Failed saves retain the capture for retry; linked project files save on exit.
 Resources close on background and exit; alignment resets on background/rotation.
 
-Next: normal Chrome camera permission at the existing address/profile, then a
-requested APK and S21 preview/capture/rotation/background/save/restart acceptance.
-Use docs/TESTING_GUIDE.md's camera checklist. No APK built in this batch and no
-paid AI calls made. Real-time generation, tracked surfaces/pose, moving-camera
+Next: normal Chrome camera permission at the existing address/profile, and S21
+preview/capture/rotation/background/save/restart acceptance using APK 1.0.10.
+Use docs/TESTING_GUIDE.md's camera checklist. No paid AI calls made.
+Real-time generation, tracked surfaces/pose, moving-camera
 AR and saved composite exports are separate future work; this is a manually
 aligned flat-image overlay. Never send continuous video or silently retry AI.
 Validation: 199 VM/widget tests pass, clean static analysis and successful web
@@ -49,7 +66,7 @@ hashes verified unchanged; audit is `.local_backups/cleanup-2026-11-19.json`.
 No source edits or new APK required. Flutter regenerates removed build outputs.
 Keep the existing localhost address/profile when restarting Chrome testing.
 
-Latest requested phone build: **1.0.9+10**, source `d67b148d3f`, at
+Previous phone build: **1.0.9+10**, source `d67b148d3f`, at
 `output/mobile-test/renovision-test-1.0.9.apk` and the existing latest alias.
 All 185 tests pass and analysis is clean. Built in 104.2 seconds; package/version
 checked and signing matches 1.0.8, supporting an update without uninstalling.

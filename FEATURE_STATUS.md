@@ -3,6 +3,17 @@
 Updated 19 November 2026. Product requirements: RENOVISION_PROJECT_BRIEF.md.
 "Implemented" means present in code, not necessarily verified on a real device.
 
+Latest requested APK: **1.0.10+11**, source `a18caebdc6`, at
+`output/mobile-test/renovision-test-1.0.10.apk` and `renovision-test.apk`.
+Includes embedded camera capture/design/compare/manual overlay and the home-cover
+picker. All 205 tests pass, analysis clean; Android release build passed in
+142.0 seconds. Package/version and signature verified against 1.0.9 for an
+in-place update. Camera hardware optional; microphone/storage write permissions
+absent. Bundled image assets match the fictional app samples only. Prior APKs
+1.0.8/1.0.9 retained; no user data or local AI settings cleared. S21 camera/rotation,
+overlay alignment, restart durability and real provider quality remain user tests.
+SHA256: `42B3918E587901CD949F9A5873A2305A1E9BC0F611A0CC2D6083BD19E8E331F4`.
+
 Home cover correction (19 November source, after APK 1.0.9): the opening hero
 previously displayed the most recently opened room's primary photo. It now uses
 the bundled fictional coastal living-room sample by default. Wallpaper control
@@ -10,7 +21,7 @@ on the banner and Settings > Home cover offer six app examples and saved project
 photos/designs, plus Use default. The explicit choice persists on this device
 and no longer follows room navigation. Missing/deleted choices fall back to an
 app sample. No real room photo is added to bundled assets, deleted or overwritten;
-project/AI settings and resume behaviour are preserved. No new APK built.
+project/AI settings and resume behaviour are preserved. Packaged in APK 1.0.10.
 Validation: 205 tests pass, including six cover/default/persistence/failure/layout
 checks, with clean static analysis. Banner content can grow for large text instead
 of clipping its controls on narrow phones.
@@ -25,7 +36,7 @@ breaks alignment. Backgrounding/rotation resets the overlay. Permission errors
 offer retry; camera resources close on background/exit. Save failures retain the
 capture for local retry or explicit discard. Six-photo limits remain. Project
 exports include captures/designs/provenance; connection credentials stay separate.
-No continuous frame upload, automatic AI spending, tracked AR or new APK.
+No continuous frame upload, automatic AI spending or tracked AR. Packaged in 1.0.10.
 Camera lifecycle/storage/widget tests use synthetic photos and fake devices;
 physical S21 camera/rotation, normal Chrome permissions and provider quality
 remain manual acceptance checks. See the camera test checklist.
@@ -48,7 +59,7 @@ No app-code changes, new APK, AI calls or repeat build/test run during cleanup.
 APK 1.0.9 retains its validated 185-test result; runtime phone acceptance remains
 the user's next test. Cache deletion means the next build regenerates its outputs.
 
-Latest requested APK: **1.0.9+10**, source `d67b148d3f`. All 185 tests pass;
+Previous APK: **1.0.9+10**, source `d67b148d3f`. All 185 tests passed;
 static analysis clean. Universal APK built in 104.2 seconds at
 `output/mobile-test/renovision-test-1.0.9.apk` (also `renovision-test.apk`).
 Package/version verified and signing certificate matches 1.0.8 for an in-place
