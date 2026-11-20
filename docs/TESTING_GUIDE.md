@@ -1,5 +1,43 @@
 # Testing and storage reference
 
+## Requested 1.0.14 test package — 21 November 2026
+
+**315 tests pass**, analysis is clean, and Chrome/Android release builds pass (111.2/234.8 seconds). Source `ca541ef971`; size 77,151,194 bytes; SHA256
+`A81CCF75510CB9C497E7BDA1EF5D69A0D90E9FFEC3C8B76F4CBBCF56BE1F707B`. The package is
+`output/mobile-test/renovision-test-1.0.14.apk` (also `renovision-test.apk`).
+Application ID and signing certificate match 1.0.13, current icons are unchanged,
+and old packages remain for rollback. Install over the existing app; do not
+uninstall or clear storage. No real customer images/keys or paid API calls were
+used during these checks. Physical S21 and real Chrome acceptance remain.
+
+1. Open the existing project after updating; check original photos, versions,
+   approved design and saved API connection. In Design workspace tap **Paint walls
+   without AI**. No connection/key is needed. Outline a wall and finish the outline,
+   or brush it; erase windows/trim/furniture. Move / zoom magnifies the image.
+2. Use **2 Paint colour**, swatches/custom hex and coverage. Compare before,
+   Undo/Redo, leave/reopen the editor and confirm its draft. Save paint version:
+   a new PNG appears in Ideas, with local-paint settings and no invented AI model.
+   Original/selected source and approval stay unchanged. Reopen that version to
+   edit layers; use its saved colours/selection if an unfinished draft exists.
+3. Save/reopen a plain and password-protected portable copy. Confirm paint layers,
+   source/parent links and draft selections survive. Try Save image/Share creation.
+   Those export flattened pixels; Save project transfers editable history.
+4. Style > Regional influences: combine Modern/Contemporary with Japanese or
+   Italian; check prompt preview contains both and retains protected features.
+   Moroccan/Indian and existing regional styles are also available. No provider
+   request occurs from selecting styles or previewing the deterministic prompt.
+5. Help > Feedback: enter an issue/suggestion, leave/reopen, preview/copy it. With
+   no configured email/URL, delivery is explicitly unavailable; the draft remains.
+
+Local paint tests cover out-of-mask pixel equality, alpha/indexed PNG handling,
+eraser holes, immutable validated layers, no AI calls, drafts, failed-save retry,
+plain/protected copies and source/baseline preservation. Phone/landscape layout
+checks use 160% text, with fictional stock samples for visual review. Preview
+colour is an approximation; sources are limited to 24MP, preview long edge 1000.
+Automatic selection, wallpaper and enforced AI-generation masks are not included.
+Logs: `output/mobile-test/analysis-1.0.14.log`, `test-1.0.14.log`,
+`build-1.0.14.log`, `web-1.0.14.log` and package verification logs there.
+
 ## Verified outstanding-items work — 20 November 2026
 
 After credits were renewed, all **296 tests passed**, static analysis was clean
@@ -160,11 +198,11 @@ Earlier comparison-stage verification: 36 focused tests and all 283 tests pass; 
 clean; release web build passed (83.3 seconds). No live Gemini test, customer-key
 use, physical phone acceptance or new APK in this batch.
 
-Latest test APK: **1.0.13+14**, source `f69772aaa0`:
-`output/mobile-test/renovision-test-1.0.13.apk`, alias `renovision-test.apk`.
-SHA256: `ED2BCFF73C2FD2F76FA8A8862C393387A3091458ED2754DE8DC7FCC3CD141E90`.
-Size: 76,560,654 bytes. Its application ID/signature match 1.0.12 for an in-place
-update. Previous APKs 1.0.12/1.0.11/1.0.10 are retained with unchanged checksums;
+Latest test APK: **1.0.14+15**, source `ca541ef971`:
+`output/mobile-test/renovision-test-1.0.14.apk`, alias `renovision-test.apk`.
+SHA256: `A81CCF75510CB9C497E7BDA1EF5D69A0D90E9FFEC3C8B76F4CBBCF56BE1F707B`.
+Size: 77,151,194 bytes. Its application ID/signature match 1.0.13 for an in-place
+update. Previous APKs 1.0.13/1.0.12/1.0.11/1.0.10 retain unchanged checksums;
 obsolete 1.0.8/1.0.9 were removed during cleanup. Development signing is not
 public-release signing. ARM64, optional camera and internet are verified; no
 microphone/storage-write permission or private project/credential assets.
@@ -172,8 +210,8 @@ microphone/storage-write permission or private project/credential assets.
 Includes all completed 20 November changes: AI settings/models, visible deletion,
 multiple precise variations, creative briefs, Gemini, typed Live names, help/model
 comparison, project Open/resume/conflicts, generation recipes/reuse/refinement,
-startup Retry and Save image / Share creation. All **296 tests passed**, analyzer
-clean, final web build 102.4 seconds, Android build 145.5 seconds. S21 acceptance
+startup Retry and Save image / Share creation, plus 21 November local paint,
+regional choices and feedback tools. **315 tests pass**, analysis is clean, and Chrome/Android release builds pass (111.2/234.8 seconds). S21 acceptance
 remains. **Do not build another APK unless the user asks.** No real AI calls or
 stored-user-data changes during packaging. Launcher icons remain unchanged.
 
@@ -206,7 +244,7 @@ is the persistence test. Do not interpret a successful diagnostic as a backup.
 
 ## Feedback setup
 
-Source after APK 1.0.13 adds Help > Feedback and Settings > Feedback and ideas.
+Included in APK 1.0.14: Help > Feedback and Settings > Feedback and ideas.
 Choose Report an issue or Suggest a feature, enter a title/details, and review
 the report. Build ID/platform can be omitted. Photos, project names/files, logs,
 API connection settings and keys are not gathered. Text the user types remains
@@ -252,7 +290,8 @@ build passed (42.2 seconds) and Android Kotlin compilation passed. Logs:
 `output/feedback-analyze.log`, `feedback-regression.log`, `feedback-web-build.log`,
 `feedback-android-kotlin.log`; source stamp `937602d939`. All launchers were mocked
 in tests; no real email/form submission was made. APK 1.0.13 SHA256 is unchanged.
-No new APK is authorised by this feedback follow-up alone.
+The 21 November request authorises 1.0.14, including these tools; it does not
+authorise a hosted service or actual report submission.
 
 Manual acceptance after contact setup: create both report types; reopen the draft;
 check diagnostic opt-out and report preview; confirm a real email/form reaches

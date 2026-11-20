@@ -1,9 +1,33 @@
 # Renovision next steps
 
-Current task list after the full code/conversation/design audit, 19 November
-2026 (Australia/Sydney). This supersedes the older chronological work lists.
+Current task list after the full code/conversation/design audit, updated through
+21 November 2026 (Australia/Sydney). This supersedes older chronological lists.
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
+
+## Requested test release — 21 November, 1.0.14+15
+
+- [x] Review unfinished conversation items against the actual source and brief.
+- [x] Add manual local wall paint: polygon/brush/erase, colour strip/custom hex,
+  per-wall layers, shading approximation, Undo/Redo and comparison. No provider call.
+- [x] Keep source images and approvals unchanged; save a new lossless PNG and
+  local-operation recipe. Bind drafts to their working image, and keep layers
+  through reopening and plain/password-protected portable copies.
+- [x] Add Japanese, Italian, Moroccan and Indian, plus a regional-influences
+  section alongside existing styles (23 styles total; 12 palettes unchanged).
+- [x] Include the previously verified Feedback draft/copy/handoff tools in this APK.
+  Delivery still needs the owner's public support email or HTTPS form URL.
+- [x] **315 tests pass**, analysis is clean, and Chrome/Android release builds pass (111.2/234.8 seconds). Source `ca541ef971`; package size 77,151,194 bytes;
+  SHA256 `A81CCF75510CB9C497E7BDA1EF5D69A0D90E9FFEC3C8B76F4CBBCF56BE1F707B`. Existing icon, signing identity and previous APKs preserved.
+
+Next phone test: install over the existing app without uninstalling, reopen the
+existing project, try Paint walls without a key, leave/reopen a draft and save a
+version. Check regional choices and Feedback draft retention. Physical performance,
+real provider comparisons and actual feedback delivery are not established by mocks.
+Remaining release priorities: durable document-file linkage, analysis reuse,
+enforced AI edit masks, larger-project measurements and final icon approval.
+Wallpaper, automatic wall detection, tracked AR, accounts/payments and a packaged
+desktop companion are later stages, not included in this test APK.
 
 ## Feedback follow-up — source after APK 1.0.13, 20 November
 
@@ -16,8 +40,8 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
   contain only build/platform; no automatic photos, projects, logs or AI settings.
   A handoff never claims delivery, and retains the draft. No submission API/telemetry.
 - [x] Verify all 305 tests, clean analysis, Chrome release compilation (42.2 seconds)
-  and Android Kotlin compilation. Source stamp `937602d939`. APK 1.0.13 is unchanged;
-  no new APK requested/built, paid AI call or actual report sent.
+  and Android Kotlin compilation. Source stamp `937602d939`. This source was added
+  after 1.0.13 and is now included in the requested 1.0.14; no actual report sent.
 - [ ] Connect the owner's support email or existing HTTPS feedback-form URL. An
   asynchronous choice is pending; both build-time contact flags currently default
   empty, so delivery is explicitly unconfigured. Do not use the private code repo.
@@ -236,7 +260,7 @@ not a claim that the following changes were implemented during the audit.
 
 ### 1. Accept the newly packaged source changes on S21
 
-- [ ] Accept 1.0.13 on the phone: Settings discovery, toolbar delete, model presets,
+- [ ] Accept 1.0.14 on the phone: Settings discovery, toolbar delete, model presets,
   2/3 correction variations, Saved settings/reuse and repeated Open/conflicts.
 - [x] Package and verify the requested **1.0.13+14**, including Save image / Share
   creation, all 296 tests, clean analyzer and final Chrome/Android release builds.
@@ -308,19 +332,21 @@ remain optional; an assistant name alone is not an image API.
 
 - [x] Review competitor paint/material tools and inspect our existing editor on
   20 November. Record a local-finishes-first design in docs/PRODUCT_NOTES.md;
-  this is research, with no paint/wallpaper editor implemented yet.
-- [ ] Next functional batch: local wall paint on an original or saved AI design.
+  the local paint implementation followed on 21 November.
+- [x] Local wall paint on an original or saved AI design.
   Select once with polygon/brush/eraser, correct edges and exclude foreground
   objects; reuse that mask for palette trials without AI calls or a key.
-- [ ] Preserve shading/texture where feasible; add per-wall colours, swatch picking,
+- [x] Preserve shading/texture where feasible; add per-wall colours, swatch picking,
   undo/redo, source-design comparison and explicit Save version. Keep the image
-  visible with a compact Finishes sheet instead of more full-page controls.
-- [ ] Persist source-bound masks/layers and local-edit provenance through autosave,
+  visible with compact area/colour controls on the paint screen.
+- [x] Persist source-bound masks/layers and local-edit provenance through autosave,
   history and plain/protected project copies. Preserve original/generation records;
-  invalidate or explicitly realign masks for a changed image/viewpoint.
-- [ ] Verify zero network/provider calls in manual mode and decoded pixel equality
-  outside the allowed edit/feather region in lossless full-frame output. Benchmark
-  Chrome/S21 preview and export; keep originals/approved baselines unchanged.
+  fresh crops/new designs do not inherit another image's paint draft.
+- [x] Verify zero provider calls and decoded pixel equality outside the manual
+  selection in lossless full-frame output, plus eraser exclusions/indexed PNGs.
+  Keep originals/approved baselines unchanged.
+- [ ] Benchmark Chrome/S21 preview/export and visually check tricky edges,
+  reflections and dark/light changes. The preview is an approximate colour trial.
 - [ ] Follow with local wallpaper: sample import, repeat scale/rotation/offset,
   perspective and foreground exclusions; then evaluate floor/cabinet finishes.
 - [ ] Assess optional wall-selection assistance separately. Reuse accepted masks;
@@ -357,7 +383,7 @@ Prompt wording alone does not meet this acceptance condition.
   discovery content and keep inspiration chiefly in Explore.
 - [ ] Room: consolidate active image/baseline information; surface photos/analysis.
 - [ ] Style: show current style/palette compactly; open a sheet/picker for all choices.
-- [ ] Assess separate base style and cultural/regional influence choices, including
+- [x] Add base style and cultural/regional influence choices, including
   Japanese and Italian, alongside existing custom text and Modern/Contemporary.
 - [ ] Refine: distinguish **Create concepts** from **Refine selected design** and
   show source/mode without opening an advanced accordion.
@@ -422,11 +448,11 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 | Requested item | Current outcome / remaining work |
 | --- | --- |
 | Inspect existing app, preserve work and data | Completed; audit-only changes, no rewrite/migration |
-| Comprehensive room list, more palettes/styles | 42 types / 19 styles / 12 palettes; more illustrated examples pending |
+| Comprehensive room list, more palettes/styles | 42 types / 23 styles / 12 palettes; more illustrated examples pending |
 | Multiple room images and consolidated context | Implemented; up to six originals, explicit primary/supporting roles |
 | Colour selection, smarter prompt, AI photo analysis | Implemented with per-generation analysis/settings snapshots; facts caching/reanalysis needs work |
-| Change paint/wallpaper without regenerating a room | Competitor/source review completed 20 November; local mask/paint renderer is the recommended next batch, wallpaper follows; not yet coded |
-| Japanese/Italian and other regional influences | Some existing influences and custom text work; dedicated choices and separate influence picker proposed |
+| Change paint/wallpaper without regenerating a room | Manual local paint/layers implemented in 1.0.14; wallpaper/perspective and automatic selection remain |
+| Japanese/Italian and other regional influences | Japanese/Italian/Moroccan/Indian added, grouped with existing regional styles; custom text remains |
 | Modern equals contemporary; mixed styles | Combined label; blending and separate-style comparisons implemented |
 | Whole-room default, clutter/floors/appliances | Implemented defaults plus optional room-specific Keep/Replace overrides |
 | Multiple genuinely different concepts | 1/2/3 distinct-direction requests implemented; semantic diversity validation pending |
@@ -450,9 +476,9 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 | Smaller room icons, type-based Live room label | Compact icons in 1.0.12; final type-based automatic naming in requested 1.0.13; phone acceptance pending |
 | Themes and settings storage/encryption TODOs | Five themes, storage details, encrypted export completed; internal encryption/OS backup policy pending |
 | Competitor/review/pricing research | Public pricing refreshed 20 November for DecAI/Renovate AI/Remodel AI; currencies/platforms/allowances separated; Android checkout and own cost/value testing pending |
-| Online feature/issue feedback | Form, saved drafts, copy and email/form handoff hooks in source; owner's delivery address/URL and real receipt test pending; not in APK 1.0.13 |
+| Online feature/issue feedback | Form, saved drafts, copy and email/form handoff hooks included in 1.0.14; owner's delivery address/URL and real receipt test pending |
 | Cleanup, minimal docs, Git ignore, commits | Four root/two guide documents; generated/private data ignored; local verified commits, no push |
-| APKs only when requested | Honoured; current 1.0.13 package explicitly requested and reconfirmed after credits renewed |
+| APKs only when requested | Honoured; 1.0.14 explicitly requested on 21 November; keep existing icon pending confirmation |
 
 ## Working rules for every batch
 

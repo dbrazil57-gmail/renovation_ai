@@ -162,7 +162,7 @@ class ProjectBackup {
           throw const FormatException();
         }
         if (room['designStyleIds'] != null) {
-          _list(room['designStyleIds'], 20).forEach(_string);
+          _list(room['designStyleIds'], 40).forEach(_string);
         }
         if (room['setupStep'] != null &&
             (room['setupStep'] is! int ||
@@ -227,6 +227,17 @@ class ProjectBackup {
       final requiredPhotos = <String>{};
       for (final room in rooms) {
         if (room.projectId != project.id) throw const FormatException();
+        final validPaintSources = {
+          ...room.photoIds,
+          ...designs
+              .where((design) => design.roomId == room.id)
+              .map((design) => design.imageId),
+        };
+        if (room.paintDrafts.length > 100 ||
+            !room.paintDrafts.keys.every(validPaintSources.contains)) {
+          throw const BackupFailure('Backup has unrelated paint drafts.');
+        }
+        requiredPhotos.addAll(room.paintDrafts.keys);
         if (room.photoIds.toSet().length != room.photoIds.length ||
             !room.photoIds.contains(room.primaryId)) {
           throw const FormatException();
@@ -258,6 +269,16 @@ class ProjectBackup {
       for (final design in designs) {
         final room = byRoom[design.roomId];
         if (room == null) throw const FormatException();
+        if (design.paintRecipe != null &&
+            (design.sourceImageId == null ||
+                design.aiProvider != null ||
+                design.aiModel != null ||
+                design.providerRequestId != null ||
+                design.recipe != null)) {
+          throw const BackupFailure(
+            'Local paint has invalid source or AI provenance.',
+          );
+        }
         final savedAnalysis = design.recipe?.analysis;
         if (savedAnalysis != null) {
           final validImages = {

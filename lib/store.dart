@@ -8,6 +8,7 @@ import 'room_analysis.dart';
 import 'ai_service.dart';
 import 'project_backup.dart';
 import 'design_recipe.dart';
+import 'local_paint.dart';
 import 'file_transfer.dart';
 import 'design_palettes.dart';
 import 'design_styles.dart';
@@ -438,6 +439,10 @@ class RenovisionStore extends ChangeNotifier {
         'primaryPhotoId': room.primaryPhotoId == null
             ? null
             : photoIds[room.primaryPhotoId],
+        'paintDrafts': {
+          for (final entry in room.paintDrafts.entries)
+            photoIds[entry.key]!: entry.value.toMap(),
+        },
         'approvedDesignId': room.approvedDesignId == null
             ? null
             : designIds[room.approvedDesignId],
@@ -713,8 +718,37 @@ class RenovisionStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool _roomHasImage(RenovationRoom room, String imageId) =>
+      room.photoIds.contains(imageId) ||
+      _storedDesigns.any(
+        (design) => design.roomId == room.id && design.imageId == imageId,
+      );
+
+  Future<void> savePaintDraft(
+    String roomId,
+    String sourceImageId,
+    LocalPaintRecipe recipe,
+  ) async {
+    final room = roomById(roomId);
+    if (room == null ||
+        !_roomHasImage(room, sourceImageId) ||
+        imageFor(sourceImageId) == null) {
+      throw const FormatException(
+        'The paint source is not available in this room.',
+      );
+    }
+    final drafts = {...room.paintDrafts, sourceImageId: recipe};
+    if (drafts.length > 100) {
+      throw const FormatException(
+        'This room has reached its paint-draft limit. Existing drafts are retained.',
+      );
+    }
+    await updateRoom(room.copyWith(paintDrafts: Map.unmodifiable(drafts)));
+  }
+
   Future<DesignVersion> createDesign({
     DesignRecipe? recipe,
+    LocalPaintRecipe? paintRecipe,
     required String roomId,
     required Uint8List image,
     required String title,
@@ -726,10 +760,26 @@ class RenovisionStore extends ChangeNotifier {
     String? providerRequestId,
     List<String> supportingImageIds = const [],
   }) async {
+    if (paintRecipe != null) {
+      final room = roomById(roomId);
+      if (room == null ||
+          sourceImageId == null ||
+          !_roomHasImage(room, sourceImageId) ||
+          imageFor(sourceImageId) == null ||
+          aiProvider != null ||
+          aiModel != null ||
+          providerRequestId != null ||
+          recipe != null) {
+        throw const FormatException(
+          'Local paint needs its room source and cannot be labelled as an AI request.',
+        );
+      }
+    }
     final photoId = 'photo_${_newId()}';
     await photos.put(photoId, image);
     final design = DesignVersion(
       recipe: recipe,
+      paintRecipe: paintRecipe,
       id: _newId(),
       roomId: roomId,
       imageId: photoId,

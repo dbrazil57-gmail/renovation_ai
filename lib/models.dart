@@ -4,6 +4,7 @@ import 'room_analysis.dart';
 import 'renovation_scope.dart';
 import 'room_features.dart';
 import 'design_recipe.dart';
+import 'local_paint.dart';
 
 class RenovationProject {
   final String id;
@@ -60,6 +61,7 @@ class RenovationRoom {
   final String roomTypeId;
   final bool automaticLiveName;
   final Map<String, String> roomItemChoices;
+  final Map<String, LocalPaintRecipe> paintDrafts;
   List<String> get photoIds => [originalId, ...additionalPhotoIds];
   String get primaryId => primaryPhotoId ?? originalId;
   String get displayName {
@@ -114,6 +116,7 @@ class RenovationRoom {
     this.roomTypeId = '',
     this.automaticLiveName = false,
     this.roomItemChoices = const {},
+    this.paintDrafts = const {},
   });
 
   RenovationRoom copyWith({
@@ -143,6 +146,7 @@ class RenovationRoom {
     String? roomTypeId,
     bool? automaticLiveName,
     Map<String, String>? roomItemChoices,
+    Map<String, LocalPaintRecipe>? paintDrafts,
   }) => RenovationRoom(
     id: id,
     projectId: projectId,
@@ -167,6 +171,7 @@ class RenovationRoom {
     roomTypeId: roomTypeId ?? this.roomTypeId,
     automaticLiveName: automaticLiveName ?? this.automaticLiveName,
     roomItemChoices: roomItemChoices ?? this.roomItemChoices,
+    paintDrafts: paintDrafts ?? this.paintDrafts,
     instructions: instructions ?? this.instructions,
     correctionInstructions:
         correctionInstructions ?? this.correctionInstructions,
@@ -203,6 +208,9 @@ class RenovationRoom {
     'roomTypeId': roomTypeId,
     'automaticLiveName': automaticLiveName,
     'roomItemChoices': roomItemChoices,
+    'paintDrafts': paintDrafts.map(
+      (id, recipe) => MapEntry(id, recipe.toMap()),
+    ),
     'instructions': instructions,
     'correctionInstructions': correctionInstructions,
     'setupStep': setupStep,
@@ -213,6 +221,10 @@ class RenovationRoom {
   };
 
   factory RenovationRoom.fromMap(Map<dynamic, dynamic> data) => RenovationRoom(
+    paintDrafts: {
+      for (final entry in (data['paintDrafts'] as Map? ?? const {}).entries)
+        entry.key as String: LocalPaintRecipe.fromMap(entry.value as Map),
+    },
     setupStep: data['setupStep'] is int
         ? (data['setupStep'] as int).clamp(0, 3)
         : 0,
@@ -266,6 +278,7 @@ class RenovationRoom {
 
 class DesignVersion {
   final DesignRecipe? recipe;
+  final LocalPaintRecipe? paintRecipe;
   final String id;
   final String roomId;
   final String imageId;
@@ -284,6 +297,7 @@ class DesignVersion {
 
   DesignVersion({
     this.recipe,
+    this.paintRecipe,
     required this.id,
     required this.roomId,
     required this.imageId,
@@ -304,6 +318,7 @@ class DesignVersion {
   DesignVersion copyWith({bool? favourite, bool? rejected, bool? deleted}) =>
       DesignVersion(
         recipe: recipe,
+        paintRecipe: paintRecipe,
         id: id,
         roomId: roomId,
         imageId: imageId,
@@ -333,6 +348,7 @@ class DesignVersion {
     'aiModel': aiModel,
     'providerRequestId': providerRequestId,
     'recipe': recipe?.toMap(),
+    'paintRecipe': paintRecipe?.toMap(),
     'supportingImageIds': supportingImageIds,
     'favourite': favourite,
     'rejected': rejected,
@@ -342,6 +358,9 @@ class DesignVersion {
 
   factory DesignVersion.fromMap(Map<dynamic, dynamic> data) => DesignVersion(
     recipe: data['recipe'] == null ? null : DesignRecipe(data['recipe'] as Map),
+    paintRecipe: data['paintRecipe'] == null
+        ? null
+        : LocalPaintRecipe.fromMap(data['paintRecipe'] as Map),
     id: data['id'].toString(),
     roomId: data['roomId'].toString(),
     imageId: data['imageId'].toString(),

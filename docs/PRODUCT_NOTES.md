@@ -1,5 +1,34 @@
 # Product and research reference
 
+## Local paint and regional choices — 21 November 2026
+
+The local-finishes proposal below is now partly implemented in requested test
+APK 1.0.14+15. In the workspace, Paint walls opens a pinned-image editor with
+area/colour steps: polygon, brush, eraser, Move/zoom, up to eight wall layers,
+colour strip/custom hex, coverage, Undo/Redo and comparison to the actual starting
+design. Selection is manual; windows, trim and furniture need explicit exclusions.
+Luminance variation guides a colour approximation, not calibrated paint matching.
+The preview uses up to a 1000-pixel long edge; sources above 24MP are rejected
+without changing the original. Phone/browser latency still needs acceptance.
+
+Drafts are bound to the working image; saved paint versions retain their underlying
+source, editable layers and parent in history, without AI model/request provenance.
+Saving adds a lossless full-frame PNG, without replacing the source or approving
+the result. Reopening a paint version edits against its original base, avoiding
+repeated colour blending. Saved-version layers can be restored explicitly with Undo.
+Plain/protected backups and independent copies retain/remap these references.
+Pixel tests check unchanged output outside the selection, eraser holes, alpha
+and indexed PNGs. This guarantee belongs to local paint; AI precision is still
+prompt/reference guidance. Wallpaper/perspective and automatic wall detection remain.
+
+The style catalogue now has 23 choices. Regional influences groups existing
+Scandinavian/Japandi/Mediterranean/French provincial with Japanese, Italian,
+Moroccan and Indian. Select these with a base style and optional free text. Cues
+respect selected palettes and protected geometry; they are not assumptions about
+the user or a requirement to stereotype a whole region. Provider adherence still
+needs real comparisons. Feedback draft tools are included, but delivery still
+needs the owner's public support contact. **315 tests pass**, analysis is clean, and Chrome/Android release builds pass (111.2/234.8 seconds).
+
 ## Feedback entry points — 20 November 2026
 
 The user wants online feature suggestions and issue reporting. The source now
@@ -19,9 +48,9 @@ report was sent, and no service account/backend was created. Screenshot uploads,
 public voting/roadmap, automated crash reports and ticket tracking remain later
 options rather than hidden telemetry in the first version.
 
-Verified with 305 tests, clean analyzer, final release web compilation and Android
-Kotlin compilation. Existing APK 1.0.13 remains unchanged; this source awaits a
-future requested package. See the Testing guide for contact setup and real
+Originally verified with 305 tests, clean analyzer, release web compilation and
+Android Kotlin compilation; now included in requested 1.0.14. See the Testing
+guide for contact setup and real
 Chrome/S21 receipt checks. This keeps initial feedback costs/support simple.
 
 ## Launch direction confirmed — 20 November 2026
@@ -693,7 +722,7 @@ change is a local operation. Its [homepage](https://renovateai.app/) lists paint
 wallpaper, flooring and cabinetry visualizers, but that alone does not establish
 all features in every consumer plan or prove they work without AI.
 
-**Actual app position:** `reference_editor.dart` / `reference_markup.dart` provide
+**App position at the 20 November review (before 1.0.14):** `reference_editor.dart` / `reference_markup.dart` provide
 crop and annotation geometry during editing, but save flattened reference images.
 Their Select tool selects annotations, not room surfaces. `screens.dart` records
 these as new image versions. `design_palettes.dart` supplies AI prompt directions;
@@ -747,9 +776,10 @@ still get useful manual finish previews, supporting the Standard launch plan.
 
 Other worthwhile follow-ups: typed inspiration/material references, a simple room
 material board, per-surface saved favourites and a base-style plus regional-
-influence picker (e.g. Contemporary + Japanese/Italian). Current 19 styles include
+influence picker (e.g. Contemporary + Japanese/Italian). The then-current 19 styles include
 Japandi/Mediterranean/French provincial/Scandinavian, but no dedicated Japanese or
-Italian buttons. These are proposed additions, not features in APK 1.0.13.
+Italian buttons. Local paint and regional choices were subsequently implemented
+in 1.0.14 above; material boards/references remain proposed.
 
 **Acceptance before shipping:** zero provider calls in manual/local mode, including
 without a key/offline; correct mask mapping when zooming/rotating/resizing; saved

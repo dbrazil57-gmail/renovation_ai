@@ -39,6 +39,7 @@ import 'storage_privacy_widgets.dart';
 import 'design_recipe_widgets.dart';
 import 'feedback_widgets.dart';
 import 'feedback_storage.dart';
+import 'local_paint_screen.dart';
 
 Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
     room.setupComplete
@@ -1979,6 +1980,55 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     if (mounted) _selectDesign(newVersion.id);
   }
 
+  Future<void> _paintRoom(RenovationRoom room) async {
+    if (aiPending || !await draft.save() || !mounted) return;
+    final active = _activeImage(room);
+    if (active == null) return;
+    final parent = selectedId;
+    final selected = parent == null
+        ? null
+        : widget.store
+              .designsFor(room.id)
+              .firstWhere((design) => design.id == parent);
+    final sourceId = selected?.paintRecipe != null
+        ? selected!.sourceImageId!
+        : selected?.imageId ?? selectedPhotoId;
+    final workingImageId = selected?.imageId ?? selectedPhotoId;
+    final source = widget.store.imageFor(sourceId);
+    if (source == null) {
+      notice(context, 'The source for this paint version is unavailable.');
+      return;
+    }
+    final current = widget.store.roomById(room.id)!;
+    DesignVersion? created;
+    await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocalPaintScreen(
+          source: source,
+          before: active,
+          initial: current.paintDrafts[workingImageId] ?? selected?.paintRecipe,
+          savedRecipe: selected?.paintRecipe,
+          saveDraft: (recipe) =>
+              widget.store.savePaintDraft(room.id, workingImageId, recipe),
+          saveVersion: (result, recipe) async {
+            created = await widget.store.createDesign(
+              roomId: room.id,
+              image: result.bytes,
+              title:
+                  'Local paint · ${recipe.surfaces.length} ${recipe.surfaces.length == 1 ? 'wall' : 'walls'}',
+              prompt: 'Local paint preview. Manual selections and colour blending; no AI request. See saved paint layers for colours and selections.',
+              parentId: parent,
+              sourceImageId: sourceId,
+              paintRecipe: recipe,
+            );
+          },
+        ),
+      ),
+    );
+    if (mounted && created != null) _selectDesign(created!.id);
+  }
+
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: Listenable.merge([widget.store, draft, widget.store.documents]),
@@ -2093,6 +2143,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                     showHint: false,
                   ),
             imageTools: [
+              IconButton(
+                tooltip: 'Paint walls without AI',
+                onPressed: aiPending || source == null
+                    ? null
+                    : () => _paintRoom(room),
+                icon: const Icon(Icons.format_paint_outlined),
+              ),
               if (supportsLiveRoomCamera)
                 IconButton(
                   tooltip: 'Camera renovation view',

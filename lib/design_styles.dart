@@ -18,6 +18,21 @@ const designStyles = <String, String>{
   'eclectic': 'Eclectic',
   'transitional': 'Transitional',
   'hotel': 'Boutique hotel',
+  'japanese': 'Japanese',
+  'italian': 'Italian',
+  'moroccan': 'Moroccan',
+  'indian': 'Indian',
+};
+
+const regionalStyleIds = {
+  'scandinavian',
+  'japandi',
+  'mediterranean',
+  'french_provincial',
+  'japanese',
+  'italian',
+  'moroccan',
+  'indian',
 };
 
 const styleDesignCues = <String, String>{
@@ -45,6 +60,10 @@ const styleDesignCues = <String, String>{
   'transitional':
       'clean contemporary forms balanced with restrained classic detailing',
   'hotel': 'coordinated polished finishes, considered lighting and restrained luxurious accents',
+  'japanese': 'Japanese-inspired calm proportions, natural timber, tactile restrained finishes and considered uncluttered detailing; retain the real room geometry',
+  'italian': 'Italian-inspired material coordination, refined stone and timber, elegant crafted joinery and balanced contemporary or traditional detailing as selected',
+  'moroccan': 'Moroccan-inspired restrained geometric pattern, tactile plaster and crafted accents within the chosen palette; do not introduce arches or change openings without permission',
+  'indian': 'Indian-inspired crafted timber, considered textile or geometric accents and layered materials within the selected palette; preserve the existing room and requested modern or classic direction',
 };
 
 String styleDirection(Iterable<String> ids, {String other = ''}) {

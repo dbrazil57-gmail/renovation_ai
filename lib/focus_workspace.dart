@@ -76,9 +76,12 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
           const SizedBox(height: 4),
           IconTheme(
             data: const IconThemeData(color: Colors.white),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: widget.imageTools,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: widget.imageTools,
+              ),
             ),
           ),
           if (!compact && widget.thumbnails.isNotEmpty)

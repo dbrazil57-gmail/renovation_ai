@@ -21,7 +21,16 @@ Future<bool?> showDesignRecipe(BuildContext context, DesignVersion design) {
           children: [
             Text(design.title),
             const SizedBox(height: 12),
-            if (saved == null)
+            if (design.paintRecipe != null) ...[
+              const Text('Local paint · no AI request'),
+              for (final surface in design.paintRecipe!.surfaces)
+                Text(
+                  '${surface.name}: #${surface.rgb.toRadixString(16).padLeft(6, '0').toUpperCase()} · ${(surface.coverage * 100).round()}% coverage',
+                ),
+              const Text(
+                'Use Paint walls on this version to edit its selections and colours. Its source image and approved baseline are preserved.',
+              ),
+            ] else if (saved == null)
               const Text(
                 'This older version has no complete settings snapshot. Its image and recorded prompt are retained.',
               )

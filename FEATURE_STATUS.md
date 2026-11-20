@@ -1,11 +1,13 @@
 # Renovision feature status
 
-**Source after APK 1.0.13:** Feedback in Help/Settings now offers issue reports,
-feature suggestions, persistent local drafts, preview/copy and email/HTTPS-form
-handoff hooks. All **305 tests pass**, analysis is clean, Chrome release build and
-Android Kotlin compilation pass. The owner has not provided a delivery email/URL;
-online delivery remains unconfigured and no real submission/receipt is verified.
-The existing APK does not contain this follow-up; it remains unchanged.
+**21 November — requested APK 1.0.14+15:** local wall paint now has manual
+polygon/brush/erase selection, per-wall colours, shading approximation, Undo/Redo,
+comparison, autosaved drafts and editable version recipes in plain/protected
+project copies. Lossless output preserves unselected pixels; originals/baselines
+are unchanged. No provider calls or key are needed. Japanese, Italian, Moroccan
+and Indian bring the style catalogue to 23, with a regional-influences picker.
+Feedback in Help/Settings is also included; delivery needs the owner's email/URL.
+**315 tests pass**, analysis is clean, and Chrome/Android release builds pass (111.2/234.8 seconds). Icons remain unchanged; physical S21 acceptance remains.
 
 **Verified source update, 20 November:** Open/resume conflict handling, per-version
 settings snapshots/reuse and startup loading/Retry pass regression tests.
@@ -101,16 +103,17 @@ Unspecified (Live) until confirmed. Existing custom names/photos are preserved.
 
 | Item | Verified position |
 | --- | --- |
-| Latest existing APK | **1.0.13+14**, source stamp `f69772aaa0`; `output/mobile-test/renovision-test-1.0.13.apk`, also `renovision-test.apk` |
+| Latest existing APK | **1.0.14+15**, source stamp `ca541ef971`; `output/mobile-test/renovision-test-1.0.14.apk`, also `renovision-test.apk` |
 | APK contents | Focus Canvas, embedded camera, manual same-view overlay, Live design and all completed source follow-ups below |
 | New in 1.0.13 | AI settings discovery, visible delete, 1/2/3 correction choices, creative prompts, typed Live names, OpenAI/Gemini presets, seven help guides, fixed-brief tests, Open/resume/conflict handling, saved recipes/reuse/refine, startup Retry, Save image / Share creation |
-| Last APK checks | **296 tests passed**, static analysis clean, final web release 102.4 seconds and Android release 145.5 seconds; matching signing certificate, restricted share provider and private-file exclusion verified |
+| New in 1.0.14 | Local paint and editable layers, regional style choices, saved feedback drafts/copy and optional contact handoff |
+| Last APK checks | **315 tests pass**, analysis is clean, and Chrome/Android release builds pass (111.2/234.8 seconds). Matching signing certificate, restricted share provider and private-file exclusion verified |
 | Earlier audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. The subsequent requested APK build made no paid AI call or data migration |
 | Real user evidence | User reports successful phone installation, direct AI analysis/generation, good generated designs, project auto-reload and useful comparison/camera overlay. This does not validate every newer source change |
 
 APK SHA256:
-`ED2BCFF73C2FD2F76FA8A8862C393387A3091458ED2754DE8DC7FCC3CD141E90`.
-Size: 76,560,654 bytes. Signature matches 1.0.12; its checksum and rollback
+`A81CCF75510CB9C497E7BDA1EF5D69A0D90E9FFEC3C8B76F4CBBCF56BE1F707B`.
+Size: 77,151,194 bytes. Signature matches 1.0.13; its checksum and rollback
 packages remain unchanged. Camera hardware is optional, ARM64 is included, and
 no microphone/storage-write permission or private project/credential files are
 bundled. Its release-mode build uses the development signing key and example
@@ -125,11 +128,11 @@ provider quality, physical-camera behaviour or durable storage on every device.
 | --- | --- | --- |
 | Projects and rooms | Local projects/rooms, rename, continue last room, saved setup progress, immutable originals | No room/project deletion or permanent storage cleanup |
 | Room catalogue | 42 home/utility/outdoor types, categories/search/custom names; compact photo-backed main types | Six sample images cover five main room types, not every room/style |
-| Design direction | 19 styles, 12 palettes with surface colours, custom style text, style blending or separate comparisons; Modern/Contemporary combined | Compact picker hierarchy needs improvement; selected palette may be outside the initially visible carousel |
+| Design direction | 23 styles, 12 palettes, custom text, blending/separate comparisons; Modern/Contemporary combined; expandable regional choices include Japanese/Italian/Moroccan/Indian | More illustrated samples and real-model quality comparisons remain |
 | Guided start | Photos → Direction → Analyse/review → Final options; Finish later resumes | Room identification is not a structured AI result that automatically fills the room selector |
 | Photo entry | Phone camera, gallery/multiple-photo import, embedded live preview, primary view and additional angles | Up to six original room views; reference images have no separate inspiration/material/sketch role |
 | Room scope | Whole-room defaults coordinate surfaces, fittings/appliances, lighting and loose-clutter removal; optional room-specific Keep/Replace and precise correction | Fixed uncertain fittings need explicit instructions; AI compliance is not guaranteed |
-| Local paint/material editing | Not implemented; existing palettes guide AI prompts and annotation tools create references | Proposed next batch: reusable surface masks and local wall recolouring without API calls; wallpaper/perspective and other finish layers follow |
+| Local paint/material editing | Manual polygon/brush/erase masks, up to eight wall layers, swatches/custom hex/coverage, local shading approximation, undo/redo, compare, source-bound autosaved drafts and editable lossless PNG versions; plain/protected backup support; no API calls | Manual edges/exclusions; preview long edge up to 1000 pixels, source up to 24MP; phone/web latency acceptance, automatic selection, wallpaper/perspective and floor/cabinet tools remain |
 | AI analysis | Sends selected photos/preferences to a vision model; saves observations, questions, editable prompt and provenance; new generated versions keep their matching analysis | Normal workspace can still require reanalysis after preference changes |
 | Prompt preparation | Offline deterministic fallback, AI-written prompt option, preview/copy, current requirements/protected features, correct working/supporting-image roles | Copying text does not attach photos or automatically return external results |
 | In-app AI | OpenAI/Gemini direct HTTPS with separate personal keys and saved model choices; curated image recommendations; optional OpenAI laptop relay; confirmation, progress stages/elapsed time, storage-only result retry | Gemini live account/image quality acceptance pending; no Claude/Bedrock adapter, in-flight paid-job cancellation, actual billed-cost meter or automatic output critique |
@@ -144,7 +147,7 @@ provider quality, physical-camera behaviour or durable storage on every device.
 | Project files | Portable rooms/photos/designs/choices/history/recipes; Open preserves IDs, resumes unchanged matching work and offers Keep local / Open file as copy for conflicts; Restore copy is independent | Browser linkage is session-only; Android does not retain an overwrite destination; no divergent-revision merge |
 | Appearance/help | Focus Canvas B, pinned preview and Room/Style/Refine/Ideas controls, desktop split view, contextual toolbars, compact text, tap/hover help with seven offline sample walkthroughs, stock/user-selectable home cover, five saved app themes | More hierarchy work and real-phone accessibility checks needed; themes are separate from renovation palettes |
 | Storage/privacy | Actual local storage/origin details, diagnostics; optional password-protected portable backup; Android encrypted API-key storage | Local photo/metadata database is not encrypted by the app; OS backup policy needs an explicit decision |
-| Feedback | Source-only Help/Settings form, issue/feature categories, saved local draft, report preview/copy, optional build/platform and email/form handoff hooks | Contact destination pending; no submission backend, receipt confirmation, ticket history, voting or screenshot attachments; outside existing APK |
+| Feedback | Included in 1.0.14: Help/Settings form, issue/feature categories, saved local draft, report preview/copy, optional build/platform and email/form handoff hooks | Contact destination pending; no submission backend, receipt confirmation, ticket history, voting or screenshot attachments |
 
 ## Corrections and incomplete requirements
 
@@ -181,15 +184,15 @@ analysis can still need review. Exact paid request replay is not implemented.
 
 ### 3. Precision remains guidance rather than enforcement
 
-The 20 November follow-up recommends a local paint editor as the next functional
-batch: save a reusable wall selection, then try colours without generating another
-room image. Wallpaper would reuse that foundation with perspective/repeat controls.
-This has been reviewed and added to the backlog, not implemented in 1.0.13.
-Current palettes do not recolour photo pixels, and text analysis is not a mask.
+Local paint is implemented in 1.0.14: reusable manual selections and colour trials
+without regenerating the room. Its full-frame PNG compositor preserves pixels
+outside the selected area in the oriented source frame. It does not remove objects
+or infer missing geometry. Wallpaper/perspective remain later work. Existing
+AI prompt palettes and text analysis are not image-edit masks.
 
 The OpenAI edit request contains images and a prompt, with no mask.
 Crop/markup creates a flattened reference image; there is no stored region model,
-mask transport, compositor or detection of changes outside the selection.
+mask transport, AI-result compositor or detection of changes outside the selection.
 A prompt saying "keep the window" is useful but not a pixel lock. This is the
 largest gap against the brief's controlled-editing differentiation.
 
@@ -268,5 +271,5 @@ These are automated source/build checks, not a physical-device acceptance run.
 
 See [the ordered task list](CODEX_NEXT_STEPS.md) and
 [testing/storage instructions](docs/TESTING_GUIDE.md). Validate the requested
-1.0.13 update on the S21 before claiming device acceptance.
+1.0.14 update on the S21 before claiming device acceptance.
 Build further phone packages only when requested.

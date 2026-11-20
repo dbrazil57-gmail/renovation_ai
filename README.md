@@ -1,15 +1,10 @@
 # Renovision AI
 
-Latest source follow-up: **305 tests pass**; Feedback in Help/Settings supports
-saved issue/feature drafts, preview/copy and email/form handoff hooks. The owner's
-support address/form URL is still needed to activate delivery. Chrome release
-and Android Kotlin compilation pass. This is after the APK described below;
-no further APK was built or actual feedback sent.
-
-Verified 20 November 2026: **296 tests pass**, static analysis is clean and the
-release web build passes. The requested Android **1.0.13+14** update is built and
-verified. Existing icons remain in place while six design/colour alternatives
-await a final choice.
+21 November 2026 update: the requested **1.0.14+15** test package adds local
+wall-paint previews without an AI key, saved editable paint layers, regional
+style choices and the feedback tools. **315 tests pass**, analysis is clean, and Chrome/Android release builds pass (111.2/234.8 seconds).
+The owner's support address/form URL is still needed to activate feedback delivery.
+Existing icons remain while the alternatives await a final choice.
 
 Android-first Flutter renovation app, developed on Windows with Chrome as the
 preview target. One shared Dart codebase builds platform-specific apps; the web
@@ -30,8 +25,8 @@ and marked references do not yet enforce masks or pixel preservation.
 ## Current position
 
 Full source/conversation/design audit: **19 November 2026**, followed by verified
-fixes on **20 November**. The app is suitable for continued private testing.
-Precise edit enforcement, persistent Android project-file linkage and measured
+updates on **20–21 November**. The app is suitable for continued private testing.
+AI precise-edit enforcement, persistent Android project-file linkage and measured
 larger-project reliability remain unfinished. No public backend, payment system
 or store-ready release is included.
 
@@ -47,15 +42,26 @@ own settings, analysis and model/quality with Saved settings / Use these setting
 Refine this design actions. Startup shows loading and a non-destructive Retry.
 Older versions remain readable without inventing missing historical settings.
 
-Latest test package: **1.0.13+14**, source `f69772aaa0`, at
-`output/mobile-test/renovision-test-1.0.13.apk` (also `renovision-test.apk`).
-All 296 tests pass, analyzer clean; final web/Android release builds passed in
-102.4/145.5 seconds. APK identity, matching 1.0.12 signing certificate, ARM64,
+Latest test package: **1.0.14+15**, source `ca541ef971`, at
+`output/mobile-test/renovision-test-1.0.14.apk` (also `renovision-test.apk`).
+APK identity, matching 1.0.13 signing certificate, ARM64,
 optional camera, restricted share paths and sample-only assets were checked.
 Install over the existing app without uninstalling. Older APKs remain for rollback.
 Physical S21 acceptance and live Gemini comparisons remain. No paid AI calls or
 user-data reset were performed.
 Build further APKs only when requested.
+
+In the Design workspace, choose **Paint walls without AI**. Outline or brush a
+wall, erase exclusions, then try the colour strip or a custom hex colour. Drafts
+save locally; **Save paint version** creates a lossless PNG and editable layers,
+leaving the source and approved baseline intact. Undo/Redo and Compare before
+are available. This is manual selection and approximate colour/shading, with no
+AI call; automatic wall detection and wallpaper are later work. Local paint
+preserves unselected pixels; that does not establish the same guarantee for AI edits.
+
+**Style > Regional influences** now includes Japanese, Italian, Moroccan and
+Indian, alongside Scandinavian, Japandi, Mediterranean and French provincial.
+Combine these with a base style; the app now has 23 styles and 12 palettes.
 
 ## Project documents
 

@@ -26,12 +26,41 @@ class DesignStyleControls extends StatelessWidget {
             runSpacing: 6,
             children: [
               for (final entry in designStyles.entries)
-                FilterChip(
-                  label: Text(entry.value),
-                  selected: draft.styleIds.contains(entry.key),
-                  showCheckmark: true,
-                  onSelected: (value) => draft.setStyle(entry.key, value),
-                ),
+                if (!regionalStyleIds.contains(entry.key))
+                  FilterChip(
+                    label: Text(entry.value),
+                    selected: draft.styleIds.contains(entry.key),
+                    showCheckmark: true,
+                    onSelected: (value) => draft.setStyle(entry.key, value),
+                  ),
+            ],
+          ),
+          ExpansionTile(
+            tilePadding: EdgeInsets.zero,
+            title: const Text('Regional influences'),
+            subtitle: Text(
+              draft.styleIds
+                  .where(regionalStyleIds.contains)
+                  .map((id) => designStyles[id]!)
+                  .join(' + '),
+            ),
+            initiallyExpanded: draft.styleIds.any(regionalStyleIds.contains),
+            children: [
+              const Text(
+                'Combine with a style, for example Contemporary + Japanese. These are design influences; add specific details in Other.',
+              ),
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                children: [
+                  for (final id in regionalStyleIds)
+                    FilterChip(
+                      label: Text(designStyles[id]!),
+                      selected: draft.styleIds.contains(id),
+                      onSelected: (value) => draft.setStyle(id, value),
+                    ),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 12),
