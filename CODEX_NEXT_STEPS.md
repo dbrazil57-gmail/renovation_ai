@@ -375,6 +375,9 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 
 - [ ] Validate Standard BYO-key adoption and onboarding before investing in
   managed subscription AI credits/Pro services. No launch price is set.
+- [ ] Test the modest side-income proposition: introductory A$4.99 vs A$9.99
+  one-off Standard unlock, with AI billed separately, against real tester value,
+  onboarding friction and support costs. Prices are hypotheses, not implemented.
 - [x] Refresh public DecAI, Renovate AI Studio and Remodel AI cost models on
   20 November: subscriptions, allowances/credits, annual offers and AU iOS
   benchmarks, with separate Remodel AI product identities. Research is in

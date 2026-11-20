@@ -26,6 +26,38 @@ Windows packaging/install/export/key storage are not yet validated. Automatic
 cross-device sync, accounts and a paid-download entitlement are separate future
 work; exchanging a file is not live sync. No desktop installer is requested now.
 
+### Affordable side-business experiment — 20 November
+
+The user reports roughly one week and $30 spent developing the prototype and
+wants an affordable app that can earn modest side income. Low development spend
+supports trying a small launch; it does not establish ongoing maintenance,
+support, distribution or AI costs. Keep the Standard BYO-key plan and test value
+with real users before investing in hosted AI/enterprise services.
+
+Suggested experiment, not selected or implemented pricing: free local viewing,
+comparison/export and useful manual finish previews when those are built; test
+an introductory **A$4.99 or A$9.99 one-off Standard phone-app unlock**, with the
+user's AI provider charging separately. Compare with an annual licence only if
+users demonstrate ongoing value. Keep existing project access/export available;
+make included features, update terms and any later desktop charge explicit.
+Do not promise lifetime AI or automatic access to future paid services.
+
+At A$9.99, 100 purchases produce A$999 gross; 500 produce A$4,995 gross. These are
+arithmetic examples, not demand forecasts, profit or take-home income. Allow for
+store charges, taxes/refunds, support and maintenance. For Google Play, the
+[current setup guide](https://support.google.com/googleplay/android-developer/answer/6112435?hl=en)
+lists US$25 once to register, and [service fees](https://support.google.com/googleplay/android-developer/answer/112622?hl=en)
+depend on transaction, region and programme. Do not apply a blanket 15% assumption
+to every Australian sale. No account registration, purchase or billing work is
+authorised by this experiment alone.
+
+Early validation: a small group completes a real room project, saves/reopens it
+and exports a useful result without repeated help. Record willingness to pay,
+BYO-key setup friction, provider spend and support time. Affordable local paint/
+material tools could give no-key users a useful entry point; they are still on
+the implementation backlog. Included-AI packs/subscriptions follow measured
+cost and demand, with bounded usage. No final launch price is set.
+
 ## Verified outstanding-items and icon-refinement work — 20 November
 
 Project Open/resume/conflicts, immutable version recipes with saved analysis and
