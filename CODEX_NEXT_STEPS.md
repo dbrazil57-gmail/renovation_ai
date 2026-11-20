@@ -351,6 +351,12 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 
 - [ ] Validate Standard BYO-key adoption and onboarding before investing in
   managed subscription AI credits/Pro services. No launch price is set.
+- [x] Refresh public DecAI, Renovate AI Studio and Remodel AI cost models on
+  20 November: subscriptions, allowances/credits, annual offers and AU iOS
+  benchmarks, with separate Remodel AI product identities. Research is in
+  docs/PRODUCT_NOTES.md under Pricing review; no app pricing or APK change.
+- [ ] Verify exact Australian Android paywall offers/renewals, quotas/top-ups and
+  cross-device rights; benchmark total cost per accepted room before pricing.
 - [ ] Later, assess recoverable accounts, server-verified purchases/allowances
   and bounded company-funded AI. Keep local creation/save/share account-free.
 - [ ] Assess an optional paid Windows companion using the shared Flutter app;
@@ -393,7 +399,7 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 | Library/history captions below image | Both packaged in 1.0.12; phone acceptance pending |
 | Smaller room icons, type-based Live room label | Compact icons in 1.0.12; final type-based automatic naming in requested 1.0.13; phone acceptance pending |
 | Themes and settings storage/encryption TODOs | Five themes, storage details, encrypted export completed; internal encryption/OS backup policy pending |
-| Competitor/review/pricing research | Dated notes retained; no fresh pricing verification or promise to undercut costs |
+| Competitor/review/pricing research | Public pricing refreshed 20 November for DecAI/Renovate AI/Remodel AI; currencies/platforms/allowances separated; Android checkout and own cost/value testing pending |
 | Cleanup, minimal docs, Git ignore, commits | Four root/two guide documents; generated/private data ignored; local verified commits, no push |
 | APKs only when requested | Honoured; current 1.0.13 package explicitly requested and reconfirmed after credits renewed |
 

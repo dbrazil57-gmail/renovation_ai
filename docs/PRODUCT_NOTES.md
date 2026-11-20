@@ -843,6 +843,77 @@ work as separately tested feature batches. See CODEX_NEXT_STEPS.md.
 
 ## Pricing review
 
+### Current refresh — 20 November 2026
+
+This refresh takes precedence over the 14 November snapshot below. Public pages
+and Australian App Store product lists were checked; no account, purchase,
+checkout, image upload or paid generation was used. These are advertised consumer
+prices, not competitors' underlying AI costs. Store catalogues may include old,
+introductory or eligibility-specific products. They do not prove every offer is
+available to a new customer, or establish Australian Android checkout prices.
+
+**Public website offers.** Dollar currency was not explicitly identified in the
+consumer pricing pages below; do not label these AUD or USD or convert them.
+
+| Product / source | Recurring offer | Usage and other payment options |
+| --- | --- | --- |
+| [DecAI](https://decai.ai/pricing) | Plus $19.99/month, Pro $39.99/month; annual-view equivalents $4.99/$9.99 per month | Advertises 100/200 monthly generations. Non-expiring one-off packs: $29.99/100 or $69.99/300. Free: one web generation, watermarked. Annual equivalents are not monthly instalments; checkout totals/renewal terms were not confirmed. |
+| [Renovate AI Studio](https://studio.renovateai.app/pricing), Trial and Error | Hobbyist $15/month, Pro $29/month, Max $99/month; current yearly promotion displays $5/$10/$33 per month, billed yearly | Usage described as more / 3× / 10× without absolute output counts. Pro adds estimation/staging/team tools; Max adds commercial/team/material features. Promotion duration, extra months, actual annual total and renewal price need checkout confirmation. |
+| [Remodel AI](https://remodelai.app/faqs/), ReImage AI | Limited free renders followed by a paid subscription; FAQ directs customers to app stores | No numeric paid allowance or public web tariff established from this FAQ. Do not assume unlimited rendering. |
+
+At full advertised usage, DecAI's monthly plans imply about $0.20 per included
+generation; its packs imply about $0.30/$0.23. This is our arithmetic from its
+published offers, not a model/provider cost estimate. Unused subscription allowance,
+extra attempts, tools/quality and successful-result rate change practical value.
+
+**Australian iOS benchmarks** (A$, separate from website offers and Android):
+
+| Product / verified identity | Publicly listed purchase examples |
+| --- | --- |
+| [DecAI](https://apps.apple.com/au/app/decai-ai-home-design/id6502747597), COOL SUMMER LIMITED | Weekly A$9.99–14.99; annual A$49.99/59.99/99.99; annual sale products A$22.99/29.99; lifetime-labelled product A$79.99. The listing's description has different dollar examples, so use the regional product list as this benchmark, not as a verified checkout. Lifetime scope/AI allowance unconfirmed. |
+| [Renovate AI](https://apps.apple.com/au/app/renovate-ai-house-design/id1661709494), Trial and Error, Inc | Explicit Weekly product A$14.99; Pro Yearly A$229.99; a product named PRO - 300 Credits A$14.99. Other PRO prices lack a period in their names. A credit is not established as one final design, and the 300-credit product's cadence/type is unconfirmed. |
+| [Remodel AI](https://apps.apple.com/au/app/remodel-ai-home-design/id6446040791), REIMAGE AI INC. | Monthly variants A$9.99/12.99/14.99; yearly A$59.99/79.99/149.99; weekly A$7.99/9.99/14.99. Numeric paid render allowance not confirmed. |
+
+**Name collision:** [remodelai.io pricing](https://www.remodelai.io/pricing) is a
+different offer from ReImage's remodelai.app. Its App Store link identifies
+app `6449718419`, while ReImage is `6446040791`. The .io page advertises annual
+bills of $349/$599/$1,199, displayed as $29/$49/$99 monthly equivalents, with
+1,000/5,000/25,000 monthly designs, model/quality tiers and three free designs.
+Its header says unlimited but its cards give quotas; use the quotas pending
+checkout confirmation. Currency is not explicit. Do not apply these allowances
+to ReImage's app. Remodeled.ai and renovateai.io are further separate services.
+
+Australian Google Play pricing was not verified: regional listing requests were
+inaccessible, and the accessible .io-linked Android listing did not expose
+subscription amounts. Mobile/web account portability, trial eligibility, renewal
+price, refunds, credit expiry/rollover and render/credit conversion still require
+the exact app's current paywall/terms. No iOS price is presented as an Android quote.
+
+**Implications for RenoVision — recommendations, not implemented pricing:**
+
+- Keep the confirmed Standard BYO-developer-key launch. Sell the project workflow,
+  saved/refinable history, camera experience and control over provider/models.
+  State before purchase that AI usage is billed separately by the user's provider.
+  A lower app fee alone does not establish a lower total room-design cost.
+- Test a modest one-off or annual Standard licence alongside monthly demand;
+  homeowners may need the app for one project. No price has been selected, and
+  earlier A$4.99/A$9.99 generation-pack ideas below are superseded launch hypotheses.
+- Defer included-AI Pro until identical-room trials measure analysis, alternatives,
+  refinements, failed billed attempts and support/payment overhead. Use bounded
+  allowances with clear quality/count rules rather than promising unlimited AI.
+- Compare cost per accepted room design, not credits or advertised images alone.
+  Example test journey: one analysis, three concepts and two refinements, counting
+  all billable attempts and recording which result the user accepts.
+- Keep access/export of existing local projects independent of future AI balances.
+  Treat the optional paid desktop companion and cross-device subscription rights
+  as explicit later decisions, so phone customers understand any second charge.
+
+Remaining pricing acceptance: inspect the three exact Android apps' AU paywalls
+without purchasing; record offered period, annual upfront total, renewal price,
+trial cutoff, included allowance, reset/expiry rules, top-ups and device coverage.
+Then validate RenoVision's own costs/value with testers before setting prices.
+
+### Historical snapshot — 14 November 2026
 
 
 Checked 14 November 2026. Public information only; no account, checkout,
