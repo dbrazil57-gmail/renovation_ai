@@ -135,7 +135,7 @@ void main() {
       await tap(tester, find.text('Claylands'));
       expect(find.byType(ProjectScreen), findsOneWidget);
       expect(find.text('Rooms and spaces'), findsOneWidget);
-      expect(find.text('Living room (Live view)'), findsOneWidget);
+      expect(find.text('Living room (Live)'), findsOneWidget);
       expect(find.byType(ProjectFileControls), findsNothing);
       expect(find.text('Save, restore and AI settings'), findsNothing);
       expect(files.saves, 0);
@@ -193,17 +193,17 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Living room (Live view)'), findsOneWidget);
-      expect(find.text('Kitchen (Live view)'), findsOneWidget);
-      expect(find.text('Room (Live view)'), findsOneWidget);
+      expect(find.text('Living room (Live)'), findsOneWidget);
+      expect(find.text('Kitchen (Live)'), findsOneWidget);
+      expect(find.text('Unspecified (Live)'), findsOneWidget);
       expect(find.text('Guest retreat'), findsOneWidget);
       await store.updateRoom(unknown.copyWith(roomTypeId: 'office'));
       await tester.pumpAndSettle();
-      expect(find.text('Office (Live view)'), findsOneWidget);
-      expect(find.text('Room (Live view)'), findsNothing);
-      await tap(tester, find.text('Living room (Live view)'));
+      expect(find.text('Office (Live)'), findsOneWidget);
+      expect(find.text('Unspecified (Live)'), findsNothing);
+      await tap(tester, find.text('Living room (Live)'));
       expect(find.byType(WorkspaceScreen), findsOneWidget);
-      expect(find.text('Living room (Live view)'), findsOneWidget);
+      expect(find.text('Living room (Live)'), findsOneWidget);
       await store.renameRoom(living.id, 'Front lounge');
       await store.updateRoom(
         store.roomById(living.id)!.copyWith(roomTypeId: 'kitchen'),
@@ -218,6 +218,46 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  test('automatic Live names track type, survive backup/restore and yield to an explicit rename', () async {
+    final live = await store.createRoom(
+      projectId: project.id,
+      name: 'Bedroom',
+      roomTypeId: 'bedroom',
+      automaticLiveName: true,
+      originalImage: image,
+    );
+    final ordinary = await store.createRoom(
+      projectId: project.id,
+      name: 'Bedroom',
+      roomTypeId: 'bedroom',
+      originalImage: image,
+    );
+    expect(live.displayName, 'Bedroom (Live)');
+    expect(ordinary.displayName, 'Bedroom');
+    final changed = live.copyWith(roomTypeId: 'kitchen');
+    await store.updateRoom(changed);
+    expect(store.roomById(live.id)!.displayName, 'Kitchen (Live)');
+    expect(store.roomById(live.id)!.name, 'Bedroom');
+    final restoredProject = await store.restoreBackup(
+      ProjectBackup.decode(store.backupFor(project.id).encode()),
+    );
+    final restoredLive = store
+        .roomsFor(restoredProject.id)
+        .singleWhere((room) => room.automaticLiveName);
+    expect(restoredLive.displayName, 'Kitchen (Live)');
+    expect(store.imageFor(restoredLive.originalId), image);
+    final legacy = Map.of(changed.toMap())
+      ..remove('automaticLiveName')
+      ..['name'] = 'Room (Live view)';
+    expect(RenovationRoom.fromMap(legacy).displayName, 'Kitchen (Live)');
+    await store.renameRoom(live.id, 'Guest retreat');
+    final renamed = store.roomById(live.id)!;
+    expect(renamed.automaticLiveName, isFalse);
+    await store.updateRoom(renamed.copyWith(roomTypeId: 'office'));
+    expect(store.roomById(live.id)!.displayName, 'Guest retreat');
+    expect(store.imageFor(live.originalId), image);
+  });
 
   for (final camera in [true, false]) {
     testWidgets(

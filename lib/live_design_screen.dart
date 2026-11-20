@@ -356,6 +356,10 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
       final created = await widget.store.createRoom(
         projectId: widget.projectId,
         name: choice?.name ?? 'Live room',
+        automaticLiveName:
+            choice == null ||
+            choice.name.trim().toLowerCase() ==
+                roomTypes[choice.roomTypeId]?.toLowerCase(),
         originalImage: bytes,
         roomTypeId: choice?.roomTypeId ?? 'other',
         colourPaletteId: starter?.paletteId ?? '',

@@ -261,6 +261,8 @@ void main() {
       await start(tester);
       final room = store.roomsFor(project.id).single;
       expect(room.name, 'Dining-side kitchen');
+      expect(room.automaticLiveName, isFalse);
+      expect(room.displayName, 'Dining-side kitchen');
       expect(room.roomTypeId, 'kitchen');
       expect(room.colourPaletteId, starter.paletteId);
       expect(room.designStyleIds, [starter.styleId]);
@@ -274,6 +276,28 @@ void main() {
       expect(ai.prompts.single, contains('Charcoal'));
       expect(store.designsFor(room.id), hasLength(1));
       expect(find.byKey(const ValueKey('live-design-overlay')), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'a room-picker default bedroom gets a type-based Live label without changing its stored name',
+    (tester) async {
+      await show(
+        tester,
+        initialChoice: const RoomStartChoice(
+          'Bedroom',
+          'bedroom',
+          null,
+          method: RoomStartMethod.liveDesign,
+        ),
+      );
+      await start(tester);
+      final room = store.roomsFor(project.id).single;
+      expect(room.name, 'Bedroom');
+      expect(room.roomTypeId, 'bedroom');
+      expect(room.automaticLiveName, isTrue);
+      expect(room.displayName, 'Bedroom (Live)');
+      expect(store.imageFor(room.originalId), feed.bytes);
     },
   );
 

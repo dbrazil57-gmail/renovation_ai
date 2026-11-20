@@ -269,7 +269,11 @@ class RenovisionStore extends ChangeNotifier {
     final trimmed = _validName(name);
     final current = records.get('room:$id');
     if (current is! Map) throw StateError('Room is unavailable.');
-    await records.put('room:$id', {...current, 'name': trimmed});
+    await records.put('room:$id', {
+      ...current,
+      'name': trimmed,
+      'automaticLiveName': false,
+    });
     notifyListeners();
   }
 
@@ -460,6 +464,7 @@ class RenovisionStore extends ChangeNotifier {
     String roomTypeId = '',
     List<String> designStyleIds = const [],
     bool guidedSetup = false,
+    bool automaticLiveName = false,
   }) async {
     _validatePalette(colourPaletteId);
     if (roomTypeId.isNotEmpty && !roomTypes.containsKey(roomTypeId)) {
@@ -490,6 +495,7 @@ class RenovisionStore extends ChangeNotifier {
         additionalPhotoIds: extraIds,
         colourPaletteId: colourPaletteId,
         roomTypeId: roomTypeId,
+        automaticLiveName: automaticLiveName,
         designStyleIds: styles,
         preciseEdit: false,
         setupComplete: !guidedSetup,

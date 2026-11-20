@@ -28,11 +28,17 @@ as an expandable card; appearance also collapses. The image toolbar includes
 recoverable design deletion, and Refine visibly separates New design from Precise
 correction, each with 1/2/3 outputs appropriate to its scope. New design prompts
 take more initiative with sparse briefs. Available-model presets recommend detail
-versus speed while preserving saved choices. 256 tests pass; analyser clean;
-web release compilation passed. The Chrome interaction runner stalled before tests.
+versus speed while preserving saved choices. 258 tests pass; analyser clean;
+the preceding UI batch's web compilation passed. The Chrome interaction runner
+stalled before tests.
 RenoVision is the confirmed display name in source; new icon options await selection.
 Saved account-model lists restore safely; Refresh available models discovers other
 supported models without another key entry on Android. No new APK.
+
+Live-room naming clarification: automatic labels use the selected room type,
+such as Bedroom (Live) or Kitchen (Live), and follow later type changes. Unknown
+types show Unspecified (Live); custom names remain untouched. This correction
+is in source after 1.0.12, including room-picker starts and portable save/restore.
 
 Application code audited through `a948da0` is now packaged in the requested
 **1.0.12+13** update. All **249 tests were rerun and passed**, static analysis is

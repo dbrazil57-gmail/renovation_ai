@@ -100,6 +100,10 @@ class ProjectBackup {
         _optionalText(room['flooringNotes']);
         _optionalText(room['removeItems']);
         _optionalText(room['roomTypeId']);
+        if (room['automaticLiveName'] != null &&
+            room['automaticLiveName'] is! bool) {
+          throw const FormatException();
+        }
         if (room['roomItemChoices'] != null) {
           final choices = _map(room['roomItemChoices']);
           if (choices.length > 100 ||

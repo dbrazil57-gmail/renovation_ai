@@ -57,19 +57,27 @@ class RenovationRoom {
   final String flooringNotes;
   final String removeItems;
   final String roomTypeId;
+  final bool automaticLiveName;
   final Map<String, String> roomItemChoices;
   List<String> get photoIds => [originalId, ...additionalPhotoIds];
   String get primaryId => primaryPhotoId ?? originalId;
   String get displayName {
-    if (!const {'live room', 'live view'}.contains(name.trim().toLowerCase())) {
+    final legacyLiveName = const {
+      'live',
+      'live room',
+      'live view',
+      'room (live)',
+      'room (live view)',
+    }.contains(name.trim().toLowerCase());
+    if (!automaticLiveName && !legacyLiveName) {
       return name;
     }
     final typeName = switch (roomTypeId) {
       'living' => 'Living room',
-      '' || 'other' => 'Room',
-      _ => roomTypes[roomTypeId] ?? 'Room',
+      '' || 'other' => 'Unspecified',
+      _ => roomTypes[roomTypeId] ?? 'Unspecified',
     };
-    return '$typeName (Live view)';
+    return '$typeName (Live)';
   }
 
   final DateTime created;
@@ -103,6 +111,7 @@ class RenovationRoom {
     this.flooringNotes = '',
     this.removeItems = '',
     this.roomTypeId = '',
+    this.automaticLiveName = false,
     this.roomItemChoices = const {},
   });
 
@@ -131,6 +140,7 @@ class RenovationRoom {
     String? flooringNotes,
     String? removeItems,
     String? roomTypeId,
+    bool? automaticLiveName,
     Map<String, String>? roomItemChoices,
   }) => RenovationRoom(
     id: id,
@@ -154,6 +164,7 @@ class RenovationRoom {
     flooringNotes: flooringNotes ?? this.flooringNotes,
     removeItems: removeItems ?? this.removeItems,
     roomTypeId: roomTypeId ?? this.roomTypeId,
+    automaticLiveName: automaticLiveName ?? this.automaticLiveName,
     roomItemChoices: roomItemChoices ?? this.roomItemChoices,
     instructions: instructions ?? this.instructions,
     correctionInstructions:
@@ -189,6 +200,7 @@ class RenovationRoom {
     'flooringNotes': flooringNotes,
     'removeItems': removeItems,
     'roomTypeId': roomTypeId,
+    'automaticLiveName': automaticLiveName,
     'roomItemChoices': roomItemChoices,
     'instructions': instructions,
     'correctionInstructions': correctionInstructions,
@@ -240,6 +252,7 @@ class RenovationRoom {
     flooringNotes: (data['flooringNotes'] ?? '').toString(),
     removeItems: (data['removeItems'] ?? '').toString(),
     roomTypeId: (data['roomTypeId'] ?? '').toString(),
+    automaticLiveName: data['automaticLiveName'] == true,
     roomItemChoices: Map<String, String>.from(
       data['roomItemChoices'] as Map? ?? const {},
     ),

@@ -33,10 +33,15 @@ acceptance remains. No paid API calls or user-data reset.
   initiative, while preserving narrow corrections and explicit Keep requirements.
 - [x] Add account-aware Room design / Quick ideas / Final detail model presets;
   prefer 2.6 Sunburst/medium on fresh direct connections, preserve saved choices.
-- [x] Verify 256 tests, clean analysis and web release build (74.9 seconds).
+- [x] Verify 258 tests and clean analysis; the preceding UI batch's web build
+  passed in 74.9 seconds and was not repeated for the naming correction.
   Chrome's test iframe stalled before execution; manual browser acceptance remains.
 - [x] Retain vetted model availability across restart; add explicit model refresh
   for older saved connections without resending photos or re-entering the key.
+- [x] Correct automatic Live room labels to the selected type, e.g. Bedroom (Live),
+  including room-picker starts and type changes. Preserve the automatic-label
+  flag through save/restore; explicit custom renames stop automatic naming.
+  Unknown types show Unspecified (Live), not a guessed or generic Room label.
 - [x] Keep the user-confirmed RenoVision name and update source display labels;
   retain the package ID, storage and signing identity.
 - [x] Generate a second six-icon preview board after rejection of the initial

@@ -8,7 +8,7 @@ instructions have been consolidated here; no real project data was changed.
 ## 20 November source follow-up testing
 
 These changes are after APK 1.0.12 and need a new package only when requested.
-All 256 local tests pass; static analysis is clean. New coverage checks first/
+All 258 local tests pass; static analysis is clean. New coverage checks first/
 collapsed AI settings and appearance, model presets without generation, safe
 toolbar deletion, separate saved precision counts and three strictly scoped
 correction requests from one source. Existing originals/baselines are preserved.
@@ -47,6 +47,18 @@ Next acceptance after the requested package:
 Gemini is not integrated by these fixes. It requires a separate Google key and
 adapter. Claude is an optional analysis/prompt-writing candidate, not an image
 generator. The OpenAI key cannot authenticate with either provider.
+
+Live-room naming check (same source-only follow-up): start through the room
+picker with Bedroom and Live design; the room should display **Bedroom (Live)**.
+Confirming Kitchen instead should produce **Kitchen (Live)**. The label must
+survive a project backup/open and leave originals intact. An explicit custom
+rename must stay unchanged when the type later changes. Older Live room / Live
+view / Room (Live view) placeholders use the same type-based display; an unknown
+type shows Unspecified (Live) until selected. No existing room names are migrated.
+Naming verification: 39 focused tests and all 258 regression tests pass; analysis
+is clean. Logs use `output/live-room-labels-2026-11-20-` with `focused.log`,
+`analysis.log` and `regression.log`. No APK, paid AI request or browser rerun for
+this naming-only correction.
 
 ## Current source and phone package
 
