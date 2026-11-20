@@ -48,6 +48,7 @@ class RenovationRoom {
   final bool preciseEdit;
   final bool keepLayout;
   final int conceptCount;
+  final int precisionConceptCount;
   final bool compareStyles;
   final RoomAnalysis? analysis;
   final String aiPrompt;
@@ -93,6 +94,7 @@ class RenovationRoom {
     this.preciseEdit = false,
     this.keepLayout = true,
     this.conceptCount = 1,
+    this.precisionConceptCount = 1,
     this.compareStyles = true,
     this.analysis,
     this.aiPrompt = '',
@@ -120,6 +122,7 @@ class RenovationRoom {
     bool? preciseEdit,
     bool? keepLayout,
     int? conceptCount,
+    int? precisionConceptCount,
     bool? compareStyles,
     RoomAnalysis? analysis,
     String? aiPrompt,
@@ -142,6 +145,7 @@ class RenovationRoom {
     preciseEdit: preciseEdit ?? this.preciseEdit,
     keepLayout: keepLayout ?? this.keepLayout,
     conceptCount: conceptCount ?? this.conceptCount,
+    precisionConceptCount: precisionConceptCount ?? this.precisionConceptCount,
     compareStyles: compareStyles ?? this.compareStyles,
     analysis: analysis ?? this.analysis,
     aiPrompt: aiPrompt ?? this.aiPrompt,
@@ -176,6 +180,7 @@ class RenovationRoom {
     'preciseEdit': preciseEdit,
     'keepLayout': keepLayout,
     'conceptCount': conceptCount,
+    'precisionConceptCount': precisionConceptCount,
     'compareStyles': compareStyles,
     'analysis': analysis?.toMap(),
     'aiPrompt': aiPrompt,
@@ -219,6 +224,9 @@ class RenovationRoom {
     keepLayout: data['keepLayout'] is bool ? data['keepLayout'] as bool : true,
     conceptCount: data['conceptCount'] is int
         ? (data['conceptCount'] as int).clamp(1, 3)
+        : 1,
+    precisionConceptCount: data['precisionConceptCount'] is int
+        ? (data['precisionConceptCount'] as int).clamp(1, 3)
         : 1,
     compareStyles: data['compareStyles'] != false,
     analysis: data['analysis'] is Map
@@ -404,12 +412,13 @@ Requested design changes: ${requestedChanges.isEmpty ? (hasChanges
             : 'Suggest a tasteful, achievable renovation concept.') : requestedChanges}
 $protections
 $layout
+${!preciseEdit && wholeRoomDirection ? 'DESIGN INITIATIVE: A short or empty brief in New design mode is permission to propose a fresh, coordinated interior scheme, not to copy the existing decor. Choose a confident design direction from the selected style/palette, or choose complementary materials and colours when none are selected. Make at least three substantial, room-appropriate changes to unprotected surfaces, furnishings, fittings or lighting where available. A near-identical room with extra plants or a mild recolour is insufficient. Keep explicit narrow instructions, Keep choices and architectural/layout restrictions authoritative; never invent structural changes to create impact.' : ''}
 ${!preciseEdit && wholeRoomDirection ? 'WHOLE-ROOM DESIGN DIRECTION: Use the photographs to propose a coordinated renovation appropriate to this room. Consider flooring, wall finishes, cabinetry and work surfaces where present, suitable modern fittings/appliances, layered lighting, materials and restrained furniture/accessory styling. Remove everyday loose clutter such as freestanding bins and washing-up for the concept. Do not retain visibly dated finishes merely because they appear in the source photo. These are design suggestions to review, not measured construction advice. Explicit user instructions and KEEP choices override this direction. Preserve the agreed layout, useful storage, functional or uncertain equipment and the actual outside view. Ask before removing an uncertain fixed fitting; remove a wall telephone only when explicitly requested. Do not invent structural openings, hidden appliances or additional built-in elements.' : ''}
 $scope
 $itemPrompt
 ${style.isEmpty ? '' : styleDirection(designStyleIds, other: otherStyle)}
 ${paletteById(colourPaletteId)?.prompt(precise: preciseEdit) ?? ''}
 ${preciseEdit ? 'Keep unselected regions consistent. Do not silently remove items outside the target area. A marked-up reference or crop limits the intended change; it is not permission to redesign the rest of the room.' : 'Coordinate the requested changes across the room. Where new storage is requested, depict usable doors, panels and shelving appropriate to that request rather than blank decorative cladding. Do not silently remove items outside the requested renovation scope.'}
-Do not add extra windows, doors, walls, alcoves or furniture unless asked. Preserve useful existing storage unless its removal is explicitly requested. Resolve unclear instructions conservatively; ask about genuinely conflicting requirements rather than inventing a new brief.
+${!preciseEdit && wholeRoomDirection ? 'Unprotected existing furniture may be replaced in place as part of the coordinated renovation; retain practical seating/storage capacity and circulation. Do not add extra windows, doors, walls, alcoves or unrelated furniture.' : 'Do not add extra windows, doors, walls, alcoves or furniture unless asked.'} Preserve useful existing storage unless its removal is explicitly requested. ${!preciseEdit && wholeRoomDirection ? 'Resolve genuinely conflicting requirements conservatively; ordinary unspecified finish and styling choices are for the designer to propose within the authorised scope.' : 'Resolve unclear instructions conservatively; ask about genuinely conflicting requirements rather than inventing a new brief.'}
 Produce one photorealistic renovation concept. This is visual inspiration only, not a measured structural or construction plan.''';
 }

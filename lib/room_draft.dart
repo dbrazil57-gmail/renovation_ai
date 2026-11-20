@@ -32,6 +32,7 @@ class RoomDraft extends ChangeNotifier {
   bool preciseEdit;
   bool keepLayout;
   int conceptCount;
+  int precisionConceptCount;
   bool compareStyles;
   DraftSaveState state = DraftSaveState.saved;
   Timer? _timer;
@@ -59,6 +60,7 @@ class RoomDraft extends ChangeNotifier {
       useAiPrompt = room.useAiPrompt,
       styleIds = canonicalStyleIds(room.designStyleIds).toSet(),
       conceptCount = room.conceptCount,
+      precisionConceptCount = room.precisionConceptCount,
       compareStyles = room.compareStyles,
       preciseEdit = room.preciseEdit,
       keepLayout = room.keepLayout {
@@ -200,6 +202,12 @@ class RoomDraft extends ChangeNotifier {
     _changed();
   }
 
+  void setPrecisionConceptCount(int value) {
+    if (value < 1 || value > 3 || value == precisionConceptCount) return;
+    precisionConceptCount = value;
+    _changed();
+  }
+
   void setCompareStyles(bool value) {
     if (value == compareStyles) return;
     compareStyles = value;
@@ -243,6 +251,7 @@ class RoomDraft extends ChangeNotifier {
     final precise = preciseEdit;
     final layout = keepLayout;
     final countSnapshot = conceptCount;
+    final precisionCountSnapshot = precisionConceptCount;
     final compareSnapshot = compareStyles;
     final analysisSnapshot = analysis;
     final editedPrompt = aiPrompt.text;
@@ -266,6 +275,7 @@ class RoomDraft extends ChangeNotifier {
           preciseEdit: precise,
           keepLayout: layout,
           conceptCount: countSnapshot,
+          precisionConceptCount: precisionCountSnapshot,
           compareStyles: compareSnapshot,
           analysis: analysisSnapshot,
           aiPrompt: editedPrompt,

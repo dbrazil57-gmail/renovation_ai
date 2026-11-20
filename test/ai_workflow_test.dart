@@ -165,13 +165,13 @@ void main() {
       await tester.pumpAndSettle();
       await revealFocusControl(
         tester,
-        find.text('Use whole-room renovation'),
+        find.text('Use New design'),
         -350,
         scrollable: find.byType(Scrollable).first,
       );
-      await ensureFocusVisible(tester, find.text('Use whole-room renovation'));
+      await ensureFocusVisible(tester, find.text('Use New design'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Use whole-room renovation'));
+      await tester.tap(find.text('Use New design'));
       await tester.pump(const Duration(milliseconds: 700));
       await revealFocusControl(
         tester,

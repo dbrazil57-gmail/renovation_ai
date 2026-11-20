@@ -19,6 +19,35 @@ Camera handoff, history captions, room chooser/live entry, compact layouts,
 themes and protected backups are now in the requested APK. Physical S21
 acceptance remains. No paid API calls or user-data reset.
 
+## 20 November feedback batch — source only
+
+- [x] Make AI connection/models the first expandable settings card with status;
+  collapse the lower-priority appearance choices into a matching card.
+- [x] Add recoverable Delete beside image tools, guarding originals, approved
+  baselines and active AI requests.
+- [x] Expose New design / Precise correction above the brief; enable 2/3 outputs
+  in both modes, keeping correction variation strictly scoped.
+- [x] Store a separate precision output count with a safe one-output legacy
+  default, so old three-concept settings never silently raise correction usage.
+- [x] Strengthen short/blank whole-room design briefs and AI prompt-writing
+  initiative, while preserving narrow corrections and explicit Keep requirements.
+- [x] Add account-aware Room design / Quick ideas / Final detail model presets;
+  prefer 2.6 Sunburst/medium on fresh direct connections, preserve saved choices.
+- [x] Verify 256 tests, clean analysis and web release build (74.9 seconds).
+  Chrome's test iframe stalled before execution; manual browser acceptance remains.
+- [x] Retain vetted model availability across restart; add explicit model refresh
+  for older saved connections without resending photos or re-entering the key.
+- [x] Keep the user-confirmed RenoVision name and update source display labels;
+  retain the package ID, storage and signing identity.
+- [x] Generate a second six-icon preview board after rejection of the initial
+  icon set; launcher asset selection remains pending. Preview/prompt in
+  `output/design-review/brand-icons-2026-11-20-v2*`.
+
+Gemini is a separate provider/key integration, not unlocked by an OpenAI key.
+The user's provider preference is pending; current work improves the OpenAI route.
+Anthropic can be considered for analysis later, not as the image renderer.
+Next APK only on explicit request; 1.0.12 does not contain this follow-up.
+
 ## Completed audit batch
 
 - [x] Read the brief and inspect actual source/tests/platform code.
@@ -70,6 +99,8 @@ not a claim that the following changes were implemented during the audit.
 
 ### 1. Accept the newly packaged source changes on S21
 
+- [ ] When requested, package the 20 November source follow-up and test its
+  Settings discovery, toolbar delete, model presets and 2/3 correction variations.
 - [x] Build the explicitly requested **1.0.12+13** with the existing application
   ID/signature so it updates without uninstalling. Future APKs only when requested.
 - [ ] On S21, check the camera result remains in the live viewer and automatically

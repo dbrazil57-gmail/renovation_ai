@@ -23,6 +23,17 @@ for continued private testing, with project-file identity, complete per-version
 settings, precise edit enforcement and larger-project reliability still to finish.
 No public backend, payment system or store-ready release is included.
 
+20 November source follow-up (not in APK 1.0.12): AI settings now appears first
+as an expandable card; appearance also collapses. The image toolbar includes
+recoverable design deletion, and Refine visibly separates New design from Precise
+correction, each with 1/2/3 outputs appropriate to its scope. New design prompts
+take more initiative with sparse briefs. Available-model presets recommend detail
+versus speed while preserving saved choices. 256 tests pass; analyser clean;
+web release compilation passed. The Chrome interaction runner stalled before tests.
+RenoVision is the confirmed display name in source; new icon options await selection.
+Saved account-model lists restore safely; Refresh available models discovers other
+supported models without another key entry on Android. No new APK.
+
 Application code audited through `a948da0` is now packaged in the requested
 **1.0.12+13** update. All **249 tests were rerun and passed**, static analysis is
 clean and the Android release build passed in 139.1 seconds. The earlier web

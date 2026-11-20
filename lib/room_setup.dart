@@ -435,10 +435,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                         updateGuard();
                       },
                     ),
-                    ExpansionTile(
-                      title: const Text('AI connection and models'),
-                      children: [AiConnectionCard(ai: widget.store.ai)],
-                    ),
+                    AiConnectionSettingsCard(ai: widget.store.ai),
                   ],
                   if (step == 3) ...[
                     ExpansionTile(

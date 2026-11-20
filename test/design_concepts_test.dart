@@ -84,14 +84,14 @@ void main() {
       'Change only handle',
     );
     expect(
-      () => planDesignConcepts(
+      planDesignConcepts(
         prompt: base,
         precise: true,
         count: 3,
         styleIds: [],
         compareStyles: true,
-      ),
-      throwsA(isA<AiFailure>()),
+      ).map((plan) => plan.prompt).toSet(),
+      hasLength(3),
     );
     expect(
       () => planDesignConcepts(

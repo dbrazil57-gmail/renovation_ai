@@ -17,12 +17,19 @@ List<DesignConcept> planDesignConcepts({
   String otherStyle = '',
   int previousConcepts = 0,
 }) {
-  if (count < 1 || count > 3 || (precise && count != 1)) {
-    throw const AiFailure(
-      'Use one result for a precise correction, or choose Whole-room renovation for multiple ideas.',
-    );
+  if (count < 1 || count > 3) {
+    throw const AiFailure('Choose one, two or three results.');
   }
-  if (precise) return [DesignConcept('Precision edit', prompt)];
+  if (precise) {
+    if (count == 1) return [DesignConcept('Precision edit', prompt)];
+    return [
+      for (var index = 0; index < count; index++)
+        DesignConcept(
+          'Correction variation ${index + 1}',
+          '$prompt\n\nPRECISE CORRECTION VARIATION ${index + 1} OF $count: Apply exactly the same specific correction to this same starting image. Offer an alternative execution only within details the user has left open. Keep all unrelated regions, approved design choices, layout and protected features unchanged. Do not reapply whole-room styles, recolour unrelated surfaces or add decorative objects to force variety. If the instruction permits only one valid outcome, follow it faithfully rather than inventing extra changes. Return one individual image, not a collage.',
+        ),
+    ];
+  }
   final styles = canonicalStyleIds(styleIds)
       .where(designStyles.containsKey)
       .toList();

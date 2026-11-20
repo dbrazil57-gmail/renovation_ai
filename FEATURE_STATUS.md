@@ -8,6 +8,42 @@ implementation diaries. The product brief is unchanged.
 precision, project-file reopening and reproducible design history.** Keep the
 existing app and Focus Canvas interface; a rewrite is not justified.
 
+## 20 November follow-up — source after APK 1.0.12
+
+AI settings is now the first clearly labelled expandable card with connection
+status. App appearance is a matching collapsed card below Home cover/Storage.
+Saved designs have a recoverable Delete action beside crop/markup/compare;
+originals remain protected and an approved baseline must be replaced before deletion.
+
+Refine shows New design / Precise correction directly. Both allow 1/2/3 outputs:
+whole-room concepts versus variations of the specified correction. The new
+optional `precisionConceptCount` preference defaults to one for older projects,
+separately from the whole-room count, and survives autosave/backups. Selecting
+three whole-room ideas therefore does not silently turn an older correction
+into three paid requests. Live camera still confirms one preview at a time.
+
+New design briefs with few/no comments now explicitly ask for substantial
+coordinated changes within the permitted scope. Analysis prompt-writing no
+longer defaults to a conservative near-copy for those requests. Precise corrections
+keep narrow instructions. These are improved requests, not measured quality guarantees.
+
+New direct OpenAI connections prefer available GPT Image 2.6 Sunburst at medium
+quality. Saved model/quality choices are preserved. Room design / Quick ideas /
+Final detail presets change local settings only and use available account models;
+generation remains separately confirmed. Gemini needs its own key/adapter and
+is not implemented in this batch; Claude vision is for analysis, not image output.
+Verified account model lists now survive restart. Older saved connections retain
+their known selected model; Refresh available models checks access without sending
+photos or re-entering the saved key, and never silently changes a valid selection.
+
+All **256 tests passed**, static analysis is clean and the release web build
+passed in 74.9 seconds. The Chrome test iframe stalled before tests; browser
+interaction acceptance remains. No new APK or app API call for this follow-up. The
+installed 1.0.12 does not contain these changes. The user confirmed RenoVision;
+Android/web/Flutter display labels are updated in source while the package ID and
+storage stay unchanged. A second board of six different icons was generated with
+built-in imagegen after the first set was rejected; launcher assets await selection.
+
 ## Source versus installed app
 
 | Item | Verified position |
@@ -15,7 +51,7 @@ existing app and Focus Canvas interface; a rewrite is not justified.
 | Latest existing APK | **1.0.12+13**, source stamp `3cb94c972c`; `output/mobile-test/renovision-test-1.0.12.apk`, also `renovision-test.apk` |
 | APK contents | Focus Canvas, embedded camera, manual same-view overlay, Live design and all completed source follow-ups below |
 | New in 1.0.12 | Camera-result handoff/automatic overlay fixes, version-history captions, smaller photo-backed room chooser, Live design from room selection, simpler Rooms page, typed live-room labels, compact typography, five app themes, storage details and protected backups |
-| Latest checks | **249 tests rerun and passed**, static analysis clean, Android release build passed in 139.1 seconds; previous web build passed in 54.9 seconds |
+| Last APK checks | **249 tests rerun and passed**, static analysis clean, Android release build passed in 139.1 seconds; source follow-up above has 256 passing tests |
 | Earlier audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. The subsequent requested APK build made no paid AI call or data migration |
 | Real user evidence | User reports successful phone installation, direct AI analysis/generation, good generated designs, project auto-reload and useful comparison/camera overlay. This does not validate every newer source change |
 

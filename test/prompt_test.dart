@@ -72,4 +72,31 @@ void main() {
     expect(prompt, contains('EXPLORATION'));
     expect(prompt, contains('Suggest a tasteful'));
   });
+
+  test('an empty New design brief authorises a substantial coordinated concept without weakening a correction', () {
+    final concept = buildRenovationPrompt(
+      roomName: 'Living room',
+      instructions: '',
+      protectedFeatures: 'Wide windows and fireplace',
+      preciseEdit: false,
+      wholeRoomDirection: true,
+    );
+    expect(concept, contains('DESIGN INITIATIVE:'));
+    expect(concept, contains('at least three substantial'));
+    expect(
+      concept,
+      contains('Unprotected existing furniture may be replaced in place'),
+    );
+    expect(concept, contains('MUST RETAIN: Wide windows and fireplace'));
+    final correction = buildRenovationPrompt(
+      roomName: 'Living room',
+      instructions: 'Change only the lamp shade',
+      protectedFeatures: 'Wide windows and fireplace',
+      preciseEdit: true,
+      wholeRoomDirection: true,
+    );
+    expect(correction, isNot(contains('DESIGN INITIATIVE:')));
+    expect(correction, isNot(contains('may be replaced in place')));
+    expect(correction, contains('Keep unselected regions consistent'));
+  });
 }

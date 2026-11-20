@@ -1,5 +1,71 @@
 # Product and research reference
 
+## Settings, models and branding follow-up — 20 November 2026
+
+Source after APK 1.0.12 makes AI connection/models the first expandable card;
+appearance now matches Home cover/Storage as a lower-priority collapsed card.
+Delete is visible beside image tools for saved designs, with existing recovery
+and baseline/original protection. Refine exposes New design / Precise correction.
+Both support multiple outputs, but correction variations never inherit broad
+renovation directions. Separate saved counts preserve old one-image correction
+behaviour instead of silently multiplying requests.
+
+The previous analysis-writing instruction proposed a conservative concept with
+few comments; that contributed to cautious briefs. New design mode now calls for
+a coordinated, visibly substantial redesign within allowed scope even with an
+empty brief. Explicit narrow instructions/Keep features still take priority.
+Models can still miss the request; no new real-room quality benchmark was run.
+
+Official model guidance checked 20 November:
+
+- [OpenAI image prompting](https://developers.openai.com/api/docs/guides/image-prompting)
+  distinguishes 2.6 Sunburst for detailed/layout-sensitive editing from Flare for
+  faster iteration. The new account-aware presets use Sunburst/medium for Room
+  design, Flare/low for Quick ideas, and Sunburst/high for Final detail, falling
+  back only within listed supported account models. These are starting choices,
+  not a measured claim of the best result for Claylands. Saved choices stay saved.
+- [Google image generation](https://aistudio.google.com/docs/image-generation)
+  supports native generation/editing with Nano Banana models. Nano Banana 2.1 is
+  the current primary workhorse candidate for a future comparison; a
+  [Google API key](https://aistudio.google.com/docs/api-key) and adapter are required.
+  This batch does not implement Gemini. No new key should be pasted into chat.
+- [Claude vision](https://platform.claude.com/docs/en/build-with-claude/vision)
+  supports image understanding, not image generation/editing. It could later write
+  observations/briefs alongside an image renderer, with its own credentials.
+
+### App name and icon options
+
+The current Android label `renovision_ai` and starter icon need polish. A preview
+board made with built-in imagegen is retained at
+`output/design-review/brand-options-2026-11-20.png`; its exact prompt is in the
+adjacent `brand-options-2026-11-20-prompt.txt`. These are ignored local design
+artifacts, with no customer photo/API key used. They are not installed assets.
+
+The following first-board options are superseded; the user kept the RenoVision
+name and requested different icon concepts.
+
+| Option | Working name | Mark |
+| --- | --- | --- |
+| A, superseded | RenoVision | Olive room corner with an ivory reveal glint |
+| B | RoomShift | Two contrasting room planes suggesting before/after |
+| C | RoomCanvas | Forest-green room frame with a warm terracotta plane |
+| D | RenoVision | Bold RV monogram with a doorway detail |
+
+These are creative options, not name-availability clearance. The user subsequently
+confirmed RenoVision as the name but rejected the first icon set. Android,
+Flutter and browser display labels now use RenoVision in source; the package
+identity and launcher assets remain unchanged.
+After selection, create a dedicated clean adaptive icon and small-size previews;
+do not crop a labelled comparison board into the shipping icon. Preserve the
+application ID/signature and all stored projects regardless of display-name choice.
+
+The new six-icon board is
+`output/design-review/brand-icons-2026-11-20-v2.png`, with the exact built-in
+imagegen prompt in the adjacent `brand-icons-2026-11-20-v2-prompt.txt`:
+A Reveal lens, B Material layers, C Design sweep, D Open view, E Plan to space,
+F Room scan. B emphasizes material/interior design; F emphasizes the camera.
+Selection remains open. The original board remains as design history only.
+
 ## Whole-project design audit — 19 November 2026
 
 Reviewed the original product brief, substantive conversation requests, source

@@ -9,13 +9,9 @@ import 'package:image/image.dart' as img;
 import 'ai_activity.dart';
 import 'ai_types.dart';
 import 'room_analysis.dart';
+import 'ai_model_choices.dart';
 
-const directImageModels = [
-  'gpt-image-2.5-sunburst',
-  'gpt-image-2.5-flare',
-  'gpt-image-2.6-sunburst',
-  'gpt-image-2.6-flare',
-];
+const directImageModels = preferredRoomImageModels;
 
 List<Uint8List> prepareInternetPhotos(List<Uint8List> sources) {
   return sources.map((bytes) {

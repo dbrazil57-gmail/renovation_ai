@@ -1,11 +1,11 @@
 {
-    "name": "renovision_ai",
-    "short_name": "renovision_ai",
+    "name": "RenoVision",
+    "short_name": "RenoVision",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Visualise room renovations from your own photos with RenoVision.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

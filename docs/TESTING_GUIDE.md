@@ -5,6 +5,49 @@ Updated after the whole-project audit, 19 November 2026. Use
 [next steps](../CODEX_NEXT_STEPS.md) for the ordered backlog. Earlier dated test
 instructions have been consolidated here; no real project data was changed.
 
+## 20 November source follow-up testing
+
+These changes are after APK 1.0.12 and need a new package only when requested.
+All 256 local tests pass; static analysis is clean. New coverage checks first/
+collapsed AI settings and appearance, model presets without generation, safe
+toolbar deletion, separate saved precision counts and three strictly scoped
+correction requests from one source. Existing originals/baselines are preserved.
+The targeted Chrome runner stalled in its JavaScript test iframe before running
+tests; its diagnostic reported a responsive host with no pending network requests.
+The isolated runner was stopped. Do not count that browser attempt as a pass.
+Release-web compilation passed separately in 74.9 seconds, recorded in the
+feedback logs; it does not establish browser interaction acceptance.
+
+Logs: `output/feedback-2026-11-20-analysis.log`, `-focused-tests.log`,
+`-regression.log`, `-chrome-tests.log` and `-web-build.log` with the same prefix.
+All application AI responses in these checks are synthetic; the brand board was
+generated separately with built-in imagegen, without the app key/customer photos.
+
+Next acceptance after the requested package:
+
+1. Settings: AI connection and models is the first card, shows status and opens
+   on tap. Home cover/Storage/Appearance use the same expandable-card pattern.
+2. Connected OpenAI: try Room design, Quick ideas and Final detail. Check model/
+   quality change without an API request. Fresh direct connections prefer available
+   2.6 Sunburst/medium; saved choices remain unchanged unless selected explicitly.
+   Older saved connections show the previously selected model until Refresh
+   available models checks account access. The saved Android key is reused, no
+   photos are sent, and a valid saved model/quality is not changed by refreshing.
+3. Choose a saved design and tap Delete next to crop/markup. Cancel, delete/undo,
+   and try an approved baseline. Originals stay protected and deletion is recoverable.
+4. Refine: switch New design / Precise correction without opening advanced help.
+   Whole-room mode offers 2/3 ideas; correction mode offers 2/3 scoped variations.
+   Each explicitly confirmed result is a separate paid request. Counts save
+   independently; old projects keep a one-output correction default.
+5. With little/no brief, test a New design for substantial coordinated changes.
+   Check architecture, layout and Keep choices, not merely attractive styling.
+   For an older reviewed AI prompt marked stale, reanalyse with consent or deselect
+   its use to preview the new deterministic brief. Do not silently repeat analysis.
+
+Gemini is not integrated by these fixes. It requires a separate Google key and
+adapter. Claude is an optional analysis/prompt-writing candidate, not an image
+generator. The OpenAI key cannot authenticate with either provider.
+
 ## Current source and phone package
 
 Latest test APK: **1.0.12+13**, source `3cb94c972c`:

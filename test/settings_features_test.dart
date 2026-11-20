@@ -93,6 +93,10 @@ void main() {
       await tester.enterText(input, 'Keep this unfinished design brief.');
       await tester.tap(find.byTooltip('Room settings'));
       await tester.pumpAndSettle();
+      final appearance = find.byKey(const ValueKey('app-appearance-settings'));
+      await tester.ensureVisible(appearance);
+      await tester.tap(appearance);
+      await tester.pumpAndSettle();
       for (final choice in AppThemeChoice.values) {
         final target = find.byKey(ValueKey('app-theme-${choice.name}'));
         await tester.ensureVisible(target);
@@ -145,6 +149,8 @@ void main() {
         ),
       );
       final choice = find.byKey(const ValueKey('app-theme-oceanBlue'));
+      await tester.tap(find.byKey(const ValueKey('app-appearance-settings')));
+      await tester.pumpAndSettle();
       await tester.ensureVisible(choice);
       await tester.tap(choice);
       await tester.pumpAndSettle();

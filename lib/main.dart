@@ -26,7 +26,7 @@ class RenovisionApp extends StatelessWidget {
     return ValueListenableBuilder<AppThemeChoice>(
       valueListenable: store.appearance,
       builder: (context, choice, _) => MaterialApp(
-        title: 'Renovision AI',
+        title: 'RenoVision',
         debugShowCheckedModeBanner: false,
         theme: buildRenovisionTheme(choice: choice),
         home: AppShell(store: store),

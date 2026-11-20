@@ -340,8 +340,8 @@ void main() {
         'kitchen_oven': 'replace',
         'kitchen_microwave': 'keep',
       });
-      await reach(tester, find.text('Whole-room renovation'), up: true);
-      await tester.tap(find.text('Whole-room renovation'));
+      await reach(tester, find.text('New design'), up: true);
+      await tester.tap(find.text('New design'));
       await tester.pumpAndSettle();
       final wholeRoomField = find.widgetWithText(
         TextField,

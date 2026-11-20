@@ -10,6 +10,7 @@ import 'ai_types.dart';
 export 'ai_types.dart';
 import 'secret_store.dart';
 import 'openai_internet.dart';
+import 'ai_model_choices.dart';
 
 /// Supports a personal internet API key or the development relay. Provider keys
 /// stay in the platform vault/session memory, never project/photo records.
@@ -29,6 +30,7 @@ class AiService extends ChangeNotifier {
           'model': model,
           'quality': quality,
           'analysisModel': analysisModel,
+          'imageModels': imageModels,
         }
       : {
           'url': _url,
@@ -59,7 +61,20 @@ class AiService extends ChangeNotifier {
           connectionNotice = 'Enter your OpenAI API key in Settings to reconnect over the internet.';
         } else {
           _directKey = key;
-          imageModels = directImageModels;
+          final listed = saved['imageModels'];
+          imageModels = listed is List
+              ? directImageModels.where(listed.contains).toList()
+              : const [];
+          if (imageModels.isEmpty &&
+              directImageModels.contains(saved['model'])) {
+            imageModels = [saved['model'] as String];
+          }
+          if (imageModels.isEmpty) {
+            connectionNotice = 'Saved key found, but model settings need to be reconnected in AI settings. No request was sent.';
+            _directKey = null;
+            notifyListeners();
+            return;
+          }
           imageQualities = const ['low', 'medium', 'high'];
           model = imageModels.contains(saved['model'])
               ? saved['model'] as String
@@ -137,8 +152,8 @@ class AiService extends ChangeNotifier {
     _pairingCode = null;
     imageModels = images;
     imageQualities = const ['low', 'medium', 'high'];
-    model = images.contains(model) ? model : images.first;
-    quality = imageQualities.contains(quality) ? quality : 'low';
+    model = images.contains(model) ? model : recommendedImageModel(images);
+    quality = imageQualities.contains(quality) ? quality : 'medium';
     analysisModel =
         [
           'gpt-6-luna',
@@ -149,6 +164,16 @@ class AiService extends ChangeNotifier {
     maxInputImages = 7;
     connectionNotice = 'Connected directly to OpenAI over HTTPS. The key check generated no image.';
     notifyListeners();
+  }
+
+  Future<void> refreshModels() async {
+    final key = _directKey;
+    if (!isDirect || key == null) {
+      throw const AiFailure(
+        'Connect an internet API key before refreshing models.',
+      );
+    }
+    await connectDirect(apiKey: key);
   }
 
   @override

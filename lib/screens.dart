@@ -311,7 +311,7 @@ class _AppShellState extends State<AppShell> {
             SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Renovision AI',
+                'RenoVision',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -1242,13 +1242,10 @@ class SettingsTab extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 12),
-        AppAppearanceSettingsCard(store: store),
-        ExpansionTile(
-          title: const Text('AI connection and models'),
-          children: [AiConnectionCard(ai: store.ai)],
-        ),
+        AiConnectionSettingsCard(ai: store.ai),
         HomeCoverSettingsCard(store: store),
         StoragePrivacyCard(store: store),
+        AppAppearanceSettingsCard(store: store),
         ?roomSaving,
         Text('Save and restore', style: Theme.of(context).textTheme.titleLarge),
         const Text(
@@ -1724,7 +1721,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   AiEditRequest _aiRequest(RenovationRoom room, {bool forAnalysis = false}) {
     if (precise && isWholeRoomRequest(changes.text)) {
       throw const AiFailure(
-        '“All” is a whole-room request. Choose Whole-room renovation, or describe a specific correction before copying or generating.',
+        '“All” is a whole-room request. Choose New design, or describe a specific correction before copying or generating.',
       );
     }
     var sourceId = selectedPhotoId;
@@ -2058,6 +2055,15 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                       },
                 icon: const Icon(Icons.auto_fix_high_outlined),
               ),
+              if (selectedId != null)
+                DeleteDesignButton(
+                  key: const ValueKey('delete-selected-design'),
+                  store: widget.store,
+                  design: versions.firstWhere(
+                    (design) => design.id == selectedId,
+                  ),
+                  enabled: !aiPending,
+                ),
             ],
             thumbnails: [
               FocusVersionThumbnail(
@@ -2269,14 +2275,28 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 ],
               ],
               FocusSection.refine: [
+                SegmentedButton<bool>(
+                  key: const ValueKey('design-edit-mode'),
+                  segments: const [
+                    ButtonSegment(value: false, label: Text('New design')),
+                    ButtonSegment(
+                      value: true,
+                      label: Text('Precise correction'),
+                    ),
+                  ],
+                  selected: {precise},
+                  onSelectionChanged: aiPending
+                      ? null
+                      : (values) => draft.setPrecise(values.first),
+                ),
                 if (precise && looksLikeBroadRenovation(changes.text)) ...[
                   const SizedBox(height: 8),
                   const Text(
-                    'This is a broad renovation request. Choose Whole-room renovation to coordinate the selected changes; use Precise correction for a specific detail.',
+                    'This is a broad renovation request. Choose New design to coordinate the selected changes; use Precise correction for a specific detail.',
                   ),
                   TextButton(
                     onPressed: () => draft.setPrecise(false),
-                    child: const Text('Use whole-room renovation'),
+                    child: const Text('Use New design'),
                   ),
                 ],
                 const SizedBox(height: 12),
@@ -2292,7 +2312,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                         : 'What should change?',
                     hintText: precise
                         ? 'Remove only the cupboard handles; keep everything else.'
-                        : 'Modernise the whole kitchen; keep the layout.',
+                        : 'Leave blank for a fresh concept, or add your must-haves.',
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -2316,7 +2336,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 ExpansionTile(
                   key: const ValueKey('focus-edit-options'),
                   maintainState: true,
-                  title: const Text('Edit mode & protected features'),
+                  title: const Text('Protected features & help'),
                   children: [
                     const HelpHeading(
                       title: 'AI instructions',
@@ -2326,20 +2346,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
 
                     const SizedBox(height: 10),
                     const SizedBox(height: 8),
-                    SegmentedButton<bool>(
-                      segments: const [
-                        ButtonSegment(
-                          value: false,
-                          label: Text('Whole-room renovation'),
-                        ),
-                        ButtonSegment(
-                          value: true,
-                          label: Text('Precise correction'),
-                        ),
-                      ],
-                      selected: {precise},
-                      onSelectionChanged: (v) => draft.setPrecise(v.first),
-                    ),
                     TextField(
                       controller: protected,
                       minLines: 2,

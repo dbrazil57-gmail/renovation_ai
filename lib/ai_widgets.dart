@@ -12,6 +12,31 @@ import 'room_draft.dart';
 import 'design_concepts.dart';
 import 'design_delete_widgets.dart';
 import 'context_help.dart';
+import 'ai_model_choices.dart';
+
+class AiConnectionSettingsCard extends StatelessWidget {
+  final AiService ai;
+  const AiConnectionSettingsCard({super.key, required this.ai});
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: ai,
+    builder: (context, _) => Card(
+      child: ExpansionTile(
+        key: const ValueKey('ai-connection-settings'),
+        leading: const Icon(Icons.auto_awesome_outlined),
+        title: const Text('AI connection and models'),
+        subtitle: Text(
+          ai.connected
+              ? 'OpenAI · ${ai.model} · ${ai.quality}'
+              : 'Connect your API key and choose models',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        children: [AiConnectionCard(ai: ai)],
+      ),
+    ),
+  );
+}
 
 class AiConnectionCard extends StatefulWidget {
   final AiService ai;
@@ -89,6 +114,25 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
     }
   }
 
+  Future<void> _refreshModels() async {
+    setState(() {
+      busy = true;
+      message = null;
+    });
+    try {
+      await widget.ai.refreshModels();
+      if (mounted) {
+        setState(
+          () => message = 'Available models refreshed. No photos were sent or images generated.',
+        );
+      }
+    } on AiFailure catch (error) {
+      if (mounted) setState(() => message = error.message);
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: Listenable.merge([widget.ai, widget.ai.activity]),
@@ -126,6 +170,36 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                     : 'Photo analysis unavailable on this connection. Reconnect in Settings.',
               ),
               const SizedBox(height: 12),
+              if (widget.ai.imageModels.isNotEmpty)
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    for (final preset in [
+                      ('Room design', false, 'medium'),
+                      ('Quick ideas', true, 'low'),
+                      ('Final detail', false, 'high'),
+                    ])
+                      if (widget.ai.imageQualities.contains(preset.$3))
+                        ActionChip(
+                          label: Text(preset.$1),
+                          tooltip:
+                              '${preset.$3} quality; changes settings only, no generation',
+                          onPressed: busy || widget.ai.activity.active
+                              ? null
+                              : () {
+                                  widget.ai.selectImageSettings(
+                                    imageModel: recommendedImageModel(
+                                      widget.ai.imageModels,
+                                      fast: preset.$2,
+                                    ),
+                                    imageQuality: preset.$3,
+                                  );
+                                },
+                        ),
+                  ],
+                ),
+              const SizedBox(height: 8),
               Wrap(
                 spacing: 12,
                 runSpacing: 12,
@@ -144,7 +218,13 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                         for (final value in widget.ai.imageModels)
                           DropdownMenuItem(
                             value: value,
-                            child: Text(value, overflow: TextOverflow.ellipsis),
+                            child: Tooltip(
+                              message: '$value\n${imageModelPurpose(value)}',
+                              child: Text(
+                                imageModelLabel(value),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ),
                       ],
                       onChanged: busy || widget.ai.activity.active
@@ -188,8 +268,22 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                 ],
               ),
               const SizedBox(height: 8),
+              Text(imageModelPurpose(widget.ai.model)),
+              if (widget.ai.isDirect)
+                TextButton.icon(
+                  onPressed: busy || widget.ai.activity.active
+                      ? null
+                      : _refreshModels,
+                  icon: const Icon(Icons.refresh),
+                  label: Text(
+                    busy ? 'Refreshing models…' : 'Refresh available models',
+                  ),
+                ),
               const Text(
                 'Selection is local and sends no photos. Model access depends on your API account. Higher quality and extra attempts can cost more; review each request before sending.',
+              ),
+              const Text(
+                'OpenAI keys unlock supported OpenAI models only. Gemini needs its own Google API key and provider integration. Claude can analyse images and write briefs, but does not generate design images.',
               ),
               TextButton(
                 onPressed: busy || widget.ai.activity.active
@@ -379,13 +473,19 @@ class _AiEditCardState extends State<AiEditCard>
   bool duplicate = false;
   final received = <DesignVersion>[];
   bool get precise => widget.draft?.preciseEdit ?? false;
-  int get count => precise || widget.singleConcept
+  int get count => widget.singleConcept
       ? 1
+      : precise
+      ? widget.draft!.precisionConceptCount
       : widget.draft?.conceptCount ?? localCount;
   bool get compare => widget.draft?.compareStyles ?? localCompare;
   void setCount(int value) => setState(() {
     localCount = value;
-    widget.draft?.setConceptCount(value);
+    if (precise) {
+      widget.draft?.setPrecisionConceptCount(value);
+    } else {
+      widget.draft?.setConceptCount(value);
+    }
   });
   String summary() =>
       '${plannedCount == 1 ? 'AI result saved as a new version. Compare it before approving a new baseline.' : 'Saved ${received.length} of $plannedCount concepts as separate versions. Choose a design below to use it.'}${received.length < plannedCount ? ' Remaining concepts were not requested. Generating again starts a new batch.' : ''}${duplicate ? ' An output is byte-for-byte identical to an existing image. It was retained for history; no automatic replacement was requested.' : ''}';
@@ -457,6 +557,8 @@ class _AiEditCardState extends State<AiEditCard>
           title: Text(
             requests.length == 1
                 ? 'Send this edit to OpenAI?'
+                : captured.precise
+                ? 'Generate ${requests.length} correction variations?'
                 : 'Generate ${requests.length} design concepts?',
           ),
           content: SizedBox(
@@ -498,8 +600,10 @@ class _AiEditCardState extends State<AiEditCard>
                   ),
                   const SizedBox(height: 12),
                   if (requests.length > 1)
-                    const Text(
-                      'Each option starts from the same room but requests a distinct renovation scheme, not accessory changes. Your Keep choices and layout restrictions still apply. Each result saves before the next request. Stop after this image prevents further requests; the current request may still be billed.',
+                    Text(
+                      captured.precise
+                          ? 'Each variation applies the same specific correction to the same starting image. Variation is limited to choices your instruction leaves open; unrelated features stay protected. Each result saves before the next paid request. Stop after this image prevents further requests; the current request may still be billed.'
+                          : 'Each option starts from the same room but requests a distinct renovation scheme, not accessory changes. Your Keep choices and layout restrictions still apply. Each result saves before the next request. Stop after this image prevents further requests; the current request may still be billed.',
                     ),
                   for (final item in requests)
                     if (requests.length == 1)
@@ -706,24 +810,29 @@ class _AiEditCardState extends State<AiEditCard>
                 ),
               if (widget.compact && !widget.singleConcept) ...[
                 SegmentedButton<int>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(value: 1, label: Text('1 design')),
-                    ButtonSegment(value: 2, label: Text('2 ideas')),
-                    ButtonSegment(value: 3, label: Text('3 ideas')),
+                    ButtonSegment(
+                      value: 2,
+                      label: Text(precise ? '2 variations' : '2 ideas'),
+                    ),
+                    ButtonSegment(
+                      value: 3,
+                      label: Text(precise ? '3 variations' : '3 ideas'),
+                    ),
                   ],
                   selected: {count},
                   onSelectionChanged:
-                      busy ||
-                          pending != null ||
-                          precise ||
-                          widget.store.ai.activity.active
+                      busy || pending != null || widget.store.ai.activity.active
                       ? null
                       : (values) => setCount(values.first),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
-                    '$count paid image request${count == 1 ? '' : 's'} · confirm before sending',
+                    precise
+                        ? '$count paid image request${count == 1 ? '' : 's'} · requested correction only'
+                        : '$count paid image request${count == 1 ? '' : 's'} · confirm before sending',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
@@ -734,14 +843,13 @@ class _AiEditCardState extends State<AiEditCard>
                   contentPadding: EdgeInsets.zero,
                   title: const Text('Multiple design ideas'),
                   subtitle: Text(
-                    precise ? 'One image in precise correction mode.' : '2–3 distinct renovation schemes, not accessory changes. Each is a separate paid request.',
+                    precise
+                        ? '2–3 variations of your specific correction. Unrelated details are requested unchanged.'
+                        : '2–3 distinct renovation schemes, not accessory changes. Each is a separate paid request.',
                   ),
                   value: count > 1,
                   onChanged:
-                      busy ||
-                          pending != null ||
-                          precise ||
-                          widget.store.ai.activity.active
+                      busy || pending != null || widget.store.ai.activity.active
                       ? null
                       : (value) => setCount(value == true ? 3 : 1),
                 ),
@@ -760,7 +868,7 @@ class _AiEditCardState extends State<AiEditCard>
                         ? null
                         : (values) => setCount(values.first),
                   ),
-                if ((widget.draft?.styleIds.length ?? 0) > 1)
+                if (!precise && (widget.draft?.styleIds.length ?? 0) > 1)
                   CheckboxListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('Compare styles separately'),
@@ -811,7 +919,9 @@ class _AiEditCardState extends State<AiEditCard>
                         ? 'Generating…'
                         : widget.buttonLabel ??
                               (count > 1
-                                  ? 'Generate $count redesign options'
+                                  ? (precise
+                                        ? 'Generate $count correction variations'
+                                        : 'Generate $count redesign options')
                                   : 'Generate AI design'),
                   ),
                 ),
