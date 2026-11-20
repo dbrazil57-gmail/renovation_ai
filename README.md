@@ -1,10 +1,15 @@
 # Renovision AI
 
+Current test update: **1.0.15+16** applies the user's confirmed **A** icon for now:
+olive green with a cream room outline and sparkle. Launcher assets, app header,
+startup mark and web icons match. **315 tests pass**, icon export passes, analysis is clean, and Chrome/Android release builds pass (138.1/155.1 seconds). Source `ce6b2da600`.
+The previous 1.0.14 package remains unchanged for rollback.
+
 21 November 2026 update: the requested **1.0.14+15** test package adds local
 wall-paint previews without an AI key, saved editable paint layers, regional
 style choices and the feedback tools. **315 tests pass**, analysis is clean, and Chrome/Android release builds pass (111.2/234.8 seconds).
 The owner's support address/form URL is still needed to activate feedback delivery.
-Existing icons remain while the alternatives await a final choice.
+That package retained the previous icon; A was subsequently confirmed for 1.0.15.
 
 Android-first Flutter renovation app, developed on Windows with Chrome as the
 preview target. One shared Dart codebase builds platform-specific apps; the web
@@ -42,9 +47,9 @@ own settings, analysis and model/quality with Saved settings / Use these setting
 Refine this design actions. Startup shows loading and a non-destructive Retry.
 Older versions remain readable without inventing missing historical settings.
 
-Latest test package: **1.0.14+15**, source `ca541ef971`, at
-`output/mobile-test/renovision-test-1.0.14.apk` (also `renovision-test.apk`).
-APK identity, matching 1.0.13 signing certificate, ARM64,
+Latest test package: **1.0.15+16**, source `ce6b2da600`, at
+`output/mobile-test/renovision-test-1.0.15.apk` (also `renovision-test.apk`).
+APK identity, matching 1.0.14 signing certificate, ARM64,
 optional camera, restricted share paths and sample-only assets were checked.
 Install over the existing app without uninstalling. Older APKs remain for rollback.
 Physical S21 acceptance and live Gemini comparisons remain. No paid AI calls or

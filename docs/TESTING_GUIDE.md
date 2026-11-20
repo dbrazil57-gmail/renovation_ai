@@ -1,5 +1,25 @@
 # Testing and storage reference
 
+## Confirmed icon A test package — 21 November, 1.0.15+16
+
+The user confirmed A for now and accepted the offered updated test APK.
+**315 tests pass**, icon export passes, analysis is clean, and Chrome/Android release builds pass (138.1/155.1 seconds). Source `ce6b2da600`; 77,161,254 bytes; SHA256 `E0A4487484CE5F595559201C39FAB1265F5033528A6C21856770897A8CCC3E0D`.
+Use `output/mobile-test/renovision-test-1.0.15.apk` or `renovision-test.apk`.
+The previous 1.0.14 package retains its original checksum/icon for rollback.
+
+Install as an update without uninstalling or clearing storage. Check the olive
+green/cream room-and-sparkle launcher icon, then the matching app header/startup
+mark. Reopen the existing project and connection settings. If a pinned shortcut
+shows an older cached image, check the app drawer and recreate only that shortcut;
+do not clear app data. Physical S21 acceptance remains.
+
+The exporter was run with `INSTALL_RENOVISION_ICON=true` following confirmation;
+all 40 platform/master files match the reviewed A candidate. Android adaptive/
+themed XML and actual compiled olive/cream vector resources are verified. iOS,
+macOS and Windows assets are prepared; those native builds are not tested here.
+No real photos, app AI requests or private settings were used. Logs are under
+`output/mobile-test/` with `1.0.15`, plus `output/icon-a-install.log`.
+
 ## Requested 1.0.14 test package — 21 November 2026
 
 **315 tests pass**, analysis is clean, and Chrome/Android release builds pass (111.2/234.8 seconds). Source `ca541ef971`; size 77,151,194 bytes; SHA256
@@ -64,11 +84,10 @@ room choices, then use its Saved settings to inspect/reuse/refine it. Confirm
 originals and approved baselines stay intact. Legacy versions should explain
 when their original structured settings were not recorded.
 
-Six icon previews are at `output/design-review/icon-refinements/`; A is preferred
-so far, with final artwork not confirmed. Default platform icons were restored
-byte-for-byte. `tool/export_brand_assets_test.dart` defaults to preview output;
-use `--dart-define=INSTALL_RENOVISION_ICON=true` only after explicit icon approval.
-The new APK may retain the current icon while selection continues.
+Six previews remain at `output/design-review/icon-refinements/`. The 1.0.13/14
+packages retained the original icons; A was confirmed and applied for 1.0.15 above.
+The exporter still defaults to preview output; its install flag was used following
+that confirmation. Further icon alternatives remain optional.
 
 Updated after the whole-project audit, 19 November 2026. Use
 [feature status](../FEATURE_STATUS.md) for implementation limits and
@@ -198,11 +217,11 @@ Earlier comparison-stage verification: 36 focused tests and all 283 tests pass; 
 clean; release web build passed (83.3 seconds). No live Gemini test, customer-key
 use, physical phone acceptance or new APK in this batch.
 
-Latest test APK: **1.0.14+15**, source `ca541ef971`:
-`output/mobile-test/renovision-test-1.0.14.apk`, alias `renovision-test.apk`.
-SHA256: `A81CCF75510CB9C497E7BDA1EF5D69A0D90E9FFEC3C8B76F4CBBCF56BE1F707B`.
-Size: 77,151,194 bytes. Its application ID/signature match 1.0.13 for an in-place
-update. Previous APKs 1.0.13/1.0.12/1.0.11/1.0.10 retain unchanged checksums;
+Latest test APK: **1.0.15+16**, source `ce6b2da600`:
+`output/mobile-test/renovision-test-1.0.15.apk`, alias `renovision-test.apk`.
+SHA256: `E0A4487484CE5F595559201C39FAB1265F5033528A6C21856770897A8CCC3E0D`.
+Size: 77,161,254 bytes. Its application ID/signature match 1.0.14 for an in-place
+update. Previous APKs 1.0.14/1.0.13/1.0.12/1.0.11/1.0.10 retain their checksums;
 obsolete 1.0.8/1.0.9 were removed during cleanup. Development signing is not
 public-release signing. ARM64, optional camera and internet are verified; no
 microphone/storage-write permission or private project/credential assets.
@@ -211,9 +230,9 @@ Includes all completed 20 November changes: AI settings/models, visible deletion
 multiple precise variations, creative briefs, Gemini, typed Live names, help/model
 comparison, project Open/resume/conflicts, generation recipes/reuse/refinement,
 startup Retry and Save image / Share creation, plus 21 November local paint,
-regional choices and feedback tools. **315 tests pass**, analysis is clean, and Chrome/Android release builds pass (111.2/234.8 seconds). S21 acceptance
+regional choices, feedback tools and confirmed icon A. **315 tests pass**, icon export passes, analysis is clean, and Chrome/Android release builds pass (138.1/155.1 seconds). S21 acceptance
 remains. **Do not build another APK unless the user asks.** No real AI calls or
-stored-user-data changes during packaging. Launcher icons remain unchanged.
+stored-user-data changes during packaging. Confirmed A is applied in 1.0.15.
 
 Start the phone test by installing over the existing app, opening the existing
 project and checking its photos/versions/AI connection. Then test Camera → Live

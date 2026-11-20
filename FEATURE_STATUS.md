@@ -1,5 +1,12 @@
 # Renovision feature status
 
+**Confirmed icon update, 21 November — 1.0.15+16:** the user chose A for now.
+The olive/cream room-and-sparkle mark is applied to Android adaptive/legacy/themed
+launcher resources, web icons, the startup screen and app header. All 40 generated
+assets match the reviewed A candidate. iOS/macOS/Windows icon files are updated;
+those native builds remain unverified. **315 tests pass**, icon export passes, analysis is clean, and Chrome/Android release builds pass (138.1/155.1 seconds). Existing projects, app ID,
+signing identity and connection settings are preserved. Source `ce6b2da600`.
+
 **21 November — requested APK 1.0.14+15:** local wall paint now has manual
 polygon/brush/erase selection, per-wall colours, shading approximation, Undo/Redo,
 comparison, autosaved drafts and editable version recipes in plain/protected
@@ -16,8 +23,8 @@ passes (102.4 seconds). Android 1.0.13+14 built in 145.5 seconds from source
 `f69772aaa0`; package identity, signing, permissions and bundled files are verified.
 Existing platform icons remain unchanged.
 
-The user requested more icon shapes/colours before confirmation. Six previews
-are under `output/design-review/icon-refinements/`; A remains preferred so far.
+Six earlier alternatives remain under `output/design-review/icon-refinements/`;
+A is now confirmed and applied for the current test build.
 Preview generation uses local vector artwork, without a model key or paid AI call.
 The remaining limits below distinguish completed source from device acceptance.
 
@@ -103,17 +110,18 @@ Unspecified (Live) until confirmed. Existing custom names/photos are preserved.
 
 | Item | Verified position |
 | --- | --- |
-| Latest existing APK | **1.0.14+15**, source stamp `ca541ef971`; `output/mobile-test/renovision-test-1.0.14.apk`, also `renovision-test.apk` |
+| Latest existing APK | **1.0.15+16**, source stamp `ce6b2da600`; `output/mobile-test/renovision-test-1.0.15.apk`, also `renovision-test.apk` |
 | APK contents | Focus Canvas, embedded camera, manual same-view overlay, Live design and all completed source follow-ups below |
 | New in 1.0.13 | AI settings discovery, visible delete, 1/2/3 correction choices, creative prompts, typed Live names, OpenAI/Gemini presets, seven help guides, fixed-brief tests, Open/resume/conflict handling, saved recipes/reuse/refine, startup Retry, Save image / Share creation |
 | New in 1.0.14 | Local paint and editable layers, regional style choices, saved feedback drafts/copy and optional contact handoff |
-| Last APK checks | **315 tests pass**, analysis is clean, and Chrome/Android release builds pass (111.2/234.8 seconds). Matching signing certificate, restricted share provider and private-file exclusion verified |
+| New in 1.0.15 | Confirmed A icon, consistent launcher/startup/header/web branding; same app identity and storage |
+| Last APK checks | **315 tests pass**, icon export passes, analysis is clean, and Chrome/Android release builds pass (138.1/155.1 seconds). Matching signing certificate, compiled olive/cream icon, restricted share provider and private-file exclusion verified |
 | Earlier audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. The subsequent requested APK build made no paid AI call or data migration |
 | Real user evidence | User reports successful phone installation, direct AI analysis/generation, good generated designs, project auto-reload and useful comparison/camera overlay. This does not validate every newer source change |
 
 APK SHA256:
-`A81CCF75510CB9C497E7BDA1EF5D69A0D90E9FFEC3C8B76F4CBBCF56BE1F707B`.
-Size: 77,151,194 bytes. Signature matches 1.0.13; its checksum and rollback
+`E0A4487484CE5F595559201C39FAB1265F5033528A6C21856770897A8CCC3E0D`.
+Size: 77,161,254 bytes. Signature matches 1.0.14; its checksum and rollback
 packages remain unchanged. Camera hardware is optional, ARM64 is included, and
 no microphone/storage-write permission or private project/credential files are
 bundled. Its release-mode build uses the development signing key and example
@@ -271,5 +279,5 @@ These are automated source/build checks, not a physical-device acceptance run.
 
 See [the ordered task list](CODEX_NEXT_STEPS.md) and
 [testing/storage instructions](docs/TESTING_GUIDE.md). Validate the requested
-1.0.14 update on the S21 before claiming device acceptance.
+1.0.15 update on the S21 before claiming device acceptance.
 Build further phone packages only when requested.

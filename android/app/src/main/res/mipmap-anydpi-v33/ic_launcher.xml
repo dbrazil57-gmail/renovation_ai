@@ -1,0 +1,1 @@
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android"><background android:drawable="@color/renovision_icon_background"/><foreground android:drawable="@drawable/renovision_foreground"/><monochrome android:drawable="@drawable/renovision_foreground"/></adaptive-icon>

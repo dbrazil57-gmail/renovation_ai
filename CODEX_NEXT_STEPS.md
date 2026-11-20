@@ -5,6 +5,22 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Confirmed A icon — 21 November, requested 1.0.15+16
+
+- [x] User confirmed A for now: olive green, cream room outline and sparkle.
+- [x] Install the existing reviewed vector artwork across the platform icon assets;
+  add Android adaptive/themed resources and matching startup/header/web branding.
+  All 40 files match the reviewed A candidate; no generated image/API call needed.
+- [x] **315 tests pass**, icon export passes, analysis is clean, and Chrome/Android release builds pass (138.1/155.1 seconds). Source `ce6b2da600`; 77,161,254 bytes; SHA256 `E0A4487484CE5F595559201C39FAB1265F5033528A6C21856770897A8CCC3E0D`.
+  Verify the compiled olive/cream icon in the APK, matching 1.0.14 certificate,
+  existing app ID, private-file exclusion and unchanged previous APKs.
+- [ ] Accept on S21: install over the existing app; check the launcher and header
+  show A, then reopen the existing project and saved AI connection.
+
+This selection accepts the earlier offer to apply A and provide an updated test
+APK. More packages still need a request. Further icon refinement is optional;
+confirmation is no longer a blocker for the current branding.
+
 ## Requested test release — 21 November, 1.0.14+15
 
 - [x] Review unfinished conversation items against the actual source and brief.
@@ -25,7 +41,7 @@ existing project, try Paint walls without a key, leave/reopen a draft and save a
 version. Check regional choices and Feedback draft retention. Physical performance,
 real provider comparisons and actual feedback delivery are not established by mocks.
 Remaining release priorities: durable document-file linkage, analysis reuse,
-enforced AI edit masks, larger-project measurements and final icon approval.
+enforced AI edit masks and larger-project measurements. A is confirmed above.
 Wallpaper, automatic wall detection, tracked AR, accounts/payments and a packaged
 desktop companion are later stages, not included in this test APK.
 
@@ -83,15 +99,14 @@ The user requested the next APK and renewed credits to finish it. Keep the
 current icon unless a new one is confirmed. Old APKs remain for rollback; further
 packages still require a request.
 
-Branding: the user wants alternatives in design and colour; A is still preferred
-so far, not final. Six vector alternatives are at
+Branding: A was confirmed for now on 21 November and installed for 1.0.15. Six
+earlier vector alternatives remain at
 `output/design-review/icon-refinements/renovision-icon-refinements.png`, with
 individual A–F SVGs. Regenerate previews with `tool/preview_brand_options.ps1`.
-All 33 original platform icons were restored after initial candidate export;
-candidate assets are held in `output/design-review/icon-a-candidate/`. The app
-header also keeps its prior icon. `tool/export_brand_assets_test.dart` defaults
-to preview-only; installing artwork requires explicit icon confirmation and
-`INSTALL_RENOVISION_ICON=true`.
+The 1.0.14 package retained the original platform icons. The approved candidate
+at `output/design-review/icon-a-candidate/` is now applied, including the header
+and startup mark. The exporter still defaults to previews; the user-confirmed
+installation used `INSTALL_RENOVISION_ICON=true`.
 
 Published `output/mobile-test/renovision-test-1.0.13.apk` and the latest alias.
 Package ID/code/name, matching signing identity, ARM64/optional camera, restricted
@@ -207,7 +222,8 @@ The requested 1.0.13 includes this follow-up; 1.0.12 does not.
   launch. No stored ratings/automatic paid benchmark or automatic ranking yet.
 - [x] Prepare preview-only adaptive/vector launcher candidates and six colour/
   design alternatives. Existing launcher icons remain unchanged.
-- [ ] Confirm final icon with the user before installing candidate assets.
+- [x] User confirmed A for now on 21 November; install it in the current source
+  and requested 1.0.15 APK, preserving identity/storage. Further refinements optional.
 
 ## Completed audit batch
 
@@ -437,7 +453,8 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
   validate packaging, native files/keys and paid entitlement before release.
   Keep portable-file transfer separate from any later automatic cloud sync.
 
-- [ ] Production identity/name/icon/signing, privacy documentation, recovery/support.
+- [ ] Production package/signing, privacy documentation and recovery/support;
+  current display name and icon A are confirmed.
 - [ ] If selling AI usage: hosted HTTPS backend, secret management, enforced credits,
   pricing/unit economics, payment validation and explicit limits.
 - [ ] Physical-device matrix, release profiling, store/package review and separate
@@ -478,7 +495,7 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 | Competitor/review/pricing research | Public pricing refreshed 20 November for DecAI/Renovate AI/Remodel AI; currencies/platforms/allowances separated; Android checkout and own cost/value testing pending |
 | Online feature/issue feedback | Form, saved drafts, copy and email/form handoff hooks included in 1.0.14; owner's delivery address/URL and real receipt test pending |
 | Cleanup, minimal docs, Git ignore, commits | Four root/two guide documents; generated/private data ignored; local verified commits, no push |
-| APKs only when requested | Honoured; 1.0.14 explicitly requested on 21 November; keep existing icon pending confirmation |
+| APKs only when requested | Honoured; A selection accepts the offered updated 1.0.15 APK; further builds need a request |
 
 ## Working rules for every batch
 

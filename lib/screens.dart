@@ -40,6 +40,7 @@ import 'design_recipe_widgets.dart';
 import 'feedback_widgets.dart';
 import 'feedback_storage.dart';
 import 'local_paint_screen.dart';
+import 'brand_mark.dart';
 
 Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
     room.setupComplete
@@ -311,7 +312,7 @@ class _AppShellState extends State<AppShell> {
       appBar: AppBar(
         title: const Row(
           children: [
-            Icon(Icons.home_work_outlined),
+            ExcludeSemantics(child: RenoVisionMark()),
             SizedBox(width: 10),
             Expanded(
               child: Text(

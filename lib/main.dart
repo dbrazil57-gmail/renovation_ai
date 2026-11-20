@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
+import 'brand_mark.dart';
 import 'screens.dart';
 import 'store.dart';
 import 'app_appearance.dart';
@@ -81,7 +82,7 @@ class _RenovisionStartupState extends State<RenovisionStartup> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.home_work_outlined, size: 48),
+                    const RenoVisionMark(size: 48),
                     const SizedBox(height: 16),
                     Text(
                       failed

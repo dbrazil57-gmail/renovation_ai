@@ -1,5 +1,20 @@
 # Product and research reference
 
+## A confirmed for current branding — 21 November 2026
+
+The user confirmed "yes a for now": RenoVision keeps the olive green background,
+cream room outline and sparkle shown in candidate A. The deterministic exporter
+now installs those assets, including Android adaptive/themed variants, web/PWA,
+iOS/macOS and Windows icons. All 40 files match the reviewed candidate. The app
+header/startup use the same vector painter. This is source/export verification,
+not native iOS/macOS/Windows runtime acceptance.
+
+The selection also accepts the earlier offer to apply the icon and make an
+updated test APK, 1.0.15+16. **315 tests pass**, icon export passes, analysis is clean, and Chrome/Android release builds pass (138.1/155.1 seconds). The existing ID/signing/storage remain;
+1.0.14 and earlier packages are unchanged. Header and compiled Android icon
+checks distinguish this build from the previous preview-only artwork. Further
+icon refinements can follow, but A is no longer awaiting approval for this build.
+
 ## Local paint and regional choices — 21 November 2026
 
 The local-finishes proposal below is now partly implemented in requested test
@@ -131,10 +146,10 @@ imports and design writes clean up only new data; startup Retry does not clear
 stores. Persistent Android file overwrites, analysis-fact caching, enforced masks
 and measured large-library performance remain unfinished.
 
-The clean vector rendering of A was shown, but the user requested refinement
-and several design/colour alternatives. A remains acceptable and preferred so
-far, not a final approval. Platform launcher assets and the app header were
-returned to their previous versions; candidates are preview-only. A six-option
+At that 20 November stage, A was shown but the user requested refinement and
+design/colour alternatives. Assets/header were restored and candidates kept as
+previews. This was superseded by the 21 November confirmation/application above.
+A six-option
 board is at `output/design-review/icon-refinements/renovision-icon-refinements.png`:
 A olive/cream room, B lighter teal linework, C cream/olive framed room,
 D navy/champagne geometric reveal, E terracotta/cream doorway and F graphite/sage
@@ -211,16 +226,16 @@ supporting views and the prepared brief identical. Normal variety is unchanged.
 
 ### App name and icon options
 
-RenoVision is the confirmed display name in source. The user's latest marked
-image selects first-board **A** as the preferred name/icon direction so far:
+RenoVision is the confirmed display name in source. The 20 November marked
+image selected first-board **A** as the preferred name/icon direction:
 olive-green tile, cream room-corner outline and reveal sparkle. This supersedes
-the previous open icon choice; clean launcher assets are still pending. A preview
+the previous open choice. A was confirmed and installed on 21 November above. A preview
 board made with built-in imagegen is retained at
 `output/design-review/brand-options-2026-11-20.png`; its exact prompt is in the
 adjacent `brand-options-2026-11-20-prompt.txt`. These are ignored local design
 artifacts, with no customer photo/API key used. They are not installed assets.
 
-The first-board options are retained below; A is the current preferred direction.
+The first-board options are retained below; A is now the confirmed current choice.
 
 | Option | Working name | Mark |
 | --- | --- | --- |
