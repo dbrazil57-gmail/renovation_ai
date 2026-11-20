@@ -11,9 +11,11 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
 /** The API key is encrypted; its encryption key stays in Android Keystore. */
-class KeyVault(context: Context) {
-    private val preferences = context.getSharedPreferences("renovision_secrets", Context.MODE_PRIVATE)
-    private val alias = "renovision_openai_key_v1"
+class KeyVault(context: Context, provider: String = "openai") {
+    init { require(provider == "openai" || provider == "gemini") }
+    private val preferences = context.getSharedPreferences(
+        if (provider == "openai") "renovision_secrets" else "renovision_gemini_secrets", Context.MODE_PRIVATE)
+    private val alias = "renovision_${provider}_key_v1"
     private fun encryptionKey(): SecretKey {
         val store = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
         val existing = store.getKey(alias, null)

@@ -4,7 +4,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'package:image/image.dart' as img;
+
+import 'ai_photo_preparation.dart';
+export 'ai_photo_preparation.dart' show prepareInternetPhotos;
 
 import 'ai_activity.dart';
 import 'ai_types.dart';
@@ -12,23 +14,6 @@ import 'room_analysis.dart';
 import 'ai_model_choices.dart';
 
 const directImageModels = preferredRoomImageModels;
-
-List<Uint8List> prepareInternetPhotos(List<Uint8List> sources) {
-  return sources.map((bytes) {
-    var image = img.decodeImage(bytes);
-    if (image == null) throw const FormatException('Unsupported photo');
-    image = img.bakeOrientation(image);
-    if (image.width > 2048 || image.height > 2048) {
-      image = image.width >= image.height
-          ? img.copyResize(image, width: 2048)
-          : img.copyResize(image, height: 2048);
-    }
-    image.exif = img.ExifData();
-    image.iccProfile = null;
-    image.textData?.clear();
-    return img.encodePng(image);
-  }).toList();
-}
 
 /// Direct, fixed-host HTTPS transport. No laptop route or automatic retry.
 class OpenAiInternet {
@@ -82,23 +67,8 @@ class OpenAiInternet {
     }
   }
 
-  Future<List<Uint8List>> photos(List<Uint8List> sources) async {
-    if (sources.isEmpty ||
-        sources.length > 7 ||
-        sources.any((b) => b.isEmpty || b.length > 18 * 1024 * 1024) ||
-        sources.fold<int>(0, (n, b) => n + b.length) > 36 * 1024 * 1024) {
-      throw const AiFailure(
-        'Use up to seven photos, 18 MB each and 36 MB combined.',
-      );
-    }
-    try {
-      return await compute(prepareInternetPhotos, sources);
-    } catch (_) {
-      throw const AiFailure(
-        'A photo could not be prepared. No internet request was sent; the originals are unchanged.',
-      );
-    }
-  }
+  Future<List<Uint8List>> photos(List<Uint8List> sources) =>
+      internetPhotos(sources);
 
   Future<AiResult> edit({
     required String key,

@@ -10,7 +10,9 @@ import 'ai_types.dart';
 export 'ai_types.dart';
 import 'secret_store.dart';
 import 'openai_internet.dart';
+import 'gemini_internet.dart';
 import 'ai_model_choices.dart';
+export 'ai_model_choices.dart' show AiProvider;
 
 /// Supports a personal internet API key or the development relay. Provider keys
 /// stay in the platform vault/session memory, never project/photo records.
@@ -18,25 +20,35 @@ class AiService extends ChangeNotifier {
   final AiActivity activity = AiActivity();
   final http.Client Function() clientFactory;
   final SecretStore keyStore;
+  final SecretStore geminiKeyStore;
+  AiProvider provider = AiProvider.openai;
+  int connectionRevision = 0;
+  String get providerLabel => provider.label;
+  final Map<String, Map<String, dynamic>> _providerSettings = {};
+  SecretStore storeFor(AiProvider choice) =>
+      choice == AiProvider.openai ? keyStore : geminiKeyStore;
   bool isDirect = false;
   String? _directKey;
   bool get preferDirect => true;
-  bool get keyRememberedOnDevice => keyStore.persistent;
+  bool get keyRememberedOnDevice => storeFor(provider).persistent;
   Map<String, dynamic>? get rememberedConnection => !connected
       ? null
       : isDirect
       ? {
           'mode': 'direct',
+          'provider': provider.name,
           'model': model,
           'quality': quality,
           'analysisModel': analysisModel,
           'imageModels': imageModels,
+          'providerSettings': _providerSettings,
         }
       : {
           'url': _url,
           'pairingCode': _pairingCode,
           'model': model,
           'quality': quality,
+          'providerSettings': _providerSettings,
         };
   String? connectionNotice;
   String _preferredUrl = 'http://127.0.0.1:8787';
@@ -53,20 +65,33 @@ class AiService extends ChangeNotifier {
   String get relayUrl => _url ?? _preferredUrl;
 
   Future<void> restoreConnection(Map saved) async {
+    final preferences = saved['providerSettings'];
+    if (preferences is Map) {
+      for (final choice in AiProvider.values) {
+        final entry = preferences[choice.name];
+        if (entry is Map) {
+          _providerSettings[choice.name] = _safeSettings(entry, choice);
+        }
+      }
+    }
     if (saved['mode'] == 'direct') {
+      provider = AiProvider.fromId(saved['provider']);
+      // Remember choices even on web, where the key expires with the session.
+      _providerSettings[provider.name] = _safeSettings(saved, provider);
       isDirect = true;
       try {
-        final key = await keyStore.read();
+        final key = await storeFor(provider).read();
         if (key == null || key.isEmpty) {
-          connectionNotice = 'Enter your OpenAI API key in Settings to reconnect over the internet.';
+          connectionNotice =
+              'Enter your $providerLabel API key in Settings to reconnect over the internet.';
         } else {
           _directKey = key;
           final listed = saved['imageModels'];
           imageModels = listed is List
-              ? directImageModels.where(listed.contains).toList()
+              ? provider.imageModels.where(listed.contains).toList()
               : const [];
           if (imageModels.isEmpty &&
-              directImageModels.contains(saved['model'])) {
+              provider.imageModels.contains(saved['model'])) {
             imageModels = [saved['model'] as String];
           }
           if (imageModels.isEmpty) {
@@ -82,11 +107,18 @@ class AiService extends ChangeNotifier {
           quality = imageQualities.contains(saved['quality'])
               ? saved['quality'] as String
               : 'low';
-          analysisModel = saved['analysisModel'] is String
-              ? saved['analysisModel'] as String
-              : 'gpt-6-luna';
+          analysisModel = provider == AiProvider.openai
+              ? (saved['analysisModel'] is String
+                    ? saved['analysisModel'] as String
+                    : 'gpt-6-luna')
+              : (geminiAnalysisModels.contains(saved['analysisModel'])
+                    ? saved['analysisModel'] as String
+                    : null);
           maxInputImages = 7;
-          connectionNotice = 'Saved API key loaded from device storage. Photos go directly to OpenAI over the internet after confirmation.';
+          _rememberProvider();
+          connectionRevision++;
+          connectionNotice =
+              'Saved API key loaded from device storage. Photos go directly to $providerLabel over the internet after confirmation.';
         }
       } catch (_) {
         connectionNotice = 'The device could not read the saved API key. Re-enter it in AI settings.';
@@ -116,11 +148,59 @@ class AiService extends ChangeNotifier {
     notifyListeners();
   }
 
-  AiService({http.Client Function()? clientFactory, SecretStore? keyStore})
-    : clientFactory = clientFactory ?? http.Client.new,
-      keyStore = keyStore ?? createSecretStore();
+  AiService({
+    http.Client Function()? clientFactory,
+    SecretStore? keyStore,
+    SecretStore? geminiKeyStore,
+  }) : clientFactory = clientFactory ?? http.Client.new,
+       keyStore = keyStore ?? createSecretStore(),
+       geminiKeyStore = geminiKeyStore ?? createSecretStore(provider: 'gemini');
 
-  Future<void> connectDirect({required String apiKey}) async {
+  Map<String, dynamic> _safeSettings(Map value, AiProvider choice) => {
+    if (choice.imageModels.contains(value['model'])) 'model': value['model'],
+    if (['low', 'medium', 'high'].contains(value['quality']))
+      'quality': value['quality'],
+    if (value['analysisModel'] is String &&
+        (choice == AiProvider.openai
+                ? ['gpt-6-luna', 'gpt-4.1-mini', 'gpt-4o-mini']
+                : geminiAnalysisModels)
+            .contains(value['analysisModel']))
+      'analysisModel': value['analysisModel'],
+    if (value['imageModels'] is List)
+      'imageModels': choice.imageModels
+          .where((value['imageModels'] as List).contains)
+          .toList(),
+  };
+
+  void _rememberProvider() {
+    if (!isDirect || !connected) return;
+    _providerSettings[provider.name] = _safeSettings({
+      'model': model,
+      'quality': quality,
+      'analysisModel': analysisModel,
+      'imageModels': imageModels,
+    }, provider);
+  }
+
+  Future<void> useSavedProvider(AiProvider choice) async {
+    String? key;
+    try {
+      key = await storeFor(choice).read();
+    } catch (_) {
+      throw const AiFailure(
+        'The saved key could not be read. Re-enter it in AI settings.',
+      );
+    }
+    if (key == null || key.isEmpty) {
+      throw AiFailure('No saved ${choice.label} key. Enter one to connect.');
+    }
+    await connectDirect(apiKey: key, provider: choice);
+  }
+
+  Future<void> connectDirect({
+    required String apiKey,
+    AiProvider provider = AiProvider.openai,
+  }) async {
     if (activity.active) {
       throw const AiFailure('Wait for the current AI request to finish.');
     }
@@ -128,41 +208,67 @@ class AiService extends ChangeNotifier {
     if (key.isEmpty ||
         key.length > 1024 ||
         RegExp(r'[\s\x00-\x1f]').hasMatch(key)) {
-      throw const AiFailure(
-        'Enter your OpenAI developer API key without spaces.',
+      throw AiFailure(
+        'Enter your ${provider.label} developer API key without spaces.',
       );
     }
-    final available = await OpenAiInternet(clientFactory).models(key);
-    final images = directImageModels.where(available.contains).toList();
-    if (images.isEmpty) {
+    final available = provider == AiProvider.openai
+        ? await OpenAiInternet(clientFactory).models(key)
+        : await GeminiInternet(clientFactory).models(key);
+    if (activity.active) {
       throw const AiFailure(
-        'This key has no supported image model listed. Check image-model access in your OpenAI API account.',
+        'Wait for the current AI request to finish. No connection was changed.',
+      );
+    }
+    final images = provider.imageModels.where(available.contains).toList();
+    if (images.isEmpty) {
+      throw AiFailure(
+        'This key has no supported image model listed. Check image-model access in your ${provider.label} API account.',
       );
     }
     try {
-      await keyStore.write(key);
+      await storeFor(provider).write(key);
     } catch (_) {
       throw const AiFailure(
         'The API key could not be saved securely. No connection was changed.',
       );
     }
+    if (activity.active) {
+      throw const AiFailure(
+        'The key was saved, but the connection is unchanged while an AI request is running. Connect again after it finishes.',
+      );
+    }
+    _rememberProvider();
+    final saved = _providerSettings[provider.name];
+    final previousModel =
+        saved?['model'] ?? (this.provider == provider ? model : null);
+    final previousQuality =
+        saved?['quality'] ?? (this.provider == provider ? quality : null);
+    this.provider = provider;
     _directKey = key;
     isDirect = true;
     _url = null;
     _pairingCode = null;
     imageModels = images;
     imageQualities = const ['low', 'medium', 'high'];
-    model = images.contains(model) ? model : recommendedImageModel(images);
-    quality = imageQualities.contains(quality) ? quality : 'medium';
+    model = images.contains(previousModel)
+        ? previousModel as String
+        : recommendedImageModel(images);
+    quality = imageQualities.contains(previousQuality)
+        ? previousQuality as String
+        : 'medium';
     analysisModel =
-        [
-          'gpt-6-luna',
-          'gpt-4.1-mini',
-          'gpt-4o-mini',
-        ].where(available.contains).firstOrNull ??
-        'gpt-6-luna';
+        (provider == AiProvider.openai
+                ? ['gpt-6-luna', 'gpt-4.1-mini', 'gpt-4o-mini']
+                : geminiAnalysisModels)
+            .where(available.contains)
+            .firstOrNull ??
+        (provider == AiProvider.openai ? 'gpt-6-luna' : null);
     maxInputImages = 7;
-    connectionNotice = 'Connected directly to OpenAI over HTTPS. The key check generated no image.';
+    _rememberProvider();
+    connectionRevision++;
+    connectionNotice =
+        'Connected directly to $providerLabel over HTTPS. The key check generated no image. Listed models can still require billing or account approval.';
     notifyListeners();
   }
 
@@ -173,7 +279,7 @@ class AiService extends ChangeNotifier {
         'Connect an internet API key before refreshing models.',
       );
     }
-    await connectDirect(apiKey: key);
+    await connectDirect(apiKey: key, provider: provider);
   }
 
   @override
@@ -202,6 +308,9 @@ class AiService extends ChangeNotifier {
     required String url,
     required String pairingCode,
   }) async {
+    if (activity.active) {
+      throw const AiFailure('Wait for the current AI request to finish.');
+    }
     final uri = localRelay(url);
     if (pairingCode.trim().isEmpty) {
       throw const AiFailure('Enter the connection code shown by the relay.');
@@ -222,7 +331,9 @@ class AiService extends ChangeNotifier {
           'The relay returned an unsupported configuration.',
         );
       }
+      _rememberProvider();
       _url = uri.toString();
+      provider = AiProvider.openai;
       isDirect = false;
       _directKey = null;
       _preferredUrl = _url!;
@@ -246,6 +357,7 @@ class AiService extends ChangeNotifier {
       maxInputImages = data['maxInputImages'] is int
           ? (data['maxInputImages'] as int).clamp(1, 7)
           : 1;
+      connectionRevision++;
       notifyListeners();
     } on AiFailure {
       rethrow;
@@ -259,6 +371,25 @@ class AiService extends ChangeNotifier {
   }
 
   Future<void> disconnect() async {
+    await removeProviderKey(provider);
+  }
+
+  Future<void> removeProviderKey(AiProvider choice) async {
+    if (activity.active) {
+      throw const AiFailure('Wait for the current AI request to finish.');
+    }
+    try {
+      await storeFor(choice).delete();
+    } catch (_) {
+      throw const AiFailure(
+        'The device could not remove the stored key. Try Remove key again in Settings.',
+      );
+    }
+    if (choice != provider) {
+      notifyListeners();
+      return;
+    }
+    _rememberProvider();
     _directKey = null;
     _url = null;
     _pairingCode = null;
@@ -268,20 +399,19 @@ class AiService extends ChangeNotifier {
     imageModels = const [];
     imageQualities = const [];
     maxInputImages = 1;
+    connectionRevision++;
+    connectionNotice =
+        '${choice.label} disconnected and its key removed. Projects and other provider keys are unchanged.';
     notifyListeners();
-    try {
-      await keyStore.delete();
-    } catch (_) {
-      throw const AiFailure(
-        'The device could not remove the stored key. Try Remove key again in Settings.',
-      );
-    }
   }
 
   void selectImageSettings({
     required String imageModel,
     required String imageQuality,
   }) {
+    if (activity.active) {
+      throw const AiFailure('Wait for the current AI request to finish.');
+    }
     if (!connected ||
         !imageModels.contains(imageModel) ||
         !imageQualities.contains(imageQuality)) {
@@ -291,6 +421,7 @@ class AiService extends ChangeNotifier {
     }
     model = imageModel;
     quality = imageQuality;
+    _rememberProvider();
     notifyListeners();
   }
 
@@ -328,6 +459,16 @@ class AiService extends ChangeNotifier {
       );
     }
     if (isDirect) {
+      if (provider == AiProvider.gemini) {
+        return GeminiInternet(clientFactory).edit(
+          key: _directKey!,
+          prompt: prompt,
+          model: chosenModel,
+          quality: chosenQuality,
+          sources: [image, ...supportingImages],
+          onProgress: onProgress,
+        );
+      }
       return OpenAiInternet(clientFactory).edit(
         key: _directKey!,
         prompt: prompt,
@@ -416,6 +557,15 @@ class AiService extends ChangeNotifier {
       );
     }
     if (isDirect) {
+      if (provider == AiProvider.gemini) {
+        return GeminiInternet(clientFactory).analyse(
+          key: _directKey!,
+          model: analysisModel!,
+          prompt: context,
+          sources: inputs,
+          onProgress: onProgress,
+        );
+      }
       return OpenAiInternet(clientFactory).analyse(
         key: _directKey!,
         model: analysisModel!,

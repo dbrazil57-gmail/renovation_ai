@@ -48,9 +48,20 @@ acceptance remains. No paid API calls or user-data reset.
   icon set; launcher asset selection remains pending. Preview/prompt in
   `output/design-review/brand-icons-2026-11-20-v2*`.
 
-Gemini is a separate provider/key integration, not unlocked by an OpenAI key.
-The user's provider preference is pending; current work improves the OpenAI route.
-Anthropic can be considered for analysis later, not as the image renderer.
+Gemini is now a separate direct HTTPS provider with its own Google key. The
+recommended catalogue is browsable without keys: OpenAI 2.6 Sunburst/Flare and
+Nano Banana 2.1/Pro. Account-listed image models are filtered to these supported
+editors (older OpenAI 2.5 models remain for compatibility). Android stores each
+key in its own encrypted vault; switching retains each provider's model/quality.
+Gemini analysis uses an available supported vision model and the same saved
+observations/editable-prompt workflow. Google requests use stateless Interactions;
+neither provider automatically retries or receives the other's key.
+Claude can be considered for analysis later, not as the image renderer.
+Real Gemini quality/access testing remains pending the user's Google API key.
+Verification: all 275 tests pass, static analysis clean, final web release build
+passed (78.1 seconds), Android Kotlin compilation passed (no APK packaged).
+Existing 1.0.12 APK hash and the original project brief remain unchanged. Provider
+responses were mocked; no real app API request or customer-data reset was made.
 Next APK only on explicit request; 1.0.12 does not contain this follow-up.
 
 ## Completed audit batch
@@ -162,9 +173,9 @@ new child changes only the intended instruction while retaining its provenance.
 - [ ] Consider output critique/perceptual similarity checks before automatically
   claiming options are different. Never automatically repeat billed requests.
 
-Another provider is optional. The existing OpenAI route is sufficient for the
-basic app. Add Gemini/other image adapters only after comparative evidence and
-provider capability/terms checks; an assistant name alone is not an image API.
+OpenAI and Gemini adapters are implemented. Compare identical real-room inputs
+with explicit consent before claiming one is best or cheaper. Further providers
+remain optional; an assistant name alone is not an image API.
 
 ### 5. Implement genuine controlled precision editing
 

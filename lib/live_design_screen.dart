@@ -239,39 +239,47 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
     super.dispose();
   }
 
-  Future<bool> _analysisConsent() async =>
-      await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(
-            sourceId == null
-                ? 'Start live design?'
-                : analysisAttempted
-                ? 'Analyse this view again?'
-                : 'Analyse this saved view?',
-          ),
-          content: SingleChildScrollView(
-            child: Text(
-              sourceId == null
-                  ? 'The app will automatically capture one reference frame and save it in this project. One photo and the room brief are sent to your connected AI for a paid analysis. Video stays on this device. Each design or palette update is a separate request that you confirm.'
-                  : analysisAttempted
-                  ? 'Send the saved reference and brief for one more paid analysis. A failed request may already have been charged; check provider usage before retrying. No new camera frame is captured.'
-                  : 'Send this saved reference and brief for one paid analysis while staying in the camera viewer. No new camera frame is captured. Image generation has its own confirmation.',
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Start and analyse'),
-            ),
-          ],
+  int? analysisConnectionRevision;
+  Future<bool> _analysisConsent() async {
+    final revision = widget.store.ai.connectionRevision;
+    final provider = widget.store.ai.providerLabel;
+    final accepted = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          sourceId == null
+              ? 'Start live design?'
+              : analysisAttempted
+              ? 'Analyse this view again?'
+              : 'Analyse this saved view?',
         ),
-      ) ??
-      false;
+        content: SingleChildScrollView(
+          child: Text(
+            'Provider: $provider. ${sourceId == null
+                ? 'The app will automatically capture one reference frame and save it in this project. One photo and the room brief are sent to your connected AI for a paid analysis. Video stays on this device. Each design or palette update is a separate request that you confirm.'
+                : analysisAttempted
+                ? 'Send the saved reference and brief for one more paid analysis. A failed request may already have been charged; check provider usage before retrying. No new camera frame is captured.'
+                : 'Send this saved reference and brief for one paid analysis while staying in the camera viewer. No new camera frame is captured. Image generation has its own confirmation.'}',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Start and analyse'),
+          ),
+        ],
+      ),
+    );
+    if (accepted != true || revision != widget.store.ai.connectionRevision) {
+      return false;
+    }
+    analysisConnectionRevision = revision;
+    return true;
+  }
 
   Future<void> _start() async {
     if (busy ||
@@ -405,6 +413,12 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
     if (draft == null || sourceId == null || widget.store.ai.activity.active) {
       return;
     }
+    if (analysisConnectionRevision != widget.store.ai.connectionRevision) {
+      setState(
+        () => message = 'The AI connection changed. Confirm analysis again. No photos were sent.',
+      );
+      return;
+    }
     var started = false;
     setState(() {
       analysing = true;
@@ -420,6 +434,12 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
         return;
       }
       if (!mounted) return;
+      if (analysisConnectionRevision != widget.store.ai.connectionRevision) {
+        setState(
+          () => message = 'The AI connection changed. Confirm analysis again. No photos were sent.',
+        );
+        return;
+      }
       final context =
           'Identify the likely room type from this camera reference and describe visible features, uncertainty and useful renovation questions. This is one view, not a spatial scan.\n${roomTemplatePrompt(room!, draft!, includeRoomContext: false)}';
       widget.store.ai.activity.begin(

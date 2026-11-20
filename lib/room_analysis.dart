@@ -4,12 +4,14 @@ class RoomAnalysisResult {
   final List<String> questions;
   final String prompt;
   final String model;
+  final String provider;
   final String? requestId;
   const RoomAnalysisResult({
     required this.observations,
     required this.questions,
     required this.prompt,
     required this.model,
+    this.provider = 'OpenAI',
     this.requestId,
   });
 
@@ -44,6 +46,9 @@ class RoomAnalysisResult {
       questions: List<String>.from(value['questions'] as List),
       prompt: value['prompt'] as String,
       model: value['model'] as String,
+      provider: value['provider'] is String
+          ? value['provider'] as String
+          : 'OpenAI',
       requestId: value['requestId'] as String?,
     );
   }
@@ -53,6 +58,7 @@ class RoomAnalysisResult {
     'questions': questions,
     'prompt': prompt,
     'model': model,
+    'provider': provider,
     'requestId': requestId,
   };
 }

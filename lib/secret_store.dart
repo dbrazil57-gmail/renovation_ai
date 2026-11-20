@@ -4,4 +4,5 @@ import 'secret_store_session.dart'
 export 'secret_store_types.dart';
 import 'secret_store_types.dart';
 
-SecretStore createSecretStore() => platform.createSecretStore();
+SecretStore createSecretStore({String provider = 'openai'}) =>
+    platform.createSecretStore(provider: provider);

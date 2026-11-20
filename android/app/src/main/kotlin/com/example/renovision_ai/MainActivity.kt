@@ -14,6 +14,7 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         val vault = KeyVault(applicationContext)
+        val geminiVault = KeyVault(applicationContext, "gemini")
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "renovision/secrets")
             .setMethodCallHandler { call, result ->
                 try {
@@ -24,6 +25,12 @@ class MainActivity : FlutterActivity() {
                             result.success(null)
                         }
                         "deleteOpenAiKey" -> { vault.delete(); result.success(null) }
+                        "readGeminiKey" -> result.success(geminiVault.read())
+                        "writeGeminiKey" -> {
+                            geminiVault.write(call.argument<String>("key") ?: error("Missing key"))
+                            result.success(null)
+                        }
+                        "deleteGeminiKey" -> { geminiVault.delete(); result.success(null) }
                         else -> result.notImplemented()
                     }
                 } catch (_: Exception) {

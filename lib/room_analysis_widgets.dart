@@ -61,6 +61,8 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
     var activityStarted = false;
     try {
       final request = widget.buildRequest();
+      final connectionRevision = widget.store.ai.connectionRevision;
+      final providerLabel = widget.store.ai.providerLabel;
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
@@ -93,8 +95,8 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                     '${widget.store.ai.analysisModel} · ${request.supportingImages.length + 1} photos',
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'These photos and your room preferences will be sent to OpenAI. API charges apply. The AI will describe the room, flag uncertainties and draft a prompt. It will not generate a design image in this step. Originals stay saved in the app.',
+                  Text(
+                    'These photos and your room preferences will be sent to $providerLabel. API charges apply. The AI will describe the room, flag uncertainties and draft a prompt. It will not generate a design image in this step. Originals stay saved in the app.',
                   ),
                   const SizedBox(height: 8),
                   const Text(
@@ -119,6 +121,12 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
         ),
       );
       if (confirmed != true || !mounted) return;
+      if (connectionRevision != widget.store.ai.connectionRevision) {
+        setState(
+          () => message = 'The AI connection changed. Review and confirm again. No photos were sent.',
+        );
+        return;
+      }
       if (widget.store.ai.activity.active) return;
       widget.store.ai.activity.begin(
         roomId: request.roomId,
@@ -364,7 +372,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                     initiallyExpanded: true,
                     title: const Text('Room observations and AI prompt'),
                     subtitle: Text(
-                      'OpenAI · ${analysis.result.model} · ${analysis.created.toLocal()}',
+                      '${analysis.result.provider} · ${analysis.result.model} · ${analysis.created.toLocal()}',
                     ),
                     children: [
                       Padding(

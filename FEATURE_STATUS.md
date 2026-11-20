@@ -30,15 +30,23 @@ keep narrow instructions. These are improved requests, not measured quality guar
 New direct OpenAI connections prefer available GPT Image 2.6 Sunburst at medium
 quality. Saved model/quality choices are preserved. Room design / Quick ideas /
 Final detail presets change local settings only and use available account models;
-generation remains separately confirmed. Gemini needs its own key/adapter and
-is not implemented in this batch; Claude vision is for analysis, not image output.
+generation remains separately confirmed. Gemini is also implemented as a direct
+provider with a separate Google key: Nano Banana 2.1 defaults to 2K; Final detail
+prefers available Nano Banana Pro/4K. Curated recommendations can be viewed
+without a key. Provider switches preserve separate keys and model preferences;
+Android restores the selected provider without startup requests. Gemini analysis
+uses an available supported vision model and records Gemini provenance. Claude
+vision is for analysis, not image output, and has no adapter in this app.
 Verified account model lists now survive restart. Older saved connections retain
 their known selected model; Refresh available models checks access without sending
 photos or re-entering the saved key, and never silently changes a valid selection.
 
-All **258 tests passed** and static analysis is clean. The preceding UI batch's
-release web build passed in 74.9 seconds; it was not repeated for this naming
-correction. The Chrome test iframe stalled before tests; browser
+All **275 tests passed** and static analysis is clean. The final release web build
+passed in 78.1 seconds; Android Kotlin compilation passed without packaging an APK.
+Seventeen new tests cover Gemini transport, key isolation/switching, session-key
+expiry, offline restore, safe errors and provider-specific consent. All responses
+were synthetic; no paid provider call was made. The preceding Chrome test iframe
+stalled before tests; browser
 interaction acceptance remains. No new APK or app API call for this follow-up. The
 installed 1.0.12 does not contain these changes. The user confirmed RenoVision;
 Android/web/Flutter display labels are updated in source while the package ID and
@@ -86,7 +94,7 @@ provider quality, physical-camera behaviour or durable storage on every device.
 | Room scope | Whole-room defaults coordinate surfaces, fittings/appliances, lighting and loose-clutter removal; optional room-specific Keep/Replace and precise correction | Fixed uncertain fittings need explicit instructions; AI compliance is not guaranteed |
 | AI analysis | Sends selected photos and preferences to a vision model; saves observations, questions, editable AI-written prompt and provenance | Latest analysis only; normal workspace can require reanalysis after preference changes |
 | Prompt preparation | Offline deterministic fallback, AI-written prompt option, preview/copy, current requirements/protected features, correct working/supporting-image roles | Copying text does not attach photos or automatically return external results |
-| In-app AI | OpenAI direct HTTPS with a personal API key; optional laptop relay; confirmation, progress stages/elapsed time, storage-only result retry | No integrated Gemini/Claude/Bedrock adapter, in-flight paid-job cancellation, actual billed-cost meter or automatic output critique |
+| In-app AI | OpenAI/Gemini direct HTTPS with separate personal keys and saved model choices; curated image recommendations; optional OpenAI laptop relay; confirmation, progress stages/elapsed time, storage-only result retry | Gemini live account/image quality acceptance pending; no Claude/Bedrock adapter, in-flight paid-job cancellation, actual billed-cost meter or automatic output critique |
 | Multiple concepts | One/two/three sequential requests from a frozen source; distinct specified material/design directions; partial successes saved | Strong difference is requested, not measured. Only exact-byte duplicate detection, no semantic diversity scoring |
 | Refinement/history | Select saved result, narrow correction field, branches/parents, exact prompt and source/supporting IDs, model/request ID, favourites/reject/approval | Full structured settings and the matching analysis are not frozen per version |
 | Image viewing | Full-screen zoom/pan/pinch, device landscape, before/after slider, image export | Image rotation as a saved edit, share sheet and Save to Gallery are absent |

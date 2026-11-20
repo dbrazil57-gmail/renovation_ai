@@ -8,7 +8,7 @@ platform has not been verified.
 The working private beta supports saved projects/rooms, multiple photos,
 AI photo analysis and editable prompt drafting, one/two/three renovation concepts,
 selection/refinement, approved baselines, favourites, recoverable design deletion,
-zoom/crop/annotation and before/after comparison. A personal OpenAI API key can
+zoom/crop/annotation and before/after comparison. A personal OpenAI or Gemini API key can
 connect directly over HTTPS on the phone, without a laptop. An optional relay and
 manual copy/import workflow remain available.
 
@@ -28,9 +28,11 @@ as an expandable card; appearance also collapses. The image toolbar includes
 recoverable design deletion, and Refine visibly separates New design from Precise
 correction, each with 1/2/3 outputs appropriate to its scope. New design prompts
 take more initiative with sparse briefs. Available-model presets recommend detail
-versus speed while preserving saved choices. 258 tests pass; analyser clean;
-the preceding UI batch's web compilation passed. The Chrome interaction runner
-stalled before tests.
+versus speed while preserving saved choices. OpenAI and Gemini have separate
+direct API connections and a recommended image-model catalogue browsable without
+keys. All 275 tests pass; analyser clean; release web and Android Kotlin compilation
+passed. Gemini responses were mocked; live account/image acceptance remains.
+The preceding Chrome interaction runner stalled before tests.
 RenoVision is the confirmed display name in source; new icon options await selection.
 Saved account-model lists restore safely; Refresh available models discovers other
 supported models without another key entry on Android. No new APK.
@@ -87,14 +89,19 @@ appears missing. Source copies under `.local_backups/` do not back up app data.
 ## Test AI independently on Android
 
 Settings > AI connection and models → disconnect a laptop relay if necessary →
-Internet API → privately enter the OpenAI developer API key → Connect OpenAI over
-internet. Choose available image model/quality. Connecting checks model access;
+Internet API → choose OpenAI or Gemini → privately enter that provider's developer
+API key → Connect over internet. Recommended design models are browsable without
+a key. Choose available image model/quality (Gemini uses 1K/2K/4K resolution).
+Connecting checks listed model metadata, not paid image access;
 analysis and generation are separate confirmed requests.
 
 Android saves the key encrypted using Keystore, separately from projects. Chrome
 direct mode keeps the key in session memory and needs re-entry after reload.
 A subscription login is not an API key. Do not paste keys into chat or source.
-The app's provider integration is OpenAI; manually copied prompts are provider-neutral.
+The providers keep separate keys and model choices. Use saved provider key switches
+back without re-entry on Android. OpenAI defaults to available 2.6 Sunburst/medium;
+Gemini to Nano Banana 2.1/2K. Nano Banana Pro is the detailed Gemini preset.
+Manually copied prompts remain provider-neutral. Claude is not an image renderer.
 See [AI test setup](docs/TESTING_GUIDE.md#ai-test-setup).
 
 ## Save and resume

@@ -26,16 +26,27 @@ Official model guidance checked 20 November:
   not a measured claim of the best result for Claylands. Saved choices stay saved.
 - [Google image generation](https://aistudio.google.com/docs/image-generation)
   supports native generation/editing with Nano Banana models. Nano Banana 2.1 is
-  the current primary workhorse candidate for a future comparison; a
-  [Google API key](https://aistudio.google.com/docs/api-key) and adapter are required.
-  This batch does not implement Gemini. No new key should be pasted into chat.
+  the default Gemini editor; Nano Banana Pro is the complex-brief option. Gemini
+  3.1 Flash-Lite Image is omitted because Google does not optimise it for the
+  multi-reference/multi-turn editing this app needs. The adapter is implemented;
+  a separate [Google API key](https://aistudio.google.com/docs/api-key) is required
+  for actual testing. No key should be pasted into chat.
 - [Claude vision](https://platform.claude.com/docs/en/build-with-claude/vision)
   supports image understanding, not image generation/editing. It could later write
   observations/briefs alongside an image renderer, with its own credentials.
 
+The direct Gemini adapter follows the current [Interactions API](https://aistudio.google.com/docs/interactions-overview)
+and [REST schema](https://aistudio.google.com/api-reference/interactions-api/create-interaction)
+with revision 2026-05-20, store=false, metadata-free photo copies and no automatic
+retry. Model-list checks send no photos and do not prove billable image access.
+Nano Banana 2.1/2K is the starting preset; Quick ideas uses 1K, Final detail uses
+available Pro/4K. These are documented capability-based starting choices, not a
+comparative room-design benchmark. Real Gemini acceptance awaits a Google key.
+
 ### App name and icon options
 
-The current Android label `renovision_ai` and starter icon need polish. A preview
+RenoVision is the confirmed display name in source; the starter icon still needs
+selection. A preview
 board made with built-in imagegen is retained at
 `output/design-review/brand-options-2026-11-20.png`; its exact prompt is in the
 adjacent `brand-options-2026-11-20-prompt.txt`. These are ignored local design
@@ -414,12 +425,11 @@ Configured options are not a verification of the user's account access. Default
 remains 2.5 Sunburst at low quality, so adding newer options does not silently
 change the first request. No live model benchmark has been performed.
 
-If our tests show insufficient quality/value, consider a separate benchmark of
-[Gemini Nano Banana 2.1](https://aistudio.google.com/docs/image-generation), which
-Google documents for image generation and conversational editing. It is not
-integrated here. Adding it means another API adapter, credentials, request/error
-handling and comparable tests; it is optional, not a prerequisite. No provider
-guarantees unaltered architecture solely from a prompt.
+The separate [Gemini Nano Banana 2.1](https://aistudio.google.com/docs/image-generation)
+adapter is now integrated in source. It has independent credentials and mocked
+request/error tests; real quality/value comparison remains pending. Another
+provider is optional, not a prerequisite. No provider guarantees unaltered
+architecture solely from a prompt.
 
 ### API access and subscription credits
 

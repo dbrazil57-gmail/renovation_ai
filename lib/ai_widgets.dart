@@ -27,7 +27,7 @@ class AiConnectionSettingsCard extends StatelessWidget {
         title: const Text('AI connection and models'),
         subtitle: Text(
           ai.connected
-              ? 'OpenAI · ${ai.model} · ${ai.quality}'
+              ? '${ai.providerLabel} · ${imageModelLabel(ai.model!)} · ${imageQualityLabel(ai.provider, ai.quality!)}'
               : 'Connect your API key and choose models',
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
@@ -50,12 +50,14 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
   final code = TextEditingController();
   final apiKey = TextEditingController();
   late bool direct;
+  late AiProvider selectedProvider;
   bool busy = false;
   String? message;
   @override
   void initState() {
     super.initState();
     url = TextEditingController(text: widget.ai.relayUrl);
+    selectedProvider = widget.ai.provider;
     direct =
         widget.ai.isDirect || (!widget.ai.connected && widget.ai.preferDirect);
   }
@@ -75,7 +77,10 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
     });
     try {
       if (direct) {
-        await widget.ai.connectDirect(apiKey: apiKey.text);
+        await widget.ai.connectDirect(
+          apiKey: apiKey.text,
+          provider: selectedProvider,
+        );
       } else {
         await widget.ai.connect(url: url.text, pairingCode: code.text);
       }
@@ -101,10 +106,11 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
       message = null;
     });
     try {
-      await widget.ai.disconnect();
+      await widget.ai.removeProviderKey(selectedProvider);
       if (mounted) {
         setState(
-          () => message = 'AI disconnected and any saved API key removed. Projects are unchanged.',
+          () => message =
+              '${selectedProvider.label} key removed. Projects and other provider keys are unchanged.',
         );
       }
     } on AiFailure catch (error) {
@@ -133,6 +139,26 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
     }
   }
 
+  Future<void> _useSavedKey() async {
+    setState(() {
+      busy = true;
+      message = null;
+    });
+    try {
+      await widget.ai.useSavedProvider(selectedProvider);
+      if (mounted) {
+        setState(
+          () => message =
+              'Saved ${selectedProvider.label} key connected. No photos were sent.',
+        );
+      }
+    } on AiFailure catch (error) {
+      if (mounted) setState(() => message = error.message);
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: Listenable.merge([widget.ai, widget.ai.activity]),
@@ -147,22 +173,69 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
+            DropdownButtonFormField<AiProvider>(
+              key: ValueKey('ai-provider-${selectedProvider.name}'),
+              initialValue: selectedProvider,
+              decoration: const InputDecoration(
+                labelText: 'AI provider',
+                border: OutlineInputBorder(),
+              ),
+              items: [
+                for (final value in AiProvider.values)
+                  DropdownMenuItem(value: value, child: Text(value.label)),
+              ],
+              onChanged: busy || widget.ai.activity.active
+                  ? null
+                  : (value) {
+                      if (value != null) {
+                        setState(() {
+                          selectedProvider = value;
+                          direct = true;
+                          apiKey.clear();
+                          message = null;
+                        });
+                      }
+                    },
+            ),
+            ExpansionTile(
+              key: ValueKey('recommended-models-${selectedProvider.name}'),
+              title: const Text('Recommended design models'),
+              children: [
+                for (final id in selectedProvider.recommendations)
+                  ListTile(
+                    dense: true,
+                    title: Text(imageModelLabel(id)),
+                    subtitle: Text(imageModelPurpose(id)),
+                  ),
+                const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    'Browse without a key. Connecting checks listed models; image access and billing depend on your account.',
+                  ),
+                ),
+              ],
+            ),
             Text(
-              (widget.ai.connected ? widget.ai.isDirect : direct)
-                  ? 'Internet API sends photos and prompts directly from this device to OpenAI over HTTPS. No PC, local gateway or tunnel is needed. Enter your own OpenAI developer API key.'
+              direct
+                  ? 'Photos and prompts go directly to ${selectedProvider.label} over HTTPS after confirmation. Use a separate ${selectedProvider.label} developer API key; no laptop is needed.'
                   : 'Development option: start the relay on your PC and enter its connection code here. The OpenAI key is entered in the relay terminal. Your phone needs that PC connection in this mode.',
             ),
             const SizedBox(height: 12),
             if (widget.ai.connectionNotice != null)
               Text(widget.ai.connectionNotice!),
-            if (widget.ai.connected) ...[
+            if (widget.ai.connected && widget.ai.provider != selectedProvider)
+              Text(
+                'Active connection: ${widget.ai.providerLabel}. It stays active until the new provider connects successfully.',
+              ),
+            if (widget.ai.connected &&
+                widget.ai.provider == selectedProvider) ...[
               Text(
                 widget.ai.isDirect
-                    ? 'Connection: internet API · api.openai.com'
+                    ? 'Connection: internet API · ${widget.ai.provider.host}'
                     : 'Connection: laptop relay · development',
               ),
               Text(
-                'Connected to OpenAI · ${widget.ai.model} · ${widget.ai.quality} quality',
+                'Connected to ${widget.ai.providerLabel} · ${widget.ai.model} · ${imageQualityLabel(widget.ai.provider, widget.ai.quality!)}',
               ),
               Text(
                 widget.ai.supportsAnalysis
@@ -184,7 +257,7 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                         ActionChip(
                           label: Text(preset.$1),
                           tooltip:
-                              '${preset.$3} quality; changes settings only, no generation',
+                              '${imageQualityLabel(widget.ai.provider, preset.$3)}; changes settings only, no generation',
                           onPressed: busy || widget.ai.activity.active
                               ? null
                               : () {
@@ -192,6 +265,7 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                                     imageModel: recommendedImageModel(
                                       widget.ai.imageModels,
                                       fast: preset.$2,
+                                      detailed: preset.$1 == 'Final detail',
                                     ),
                                     imageQuality: preset.$3,
                                   );
@@ -245,13 +319,20 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                       key: ValueKey('image-quality-${widget.ai.quality}'),
                       initialValue: widget.ai.quality,
                       isExpanded: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Image quality',
+                      decoration: InputDecoration(
+                        labelText: widget.ai.provider == AiProvider.gemini
+                            ? 'Image resolution'
+                            : 'Image quality',
                         border: OutlineInputBorder(),
                       ),
                       items: [
                         for (final value in widget.ai.imageQualities)
-                          DropdownMenuItem(value: value, child: Text(value)),
+                          DropdownMenuItem(
+                            value: value,
+                            child: Text(
+                              imageQualityLabel(widget.ai.provider, value),
+                            ),
+                          ),
                       ],
                       onChanged: busy || widget.ai.activity.active
                           ? null
@@ -283,7 +364,7 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                 'Selection is local and sends no photos. Model access depends on your API account. Higher quality and extra attempts can cost more; review each request before sending.',
               ),
               const Text(
-                'OpenAI keys unlock supported OpenAI models only. Gemini needs its own Google API key and provider integration. Claude can analyse images and write briefs, but does not generate design images.',
+                'Each provider needs its own API key. Claude is not listed as a design renderer because it does not generate images.',
               ),
               TextButton(
                 onPressed: busy || widget.ai.activity.active
@@ -306,6 +387,7 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                     ? null
                     : (values) => setState(() {
                         direct = values.first;
+                        if (!direct) selectedProvider = AiProvider.openai;
                         message = null;
                       }),
               ),
@@ -319,14 +401,15 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                   enableIMEPersonalizedLearning: false,
                   autofillHints: const [],
                   maxLength: 1024,
-                  decoration: const InputDecoration(
-                    labelText: 'OpenAI API key',
-                    border: OutlineInputBorder(),
+                  enabled: !busy && !widget.ai.activity.active,
+                  decoration: InputDecoration(
+                    labelText: '${selectedProvider.label} API key',
+                    border: const OutlineInputBorder(),
                     counterText: '',
                   ),
                 ),
                 Text(
-                  widget.ai.keyRememberedOnDevice
+                  widget.ai.storeFor(selectedProvider).persistent
                       ? 'Saved encrypted using Android Keystore. The key stays separate from project files and backups.'
                       : 'Kept in memory for this session only. This browser does not save your API key.',
                 ),
@@ -336,8 +419,16 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                       ? null
                       : _connect,
                   child: Text(
-                    busy ? 'Checking API key…' : 'Connect OpenAI over internet',
+                    busy
+                        ? 'Checking API key…'
+                        : 'Connect ${selectedProvider.label} over internet',
                   ),
+                ),
+                TextButton(
+                  onPressed: busy || widget.ai.activity.active
+                      ? null
+                      : _useSavedKey,
+                  child: const Text('Use saved provider key'),
                 ),
                 TextButton(
                   onPressed: busy || widget.ai.activity.active
@@ -550,13 +641,15 @@ class _AiEditCardState extends State<AiEditCard>
     });
     widget.onPendingChanged?.call(true);
     var activityStarted = false;
+    final connectionRevision = widget.store.ai.connectionRevision;
+    final providerLabel = widget.store.ai.providerLabel;
     try {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
           title: Text(
             requests.length == 1
-                ? 'Send this edit to OpenAI?'
+                ? 'Send this edit to $providerLabel?'
                 : captured.precise
                 ? 'Generate ${requests.length} correction variations?'
                 : 'Generate ${requests.length} design concepts?',
@@ -592,11 +685,11 @@ class _AiEditCardState extends State<AiEditCard>
                   ],
                   const SizedBox(height: 12),
                   Text(
-                    '$imageModel · $imageQuality quality · ${captured.supportingImages.length + 1} input views · ${requests.length == 1 ? 'one result' : '${requests.length} separate paid image requests'}',
+                    '$imageModel · ${imageQualityLabel(widget.store.ai.provider, imageQuality ?? 'not selected')} ${widget.store.ai.provider == AiProvider.gemini ? 'resolution' : 'quality'} · ${captured.supportingImages.length + 1} input views · ${requests.length == 1 ? 'one result' : '${requests.length} separate paid image requests'}',
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'The working image, any supporting views shown above, and prompt will leave this device and be sent to OpenAI. API charges apply and additional inputs can increase cost. Each metadata-free working copy is limited to 2048 pixels on its longest side. Your originals and approved baseline remain unchanged. Precise preservation and a consistent 3D reconstruction are not guaranteed.',
+                  Text(
+                    'The working image, any supporting views shown above, and prompt will leave this device and be sent to $providerLabel. API charges apply and additional inputs can increase cost. Each metadata-free working copy is limited to 2048 pixels on its longest side. Your originals and approved baseline remain unchanged. Precise preservation and a consistent 3D reconstruction are not guaranteed.',
                   ),
                   const SizedBox(height: 12),
                   if (requests.length > 1)
@@ -624,12 +717,18 @@ class _AiEditCardState extends State<AiEditCard>
             ),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Send to OpenAI'),
+              child: Text('Send to $providerLabel'),
             ),
           ],
         ),
       );
       if (confirmed != true || !mounted) return;
+      if (connectionRevision != widget.store.ai.connectionRevision) {
+        setState(
+          () => message = 'The AI connection changed. Review and confirm the request again. No photos were sent.',
+        );
+        return;
+      }
       if (widget.beforeSend != null && !await widget.beforeSend!()) {
         if (mounted) {
           setState(
@@ -639,6 +738,7 @@ class _AiEditCardState extends State<AiEditCard>
         return;
       }
       if (widget.store.ai.activity.active) return;
+      if (connectionRevision != widget.store.ai.connectionRevision) return;
       widget.store.ai.activity.begin(
         roomId: captured.roomId,
         operation: 'Design',
@@ -759,7 +859,7 @@ class _AiEditCardState extends State<AiEditCard>
           detail: 'Keep this screen open and use Retry saving result. Retrying this save does not call AI again.',
         );
         setState(
-          () => message = 'The AI result arrived, but local saving failed. Keep this screen open and retry saving; this does not call OpenAI again. Remaining concepts were not requested.',
+          () => message = 'The AI result arrived, but local saving failed. Keep this screen open and retry saving; this does not call AI again. Remaining concepts were not requested.',
         );
       }
       return false;
@@ -805,7 +905,7 @@ class _AiEditCardState extends State<AiEditCard>
               if (!widget.compact)
                 Text(
                   widget.store.ai.connected
-                      ? 'OpenAI · ${widget.store.ai.model} · ${widget.store.ai.quality} quality. Uses the image currently selected in “Working from”.'
+                      ? '${widget.store.ai.providerLabel} · ${widget.store.ai.model} · ${imageQualityLabel(widget.store.ai.provider, widget.store.ai.quality!)}. Uses the image currently selected in “Working from”.'
                       : 'Connect AI in Settings to generate and save a result here.',
                 ),
               if (widget.compact && !widget.singleConcept) ...[
@@ -1051,7 +1151,7 @@ class AiTestJourneyCard extends StatelessWidget {
               ),
             ),
             const Text(
-              'API access and billing are separate from a ChatGPT subscription. Connecting and changing settings do not call OpenAI; analysis and generation each ask before sending photos.',
+              'Developer API access and billing are separate from chat subscriptions. Connecting checks model metadata; changing settings sends no photos. Analysis and generation each ask before sending.',
             ),
           ],
         ),

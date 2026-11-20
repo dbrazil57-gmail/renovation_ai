@@ -8,15 +8,23 @@ instructions have been consolidated here; no real project data was changed.
 ## 20 November source follow-up testing
 
 These changes are after APK 1.0.12 and need a new package only when requested.
-All 258 local tests pass; static analysis is clean. New coverage checks first/
+All 275 local tests pass; static analysis is clean. New coverage checks first/
 collapsed AI settings and appearance, model presets without generation, safe
 toolbar deletion, separate saved precision counts and three strictly scoped
 correction requests from one source. Existing originals/baselines are preserved.
 The targeted Chrome runner stalled in its JavaScript test iframe before running
 tests; its diagnostic reported a responsive host with no pending network requests.
 The isolated runner was stopped. Do not count that browser attempt as a pass.
-Release-web compilation passed separately in 74.9 seconds, recorded in the
-feedback logs; it does not establish browser interaction acceptance.
+Final release-web compilation passed in 78.1 seconds; the earlier normal build
+also passed its Wasm dry run. Android Kotlin compilation passed independently,
+without packaging an APK. These checks do not establish device/browser acceptance.
+
+Provider logs: `output/gemini-analyze.log`, `gemini-regression-tests.log`,
+`gemini-web-build-final.log` and `gemini-android-kotlin.log`. Seventeen new tests
+cover stateless Google requests, resolution mapping, structured analysis,
+separate credentials/preferences, session expiry/reconnection, offline restore,
+metadata-only checks, errors/pagination, invalid input and consent-provider changes.
+No app key or customer image was used; real Gemini output quality is untested.
 
 Logs: `output/feedback-2026-11-20-analysis.log`, `-focused-tests.log`,
 `-regression.log`, `-chrome-tests.log` and `-web-build.log` with the same prefix.
@@ -44,9 +52,28 @@ Next acceptance after the requested package:
    For an older reviewed AI prompt marked stale, reanalyse with consent or deselect
    its use to preview the new deterministic brief. Do not silently repeat analysis.
 
-Gemini is not integrated by these fixes. It requires a separate Google key and
-adapter. Claude is an optional analysis/prompt-writing candidate, not an image
-generator. The OpenAI key cannot authenticate with either provider.
+Gemini is integrated in source with its own Google key. Browse OpenAI/Gemini
+recommendations without entering a key. Only supported room-image editors are
+offered; Claude remains an analysis candidate, not an image generator. The
+OpenAI key cannot authenticate with another provider.
+
+Provider acceptance (after a requested APK, using keys entered privately):
+
+1. Connect Gemini: confirm Nano Banana 2.1/2K is the new-account default and no
+   photo was sent. Room analysis should show Gemini and its analysis model.
+2. Confirm one design, then a refinement and multiple distinct concepts. Check
+   references, room layout, saved results and provider/model provenance. Test 1K
+   before increasing output resolution; each confirmed request may be billed.
+3. Set a Gemini model/resolution, switch to OpenAI with its separate key, then
+   select Gemini and Use saved provider key. Choices should return independently.
+4. Restart Android: selected provider/key restores without sending photos.
+   Chrome keys remain session-only. Remove one key: the other and projects stay.
+5. Cancel confirmation, reject an invalid key, check revoked/quota errors and
+   verify a failed new-provider connection leaves the current connection intact.
+6. Export/open the project: all room work survives; credentials stay on device.
+
+Google integration tests use synthetic responses. A real Gemini output comparison,
+S21 Keystore persistence and browser network acceptance need the user's key/device.
 
 Live-room naming check (same source-only follow-up): start through the room
 picker with Bedroom and Live design; the room should display **Bedroom (Live)**.
@@ -204,8 +231,8 @@ AI result**. Copying a prompt does not import the returned image automatically.
 ### Independent Android internet connection
 
 1. Open Settings > AI connection and models. Disconnect a laptop relay if needed.
-2. Choose **Internet API**, enter the personal OpenAI developer API key privately,
-   then **Connect OpenAI over internet**. The connection checks available models;
+2. Choose **Internet API**, select OpenAI or Gemini, enter that provider's developer
+   API key privately, then **Connect over internet**. The check lists models;
    it does not generate an image. Select a supported model/quality shown by the app.
 3. Open the room, choose its working image and confirm a separate analysis request.
    Review observations/questions and the editable draft prompt.
@@ -219,11 +246,11 @@ Android encrypts the saved key with Keystore and excludes its secret preference
 from OS backup/transfer. Chrome direct mode keeps the key in memory for that
 session only, so reload requires re-entry. Projects do not transport credentials.
 No shared key is embedded in source/APK. A subscription login is not an API key.
-The independent phone route uses fixed OpenAI HTTPS endpoints, rejects redirects
+The independent phone routes use fixed OpenAI/Google HTTPS endpoints, reject redirects
 and does not silently retry requests. No laptop or `adb reverse` is needed.
 
-The existing in-app provider is OpenAI only. Other image providers would require
-an adapter/capability checks and testing; provider-neutral copy/import works with
+OpenAI and Gemini are integrated. Further image providers require an adapter,
+capability checks and testing; provider-neutral copy/import works with
 any external tool that supports the requested image task. The app does not log
 into ChatGPT, Gemini or Claude subscriptions. Historical model/pricing research
 in Product notes is dated; it is not a verified current access or cost guarantee.
