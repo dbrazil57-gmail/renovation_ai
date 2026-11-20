@@ -22,6 +22,17 @@ class AiService extends ChangeNotifier {
   final SecretStore keyStore;
   final SecretStore geminiKeyStore;
   AiProvider provider = AiProvider.openai;
+
+  /// Deliberate testing aid; resets off on restart and is not exported.
+  bool fixedComparisonBrief = false;
+  void setFixedComparisonBrief(bool enabled) {
+    if (activity.active) {
+      throw const AiFailure('Wait for the current AI request to finish.');
+    }
+    fixedComparisonBrief = enabled;
+    notifyListeners();
+  }
+
   int connectionRevision = 0;
   String get providerLabel => provider.label;
   final Map<String, Map<String, dynamic>> _providerSettings = {};

@@ -32,6 +32,25 @@ class ConceptRecords extends MemoryBox {
 void main() {
   const base =
       'Keep the window and layout.\nDESIGN STYLE: Modern + Classic.\nSTYLE DETAILS: old blended suggestions.\nProduce one concept.';
+  test(
+    'fixed model tests preserve the exact brief across attempts and edit modes',
+    () {
+      for (final precise in [false, true]) {
+        for (final attempt in [0, 1, 7]) {
+          final plan = planDesignConcepts(
+            prompt: base,
+            precise: precise,
+            count: 1,
+            styleIds: ['modern', 'classic'],
+            compareStyles: true,
+            previousConcepts: attempt,
+            fixedBrief: true,
+          ).single;
+          expect(plan.prompt, base);
+        }
+      }
+    },
+  );
   test('separate style concepts replace blended style lines and retain protections', () {
     final plans = planDesignConcepts(
       prompt: base,
@@ -266,6 +285,42 @@ void main() {
     await tester.tap(find.text('Send to OpenAI'));
     await tester.pumpAndSettle();
   }
+
+  testWidgets(
+    'fixed model tests submit identical prompts from the reselected original',
+    (tester) async {
+      draft.setConceptCount(1);
+      store.ai.setFixedComparisonBrief(true);
+      await show(tester);
+      await send(tester);
+      chosen =
+          null; // The tester reselects the original before changing models.
+      await send(tester);
+      expect(submitted, hasLength(2));
+      expect(submitted.map((request) => request['prompt']), [base, base]);
+      expect(submitted.map((request) => request['image']), [
+        base64Encode(source),
+        base64Encode(source),
+      ]);
+      expect(store.designsFor(room.id), hasLength(2));
+    },
+  );
+
+  testWidgets(
+    'fixed model tests block a multi-output request before consent or payment',
+    (tester) async {
+      store.ai.setFixedComparisonBrief(true);
+      await show(tester);
+      await openConfirmation(tester);
+      expect(
+        find.textContaining('Select one result for a fixed-brief model test'),
+        findsOneWidget,
+      );
+      expect(find.text('Send to OpenAI'), findsNothing);
+      expect(submitted, isEmpty);
+      expect(draft.conceptCount, 3); // The normal saved choice is preserved.
+    },
+  );
 
   test(
     'batch preferences autosave and survive portable project round trip',

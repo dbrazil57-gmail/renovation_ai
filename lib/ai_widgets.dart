@@ -13,6 +13,7 @@ import 'design_concepts.dart';
 import 'design_delete_widgets.dart';
 import 'context_help.dart';
 import 'ai_model_choices.dart';
+import 'walkthrough_screen.dart';
 
 class AiConnectionSettingsCard extends StatelessWidget {
   final AiService ai;
@@ -200,6 +201,9 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
             ExpansionTile(
               key: ValueKey('recommended-models-${selectedProvider.name}'),
               title: const Text('Recommended design models'),
+              subtitle: const Text(
+                'Starting shortlist for testing · not yet ranked',
+              ),
               children: [
                 for (final id in selectedProvider.recommendations)
                   ListTile(
@@ -212,6 +216,23 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                   child: Text(
                     'Browse without a key. Connecting checks listed models; image access and billing depend on your account.',
                   ),
+                ),
+                TextButton.icon(
+                  onPressed: busy || widget.ai.activity.active
+                      ? null
+                      : () => showModelComparisonWalkthrough(context),
+                  icon: const Icon(Icons.balance_outlined),
+                  label: const Text('How to compare models'),
+                ),
+                SwitchListTile(
+                  title: const Text('Use fixed brief for model tests'),
+                  subtitle: const Text(
+                    'One result per test; skips rotating design directions. Reselect the same original each time. Resets off after restart.',
+                  ),
+                  value: widget.ai.fixedComparisonBrief,
+                  onChanged: busy || widget.ai.activity.active
+                      ? null
+                      : widget.ai.setFixedComparisonBrief,
                 ),
               ],
             ),
@@ -590,6 +611,7 @@ class _AiEditCardState extends State<AiEditCard>
     }
     final imageModel = widget.store.ai.model;
     final imageQuality = widget.store.ai.quality;
+    final fixedBrief = widget.store.ai.fixedComparisonBrief;
     late AiEditRequest captured;
     late List<AiEditRequest> requests;
     try {
@@ -605,6 +627,7 @@ class _AiEditCardState extends State<AiEditCard>
             .designsFor(captured.roomId)
             .where((v) => v.aiProvider != null)
             .length,
+        fixedBrief: fixedBrief,
       );
       requests = [
         for (final (index, plan) in plans.indexed)
@@ -688,6 +711,10 @@ class _AiEditCardState extends State<AiEditCard>
                     '$imageModel · ${imageQualityLabel(widget.store.ai.provider, imageQuality ?? 'not selected')} ${widget.store.ai.provider == AiProvider.gemini ? 'resolution' : 'quality'} · ${captured.supportingImages.length + 1} input views · ${requests.length == 1 ? 'one result' : '${requests.length} separate paid image requests'}',
                   ),
                   const SizedBox(height: 8),
+                  if (fixedBrief)
+                    const Text(
+                      'Fixed-brief model test: this sends the prepared prompt without added design directions. Check that the selected photos match your other tests.',
+                    ),
                   Text(
                     'The working image, any supporting views shown above, and prompt will leave this device and be sent to $providerLabel. API charges apply and additional inputs can increase cost. Each metadata-free working copy is limited to 2048 pixels on its longest side. Your originals and approved baseline remain unchanged. Precise preservation and a consistent 3D reconstruction are not guaranteed.',
                   ),
@@ -907,6 +934,10 @@ class _AiEditCardState extends State<AiEditCard>
                   widget.store.ai.connected
                       ? '${widget.store.ai.providerLabel} · ${widget.store.ai.model} · ${imageQualityLabel(widget.store.ai.provider, widget.store.ai.quality!)}. Uses the image currently selected in “Working from”.'
                       : 'Connect AI in Settings to generate and save a result here.',
+                ),
+              if (widget.store.ai.fixedComparisonBrief)
+                const Text(
+                  'Fixed-brief model test · select one result. Use the same original and brief for each model.',
                 ),
               if (widget.compact && !widget.singleConcept) ...[
                 SegmentedButton<int>(

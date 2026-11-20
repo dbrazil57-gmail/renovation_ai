@@ -14,6 +14,7 @@ import 'package:renovision_ai/gemini_internet.dart';
 import 'package:renovision_ai/project_backup.dart';
 import 'package:renovision_ai/room_analysis.dart';
 import 'package:renovision_ai/store.dart';
+import 'package:renovision_ai/walkthrough_screen.dart';
 
 import 'openai_internet_test.dart' show Vault, Wire;
 import 'support/memory_box.dart';
@@ -510,6 +511,54 @@ void main() {
         isTrue,
       );
       expect(requests, isEmpty);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'model comparison help preserves the selected model and sends no paid request',
+    (tester) async {
+      await connectGoogle();
+      ai.selectImageSettings(
+        imageModel: 'gemini-3-pro-image',
+        imageQuality: 'high',
+      );
+      final saved = jsonEncode(ai.rememberedConnection);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(child: AiConnectionCard(ai: ai)),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Recommended design models'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('How to compare models'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('How to compare models'));
+      await tester.pumpAndSettle();
+      expect(find.byType(WalkthroughScreen), findsOneWidget);
+      expect(find.text('Start with the image-model shortlist'), findsOneWidget);
+      await tester.tap(find.byTooltip('Back'));
+      await tester.pumpAndSettle();
+      expect(jsonEncode(ai.rememberedConnection), saved);
+      expect(requests, hasLength(1));
+      expect(payloads, isEmpty);
+      await tester.ensureVisible(find.text('Use fixed brief for model tests'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Use fixed brief for model tests'));
+      await tester.pumpAndSettle();
+      expect(ai.fixedComparisonBrief, isTrue);
+      final restarted = AiService(
+        keyStore: openaiVault,
+        geminiKeyStore: googleVault,
+        clientFactory: () => throw StateError('No startup request'),
+      );
+      addTearDown(restarted.dispose);
+      await restarted.restoreConnection(jsonDecode(saved) as Map);
+      expect(restarted.fixedComparisonBrief, isFalse);
+      expect(restarted.model, 'gemini-3-pro-image');
+      expect(requests, hasLength(1));
       expect(tester.takeException(), isNull);
     },
   );

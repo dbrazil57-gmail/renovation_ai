@@ -8,14 +8,14 @@ instructions have been consolidated here; no real project data was changed.
 ## 20 November source follow-up testing
 
 These changes are after APK 1.0.12 and need a new package only when requested.
-All 279 local tests pass; static analysis is clean. New coverage checks first/
+All 283 local tests pass; static analysis is clean. New coverage checks first/
 collapsed AI settings and appearance, model presets without generation, safe
 toolbar deletion, separate saved precision counts and three strictly scoped
 correction requests from one source. Existing originals/baselines are preserved.
 The targeted Chrome runner stalled in its JavaScript test iframe before running
 tests; its diagnostic reported a responsive host with no pending network requests.
 The isolated runner was stopped. Do not count that browser attempt as a pass.
-Final release-web compilation passed in 85.2 seconds; the earlier provider build
+Final release-web compilation passed in 83.3 seconds; the earlier provider build
 also passed its Wasm dry run. Android Kotlin compilation passed independently,
 without packaging an APK. These checks do not establish device/browser acceptance.
 
@@ -96,7 +96,7 @@ Walkthrough acceptance (source after 1.0.12; package only on request):
 2. Under Camera & photos, try Choose photos, Take a photo and Live view. Check
    Next/Previous progress, final Done, system Back and returning to the same app
    screen. No actual capture, provider call or project write should occur.
-3. Try Design & refine, Image tools & compare and Save & reopen. The fictional
+3. Try Design & refine, Image tools & compare, Save & reopen and Compare AI models. The fictional
    kitchen gives example instructions; it is not inserted into your projects.
 4. Check small phone/landscape and enlarged system text. Step text can scroll;
    navigation remains available. The catalogue scrolls when needed.
@@ -112,6 +112,22 @@ All 279 tests pass after the walkthrough change, analysis is clean and the web
 release build passed (85.2 seconds). Native Android code was not changed in this
 batch; its preceding provider compilation passed. No APK or browser-interaction
 acceptance was run for these guides.
+
+Model comparison follow-up: Settings → Recommended design models should say the
+shortlist is not yet ranked. How to compare models opens the same manual test
+guide as Help and preserves the chosen provider/model/quality when returning.
+Reading it sends no photos and runs no paid test. Real-room rankings need actual
+comparisons; record time and cost manually as well as design/brief/layout scores.
+Enable Use fixed brief for model tests and choose one result. Confirm that the
+prepared prompt is sent unchanged on repeat attempts from the same original,
+instead of the normal rotating exploration directions. Two/three output requests
+must stop before paid consent, keeping the saved room output count unchanged.
+Restart: the test switch turns off while the provider/model choices restore.
+Logs: `output/model-comparison-focused.log`, `model-comparison-analyze.log`,
+`model-comparison-regression.log` and `model-comparison-web-build.log`.
+Final comparison verification: 36 focused tests and all 283 tests pass; analyzer
+clean; release web build passed (83.3 seconds). No live Gemini test, customer-key
+use, physical phone acceptance or new APK in this batch.
 
 Latest test APK: **1.0.12+13**, source `3cb94c972c`:
 `output/mobile-test/renovision-test-1.0.12.apk`, alias `renovision-test.apk`.

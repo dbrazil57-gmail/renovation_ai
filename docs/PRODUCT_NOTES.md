@@ -43,27 +43,52 @@ Nano Banana 2.1/2K is the starting preset; Quick ideas uses 1K, Final detail use
 available Pro/4K. These are documented capability-based starting choices, not a
 comparative room-design benchmark. Real Gemini acceptance awaits a Google key.
 
+### Model-comparison shortlist
+
+The user's goal is a small working choice of strong image editors to test before
+launch, then rank from actual renovation results. Keep the four primary candidates:
+Nano Banana 2.1 and Pro under Gemini; GPT Image 2.6 Sunburst and Flare under OpenAI.
+Google's current guide recommends 2.1 over the previous Nano Banana 2 for new
+projects; Lite is not optimised for this app's multi-reference/refinement workflow.
+Do not inflate the shortlist with general chat models or claim a measured winner.
+Earlier OpenAI 2.5 options remain for existing account/project compatibility.
+
+Settings labels the recommendations as an unranked testing shortlist and links
+directly to Compare AI models. The same guide is available through Help. It covers
+fixed input photos/views/brief, one confirmed result per model, reselecting the
+original between attempts, manual 1–5 ratings, actual time/cost and several rooms
+and edit types. A selected generated image must not become the next model's test
+input accidentally. No automatic paid benchmark, stored scorecard or leaderboard
+is implemented; a tested ranking remains future work after real comparisons.
+
+Code inspection found that normal New design attempts rotate creative direction
+even for one output. A fixed-brief test switch now skips that planning appendix
+and sends the prepared prompt exactly, for one output only. It is off by default,
+resets off after restart, blocks multi-output attempts before sending and preserves
+the room's ordinary saved output counts. Testers must still keep source photos,
+supporting views and the prepared brief identical. Normal variety is unchanged.
+
 ### App name and icon options
 
-RenoVision is the confirmed display name in source; the starter icon still needs
-selection. A preview
+RenoVision is the confirmed display name in source. The user's latest marked
+image selects first-board **A** as the preferred name/icon direction so far:
+olive-green tile, cream room-corner outline and reveal sparkle. This supersedes
+the previous open icon choice; clean launcher assets are still pending. A preview
 board made with built-in imagegen is retained at
 `output/design-review/brand-options-2026-11-20.png`; its exact prompt is in the
 adjacent `brand-options-2026-11-20-prompt.txt`. These are ignored local design
 artifacts, with no customer photo/API key used. They are not installed assets.
 
-The following first-board options are superseded; the user kept the RenoVision
-name and requested different icon concepts.
+The first-board options are retained below; A is the current preferred direction.
 
 | Option | Working name | Mark |
 | --- | --- | --- |
-| A, superseded | RenoVision | Olive room corner with an ivory reveal glint |
+| A, preferred so far | RenoVision | Olive room corner with an ivory reveal glint |
 | B | RoomShift | Two contrasting room planes suggesting before/after |
 | C | RoomCanvas | Forest-green room frame with a warm terracotta plane |
 | D | RenoVision | Bold RV monogram with a doorway detail |
 
-These are creative options, not name-availability clearance. The user subsequently
-confirmed RenoVision as the name but rejected the first icon set. Android,
+These are creative options, not name-availability clearance. Android,
 Flutter and browser display labels now use RenoVision in source; the package
 identity and launcher assets remain unchanged.
 After selection, create a dedicated clean adaptive icon and small-size previews;
@@ -75,7 +100,8 @@ The new six-icon board is
 imagegen prompt in the adjacent `brand-icons-2026-11-20-v2-prompt.txt`:
 A Reveal lens, B Material layers, C Design sweep, D Open view, E Plan to space,
 F Room scan. B emphasizes material/interior design; F emphasizes the camera.
-Selection remains open. The original board remains as design history only.
+The later board remains as design history. The latest marked preference returns
+to A on the first board; this is a direction choice, not a finished launcher asset.
 
 ## Whole-project design audit — 19 November 2026
 

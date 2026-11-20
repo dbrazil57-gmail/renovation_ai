@@ -30,10 +30,11 @@ correction, each with 1/2/3 outputs appropriate to its scope. New design prompts
 take more initiative with sparse briefs. Available-model presets recommend detail
 versus speed while preserving saved choices. OpenAI and Gemini have separate
 direct API connections and a recommended image-model catalogue browsable without
-keys. All 279 tests pass; analyser clean; release web and Android Kotlin compilation
+keys. All 283 tests pass; analyser clean; release web and Android Kotlin compilation
 passed. Gemini responses were mocked; live account/image acceptance remains.
 The preceding Chrome interaction runner stalled before tests.
-RenoVision is the confirmed display name in source; new icon options await selection.
+RenoVision is the confirmed display name; first-board A (olive room outline and
+sparkle) is now preferred so far. Clean launcher artwork remains pending.
 Saved account-model lists restore safely; Refresh available models discovers other
 supported models without another key entry on Android. No new APK.
 
@@ -109,6 +110,12 @@ See [AI test setup](docs/TESTING_GUIDE.md#ai-test-setup).
 For guided examples, open the app's information/Help icon and choose **Sample
 walkthroughs**. Camera & photos groups Choose photos, Take a photo and Live view;
 other guides cover Design & refine, Image tools & compare and Save & reopen.
+**Compare AI models** is also available from Settings → Recommended design models
+→ How to compare models. Keep the same original photo and brief for every test;
+recommendations are a starting shortlist, with ranking left to actual results.
+Enable **Use fixed brief for model tests** and select one result to skip the
+normal rotating creative direction. This test switch resets off after restart;
+it never starts a generation by itself or changes saved room output counts.
 Each uses a fictional kitchen with Next/Previous steps. These are read-only
 examples, available without a key; they do not capture photos or send AI requests.
 Walkthroughs are in source for the next requested APK, after installed 1.0.12.

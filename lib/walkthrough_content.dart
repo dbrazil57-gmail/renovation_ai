@@ -224,6 +224,50 @@ const savingWalkthrough = AppWalkthrough(
   ],
 );
 
+const modelComparisonWalkthrough = AppWalkthrough(
+  'models',
+  'Compare AI models',
+  'Test the same room fairly before choosing a favourite model.',
+  [
+    WalkthroughStep(
+      'Start with the image-model shortlist',
+      'In Settings, open AI connection and models, then Recommended design models. Start with Nano Banana 2.1 and Nano Banana Pro under Gemini, and GPT Image 2.6 Sunburst and Flare under OpenAI.',
+      'Compare two Gemini models first with one Google developer key. Add an OpenAI key when you want to compare across providers.',
+      note: 'These are suggested candidates, not a measured ranking. A provider key can access its listed models; generation still depends on account permissions and billing.',
+    ),
+    WalkthroughStep(
+      'Keep the test inputs fixed',
+      'Choose one original room photo, the same supporting views, style, palette and brief. Review the prepared prompt once and keep it unchanged for the first comparison.',
+      'Use the same kitchen photo and ask for charcoal cupboards, pale stone and new flooring while keeping the layout.',
+      note: 'Use the same reviewed analysis/prompt across models where possible. Rewriting it between attempts makes the result harder to attribute to the model.',
+    ),
+    WalkthroughStep(
+      'Generate one result per model',
+      'In Recommended design models, enable Use fixed brief for model tests. Select a model and choose one concept in the room. Review the confirmation before sending. For the first Gemini comparison, use 2K for both models.',
+      'Save a Nano Banana 2.1 result, then reselect the same original before testing Nano Banana Pro.',
+      note: 'The switch skips the normal rotating creative direction and sends the prepared prompt unchanged. It resets off after restart. Reselect the same original after each saved result; each confirmed test can be billed.',
+    ),
+    WalkthroughStep(
+      'Score the results against the brief',
+      'Use version history and Compare original to check the room. Rate design appeal, instruction following, layout preservation, realism and useful creativity from 1 to 5.',
+      'Appeal __/5; follows brief __/5; preserves layout __/5; realism __/5; creativity __/5.',
+      note: 'Compare provider/model and the exact prompt saved with each version. Record settings, elapsed time and actual cost separately. OpenAI quality levels and Gemini output resolutions are different controls.',
+    ),
+    WalkthroughStep(
+      'Test more than one room and task',
+      'Repeat with a bedroom or living room, then try a precise correction. A model that excels at creative renovations may be less reliable at preserving a small edit.',
+      'Kitchen redesign: change finishes. Bedroom redesign: new coordinated scheme. Correction: change only the benchtop.',
+      note: 'AI results vary. Repeat the important cases before drawing conclusions, with a deliberate budget for each additional paid request.',
+    ),
+    WalkthroughStep(
+      'Choose defaults from your own results',
+      'Rank candidates separately for best overall design, precise corrections and quick previews. Balance quality with speed and actual cost, then set your preferred model in Settings and turn off Use fixed brief for model tests.',
+      'Best redesign: ____; best correction: ____; best quick preview: ____. Review these choices before going live.',
+      note: 'The app does not score images or maintain a model leaderboard yet. These are manual test notes; no model is automatically promoted and no paid test runs automatically.',
+    ),
+  ],
+);
+
 const appWalkthroughs = [
   photoWalkthrough,
   cameraWalkthrough,
@@ -231,4 +275,5 @@ const appWalkthroughs = [
   designWalkthrough,
   toolsWalkthrough,
   savingWalkthrough,
+  modelComparisonWalkthrough,
 ];

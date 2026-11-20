@@ -16,9 +16,18 @@ List<DesignConcept> planDesignConcepts({
   required bool compareStyles,
   String otherStyle = '',
   int previousConcepts = 0,
+  bool fixedBrief = false,
 }) {
   if (count < 1 || count > 3) {
     throw const AiFailure('Choose one, two or three results.');
+  }
+  if (fixedBrief) {
+    if (count != 1) {
+      throw const AiFailure(
+        'Select one result for a fixed-brief model test, or turn off Use fixed brief for model tests in AI settings. No request was sent.',
+      );
+    }
+    return [DesignConcept('Fixed-brief model test', prompt)];
   }
   if (precise) {
     if (count == 1) return [DesignConcept('Precision edit', prompt)];

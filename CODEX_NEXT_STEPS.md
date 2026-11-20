@@ -45,7 +45,8 @@ acceptance remains. No paid API calls or user-data reset.
 - [x] Keep the user-confirmed RenoVision name and update source display labels;
   retain the package ID, storage and signing identity.
 - [x] Generate a second six-icon preview board after rejection of the initial
-  icon set; launcher asset selection remains pending. Preview/prompt in
+  icon set; the latest marked preference is first-board A (RenoVision olive room
+  outline and sparkle), preferred so far. Clean launcher assets remain pending. Preview/prompt in
   `output/design-review/brand-icons-2026-11-20-v2*`.
 
 Gemini is now a separate direct HTTPS provider with its own Google key. The
@@ -80,6 +81,28 @@ Next APK only on explicit request; 1.0.12 does not contain this follow-up.
 - [x] All 279 tests pass, static analysis is clean, release web build passed in
   85.2 seconds. Existing APK/brief/data retained; no new APK or paid AI request.
 - [ ] Physical phone acceptance after the next explicitly requested APK.
+
+## Model comparison and brand preference follow-up — source only
+
+- [x] Keep the four primary image candidates: Gemini Nano Banana 2.1 / Pro and
+  OpenAI GPT Image 2.6 Sunburst / Flare; account access still controls selection.
+- [x] Mark recommendations as an unranked shortlist and link Settings directly
+  to Compare AI models, also available in Help as the seventh sample walkthrough.
+- [x] Explain fixed inputs/brief, one output per model, reselecting the original,
+  manual quality/fidelity/creativity ratings and separately recorded time/cost.
+- [x] Add an opt-in fixed-brief test switch in AI settings. A one-output request
+  sends the prepared brief unchanged, without rotating concept directions. Block
+  multi-output test requests before confirmation; preserve saved room counts.
+  Reset the testing aid off at app restart and keep normal design variety intact.
+- [x] Read the user's marked icon from the corrected Windows image path; its
+  checksum matches the preserved first board. Record A as preferred so far.
+- [x] Verify 36 focused tests, all 283 regression tests, clean analysis and final
+  release web compilation (83.3 seconds). Original brief, APK checksum, images,
+  credentials and launcher assets preserved. No real app AI call or APK build.
+- [ ] Run real-room comparisons with the user's keys and rank by task before
+  launch. No stored ratings/automatic paid benchmark or automatic ranking yet.
+- [ ] Prepare a clean adaptive launcher asset from the preferred A direction.
+  Existing app icon, package/signing identity and customer data stay intact.
 
 ## Completed audit batch
 

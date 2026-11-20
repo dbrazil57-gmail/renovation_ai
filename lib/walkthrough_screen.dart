@@ -7,6 +7,15 @@ Future<void> showAppWalkthroughs(BuildContext context) => Navigator.push<void>(
   MaterialPageRoute(builder: (_) => const AppWalkthroughsScreen()),
 );
 
+Future<void> showModelComparisonWalkthrough(BuildContext context) =>
+    Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            const WalkthroughScreen(guide: modelComparisonWalkthrough),
+      ),
+    );
+
 class AppWalkthroughsScreen extends StatelessWidget {
   const AppWalkthroughsScreen({super.key});
   void _open(BuildContext context, AppWalkthrough guide) =>
@@ -93,6 +102,7 @@ class AppWalkthroughsScreen extends StatelessWidget {
                 (designWalkthrough, Icons.auto_awesome_outlined),
                 (toolsWalkthrough, Icons.compare_outlined),
                 (savingWalkthrough, Icons.save_outlined),
+                (modelComparisonWalkthrough, Icons.balance_outlined),
               ])
                 Card(
                   child: ListTile(
