@@ -101,7 +101,8 @@ void main() {
       await tap(tester, find.text('Open project file…'));
       expect(files.picks, 1);
       await tap(tester, find.text('Open project'));
-      expect(store.projects, hasLength(2));
+      expect(store.projects, hasLength(1));
+      expect(store.projects.single.id, project.id);
       expect(store.roomsFor(project.id).single.id, room.id);
       expect(store.imageFor(room.originalId), image);
       expect(find.byType(ProjectScreen), findsOneWidget);

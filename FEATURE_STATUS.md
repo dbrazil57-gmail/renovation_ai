@@ -1,14 +1,26 @@
 # Renovision feature status
 
+**Verified source update, 20 November:** Open/resume conflict handling, per-version
+settings snapshots/reuse and startup loading/Retry pass regression tests.
+**All 296 tests pass**, static analysis is clean and the final release web build
+passes (102.4 seconds). Android 1.0.13+14 built in 145.5 seconds from source
+`f69772aaa0`; package identity, signing, permissions and bundled files are verified.
+Existing platform icons remain unchanged.
+
+The user requested more icon shapes/colours before confirmation. Six previews
+are under `output/design-review/icon-refinements/`; A remains preferred so far.
+Preview generation uses local vector artwork, without a model key or paid AI call.
+The remaining limits below distinguish completed source from device acceptance.
+
 Audited 19 November 2026 (Australia/Sydney) against the project brief, the
 conversation and actual source through `a948da0`. This replaces superseded
 implementation diaries. The product brief is unchanged.
 
 **Assessment: a working private Android-first beta, with important gaps in
-precision, project-file reopening and reproducible design history.** Keep the
+precision enforcement, persistent file linkage and larger-project performance.** Keep the
 existing app and Focus Canvas interface; a rewrite is not justified.
 
-## 20 November follow-up — source after APK 1.0.12
+## 20 November follow-up — included in requested 1.0.13
 
 AI settings is now the first clearly labelled expandable card with connection
 status. App appearance is a matching collapsed card below Home cover/Storage.
@@ -41,16 +53,15 @@ Verified account model lists now survive restart. Older saved connections retain
 their known selected model; Refresh available models checks access without sending
 photos or re-entering the saved key, and never silently changes a valid selection.
 
-All **283 tests passed** and static analysis is clean. The final release web build
-passed in 83.3 seconds; the preceding provider batch's Android Kotlin compilation
-passed without packaging an APK. Walkthrough UI is shared Flutter code; physical
-phone acceptance remains pending the next requested package.
+All **296 tests passed** and static analysis is clean. The final release web build
+passed in 102.4 seconds. Walkthrough UI is shared Flutter code; physical
+phone acceptance remains pending the requested package.
 Seventeen new tests cover Gemini transport, key isolation/switching, session-key
 expiry, offline restore, safe errors and provider-specific consent. All responses
 were synthetic; no paid provider call was made. The preceding Chrome test iframe
 stalled before tests; browser
-interaction acceptance remains. No new APK or app API call for this follow-up. The
-installed 1.0.12 does not contain these changes. The user confirmed RenoVision;
+interaction acceptance remains. No paid app API call was made. The requested
+1.0.13 includes these changes; installed 1.0.12 does not. The user confirmed RenoVision;
 Android/web/Flutter display labels are updated in source while the package ID and
 storage stay unchanged. A second board of six different icons was generated with
 built-in imagegen. The user's latest mark prefers first-board A (RenoVision olive
@@ -83,16 +94,16 @@ Unspecified (Live) until confirmed. Existing custom names/photos are preserved.
 
 | Item | Verified position |
 | --- | --- |
-| Latest existing APK | **1.0.12+13**, source stamp `3cb94c972c`; `output/mobile-test/renovision-test-1.0.12.apk`, also `renovision-test.apk` |
+| Latest existing APK | **1.0.13+14**, source stamp `f69772aaa0`; `output/mobile-test/renovision-test-1.0.13.apk`, also `renovision-test.apk` |
 | APK contents | Focus Canvas, embedded camera, manual same-view overlay, Live design and all completed source follow-ups below |
-| New in 1.0.12 | Camera-result handoff/automatic overlay fixes, version-history captions, smaller photo-backed room chooser, Live design from room selection, simpler Rooms page, typed live-room labels, compact typography, five app themes, storage details and protected backups |
-| Last APK checks | **249 tests rerun and passed**, static analysis clean, Android release build passed in 139.1 seconds; source follow-up above has 258 passing tests |
+| New in 1.0.13 | AI settings discovery, visible delete, 1/2/3 correction choices, creative prompts, typed Live names, OpenAI/Gemini presets, seven help guides, fixed-brief tests, Open/resume/conflict handling, saved recipes/reuse/refine, startup Retry, Save image / Share creation |
+| Last APK checks | **296 tests passed**, static analysis clean, final web release 102.4 seconds and Android release 145.5 seconds; matching signing certificate, restricted share provider and private-file exclusion verified |
 | Earlier audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. The subsequent requested APK build made no paid AI call or data migration |
 | Real user evidence | User reports successful phone installation, direct AI analysis/generation, good generated designs, project auto-reload and useful comparison/camera overlay. This does not validate every newer source change |
 
 APK SHA256:
-`CD3A047F2D84C515B279F2686B506017AB1A46199A00038A23B410799A88CB99`.
-Size: 76,231,742 bytes. Signature matches 1.0.11; its checksum and rollback
+`ED2BCFF73C2FD2F76FA8A8862C393387A3091458ED2754DE8DC7FCC3CD141E90`.
+Size: 76,560,654 bytes. Signature matches 1.0.12; its checksum and rollback
 packages remain unchanged. Camera hardware is optional, ARM64 is included, and
 no microphone/storage-write permission or private project/credential files are
 bundled. Its release-mode build uses the development signing key and example
@@ -111,46 +122,53 @@ provider quality, physical-camera behaviour or durable storage on every device.
 | Guided start | Photos → Direction → Analyse/review → Final options; Finish later resumes | Room identification is not a structured AI result that automatically fills the room selector |
 | Photo entry | Phone camera, gallery/multiple-photo import, embedded live preview, primary view and additional angles | Up to six original room views; reference images have no separate inspiration/material/sketch role |
 | Room scope | Whole-room defaults coordinate surfaces, fittings/appliances, lighting and loose-clutter removal; optional room-specific Keep/Replace and precise correction | Fixed uncertain fittings need explicit instructions; AI compliance is not guaranteed |
-| AI analysis | Sends selected photos and preferences to a vision model; saves observations, questions, editable AI-written prompt and provenance | Latest analysis only; normal workspace can require reanalysis after preference changes |
+| AI analysis | Sends selected photos/preferences to a vision model; saves observations, questions, editable prompt and provenance; new generated versions keep their matching analysis | Normal workspace can still require reanalysis after preference changes |
 | Prompt preparation | Offline deterministic fallback, AI-written prompt option, preview/copy, current requirements/protected features, correct working/supporting-image roles | Copying text does not attach photos or automatically return external results |
 | In-app AI | OpenAI/Gemini direct HTTPS with separate personal keys and saved model choices; curated image recommendations; optional OpenAI laptop relay; confirmation, progress stages/elapsed time, storage-only result retry | Gemini live account/image quality acceptance pending; no Claude/Bedrock adapter, in-flight paid-job cancellation, actual billed-cost meter or automatic output critique |
 | Multiple concepts | One/two/three sequential requests from a frozen source; distinct specified material/design directions; partial successes saved | Strong difference is requested, not measured. Only exact-byte duplicate detection, no semantic diversity scoring |
-| Refinement/history | Select saved result, narrow correction field, branches/parents, exact prompt and source/supporting IDs, model/request ID, favourites/reject/approval | Full structured settings and the matching analysis are not frozen per version |
-| Image viewing | Full-screen zoom/pan/pinch, device landscape, before/after slider, image export | Image rotation as a saved edit, share sheet and Save to Gallery are absent |
+| Refinement/history | Saved result selection/corrections, branches/parents, exact prompt and input IDs, immutable settings/analysis/model/quality snapshot; Saved settings / Use these settings / Refine this design; favourites/reject/approval | Older/manual/editor versions can lack a recipe; deleted source references must be restored before reuse; no automatic exact-request replay |
+| Image viewing/export | Full-screen zoom/pan/pinch, landscape, before/after slider; Save image / Share creation; Android 10+ Gallery, older chooser, native share sheet; Chrome sharing/download fallback | Native/browser acceptance pending; no saved image rotation or comparison/overlay composites; sharing exports pixels only, not editable history |
 | Crop/annotation | Resizable/movable crop, pen/line/arrow/rectangle/ellipse/note, colours/widths, select/move/remove and undo/redo; saved as a new reference | No enforced mask, full-frame compositing or persisted editable annotation geometry |
 | Design deletion | Recoverable deletion, undo/restore, protected baseline handling | No permanent purge or comprehensive photo/storage manager |
 | Camera renovation | Embedded preview/capture, saved-view comparison, manually aligned opacity/slider overlay | A flat image for a matching viewpoint; no camera-pose/depth tracking |
 | Live design | Consent → one automatic reference capture/analysis → Room/style/Palette/Brief → confirmed generation → saved preview over camera → Continue to refine | Model latency remains; no continuous room scan, instant video transformation, moving-view redesign or composite/video export |
 | Autosave | Debounced drafts, compact status, menu shortcut, manual save, save on normal exit, pending-request guards | Process termination can interrupt pending writes; no journaled crash/corruption recovery |
-| Project files | Portable project with all rooms/photos/designs/current room choices/history; Open, Save, Save as, Restore | Open currently imports a fresh local copy; browser linkage is session-only, Android does not retain an overwrite destination |
+| Project files | Portable rooms/photos/designs/choices/history/recipes; Open preserves IDs, resumes unchanged matching work and offers Keep local / Open file as copy for conflicts; Restore copy is independent | Browser linkage is session-only; Android does not retain an overwrite destination; no divergent-revision merge |
 | Appearance/help | Focus Canvas B, pinned preview and Room/Style/Refine/Ideas controls, desktop split view, contextual toolbars, compact text, tap/hover help with seven offline sample walkthroughs, stock/user-selectable home cover, five saved app themes | More hierarchy work and real-phone accessibility checks needed; themes are separate from renovation palettes |
 | Storage/privacy | Actual local storage/origin details, diagnostics; optional password-protected portable backup; Android encrypted API-key storage | Local photo/metadata database is not encrypted by the app; OS backup policy needs an explicit decision |
 
 ## Corrections and incomplete requirements
 
-### 1. Open project must resume predictably
+### 1. Open/resume fixed; persistent file linkage remains
 
-`RestoreProjectButton` uses `RenovisionStore.restoreBackup` for Open as well as
-Restore. Restore deliberately remaps IDs and adds a separate copy. Opening the
-same file repeatedly therefore creates multiple local projects. Removing the
-repeated `(restored)` suffix fixed the name, not this document-identity issue.
-`ProjectDocuments` prevents two local copies writing to the same destination,
-but does not reconnect the existing local project.
+Open now validates the portable file and preserves its project/room/version/photo
+IDs. Unchanged matching content resumes the existing project without duplication.
+Divergent local/file revisions offer Keep local / Open file as copy / Cancel.
+No existing revision is silently replaced or merged. Restore copy deliberately
+remaps IDs for independent work, including saved-analysis references.
+First imports publish the project last and roll back only newly staged records
+on failure. Previously created duplicates are not automatically consolidated.
 
-Chrome can update a selected file while its handle remains linked in the running
-session. Android uses system Create/Open Document actions without persistent
-URI linkage. Save is therefore not yet the same-document workflow of Word.
-Local autosave still works independently. Preserve legacy files/IDs while adding
-an explicit **Open/resume existing** versus **Restore a separate copy** decision.
+Chrome can reconnect a selected plain file on Open and update it during that
+session. A divergent copy is not linked to the original file, and protected
+backups never acquire a plaintext save link. Android still uses Create/Open
+Document actions without persistent URI linkage. Same-destination Save across
+restarts and comprehensive crash recovery remain unfinished.
 
-### 2. Every saved design needs its own complete settings
+### 2. Saved generation recipes implemented; legacy limits remain
 
-`DesignVersion` stores the image, exact prompt, source/parent/supporting IDs,
-provider/model and request ID. Room preferences and the latest analysis are
-stored on the room. Selecting an old design does not restore its original
-structured palette/styles/scope/Keep-Replace, analysis revision or image quality.
-Quality may appear in its title but is not a dedicated version field. Add a
-backward-compatible immutable generation snapshot and keep the final prompt.
+New in-app AI generations capture detached palette/styles/scope/Keep-Replace,
+protected features, brief/correction/mode/counts, saved analysis and provider/
+model/quality/concept direction. Versions already retain the exact final prompt
+and source/supporting IDs. Snapshot changes cannot mutate earlier history;
+only allow-listed design fields enter the recipe, with no connection credentials.
+
+History offers Saved settings, Use these settings and Refine this design. Reuse
+keeps the original source; refine uses the selected result and precision mode.
+It preserves the approved baseline and restores model/quality only where supported
+by the connected provider. Legacy/manual/editor versions may lack recipes and are
+labelled honestly. Missing/deleted source references need recovery first; stale
+analysis can still need review. Exact paid request replay is not implemented.
 
 ### 3. Precision remains guidance rather than enforcement
 
@@ -171,11 +189,12 @@ Never relabel unanalysed photos as understood or reuse incompatible photo facts.
 
 ### 5. Reliability and speed need measured larger-project tests
 
-`main.dart` opens both eager Hive boxes before `runApp`; photo bytes live in the
-photo box. A growing library can affect startup/memory. Native image preparation
+`main.dart` now paints startup before opening the same existing Hive boxes, with
+a visible loading state and non-destructive Retry on failure. Photo bytes still
+live in an eager box; a growing library can affect startup/memory. Native image preparation
 and crypto use background work, but browser decode/resize/export work can still
 block its UI thread. Workspace version thumbnails are eager and inactive control
-tabs stay mounted. Add timing/memory measurements, safe startup error handling
+tabs stay mounted. Add timing/memory measurements, journaled recovery
 and bounded image loading before a storage migration. No general speed promise
 has been verified on large real projects.
 
@@ -228,11 +247,11 @@ The audit checked source, tests/logs, platform files, the brief and conversation
 Eleven fixture screens were rendered at 390×844 phone / 1440×900 desktop using
 real view metrics and fonts; outputs are private under `output/design-audit/`.
 They are layout evidence, not an interactive Chrome/S21 acceptance run.
-The suite/analyser were not repeated for documentation-only changes, but all 249
-tests and static analysis were rerun successfully for the subsequent requested
-1.0.12 Android build. The earlier web result remains separate evidence.
+After the audit, all 296 tests and static analysis were rerun successfully for
+the requested 1.0.13 update; final web compilation passed in 102.4 seconds.
+These are automated source/build checks, not a physical-device acceptance run.
 
 See [the ordered task list](CODEX_NEXT_STEPS.md) and
-[testing/storage instructions](docs/TESTING_GUIDE.md). APK 1.0.12 now packages the
-completed source changes; validate them on the S21 before claiming device acceptance.
+[testing/storage instructions](docs/TESTING_GUIDE.md). Validate the requested
+1.0.13 update on the S21 before claiming device acceptance.
 Build further phone packages only when requested.

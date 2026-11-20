@@ -8,6 +8,7 @@ import 'store.dart';
 import 'design_styles.dart';
 import 'renovation_scope.dart';
 import 'room_features.dart';
+import 'design_recipe.dart';
 
 enum DraftSaveState { saved, pending, saving, failed }
 
@@ -85,6 +86,69 @@ class RoomDraft extends ChangeNotifier {
   }
 
   bool get dirty => _revision != _savedRevision;
+  DesignRecipe captureRecipe() => DesignRecipe({
+    'instructions': changes.text,
+    'correctionInstructions': correction.text,
+    'protectedFeatures': protected.text,
+    'otherStyle': otherStyle.text,
+    'colourPaletteId': store.roomById(roomId)?.colourPaletteId ?? '',
+    'designStyleIds': styleIds.toList(),
+    'preciseEdit': preciseEdit,
+    'keepLayout': keepLayout,
+    'conceptCount': conceptCount,
+    'precisionConceptCount': precisionConceptCount,
+    'compareStyles': compareStyles,
+    'analysis': analysis?.toMap(),
+    'aiPrompt': aiPrompt.text,
+    'useAiPrompt': useAiPrompt,
+    'renovationScopeIds': scopeIds.toList(),
+    'flooringNotes': flooringNotes.text,
+    'removeItems': removeItems.text,
+    'roomTypeId': roomTypeId,
+    'roomItemChoices': Map<String, String>.from(roomItemChoices),
+  });
+
+  Future<bool> applyRecipe(DesignRecipe recipe, {bool refine = false}) async {
+    final saved = recipe.toMap();
+    try {
+      await store.setRoomPalette(
+        roomId,
+        saved['colourPaletteId'] as String? ?? '',
+      );
+    } catch (_) {
+      state = DraftSaveState.failed;
+      notifyListeners();
+      return false;
+    }
+    changes.text = saved['instructions'] as String? ?? '';
+    correction.text = refine
+        ? ''
+        : saved['correctionInstructions'] as String? ?? '';
+    protected.text = saved['protectedFeatures'] as String? ?? '';
+    otherStyle.text = saved['otherStyle'] as String? ?? '';
+    aiPrompt.text = saved['aiPrompt'] as String? ?? '';
+    flooringNotes.text = saved['flooringNotes'] as String? ?? '';
+    removeItems.text = saved['removeItems'] as String? ?? '';
+    styleIds = canonicalStyleIds(
+      List<String>.from(saved['designStyleIds'] as List? ?? []),
+    ).toSet();
+    scopeIds = List<String>.from(saved['renovationScopeIds'] as List? ?? [])
+        .toSet();
+    roomTypeId = saved['roomTypeId'] as String? ?? '';
+    roomItemChoices = Map<String, String>.from(
+      saved['roomItemChoices'] as Map? ?? {},
+    );
+    preciseEdit = refine || saved['preciseEdit'] == true;
+    keepLayout = saved['keepLayout'] != false;
+    conceptCount = saved['conceptCount'] as int? ?? 1;
+    precisionConceptCount = saved['precisionConceptCount'] as int? ?? 1;
+    compareStyles = saved['compareStyles'] != false;
+    analysis = recipe.analysis;
+    useAiPrompt = !refine && saved['useAiPrompt'] == true;
+    _changed();
+    return save();
+  }
+
   String get status => switch (state) {
     DraftSaveState.saved => 'Saved locally',
     DraftSaveState.pending =>

@@ -148,7 +148,7 @@ const designWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Refine a selected design',
-      'Select the saved version you like. In Refine, choose Precise correction for a small change and describe only that change.',
+      'Select the saved version you like. In history, Saved settings can load its recorded choices or start Refine this design. Choose Precise correction for a small change and describe only that change.',
       'Change only the benchtop to pale stone. Keep the chosen cabinetry, flooring and layout.',
       note: 'Precise prompts and markup guide the AI; they do not guarantee unchanged pixels outside the edit.',
     ),
@@ -184,6 +184,12 @@ const toolsWalkthrough = AppWalkthrough(
       'Check that the window and room layout still match the original.',
     ),
     WalkthroughStep(
+      'Save or share a creation',
+      'Open the image full screen, then choose Save image or Share creation. On modern Android, Save image adds a copy to Gallery under Pictures/RenoVision. Share creation opens your device share sheet.',
+      'Save your favourite kitchen concept, then share the image with a friend.',
+      note: 'Chrome downloads a PNG or uses browser file sharing when available. Only the image is exported; use Save project to keep editable rooms, settings and history. Saving and sharing need no RenoVision account.',
+    ),
+    WalkthroughStep(
       'Keep or remove a version',
       'Use favourites or approve a baseline for the design you want to keep working from. Use Delete beside the image tools for an unwanted generated design.',
       'Delete an unused idea, then use Undo or restore it from Deleted designs.',
@@ -213,7 +219,7 @@ const savingWalkthrough = AppWalkthrough(
       'Reopen your work',
       'Select the saved local project in Projects, or use Open project to choose a portable project file. Open the room and select the design you want to continue.',
       'Open your Sample home file on another device, then return to Kitchen.',
-      note: 'Opening a file currently imports a local copy. Opening it repeatedly can create separate project copies.',
+      note: 'Open resumes an unchanged matching project. If local work and the file differ, choose which to keep or open a separate copy. Restore copy always creates an independent project.',
     ),
     WalkthroughStep(
       'Keep backups private',

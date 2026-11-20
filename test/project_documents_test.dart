@@ -204,7 +204,7 @@ void main() {
   );
 
   testWidgets(
-    'Open project imports the chosen file and links Save without overwriting existing projects',
+    'Open project resumes the matching project and links Save without duplicating it',
     (tester) async {
       files.opening = store.backupFor(projectId).encode();
       String? openedId;
@@ -223,8 +223,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Open project'));
       await tester.pumpAndSettle();
-      expect(openedId, isNot(projectId));
-      expect(store.projects, hasLength(2));
+      expect(openedId, projectId);
+      expect(store.projects, hasLength(1));
       expect(store.documents.linked(openedId!), isTrue);
       expect(store.roomsFor(projectId).single.id, roomId);
       await tester.runAsync(() => store.documents.save(openedId!));

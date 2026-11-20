@@ -9,12 +9,109 @@ import 'app_appearance.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  runApp(RenovisionStartup(loadStore: openLocalStore));
+}
+
+Future<RenovisionStore> openLocalStore() async {
   await Hive.initFlutter();
   final records = await Hive.openBox<dynamic>('renovision_records_v1');
   final photos = await Hive.openBox<dynamic>('renovision_photo_bytes_v1');
-  final store = RenovisionStore(records: records, photos: photos);
-  runApp(RenovisionApp(store: store));
-  unawaited(store.restoreAiConnection());
+  return RenovisionStore(records: records, photos: photos);
+}
+
+/// Paints before eager storage opens, with a retry path that never clears data.
+class RenovisionStartup extends StatefulWidget {
+  final Future<RenovisionStore> Function() loadStore;
+  const RenovisionStartup({super.key, required this.loadStore});
+  @override
+  State<RenovisionStartup> createState() => _RenovisionStartupState();
+}
+
+class _RenovisionStartupState extends State<RenovisionStartup> {
+  RenovisionStore? store;
+  bool failed = false;
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_load());
+  }
+
+  Future<void> _load() async {
+    setState(() => failed = false);
+    try {
+      await Future<void>.delayed(Duration.zero);
+      final loaded = await widget.loadStore();
+      if (!mounted) {
+        loaded.dispose();
+        return;
+      }
+      setState(() => store = loaded);
+      unawaited(
+        loaded.restoreAiConnection().catchError((_) {
+          loaded.ai.connectionNotice =
+              'Projects loaded. Reconnect AI in Settings if needed.';
+        }),
+      );
+    } catch (_) {
+      if (mounted) setState(() => failed = true);
+    }
+  }
+
+  @override
+  void dispose() {
+    store?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (store != null) return RenovisionApp(store: store!);
+    return MaterialApp(
+      title: 'RenoVision',
+      theme: buildRenovisionTheme(),
+      home: Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.home_work_outlined, size: 48),
+                    const SizedBox(height: 16),
+                    Text(
+                      failed
+                          ? 'Saved projects could not be opened'
+                          : 'Opening your projects…',
+                      style: Theme.of(context).textTheme.titleLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    if (failed) ...[
+                      const Text(
+                        'Your data has not been cleared. Check device storage and close other app tabs, then retry.',
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      FilledButton(
+                        onPressed: _load,
+                        child: const Text('Retry opening projects'),
+                      ),
+                    ] else
+                      const CircularProgressIndicator(
+                        semanticsLabel: 'Opening saved project storage',
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class RenovisionApp extends StatelessWidget {

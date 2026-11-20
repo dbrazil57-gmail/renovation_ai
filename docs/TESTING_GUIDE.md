@@ -1,5 +1,37 @@
 # Testing and storage reference
 
+## Verified outstanding-items work — 20 November 2026
+
+After credits were renewed, all **296 tests passed**, static analysis was clean
+(12.6 seconds), and the final stamped release web build passed (102.4 seconds).
+Android **1.0.13+14** is built and verified from source `f69772aaa0`
+(145.5 seconds). Package details are below.
+
+`test/outstanding_features_test.dart` covers unchanged repeat Open/restart,
+divergent-file choices, failed-import and partial-write cleanup, immutable
+recipes/analysis, portable-copy reference remapping, history reuse/refinement
+and startup loading/error Retry. Open expects one matching project; Restore
+copy remains independent. Legacy records stay readable without guessed recipes;
+credentials remain outside project files. Existing AI/backup regressions pass.
+
+Logs: `output/mobile-test/analysis-1.0.13.log`, `test-1.0.13.log` and
+`output/outstanding-web-build-final.log`. The preview asset export tool also
+passes; all current platform icons remain unchanged. No customer key/photo was
+used for automated tests, and no paid app AI request was sent.
+
+Phone acceptance: open the same unchanged file twice, confirm one project;
+change the local draft, reopen the older file and exercise Keep local / Open
+file as copy. Confirm neither overwrites the other. Generate a version, change
+room choices, then use its Saved settings to inspect/reuse/refine it. Confirm
+originals and approved baselines stay intact. Legacy versions should explain
+when their original structured settings were not recorded.
+
+Six icon previews are at `output/design-review/icon-refinements/`; A is preferred
+so far, with final artwork not confirmed. Default platform icons were restored
+byte-for-byte. `tool/export_brand_assets_test.dart` defaults to preview output;
+use `--dart-define=INSTALL_RENOVISION_ICON=true` only after explicit icon approval.
+The new APK may retain the current icon while selection continues.
+
 Updated after the whole-project audit, 19 November 2026. Use
 [feature status](../FEATURE_STATUS.md) for implementation limits and
 [next steps](../CODEX_NEXT_STEPS.md) for the ordered backlog. Earlier dated test
@@ -7,17 +39,16 @@ instructions have been consolidated here; no real project data was changed.
 
 ## 20 November source follow-up testing
 
-These changes are after APK 1.0.12 and need a new package only when requested.
-All 283 local tests pass; static analysis is clean. New coverage checks first/
+These changes are included in the requested 1.0.13 package, after APK 1.0.12.
+All 296 local tests pass; static analysis is clean. Coverage checks first/
 collapsed AI settings and appearance, model presets without generation, safe
 toolbar deletion, separate saved precision counts and three strictly scoped
 correction requests from one source. Existing originals/baselines are preserved.
 The targeted Chrome runner stalled in its JavaScript test iframe before running
 tests; its diagnostic reported a responsive host with no pending network requests.
 The isolated runner was stopped. Do not count that browser attempt as a pass.
-Final release-web compilation passed in 83.3 seconds; the earlier provider build
-also passed its Wasm dry run. Android Kotlin compilation passed independently,
-without packaging an APK. These checks do not establish device/browser acceptance.
+Final release-web compilation passed in 102.4 seconds; the earlier provider build
+also passed its Wasm dry run. These checks do not establish device/browser acceptance.
 
 Provider logs: `output/gemini-analyze.log`, `gemini-regression-tests.log`,
 `gemini-web-build-final.log` and `gemini-android-kotlin.log`. Seventeen new tests
@@ -89,7 +120,7 @@ this naming-only correction.
 
 ## Current source and phone package
 
-Walkthrough acceptance (source after 1.0.12; package only on request):
+Walkthrough acceptance (included in requested 1.0.13):
 
 1. Tap the information/Help icon, then Sample walkthroughs. Current screen help
    should still be readable and Close should still work.
@@ -125,32 +156,35 @@ must stop before paid consent, keeping the saved room output count unchanged.
 Restart: the test switch turns off while the provider/model choices restore.
 Logs: `output/model-comparison-focused.log`, `model-comparison-analyze.log`,
 `model-comparison-regression.log` and `model-comparison-web-build.log`.
-Final comparison verification: 36 focused tests and all 283 tests pass; analyzer
+Earlier comparison-stage verification: 36 focused tests and all 283 tests pass; analyzer
 clean; release web build passed (83.3 seconds). No live Gemini test, customer-key
 use, physical phone acceptance or new APK in this batch.
 
-Latest test APK: **1.0.12+13**, source `3cb94c972c`:
-`output/mobile-test/renovision-test-1.0.12.apk`, alias `renovision-test.apk`.
-SHA256: `CD3A047F2D84C515B279F2686B506017AB1A46199A00038A23B410799A88CB99`.
-Size: 76,231,742 bytes. Its application ID/signature match 1.0.11 for an in-place
-update. Previous APKs 1.0.11/1.0.10 are retained with unchanged checksums;
+Latest test APK: **1.0.13+14**, source `f69772aaa0`:
+`output/mobile-test/renovision-test-1.0.13.apk`, alias `renovision-test.apk`.
+SHA256: `ED2BCFF73C2FD2F76FA8A8862C393387A3091458ED2754DE8DC7FCC3CD141E90`.
+Size: 76,560,654 bytes. Its application ID/signature match 1.0.12 for an in-place
+update. Previous APKs 1.0.12/1.0.11/1.0.10 are retained with unchanged checksums;
 obsolete 1.0.8/1.0.9 were removed during cleanup. Development signing is not
 public-release signing. ARM64, optional camera and internet are verified; no
 microphone/storage-write permission or private project/credential assets.
 
-Packages the completed source through `a948da0`: camera handoff/automatic overlay
-fixes, version-history captions, compact room selection/live entry, simpler room
-lists, smaller typography, five themes, storage details and optional password-
-protected backups. All 249 tests rerun and passed, analyser clean, Android build
-passed in 139.1 seconds. S21 acceptance remains. **Do not build another APK unless
-the user asks.** No real AI calls or stored-user-data changes during packaging.
+Includes all completed 20 November changes: AI settings/models, visible deletion,
+multiple precise variations, creative briefs, Gemini, typed Live names, help/model
+comparison, project Open/resume/conflicts, generation recipes/reuse/refinement,
+startup Retry and Save image / Share creation. All **296 tests passed**, analyzer
+clean, final web build 102.4 seconds, Android build 145.5 seconds. S21 acceptance
+remains. **Do not build another APK unless the user asks.** No real AI calls or
+stored-user-data changes during packaging. Launcher icons remain unchanged.
 
 Start the phone test by installing over the existing app, opening the existing
 project and checking its photos/versions/AI connection. Then test Camera → Live
 design → analysis/options → generation → immediate overlay without leaving the
 viewer → Continue to refine. Also check history captions, compact room choices
-and Settings themes/plain/protected project backups. Confirm prompts before
-paid requests; storage/theme tests need no AI calls.
+and Settings themes/plain/protected project backups. Repeat Open and try Saved
+settings / Use these settings / Refine this design. Save and share a creation
+from its full-screen viewer. Confirm prompts before paid requests; export and
+storage/theme tests need no AI calls.
 
 ## Windows preview
 
@@ -172,6 +206,30 @@ is the persistence test. Do not interpret a successful diagnostic as a backup.
 
 ## Saving and storage
 
+### Save and share a creation
+
+Open a room photo or design full screen, then use Save image or Share creation.
+On Android 10+ (including the S21), Save image writes a PNG copy to Gallery under
+Pictures/RenoVision; older Android opens a system file chooser. Share creation
+opens Android sharing so the user chooses the destination; the app reports that
+the sheet opened, not that a recipient received anything. No broad photo/storage
+permission or RenoVision account is needed. Images already remain in the project.
+
+Chrome uses browser file sharing when supported, otherwise requests a PNG download
+and says to share it from Downloads. Browser cancellation must not claim success.
+If preparation consumes browser user activation, tap Share again or Save image.
+Android share copies use a dedicated cache directory, read-only URI grants and a
+non-exported provider; old temporary copies are cleaned up on a later share after
+48 hours. Only the encoded image is sent, with EXIF/ICC/text metadata removed;
+project files, prompts, history and credentials are not attached. Visible photo
+contents remain visible. Gallery/download copies exist outside app-local storage.
+
+Acceptance: save one design, find/open the full-resolution PNG in Gallery, and
+share it to a chosen personal app. Cancel sharing and confirm the project stays
+unchanged. Test free-space failure/retry, phone landscape and enlarged text.
+On Chrome, test sharing if offered and the Downloads fallback. To transfer rooms,
+editable choices and version history, use Save project instead of image export.
+
 ### Working copies and portable files
 
 - Local metadata/preferences/history use Hive `renovision_records_v1`; image
@@ -184,17 +242,19 @@ is the persistence test. Do not interpret a successful diagnostic as a backup.
   received unsaved results. Save on normal exit still applies with Autosave off.
   Browser/process termination cannot guarantee completion of async work.
 - Portable Save project/Save as/Back up project includes all rooms, original bytes,
-  saved versions/prompts/approval and current room choices/setup/analysis. API
-  keys/relay codes are never part of that file. Individual designs do not yet
-  contain a complete structured snapshot of the settings used to create them.
+  saved versions/prompts/approval and current room choices/setup/analysis. New AI
+  versions include immutable settings/analysis/model/quality recipes. Legacy,
+  manual and editor versions can lack recipes; no history is invented. API
+  keys/relay codes are never part of that file.
 - Save as can create a separate local project copy, export an image or write a
   project file. Image export is metadata-free PNG; project exports preserve exact
   originals and may therefore contain original metadata as well as private photos.
-- Open project and Restore currently both import a separate local copy with new
-  IDs. Open does not yet resume the matching previous local copy. Avoid repeatedly
-  opening one file if a suitable local project is already listed.
+- Open project preserves portable IDs and resumes an unchanged matching project.
+  Conflicting file/local contents offer Keep local / Open file as copy / Cancel.
+  Copies never silently overwrite existing work or inherit the original file link.
+  Restore copy deliberately remaps IDs, including saved-analysis references.
 - Chrome can update a file while its selected handle stays linked during that
-  app session. After restarting, selecting the file imports/relinks a copy.
+  app session. After restarting, reopen the unchanged file to resume/relink it.
   Android uses its system Create/Open Document chooser; the app does not persist
   a writable URI for later same-file Save. Other browsers can download a copy.
 - Protected backup files are deliberately not linked to plaintext automatic saves.
@@ -390,7 +450,17 @@ acceptance. Checklist:
 
 ## Verification
 
-Requested 1.0.12 package: **249 tests rerun and passed**, `flutter analyze` clean,
+Requested 1.0.13 package: **296 tests passed**, `flutter analyze` clean,
+web/Android release builds passed in 102.4/145.5 seconds. Logs under
+`output/mobile-test/`: `test-1.0.13.log`, `analysis-1.0.13.log`, `build-1.0.13.log`,
+`metadata-1.0.13.log`, `signing-1.0.13.log`, `manifest-1.0.13.log` and
+`share-paths-1.0.13.log`; web log `output/outstanding-web-build-final.log`.
+The verifier resolves Android's shortened XML resource path, checks the restricted
+share directory, matches the 1.0.12 certificate, excludes private-file assets and
+checks the final source fingerprint before publishing the versioned/latest APKs.
+Physical share/Gallery/camera and interactive Chrome acceptance remain manual.
+
+Previous 1.0.12 package: **249 tests rerun and passed**, `flutter analyze` clean,
 Android release build passed in 139.1 seconds. Logs and package verification are
 private under `output/mobile-test/`: `test-1.0.12.log`, `analysis-1.0.12.log`,
 `build-1.0.12.log`, `metadata-1.0.12.log` and `signing-1.0.12.log`.

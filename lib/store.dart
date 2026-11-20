@@ -7,6 +7,7 @@ import 'models.dart';
 import 'room_analysis.dart';
 import 'ai_service.dart';
 import 'project_backup.dart';
+import 'design_recipe.dart';
 import 'file_transfer.dart';
 import 'design_palettes.dart';
 import 'design_styles.dart';
@@ -321,6 +322,68 @@ class RenovisionStore extends ChangeNotifier {
     );
   }
 
+  /// Open keeps portable identities; restoreBackup deliberately creates a copy.
+  /// Conflicts are decided by the UI, never silently overwritten.
+  Future<RenovationProject> openBackup(ProjectBackup backup) async {
+    final checked = ProjectBackup.decode(backup.encode());
+    final existing = projectById(checked.project.id);
+    if (existing != null) {
+      if (backupFor(existing.id).contentSignature != checked.contentSignature) {
+        throw const BackupFailure(
+          'This file differs from the local project. Keep local work or restore a separate copy.',
+        );
+      }
+      return existing;
+    }
+    final staged = <String, Map<String, dynamic>>{
+      for (final room in checked.rooms) 'room:${room.id}': room.toMap(),
+      for (final design in checked.designs)
+        'design:${design.id}': design.toMap(),
+      'project:${checked.project.id}': checked.project.toMap(),
+    };
+    if (staged.keys.any((key) => records.get(key) != null) ||
+        checked.photos.keys.any((id) => photos.get(id) != null)) {
+      throw const BackupFailure(
+        'This file shares image or room identifiers with existing work. Use Restore copy to keep both projects safely.',
+      );
+    }
+    final writtenRecords = <String>[], writtenPhotos = <String>[];
+    try {
+      for (final photo in checked.photos.entries) {
+        writtenPhotos.add(photo.key);
+        await photos.put(photo.key, photo.value);
+      }
+      // Publish the project last, after every validated image and child record.
+      for (final entry in staged.entries) {
+        writtenRecords.add(entry.key);
+        await records.put(entry.key, entry.value);
+      }
+    } catch (_) {
+      var failedCleanup = false;
+      for (final key in writtenRecords.reversed) {
+        try {
+          await records.delete(key);
+        } catch (_) {
+          failedCleanup = true;
+        }
+      }
+      for (final id in writtenPhotos) {
+        try {
+          await photos.delete(id);
+        } catch (_) {
+          failedCleanup = true;
+        }
+      }
+      throw BackupFailure(
+        failedCleanup
+            ? 'Open failed and some newly staged records need recovery. Existing work was not overwritten. Keep the file and check storage.'
+            : 'The project could not be opened. Newly staged records were removed; existing work is unchanged.',
+      );
+    }
+    notifyListeners();
+    return checked.project;
+  }
+
   /// Restore into new identifiers; publish the project last. Roll back only
   /// identifiers allocated by this operation if a write fails.
   Future<RenovationProject> restoreBackup(
@@ -391,6 +454,17 @@ class RenovisionStore extends ChangeNotifier {
     for (final design in validated.designs) {
       stagedRecords['design:${designIds[design.id]}'] = {
         ...design.toMap(),
+        if (design.recipe?.analysis != null)
+          'recipe': {
+            ...design.recipe!.toMap(),
+            'analysis': {
+              ...design.recipe!.analysis!.toMap(),
+              'sourceImageId': photoIds[design.recipe!.analysis!.sourceImageId],
+              'supportingImageIds': design.recipe!.analysis!.supportingImageIds
+                  .map((id) => photoIds[id]!)
+                  .toList(),
+            },
+          },
         'id': designIds[design.id],
         'roomId': roomIds[design.roomId],
         'imageId': photoIds[design.imageId],
@@ -640,6 +714,7 @@ class RenovisionStore extends ChangeNotifier {
   }
 
   Future<DesignVersion> createDesign({
+    DesignRecipe? recipe,
     required String roomId,
     required Uint8List image,
     required String title,
@@ -654,6 +729,7 @@ class RenovisionStore extends ChangeNotifier {
     final photoId = 'photo_${_newId()}';
     await photos.put(photoId, image);
     final design = DesignVersion(
+      recipe: recipe,
       id: _newId(),
       roomId: roomId,
       imageId: photoId,
@@ -669,7 +745,27 @@ class RenovisionStore extends ChangeNotifier {
       rejected: false,
       created: DateTime.now(),
     );
-    await records.put('design:${design.id}', design.toMap());
+    try {
+      await records.put('design:${design.id}', design.toMap());
+    } catch (_) {
+      // A failed write may still have published a record in a storage cache.
+      // Remove this call's record first; retain its image if cleanup fails.
+      var recordRemoved = false;
+      try {
+        await records.delete('design:${design.id}');
+        recordRemoved = records.get('design:${design.id}') == null;
+      } catch (_) {
+        /* Keep the original write failure. */
+      }
+      if (recordRemoved) {
+        try {
+          await photos.delete(photoId);
+        } catch (_) {
+          /* Keep the original write failure. */
+        }
+      }
+      rethrow;
+    }
     notifyListeners();
     return design;
   }

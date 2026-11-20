@@ -3,6 +3,7 @@ import 'design_styles.dart';
 import 'room_analysis.dart';
 import 'renovation_scope.dart';
 import 'room_features.dart';
+import 'design_recipe.dart';
 
 class RenovationProject {
   final String id;
@@ -264,6 +265,7 @@ class RenovationRoom {
 }
 
 class DesignVersion {
+  final DesignRecipe? recipe;
   final String id;
   final String roomId;
   final String imageId;
@@ -281,6 +283,7 @@ class DesignVersion {
   final List<String> supportingImageIds;
 
   DesignVersion({
+    this.recipe,
     required this.id,
     required this.roomId,
     required this.imageId,
@@ -300,6 +303,7 @@ class DesignVersion {
 
   DesignVersion copyWith({bool? favourite, bool? rejected, bool? deleted}) =>
       DesignVersion(
+        recipe: recipe,
         id: id,
         roomId: roomId,
         imageId: imageId,
@@ -328,6 +332,7 @@ class DesignVersion {
     'aiProvider': aiProvider,
     'aiModel': aiModel,
     'providerRequestId': providerRequestId,
+    'recipe': recipe?.toMap(),
     'supportingImageIds': supportingImageIds,
     'favourite': favourite,
     'rejected': rejected,
@@ -336,6 +341,7 @@ class DesignVersion {
   };
 
   factory DesignVersion.fromMap(Map<dynamic, dynamic> data) => DesignVersion(
+    recipe: data['recipe'] == null ? null : DesignRecipe(data['recipe'] as Map),
     id: data['id'].toString(),
     roomId: data['roomId'].toString(),
     imageId: data['imageId'].toString(),

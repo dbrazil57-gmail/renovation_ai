@@ -291,6 +291,45 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
       }
       if (!mounted) return;
       final backup = ProjectBackup.decode(plain);
+      final existing = widget.openDocument
+          ? widget.store.projectById(backup.project.id)
+          : null;
+      final different =
+          existing != null &&
+          widget.store.backupFor(existing.id).contentSignature !=
+              backup.contentSignature;
+      var restoreCopy = !widget.openDocument;
+      if (different) {
+        final choice = await showDialog<String>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Local work and file differ'),
+            content: Text(
+              '${backup.project.name}\n\nThis project is already on this device, with different saved work. Keep the local project or open the file as a separate copy. Neither choice replaces your existing rooms or images.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, 'local'),
+                child: const Text('Keep local project'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, 'copy'),
+                child: const Text('Open file as copy'),
+              ),
+            ],
+          ),
+        );
+        if (!mounted || choice == null) return;
+        if (choice == 'local') {
+          widget.onRestored(existing);
+          return;
+        }
+        restoreCopy = true;
+      }
       final approved = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
@@ -300,7 +339,11 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
                 : 'Restore a project copy?',
           ),
           content: Text(
-            '${backup.project.name}\n${backup.rooms.length} rooms · ${backup.designs.length} versions · ${backup.photos.length} images\n\nA separate restored project will be added. Existing projects will not be replaced.${protected ? '\n\nThe protected file stays unchanged. Make another password-protected backup to update it.' : ''}',
+            '${backup.project.name}\n${backup.rooms.length} rooms · ${backup.designs.length} versions · ${backup.photos.length} images\n\n${restoreCopy
+                ? 'A separate restored project will be added. Existing projects will not be replaced.'
+                : existing != null
+                ? 'Resume the existing project on this device. No duplicate project will be created.'
+                : 'Open this project with its saved rooms, photos and versions.'}${protected ? '\n\nThe protected file stays unchanged. Make another password-protected backup to update it.' : ''}',
           ),
           actions: [
             TextButton(
@@ -317,12 +360,11 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
         ),
       );
       if (approved != true || !mounted) return;
-      final restored = await widget.store.restoreBackup(
-        backup,
-        projectName: widget.openDocument ? backup.project.name : null,
-      );
+      final restored = restoreCopy
+          ? await widget.store.restoreBackup(backup)
+          : await widget.store.openBackup(backup);
       // A protected backup is never linked to plaintext project-file autosave.
-      if (!protected && opened?.destination != null) {
+      if (!protected && !restoreCopy && opened?.destination != null) {
         await widget.store.documents.link(
           restored.id,
           opened!.destination!,

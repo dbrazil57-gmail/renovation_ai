@@ -233,6 +233,13 @@ void main() {
       expect(edits, 1);
       expect(saved!.aiModel, 'test-alternate-model');
       expect(saved!.title, contains('test-alternate-model / medium'));
+      expect(saved!.recipe!.toMap()['imageModel'], 'test-alternate-model');
+      expect(saved!.recipe!.toMap()['imageQuality'], 'medium');
+      expect(saved!.recipe!.toMap()['preciseEdit'], isTrue);
+      expect(
+        saved!.recipe!.toMap()['correctionInstructions'],
+        'Fix only the skirting',
+      );
       expect(
         () => ai.selectImageSettings(
           imageModel: 'arbitrary',

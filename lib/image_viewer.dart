@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:material_ui/material_ui.dart';
 
 import 'screen_toolbar.dart';
+import 'creation_export_widgets.dart';
 
 Future<void> openImageViewer(
   BuildContext context,
@@ -103,7 +104,7 @@ class ExpandableImage extends StatelessWidget {
   }
 }
 
-/// Viewing only: no edits, file writes, provider calls or orientation locks.
+/// Viewing preserves the source. Export controls write/share a sanitized copy.
 class ImageViewerScreen extends StatefulWidget {
   final Uint8List bytes;
   final String title;
@@ -182,7 +183,7 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
               ScreenTool.help(
                 context,
                 title: 'Image viewer',
-                message: 'Pinch or use the zoom buttons, then drag to pan. Fit image resets the view. Double-tap zooms or fits. Enable Android Auto rotate and turn your phone sideways for a wider view. Viewing does not edit or save a new image.',
+                message: 'Pinch or use the zoom buttons, then drag to pan. Fit image resets the view. Double-tap zooms or fits. Enable Android Auto rotate and turn your phone sideways for a wider view. Save image exports a copy to Gallery on modern Android, or Downloads in Chrome. Share creation opens device sharing where supported. Only the image is exported; project settings and API keys stay separate.',
               ),
             ],
           ),
@@ -245,18 +246,26 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
         },
       ),
     ),
-    bottomNavigationBar: MediaQuery.sizeOf(context).height < 480
-        ? null
-        : const SafeArea(
-            top: false,
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child: Text(
-                'Pinch to zoom · Drag to pan · Double-tap to zoom or fit\nTurn your phone sideways for a wider view (Auto rotate on).',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white70, fontSize: 12),
-              ),
-            ),
+    bottomNavigationBar: SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: DefaultTextStyle.merge(
+          style: const TextStyle(color: Colors.white70),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CreationExportControls(bytes: widget.bytes, title: widget.title),
+              if (MediaQuery.sizeOf(context).height >= 480)
+                const Text(
+                  'Pinch to zoom · Drag to pan · Double-tap to zoom or fit\nTurn your phone sideways for a wider view (Auto rotate on).',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                ),
+            ],
           ),
+        ),
+      ),
+    ),
   );
 }

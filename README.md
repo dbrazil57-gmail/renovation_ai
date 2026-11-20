@@ -1,5 +1,10 @@
 # Renovision AI
 
+Verified 20 November 2026: **296 tests pass**, static analysis is clean and the
+release web build passes. The requested Android **1.0.13+14** update is built and
+verified. Existing icons remain in place while six design/colour alternatives
+await a final choice.
+
 Android-first Flutter renovation app, developed on Windows with Chrome as the
 preview target. One shared Dart codebase builds platform-specific apps; the web
 preview and Android APK are not separate products. iOS folders exist but that
@@ -18,42 +23,32 @@ and marked references do not yet enforce masks or pixel preservation.
 
 ## Current position
 
-Full source/conversation/design audit: **19 November 2026**. The app is suitable
-for continued private testing, with project-file identity, complete per-version
-settings, precise edit enforcement and larger-project reliability still to finish.
-No public backend, payment system or store-ready release is included.
+Full source/conversation/design audit: **19 November 2026**, followed by verified
+fixes on **20 November**. The app is suitable for continued private testing.
+Precise edit enforcement, persistent Android project-file linkage and measured
+larger-project reliability remain unfinished. No public backend, payment system
+or store-ready release is included.
 
-20 November source follow-up (not in APK 1.0.12): AI settings now appears first
-as an expandable card; appearance also collapses. The image toolbar includes
-recoverable design deletion, and Refine visibly separates New design from Precise
-correction, each with 1/2/3 outputs appropriate to its scope. New design prompts
-take more initiative with sparse briefs. Available-model presets recommend detail
-versus speed while preserving saved choices. OpenAI and Gemini have separate
-direct API connections and a recommended image-model catalogue browsable without
-keys. All 283 tests pass; analyser clean; release web and Android Kotlin compilation
-passed. Gemini responses were mocked; live account/image acceptance remains.
-The preceding Chrome interaction runner stalled before tests.
-RenoVision is the confirmed display name; first-board A (olive room outline and
-sparkle) is now preferred so far. Clean launcher artwork remains pending.
-Saved account-model lists restore safely; Refresh available models discovers other
-supported models without another key entry on Android. No new APK.
+The latest source adds prominent expandable AI settings, visible recoverable
+design deletion, New design / Precise correction with separate 1/2/3 output
+choices, stronger creative briefs, OpenAI/Gemini model presets, seven offline
+walkthroughs and a fixed-brief model comparison aid. Automatic Live room names
+use the actual type, such as Bedroom (Live), while preserving custom names.
 
-Live-room naming clarification: automatic labels use the selected room type,
-such as Bedroom (Live) or Kitchen (Live), and follow later type changes. Unknown
-types show Unspecified (Live); custom names remain untouched. This correction
-is in source after 1.0.12, including room-picker starts and portable save/restore.
+Open project now resumes unchanged matching work; conflicting file/local
+revisions offer Keep local or Open file as copy. New AI versions retain their
+own settings, analysis and model/quality with Saved settings / Use these settings /
+Refine this design actions. Startup shows loading and a non-destructive Retry.
+Older versions remain readable without inventing missing historical settings.
 
-Application code audited through `a948da0` is now packaged in the requested
-**1.0.12+13** update. All **249 tests were rerun and passed**, static analysis is
-clean and the Android release build passed in 139.1 seconds. The earlier web
-release build and 11-screen fixture audit remain useful separate evidence.
-
-Latest test package: **1.0.12+13**, source `3cb94c972c`, at
-`output/mobile-test/renovision-test-1.0.12.apk` (also `renovision-test.apk`).
-Includes automatic camera-overlay/handoff fixes, history captions, room-entry/
-layout changes, five app themes, storage details and optional encrypted backups.
-The application ID/signature match 1.0.11; install over the existing app without
-uninstalling. Physical S21 acceptance remains. No paid AI calls or user-data reset.
+Latest test package: **1.0.13+14**, source `f69772aaa0`, at
+`output/mobile-test/renovision-test-1.0.13.apk` (also `renovision-test.apk`).
+All 296 tests pass, analyzer clean; final web/Android release builds passed in
+102.4/145.5 seconds. APK identity, matching 1.0.12 signing certificate, ARM64,
+optional camera, restricted share paths and sample-only assets were checked.
+Install over the existing app without uninstalling. Older APKs remain for rollback.
+Physical S21 acceptance and live Gemini comparisons remain. No paid AI calls or
+user-data reset were performed.
 Build further APKs only when requested.
 
 ## Project documents
@@ -118,9 +113,16 @@ normal rotating creative direction. This test switch resets off after restart;
 it never starts a generation by itself or changes saved room output counts.
 Each uses a fictional kitchen with Next/Previous steps. These are read-only
 examples, available without a key; they do not capture photos or send AI requests.
-Walkthroughs are in source for the next requested APK, after installed 1.0.12.
+Walkthroughs are included in the source for the requested 1.0.13 package.
 
 ## Save and resume
+
+Open any photo/design full screen for **Save image** and **Share creation**.
+On Android 10+, saving writes a PNG copy to Gallery under Pictures/RenoVision;
+older Android uses the system file chooser. Chrome downloads the image or uses
+browser file sharing when supported. Export strips embedded metadata and leaves
+the stored original untouched. Sharing sends only the selected image; use Save
+project to transfer editable rooms, choices and history. No account is required.
 
 Local autosave retains room drafts and new images. Its shortcut is in More tools;
 normal navigation flushes pending work. Keep a portable project backup as well.
@@ -131,12 +133,23 @@ Plain projects use `.renovision.json`. Optional password-protected backups use
 `.renovision`; keep their password separately because it is not recoverable.
 Encryption protects that export, not the current local photo/metadata database.
 
-**Current limit:** Open project imports a separate local copy, including if the
-same file was opened before. Chrome can overwrite a linked file during its running
-session; Android Save currently opens the system destination chooser. Stable
-Open/resume and persistent same-file linkage remain on the task list. Do not
-confuse local autosave with a portable backup. See
+Open preserves portable project IDs and resumes an unchanged matching local
+project. If file and local contents differ, choose Keep local or Open file as
+copy; neither silently replaces the other. Restore copy deliberately creates an
+independent project. Chrome can overwrite a linked plain file during its running
+session; reopen it after restarting to reconnect. Android Save currently opens
+the system destination chooser; persistent URI overwrite remains unfinished.
+Local autosave and portable backups are separate. See
 [saving and storage](docs/TESTING_GUIDE.md#saving-and-storage).
+
+## Launch plan
+
+Start with Standard using users' own developer API keys, with provider usage
+billed separately. Included subscription AI credits and managed Pro services
+come later, after adoption and cost testing. Accounts/billing are not implemented.
+An optional paid Windows companion is a future option for phone capture followed
+by large-screen refinement; Chrome already provides a desktop workspace. Transfer
+project files manually today; automatic cross-device sync is future work.
 
 ## Developer validation
 

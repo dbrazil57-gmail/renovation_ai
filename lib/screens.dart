@@ -36,6 +36,7 @@ import 'home_cover_widgets.dart';
 import 'live_design_screen.dart';
 import 'app_appearance_widgets.dart';
 import 'storage_privacy_widgets.dart';
+import 'design_recipe_widgets.dart';
 
 Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
     room.setupComplete
@@ -1317,6 +1318,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   String? selectedId;
   bool get precise => draft.preciseEdit;
   late String selectedPhotoId;
+  List<String>? restoredSupportingIds;
   bool includeRoomContext = true;
   FocusSection focusSection = FocusSection.room;
 
@@ -1534,8 +1536,77 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   }
 
   void _selectDesign(String? id) {
-    setState(() => selectedId = id);
+    setState(() {
+      selectedId = id;
+      restoredSupportingIds = null;
+    });
     widget.onDesignSelected?.call(id);
+  }
+
+  Future<void> _savedSettings(DesignVersion design) async {
+    if (aiPending) return;
+    final refine = await showDesignRecipe(context, design);
+    if (refine == null || !mounted || design.recipe == null || !await _save()) {
+      return;
+    }
+    final room = widget.store.roomById(widget.roomId)!;
+    final source = refine
+        ? design.imageId
+        : design.sourceImageId ?? room.primaryId;
+    if (widget.store.imageFor(source) == null) {
+      if (mounted) {
+        notice(
+          context,
+          'The saved source photo is unavailable. Current settings were kept.',
+        );
+      }
+      return;
+    }
+    final parent = widget.store
+        .designsFor(room.id)
+        .where((d) => d.imageId == source)
+        .firstOrNull;
+    if (!room.photoIds.contains(source) && parent == null) {
+      if (mounted) {
+        notice(
+          context,
+          'Restore the saved source version from Deleted designs before reusing its settings.',
+        );
+      }
+      return;
+    }
+    setState(() {
+      selectedId = parent?.id;
+      selectedPhotoId = room.photoIds.contains(source)
+          ? source
+          : room.primaryId;
+      includeRoomContext = design.supportingImageIds.isNotEmpty;
+      restoredSupportingIds = [...design.supportingImageIds];
+      focusSection = refine ? FocusSection.refine : FocusSection.style;
+    });
+    final saved = await draft.applyRecipe(design.recipe!, refine: refine);
+    if (!mounted) return;
+    final settings = design.recipe!.toMap();
+    final ai = widget.store.ai;
+    if (saved &&
+        !ai.activity.active &&
+        settings['provider'] == ai.providerLabel &&
+        ai.imageModels.contains(settings['imageModel']) &&
+        ai.imageQualities.contains(settings['imageQuality'])) {
+      ai.selectImageSettings(
+        imageModel: settings['imageModel'] as String,
+        imageQuality: settings['imageQuality'] as String,
+      );
+    }
+    widget.onDesignSelected?.call(selectedId);
+    notice(
+      context,
+      saved
+          ? (refine
+                ? 'Saved choices loaded. Describe the next correction.'
+                : 'Saved choices and source loaded. Review before generating.')
+          : 'Choices are loaded but saving needs attention. Keep this room open and retry saving.',
+    );
   }
 
   Widget _historyCard(RenovationRoom room, DesignVersion design) {
@@ -1603,6 +1674,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   runSpacing: 4,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
+                    OutlinedButton.icon(
+                      onPressed: aiPending
+                          ? null
+                          : () => _savedSettings(design),
+                      icon: const Icon(Icons.tune),
+                      label: const Text('Saved settings'),
+                    ),
                     OutlinedButton.icon(
                       onPressed: () => _selectDesign(design.id),
                       icon: Icon(selected ? Icons.check : Icons.edit_outlined),
@@ -1742,7 +1820,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     }
     final supporting = {
       if (includeRoomContext && room.photoIds.length > 1)
-        for (final id in room.photoIds.where((id) => id != sourceId))
+        for (final id in (restoredSupportingIds ?? room.photoIds).where(
+          (id) => id != sourceId,
+        ))
           id:
               widget.store.imageFor(id) ??
               (throw const AiFailure('A room context photo is unavailable.')),
@@ -2242,10 +2322,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   onView: (id) => setState(() {
                     selectedId = null;
                     selectedPhotoId = id;
+                    restoredSupportingIds = null;
                   }),
                   includeContext: includeRoomContext,
-                  onContextChanged: (value) =>
-                      setState(() => includeRoomContext = value),
+                  onContextChanged: (value) => setState(() {
+                    includeRoomContext = value;
+                    restoredSupportingIds = null;
+                  }),
                 ),
                 const SizedBox(height: 14),
               ],

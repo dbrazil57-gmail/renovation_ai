@@ -31,6 +31,40 @@ class ProjectBackup {
   int get photoBytes =>
       photos.values.fold(0, (total, bytes) => total + bytes.length);
 
+  /// Export time and JSON key order do not make an unchanged file a new revision.
+  String get contentSignature {
+    Object? ordered(Object? value) {
+      if (value is Map) {
+        final keys = value.keys.cast<String>().toList()..sort();
+        return {for (final key in keys) key: ordered(value[key])};
+      }
+      if (value is List) return value.map(ordered).toList();
+      return value;
+    }
+
+    final sortedRooms = [...rooms]..sort((a, b) => a.id.compareTo(b.id));
+    final sortedDesigns = [...designs]..sort((a, b) => a.id.compareTo(b.id));
+    return sha256
+        .convert(
+          utf8.encode(
+            jsonEncode(
+              ordered({
+                'project': project.toMap(),
+                'rooms': sortedRooms.map((room) => room.toMap()).toList(),
+                'designs': sortedDesigns
+                    .map((design) => design.toMap())
+                    .toList(),
+                'photos': {
+                  for (final entry in photos.entries)
+                    entry.key: sha256.convert(entry.value).toString(),
+                },
+              }),
+            ),
+          ),
+        )
+        .toString();
+  }
+
   Uint8List encode() {
     if (photoBytes > maxPhotoBytes) {
       throw const BackupFailure(
@@ -224,6 +258,19 @@ class ProjectBackup {
       for (final design in designs) {
         final room = byRoom[design.roomId];
         if (room == null) throw const FormatException();
+        final savedAnalysis = design.recipe?.analysis;
+        if (savedAnalysis != null) {
+          final validImages = {
+            ...room.photoIds,
+            ...designs.where((d) => d.roomId == room.id).map((d) => d.imageId),
+          };
+          if (!validImages.contains(savedAnalysis.sourceImageId) ||
+              !savedAnalysis.supportingImageIds.every(room.photoIds.contains)) {
+            throw const BackupFailure(
+              'Saved design settings reference unrelated analysis photos.',
+            );
+          }
+        }
         requiredPhotos.add(design.imageId);
         if (design.parentId != null &&
             byDesign[design.parentId]?.roomId != design.roomId) {

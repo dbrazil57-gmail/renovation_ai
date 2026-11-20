@@ -14,6 +14,7 @@ import 'design_delete_widgets.dart';
 import 'context_help.dart';
 import 'ai_model_choices.dart';
 import 'walkthrough_screen.dart';
+import 'design_recipe.dart';
 
 class AiConnectionSettingsCard extends StatelessWidget {
   final AiService ai;
@@ -496,6 +497,7 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
 }
 
 class AiEditRequest {
+  final DesignRecipe? recipe;
   final String roomId;
   final String? parentId;
   final String sourceImageId;
@@ -508,6 +510,7 @@ class AiEditRequest {
   final List<String> styleIds;
   final String otherStyle;
   const AiEditRequest({
+    this.recipe,
     required this.roomId,
     required this.parentId,
     required this.sourceImageId,
@@ -521,22 +524,26 @@ class AiEditRequest {
     this.otherStyle = '',
   });
 
-  AiEditRequest concept(DesignConcept concept, int index, int total) =>
-      AiEditRequest(
-        roomId: roomId,
-        parentId: parentId,
-        sourceImageId: sourceImageId,
-        image: image,
-        supportingImages: supportingImages,
-        styleIds: styleIds,
-        otherStyle: otherStyle,
-        prompt: concept.prompt,
-        title: total == 1
-            ? title
-            : '$title · ${index + 1}/$total ${concept.label}',
-        instructions: instructions,
-        precise: precise,
-      );
+  AiEditRequest concept(
+    DesignConcept concept,
+    int index,
+    int total, {
+    DesignRecipe? recipe,
+  }) => AiEditRequest(
+    recipe:
+        recipe?.withValues({'conceptDirection': concept.label}) ?? this.recipe,
+    roomId: roomId,
+    parentId: parentId,
+    sourceImageId: sourceImageId,
+    image: image,
+    supportingImages: supportingImages,
+    styleIds: styleIds,
+    otherStyle: otherStyle,
+    prompt: concept.prompt,
+    title: total == 1 ? title : '$title · ${index + 1}/$total ${concept.label}',
+    instructions: instructions,
+    precise: precise,
+  );
 }
 
 class AiEditCard extends StatefulWidget {
@@ -629,9 +636,29 @@ class _AiEditCardState extends State<AiEditCard>
             .length,
         fixedBrief: fixedBrief,
       );
+      final room = widget.store.roomById(captured.roomId);
+      final recipe =
+          (widget.draft?.captureRecipe() ??
+                  captured.recipe ??
+                  (room == null
+                      ? null
+                      : DesignRecipe({
+                          ...room.toMap(),
+                          'preciseEdit': captured.precise,
+                          if (captured.precise)
+                            'correctionInstructions': captured.instructions
+                          else
+                            'instructions': captured.instructions,
+                        })))
+              ?.withValues({
+                'provider': widget.store.ai.providerLabel,
+                'imageModel': ?imageModel,
+                'imageQuality': ?imageQuality,
+                'fixedBrief': fixedBrief,
+              });
       requests = [
         for (final (index, plan) in plans.indexed)
-          captured.concept(plan, index, plans.length),
+          captured.concept(plan, index, plans.length, recipe: recipe),
       ];
     } on AiFailure catch (error) {
       setState(() => message = null);
@@ -647,6 +674,11 @@ class _AiEditCardState extends State<AiEditCard>
             ),
           ],
         ),
+      );
+      return;
+    } on FormatException {
+      setState(
+        () => message = 'The design settings could not be captured safely. Review the room choices before generating. No AI request was sent.',
       );
       return;
     }
@@ -853,6 +885,11 @@ class _AiEditCardState extends State<AiEditCard>
       if (mounted) widget.store.ai.activity.update(AiStage.saving);
       await WidgetsBinding.instance.endOfFrame;
       final design = await widget.store.createDesign(
+        recipe: captured.recipe?.withValues({
+          'provider': result.provider,
+          'imageModel': result.model,
+          if (result.quality != null) 'imageQuality': result.quality,
+        }),
         roomId: captured.roomId,
         image: result.image,
         title: result.quality == null

@@ -1,8 +1,64 @@
 # Product and research reference
 
+## Launch direction confirmed — 20 November 2026
+
+Start with **Standard using the user's own AI API key**. The existing OpenAI and
+Gemini connections support this without a RenoVision account or laptop relay.
+An ordinary ChatGPT/Gemini subscription login is not a developer API credential;
+the provider bills usage to the key owner separately. Grow Standard adoption
+before investing in managed AI credits or other Pro services. No included AI
+allowance, payment entitlement or pricing is implemented/promised by this decision.
+Earlier credit-pack/price suggestions below are research hypotheses, not the
+current launch plan. Local projects, image saving and sharing remain account-free.
+
+Later, a subscription may include managed AI usage. Recommend a recoverable
+RenoVision identity for cross-device entitlements, balances and account recovery;
+that future service needs server-side payment/usage verification and spend limits.
+Do not put a shared company provider key in the distributed app. This does not
+require building accounts/billing now, or turning off the existing BYO-key path.
+
+The user also wants an optional paid laptop/desktop companion later: capture,
+analyse and explore on the phone, then refine on a larger screen. Chrome already
+provides a desktop workspace, and one Flutter codebase can underpin a future
+packaged Windows app. Portable project files carry rooms, original/generated
+images, recipes and history between devices; API keys stay device-specific.
+Windows packaging/install/export/key storage are not yet validated. Automatic
+cross-device sync, accounts and a paid-download entitlement are separate future
+work; exchanging a file is not live sync. No desktop installer is requested now.
+
+## Verified outstanding-items and icon-refinement work — 20 November
+
+Project Open/resume/conflicts, immutable version recipes with saved analysis and
+reusable settings, plus startup loading/Retry now pass regression tests. All
+296 tests pass, static analysis is clean and the final stamped web release build
+passes (102.4 seconds). The renewed credits restored approval review; the
+requested Android 1.0.13+14 update is built and verified from source `f69772aaa0`
+(145.5 seconds). It includes Save image / Share creation alongside the recovery
+and history changes; current icons and previous APKs remain unchanged.
+
+Open preserves portable IDs and resumes matching unchanged content. Divergent
+local/file content offers Keep local / Open file as copy instead of overwriting
+either revision. Restore copy still remaps IDs, including historical analysis
+references. New AI versions capture detached settings/analysis/model/quality and
+expose Saved settings / Use these settings / Refine this design. Legacy versions
+stay readable and show when structured settings were never recorded. Failed
+imports and design writes clean up only new data; startup Retry does not clear
+stores. Persistent Android file overwrites, analysis-fact caching, enforced masks
+and measured large-library performance remain unfinished.
+
+The clean vector rendering of A was shown, but the user requested refinement
+and several design/colour alternatives. A remains acceptable and preferred so
+far, not a final approval. Platform launcher assets and the app header were
+returned to their previous versions; candidates are preview-only. A six-option
+board is at `output/design-review/icon-refinements/renovision-icon-refinements.png`:
+A olive/cream room, B lighter teal linework, C cream/olive framed room,
+D navy/champagne geometric reveal, E terracotta/cream doorway and F graphite/sage
+room planes. `tool/preview_brand_options.ps1` creates local SVG/raster previews;
+no customer photo, model key or paid generation is involved. Name remains RenoVision.
+
 ## Settings, models and branding follow-up — 20 November 2026
 
-Source after APK 1.0.12 makes AI connection/models the first expandable card;
+The requested 1.0.13 update makes AI connection/models the first expandable card;
 appearance now matches Home cover/Storage as a lower-priority collapsed card.
 Delete is visible beside image tools for saved designs, with existing recovery
 and baseline/original protection. Refine exposes New design / Precise correction.
@@ -213,9 +269,11 @@ Keep those boundaries. Large UI/store files and eager image storage deserve
 incremental extraction/profiling when their related features change; a generic
 architecture rewrite would add risk without solving the known user problems.
 
-Before wider private testing, prioritize document identity/reopen, immutable
-per-version recipes, less redundant analysis, precise edit enforcement and measured
-startup/image/export performance. Local encryption, OS backup policy and recovery
+The audit prioritised document identity/reopen and immutable per-version recipes;
+the 20 November batch implements those, with same-destination persistence and
+real-device acceptance still outstanding. Next: less redundant analysis, precise
+edit enforcement and measured startup/image/export performance. Local encryption,
+OS backup policy and recovery
 need an explicit design preserving old data. Commercial backend/credits, production
 signing/identity, privacy policy and store/iOS validation belong to a later release.
 Historical competitor promises should not be used as validated capabilities or
@@ -534,8 +592,9 @@ uneditable single image.
    distinct bounded concept directions, sequential saves and partial-success
    handling. In-flight cancellation/recovery is not implemented; normal Back
    waits and a process kill can still lose a billed response.
-3. Next: immutable per-version structured settings and analysis snapshots, plus
-   separation of photo-fact caching from changed design preferences.
+3. Implemented 20 November: immutable per-version structured settings/analysis
+   snapshots and history reuse/refinement. Next: separate photo-fact caching
+   from changed design preferences.
 4. Benchmark real-room preservation, diversity, refinement, time and usage on
    the same inputs before claiming one provider/model is better or cheaper.
 
@@ -545,8 +604,10 @@ The offline fallback builds a labelled deterministic template. A connected visio
 model can analyse photos and draft an editable prompt. Choosing it for generation
 retains the authoritative current room requirements. The room stores its latest
 analysis and current choices; each design stores the final prompt, source/parent/
-supporting images, provider/model and request ID. It does not yet freeze every
-structured setting or historical analysis. These records survive project backups.
+supporting images, provider/model and request ID. New in-app generations also
+freeze structured settings, historical analysis and model/quality in an immutable
+recipe. Older/manual/editor versions may lack recipes; no missing history is
+invented. These records survive project backups.
 One/two/three concepts are separate sequential image requests from the same source,
 with explicit varied directions. Manual edits, saved versions, favourites, approval
 and branching already exist and should be reused rather than replaced.

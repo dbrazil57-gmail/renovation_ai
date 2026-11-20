@@ -5,6 +5,58 @@ Current task list after the full code/conversation/design audit, 19 November
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Verified outstanding-items batch — 20 November
+
+Credits/approval review are available again. **All 296 tests pass**, static
+analysis is clean, and the final release web build passed in 102.4 seconds.
+The requested **1.0.13+14** Android package is built and verified from source
+`f69772aaa0` (145.5 seconds). This batch adds:
+
+- Open project keeps portable IDs, resumes an unchanged matching project and
+  offers keep-local/open-file-copy choices for divergent work. A first import
+  publishes the project last and rolls back only its newly staged data on failure.
+- New generated versions capture detached settings, saved analysis,
+  provider/model/quality and concept direction alongside the exact prompt.
+  History offers Saved settings / Use these settings / Refine this design.
+  Older versions retain their original image/prompt without guessed settings.
+  Portable copies remap saved-analysis image references. Failed design-record
+  writes clean up only that call's new record/image; if record cleanup fails,
+  retain its image rather than leave a recoverable record with missing bytes.
+- Startup paints a loading surface before storage opens, with non-destructive
+  Retry on failure. Existing Hive box names and project data remain unchanged.
+- Full-screen Save image / Share creation export only a sanitized PNG copy.
+  Android supports Gallery and its share sheet; Chrome uses sharing/downloads.
+
+Nine regression cases cover repeated Open/restart, conflicts, failed-import and
+partial-write cleanup, immutable recipes/analysis/copy remapping, history reuse
+and startup loading/Retry. Four further export cases cover the native channel,
+old-Android chooser cancellation, metadata stripping/original preservation,
+busy/failure/retry feedback and compact controls. Existing API/backup suites pass.
+No real app AI calls or actual customer-data edits were made.
+
+The user requested the next APK and renewed credits to finish it. Keep the
+current icon unless a new one is confirmed. Old APKs remain for rollback; further
+packages still require a request.
+
+Branding: the user wants alternatives in design and colour; A is still preferred
+so far, not final. Six vector alternatives are at
+`output/design-review/icon-refinements/renovision-icon-refinements.png`, with
+individual A–F SVGs. Regenerate previews with `tool/preview_brand_options.ps1`.
+All 33 original platform icons were restored after initial candidate export;
+candidate assets are held in `output/design-review/icon-a-candidate/`. The app
+header also keeps its prior icon. `tool/export_brand_assets_test.dart` defaults
+to preview-only; installing artwork requires explicit icon confirmation and
+`INSTALL_RENOVISION_ICON=true`.
+
+Published `output/mobile-test/renovision-test-1.0.13.apk` and the latest alias.
+Package ID/code/name, matching signing identity, ARM64/optional camera, restricted
+share provider and absence of private project/key assets are verified. Size:
+76,560,654 bytes; SHA256
+`ED2BCFF73C2FD2F76FA8A8862C393387A3091458ED2754DE8DC7FCC3CD141E90`.
+All previous APK checksums and platform icons are unchanged. Android persistent
+document URI overwrites, enforced masks, lazy image storage, real Gemini
+comparisons and tracked AR remain outstanding. Next: physical S21/Chrome acceptance.
+
 ## Where we are
 
 The private app already supports the core photo → analysis → prompt → multiple
@@ -12,14 +64,21 @@ concepts → select → refine → compare → save workflow, with direct intern
 on Android and a same-view camera overlay. The user has successfully tested
 phone generation and project auto-reload. The chosen Focus Canvas design stays.
 
-Application baseline audited through `a948da0` is packaged in **1.0.12+13**,
-source `3cb94c972c`. All 249 tests were rerun and passed, analyser clean, Android
-release build passed in 139.1 seconds. The preceding web build also passed.
-Camera handoff, history captions, room chooser/live entry, compact layouts,
-themes and protected backups are now in the requested APK. Physical S21
-acceptance remains. No paid API calls or user-data reset.
+Launch direction confirmed 20 November: Standard starts with users' own developer
+API keys; grow adoption before building included subscription AI/other Pro options.
+Local projects/save/share need no RenoVision account. Managed credits/subscriptions
+and recoverable account entitlements are later work, with no current price promise.
+An optional paid desktop companion is a later milestone: phone capture/analysis/
+first design, larger-screen refinement. Chrome already supports the large-screen
+workspace; native Windows packaging and automatic cross-device sync are unverified.
+Portable project files can transfer work now; keys stay separate on each device.
 
-## 20 November feedback batch — source only
+The previous **1.0.12+13** package contains camera handoff, history captions,
+room chooser/live entry, compact layouts, themes and protected backups. The
+requested **1.0.13+14** adds the verified 20 November batches below. Physical S21
+acceptance remains; no paid API calls or user-data reset.
+
+## 20 November feedback batch — included in requested 1.0.13
 
 - [x] Make AI connection/models the first expandable settings card with status;
   collapse the lower-priority appearance choices into a matching card.
@@ -63,9 +122,9 @@ Verification: all 275 tests pass, static analysis clean, final web release build
 passed (78.1 seconds), Android Kotlin compilation passed (no APK packaged).
 Existing 1.0.12 APK hash and the original project brief remain unchanged. Provider
 responses were mocked; no real app API request or customer-data reset was made.
-Next APK only on explicit request; 1.0.12 does not contain this follow-up.
+The requested 1.0.13 includes this follow-up; 1.0.12 does not.
 
-## In-app walkthrough follow-up — source only
+## In-app walkthrough follow-up — included in requested 1.0.13
 
 - [x] Add Sample walkthroughs to the existing tap/hover information dialogs,
   retaining the current screen's help and Close action.
@@ -82,7 +141,7 @@ Next APK only on explicit request; 1.0.12 does not contain this follow-up.
   85.2 seconds. Existing APK/brief/data retained; no new APK or paid AI request.
 - [ ] Physical phone acceptance after the next explicitly requested APK.
 
-## Model comparison and brand preference follow-up — source only
+## Model comparison and brand preference follow-up — included in requested 1.0.13
 
 - [x] Keep the four primary image candidates: Gemini Nano Banana 2.1 / Pro and
   OpenAI GPT Image 2.6 Sunburst / Flare; account access still controls selection.
@@ -101,8 +160,9 @@ Next APK only on explicit request; 1.0.12 does not contain this follow-up.
   credentials and launcher assets preserved. No real app AI call or APK build.
 - [ ] Run real-room comparisons with the user's keys and rank by task before
   launch. No stored ratings/automatic paid benchmark or automatic ranking yet.
-- [ ] Prepare a clean adaptive launcher asset from the preferred A direction.
-  Existing app icon, package/signing identity and customer data stay intact.
+- [x] Prepare preview-only adaptive/vector launcher candidates and six colour/
+  design alternatives. Existing launcher icons remain unchanged.
+- [ ] Confirm final icon with the user before installing candidate assets.
 
 ## Completed audit batch
 
@@ -155,8 +215,10 @@ not a claim that the following changes were implemented during the audit.
 
 ### 1. Accept the newly packaged source changes on S21
 
-- [ ] When requested, package the 20 November source follow-up and test its
-  Settings discovery, toolbar delete, model presets and 2/3 correction variations.
+- [ ] Accept 1.0.13 on the phone: Settings discovery, toolbar delete, model presets,
+  2/3 correction variations, Saved settings/reuse and repeated Open/conflicts.
+- [x] Package and verify the requested **1.0.13+14**, including Save image / Share
+  creation, all 296 tests, clean analyzer and final Chrome/Android release builds.
 - [x] Build the explicitly requested **1.0.12+13** with the existing application
   ID/signature so it updates without uninstalling. Future APKs only when requested.
 - [ ] On S21, check the camera result remains in the live viewer and automatically
@@ -170,31 +232,35 @@ not a claim that the following changes were implemented during the audit.
 
 ### 2. Make Open / Save a reliable document workflow
 
-- [ ] Give portable projects stable document identity without changing original
+- [x] Give portable projects stable document identity without changing original
   photo/version IDs. Preserve compatibility with old plain/protected files.
-- [ ] **Open** should resume/reconnect a matching local project. **Restore a copy**
-  should deliberately duplicate it. Handle conflicting/newer revisions explicitly.
+- [x] **Open** resumes an unchanged matching project. **Restore a copy** duplicates
+  deliberately. Divergent revisions offer Keep local / Open file as copy; no merge.
 - [ ] Persist Android document URI permissions and overwrite the linked destination
   when supported; handle revoked access, moved files and provider limitations.
-- [ ] Reconnect browser handles safely where supported; otherwise explain/reselect
-  a destination without silently creating another local project.
+- [x] Reconnect a browser file handle on repeated Open without silently creating
+  another project; divergent copies and protected files never link plaintext saves.
+- [ ] Persist/recover browser handles across restart where supported, with permission
+  recovery and clear fallback. Currently reopen/reselect the file to reconnect.
 - [ ] Keep local autosave and portable-file status distinct. Add durable recovery
   for interrupted writes, unavailable storage and startup errors.
-- [ ] Exercise restart, repeated Open, failed writes and multiple devices/copies
-  using disposable fixtures before touching any real project store.
+- [x] Paint startup before storage opens, with non-destructive Retry; stage first
+  Open safely and clean up newly allocated failed design saves.
+- [x] Exercise restart, repeated Open/conflicts, failed imports/writes and copies
+  using disposable fixtures. Real multi-device file acceptance remains.
 
 Acceptance: opening the same file twice resumes one project; restore-copy still
 creates an independent project; cancelled/failed writes never lose local work.
 
 ### 3. Save the complete recipe for every generated version
 
-- [ ] Snapshot room type, styles/custom text, palette, scope/Keep-Replace, protected
+- [x] Snapshot room type, styles/custom text, palette, scope/Keep-Replace, protected
   features, generation mode, correction/brief, input images, analysis revision,
   final prompt, model/quality and concept direction into each version.
-- [ ] Keep older records readable and include snapshots in portable backups.
-- [ ] Add **Use these settings** and **Refine this design** actions with an obvious
+- [x] Keep older records readable and include snapshots in portable backups.
+- [x] Add **Use these settings** and **Refine this design** actions with an obvious
   active source/mode. Do not silently change the approved baseline.
-- [ ] Preserve previous analyses referenced by versions, instead of only the latest.
+- [x] Preserve previous analyses referenced by versions, instead of only the latest.
 
 Acceptance: an older option can be reopened with its exact saved choices, and a
 new child changes only the intended instruction while retaining its provenance.
@@ -264,7 +330,10 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 - [ ] Broader illustrated room/style samples; optional material/options design boards.
 - [ ] Room/project deletion with confirmation/recovery, secondary-photo management,
   storage usage and permanent purge rules respecting version references.
-- [ ] Android Share/Save to Gallery and clean comparison/overlay snapshot exports.
+- [x] Add Save image / Share creation in the full-screen viewer: Android 10+
+  Gallery, older Android chooser, native share sheet; Chrome sharing/download
+  fallback. Only a sanitized PNG is exported; original/project/key data stays intact.
+- [ ] Accept save/share on the S21 and Chrome; add comparison/overlay composites.
 - [ ] Decide Android OS backup/device-transfer policy for photos/metadata; protect
   credentials independently and explain the resulting behaviour.
 - [ ] Assess local database/photo encryption, key recovery and safe migration. Current
@@ -280,6 +349,14 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 
 ### 10. Public release later
 
+- [ ] Validate Standard BYO-key adoption and onboarding before investing in
+  managed subscription AI credits/Pro services. No launch price is set.
+- [ ] Later, assess recoverable accounts, server-verified purchases/allowances
+  and bounded company-funded AI. Keep local creation/save/share account-free.
+- [ ] Assess an optional paid Windows companion using the shared Flutter app;
+  validate packaging, native files/keys and paid entitlement before release.
+  Keep portable-file transfer separate from any later automatic cloud sync.
+
 - [ ] Production identity/name/icon/signing, privacy documentation, recovery/support.
 - [ ] If selling AI usage: hosted HTTPS backend, secret management, enforced credits,
   pricing/unit economics, payment validation and explicit limits.
@@ -293,17 +370,17 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 | Inspect existing app, preserve work and data | Completed; audit-only changes, no rewrite/migration |
 | Comprehensive room list, more palettes/styles | 42 types / 19 styles / 12 palettes; more illustrated examples pending |
 | Multiple room images and consolidated context | Implemented; up to six originals, explicit primary/supporting roles |
-| Colour selection, smarter prompt, AI photo analysis | Implemented; caching/reanalysis and historical snapshots need work |
+| Colour selection, smarter prompt, AI photo analysis | Implemented with per-generation analysis/settings snapshots; facts caching/reanalysis needs work |
 | Modern equals contemporary; mixed styles | Combined label; blending and separate-style comparisons implemented |
 | Whole-room default, clutter/floors/appliances | Implemented defaults plus optional room-specific Keep/Replace overrides |
 | Multiple genuinely different concepts | 1/2/3 distinct-direction requests implemented; semantic diversity validation pending |
-| Select and improve a generated design | Branching/precise correction implemented; clearer mode/settings restoration pending |
+| Select and improve a generated design | Branching/precise correction, explicit modes and saved settings reuse/refinement implemented |
 | Zoom/landscape and before/after slider | Implemented; real device acceptance continues |
 | Crop handles, colours/shapes/comments | Implemented; editable saved geometry and true masks/compositing pending |
 | Delete generated images | Recoverable delete/undo implemented; permanent purge/project-room deletion pending |
-| Autosave shortcut, Save on exit, Save as/Open | Implemented controls; same-document reopening/Android destination retention incomplete |
+| Autosave shortcut, Save on exit, Save as/Open | Open resumes matching work with explicit conflict choices; persistent Android destination retention incomplete |
 | Lost work after a new localhost URL | Fixed preview origin/provided recovered copies; keep same Chrome address/profile |
-| Repeated restored text | Name suffix fixed; repeated file Open can still duplicate a project |
+| Repeated restored text | Suffix fixed; unchanged repeat Open now resumes one project; Restore copy deliberately duplicates |
 | Direct phone API, no laptop | Implemented; user reports success; Android key encrypted separately |
 | Different copy prompts for assistants | One provider-neutral manual handoff retained; no extra provider needed for it |
 | Visible AI progress and faster editor | Stages/elapsed/preview work implemented; large-project benchmarks pending |
@@ -314,11 +391,11 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 | Design in viewer, immediately overlay, keep camera open | Automatic-overlay/handoff corrections packaged in 1.0.12; phone acceptance pending |
 | Live scan, moving-camera renovation, snapshot to refine | Still capture + generated overlay/refine exists; true tracked live transformation/composite export pending |
 | Library/history captions below image | Both packaged in 1.0.12; phone acceptance pending |
-| Smaller room icons, type-based Live room label | Packaged in 1.0.12; phone acceptance pending |
+| Smaller room icons, type-based Live room label | Compact icons in 1.0.12; final type-based automatic naming in requested 1.0.13; phone acceptance pending |
 | Themes and settings storage/encryption TODOs | Five themes, storage details, encrypted export completed; internal encryption/OS backup policy pending |
 | Competitor/review/pricing research | Dated notes retained; no fresh pricing verification or promise to undercut costs |
 | Cleanup, minimal docs, Git ignore, commits | Four root/two guide documents; generated/private data ignored; local verified commits, no push |
-| APKs only when requested | Honoured; no APK produced during this audit |
+| APKs only when requested | Honoured; current 1.0.13 package explicitly requested and reconfirmed after credits renewed |
 
 ## Working rules for every batch
 
