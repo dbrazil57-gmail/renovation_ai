@@ -8,14 +8,14 @@ instructions have been consolidated here; no real project data was changed.
 ## 20 November source follow-up testing
 
 These changes are after APK 1.0.12 and need a new package only when requested.
-All 275 local tests pass; static analysis is clean. New coverage checks first/
+All 279 local tests pass; static analysis is clean. New coverage checks first/
 collapsed AI settings and appearance, model presets without generation, safe
 toolbar deletion, separate saved precision counts and three strictly scoped
 correction requests from one source. Existing originals/baselines are preserved.
 The targeted Chrome runner stalled in its JavaScript test iframe before running
 tests; its diagnostic reported a responsive host with no pending network requests.
 The isolated runner was stopped. Do not count that browser attempt as a pass.
-Final release-web compilation passed in 78.1 seconds; the earlier normal build
+Final release-web compilation passed in 85.2 seconds; the earlier provider build
 also passed its Wasm dry run. Android Kotlin compilation passed independently,
 without packaging an APK. These checks do not establish device/browser acceptance.
 
@@ -88,6 +88,30 @@ is clean. Logs use `output/live-room-labels-2026-11-20-` with `focused.log`,
 this naming-only correction.
 
 ## Current source and phone package
+
+Walkthrough acceptance (source after 1.0.12; package only on request):
+
+1. Tap the information/Help icon, then Sample walkthroughs. Current screen help
+   should still be readable and Close should still work.
+2. Under Camera & photos, try Choose photos, Take a photo and Live view. Check
+   Next/Previous progress, final Done, system Back and returning to the same app
+   screen. No actual capture, provider call or project write should occur.
+3. Try Design & refine, Image tools & compare and Save & reopen. The fictional
+   kitchen gives example instructions; it is not inserted into your projects.
+4. Check small phone/landscape and enlarged system text. Step text can scroll;
+   navigation remains available. The catalogue scrolls when needed.
+5. The guide must describe Live design as one captured reference and a generated
+   still overlay, with separately confirmed updates; it must not imply tracked AR
+   or automatic paid generation from each option change.
+
+Walkthrough logs: `output/walkthrough-focused-tests.log`,
+`walkthrough-regression-tests.log`, `walkthrough-analyze.log` and
+`walkthrough-web-build.log`. Four new navigation/layout tests use disposable
+data; six existing Help tests pass in the focused run. No customer data or key used.
+All 279 tests pass after the walkthrough change, analysis is clean and the web
+release build passed (85.2 seconds). Native Android code was not changed in this
+batch; its preceding provider compilation passed. No APK or browser-interaction
+acceptance was run for these guides.
 
 Latest test APK: **1.0.12+13**, source `3cb94c972c`:
 `output/mobile-test/renovision-test-1.0.12.apk`, alias `renovision-test.apk`.

@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import 'walkthrough_screen.dart';
+
 Future<void> showContextHelp(
   BuildContext context, {
   required String title,
@@ -13,6 +15,14 @@ Future<void> showContextHelp(
       scrollable: true,
       content: SelectableText(message),
       actions: [
+        TextButton.icon(
+          onPressed: () {
+            Navigator.pop(dialogContext);
+            showAppWalkthroughs(context);
+          },
+          icon: const Icon(Icons.play_circle_outline),
+          label: const Text('Sample walkthroughs'),
+        ),
         TextButton(
           onPressed: () => Navigator.pop(dialogContext),
           child: const Text('Close'),

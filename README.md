@@ -30,7 +30,7 @@ correction, each with 1/2/3 outputs appropriate to its scope. New design prompts
 take more initiative with sparse briefs. Available-model presets recommend detail
 versus speed while preserving saved choices. OpenAI and Gemini have separate
 direct API connections and a recommended image-model catalogue browsable without
-keys. All 275 tests pass; analyser clean; release web and Android Kotlin compilation
+keys. All 279 tests pass; analyser clean; release web and Android Kotlin compilation
 passed. Gemini responses were mocked; live account/image acceptance remains.
 The preceding Chrome interaction runner stalled before tests.
 RenoVision is the confirmed display name in source; new icon options await selection.
@@ -103,6 +103,15 @@ back without re-entry on Android. OpenAI defaults to available 2.6 Sunburst/medi
 Gemini to Nano Banana 2.1/2K. Nano Banana Pro is the detailed Gemini preset.
 Manually copied prompts remain provider-neutral. Claude is not an image renderer.
 See [AI test setup](docs/TESTING_GUIDE.md#ai-test-setup).
+
+## In-app help
+
+For guided examples, open the app's information/Help icon and choose **Sample
+walkthroughs**. Camera & photos groups Choose photos, Take a photo and Live view;
+other guides cover Design & refine, Image tools & compare and Save & reopen.
+Each uses a fictional kitchen with Next/Previous steps. These are read-only
+examples, available without a key; they do not capture photos or send AI requests.
+Walkthroughs are in source for the next requested APK, after installed 1.0.12.
 
 ## Save and resume
 

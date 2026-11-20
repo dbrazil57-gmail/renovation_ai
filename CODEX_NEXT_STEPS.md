@@ -64,6 +64,23 @@ Existing 1.0.12 APK hash and the original project brief remain unchanged. Provid
 responses were mocked; no real app API request or customer-data reset was made.
 Next APK only on explicit request; 1.0.12 does not contain this follow-up.
 
+## In-app walkthrough follow-up — source only
+
+- [x] Add Sample walkthroughs to the existing tap/hover information dialogs,
+  retaining the current screen's help and Close action.
+- [x] Group Camera & photos with separate Choose photos, Take a photo and Live
+  view paths, then Design & refine, Image tools & compare and Save & reopen.
+- [x] Provide six read-only examples using a fictional kitchen, one step at a
+  time with Next/Previous/Done and progress. Reading guides needs no API key and
+  makes no camera, AI or project-storage changes.
+- [x] Explain paid confirmations, reference capture, same-view still overlay,
+  manual prompt/image handoff, version recovery and portable-file/key boundaries.
+- [x] Verify all six navigation paths, return to existing project without writes,
+  existing context help, 320px phone and landscape layouts at 180% text size.
+- [x] All 279 tests pass, static analysis is clean, release web build passed in
+  85.2 seconds. Existing APK/brief/data retained; no new APK or paid AI request.
+- [ ] Physical phone acceptance after the next explicitly requested APK.
+
 ## Completed audit batch
 
 - [x] Read the brief and inspect actual source/tests/platform code.

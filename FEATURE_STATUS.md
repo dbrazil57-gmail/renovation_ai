@@ -41,8 +41,10 @@ Verified account model lists now survive restart. Older saved connections retain
 their known selected model; Refresh available models checks access without sending
 photos or re-entering the saved key, and never silently changes a valid selection.
 
-All **275 tests passed** and static analysis is clean. The final release web build
-passed in 78.1 seconds; Android Kotlin compilation passed without packaging an APK.
+All **279 tests passed** and static analysis is clean. The final release web build
+passed in 85.2 seconds; the preceding provider batch's Android Kotlin compilation
+passed without packaging an APK. Walkthrough UI is shared Flutter code; physical
+phone acceptance remains pending the next requested package.
 Seventeen new tests cover Gemini transport, key isolation/switching, session-key
 expiry, offline restore, safe errors and provider-specific consent. All responses
 were synthetic; no paid provider call was made. The preceding Chrome test iframe
@@ -52,6 +54,12 @@ installed 1.0.12 does not contain these changes. The user confirmed RenoVision;
 Android/web/Flutter display labels are updated in source while the package ID and
 storage stay unchanged. A second board of six different icons was generated with
 built-in imagegen after the first set was rejected; launcher assets await selection.
+
+Help dialogs now link to Sample walkthroughs: Camera & photos groups Photos,
+Camera and Live view; Design & refine, Image tools & compare and Save & reopen
+complete the six guides. Fictional kitchen examples run without a key or camera
+and make no AI/project changes. Four new tests cover navigation, returning to an
+existing project without writes, small phones, landscape and 180% text size.
 
 Live naming correction: generic saved Live names and new automatic room-picker
 names display the actual selected type, e.g. **Bedroom (Live)** / **Kitchen (Live)**,
@@ -104,7 +112,7 @@ provider quality, physical-camera behaviour or durable storage on every device.
 | Live design | Consent → one automatic reference capture/analysis → Room/style/Palette/Brief → confirmed generation → saved preview over camera → Continue to refine | Model latency remains; no continuous room scan, instant video transformation, moving-view redesign or composite/video export |
 | Autosave | Debounced drafts, compact status, menu shortcut, manual save, save on normal exit, pending-request guards | Process termination can interrupt pending writes; no journaled crash/corruption recovery |
 | Project files | Portable project with all rooms/photos/designs/current room choices/history; Open, Save, Save as, Restore | Open currently imports a fresh local copy; browser linkage is session-only, Android does not retain an overwrite destination |
-| Appearance/help | Focus Canvas B, pinned preview and Room/Style/Refine/Ideas controls, desktop split view, contextual toolbars, compact text, tap/hover help, stock/user-selectable home cover, five saved app themes | More hierarchy work and real-phone accessibility checks needed; themes are separate from renovation palettes |
+| Appearance/help | Focus Canvas B, pinned preview and Room/Style/Refine/Ideas controls, desktop split view, contextual toolbars, compact text, tap/hover help with six offline sample walkthroughs, stock/user-selectable home cover, five saved app themes | More hierarchy work and real-phone accessibility checks needed; themes are separate from renovation palettes |
 | Storage/privacy | Actual local storage/origin details, diagnostics; optional password-protected portable backup; Android encrypted API-key storage | Local photo/metadata database is not encrypted by the app; OS backup policy needs an explicit decision |
 
 ## Corrections and incomplete requirements
