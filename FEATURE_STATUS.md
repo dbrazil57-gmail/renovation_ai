@@ -122,6 +122,7 @@ provider quality, physical-camera behaviour or durable storage on every device.
 | Guided start | Photos → Direction → Analyse/review → Final options; Finish later resumes | Room identification is not a structured AI result that automatically fills the room selector |
 | Photo entry | Phone camera, gallery/multiple-photo import, embedded live preview, primary view and additional angles | Up to six original room views; reference images have no separate inspiration/material/sketch role |
 | Room scope | Whole-room defaults coordinate surfaces, fittings/appliances, lighting and loose-clutter removal; optional room-specific Keep/Replace and precise correction | Fixed uncertain fittings need explicit instructions; AI compliance is not guaranteed |
+| Local paint/material editing | Not implemented; existing palettes guide AI prompts and annotation tools create references | Proposed next batch: reusable surface masks and local wall recolouring without API calls; wallpaper/perspective and other finish layers follow |
 | AI analysis | Sends selected photos/preferences to a vision model; saves observations, questions, editable prompt and provenance; new generated versions keep their matching analysis | Normal workspace can still require reanalysis after preference changes |
 | Prompt preparation | Offline deterministic fallback, AI-written prompt option, preview/copy, current requirements/protected features, correct working/supporting-image roles | Copying text does not attach photos or automatically return external results |
 | In-app AI | OpenAI/Gemini direct HTTPS with separate personal keys and saved model choices; curated image recommendations; optional OpenAI laptop relay; confirmation, progress stages/elapsed time, storage-only result retry | Gemini live account/image quality acceptance pending; no Claude/Bedrock adapter, in-flight paid-job cancellation, actual billed-cost meter or automatic output critique |
@@ -171,6 +172,12 @@ labelled honestly. Missing/deleted source references need recovery first; stale
 analysis can still need review. Exact paid request replay is not implemented.
 
 ### 3. Precision remains guidance rather than enforcement
+
+The 20 November follow-up recommends a local paint editor as the next functional
+batch: save a reusable wall selection, then try colours without generating another
+room image. Wallpaper would reuse that foundation with perspective/repeat controls.
+This has been reviewed and added to the backlog, not implemented in 1.0.13.
+Current palettes do not recolour photo pixels, and text analysis is not a mask.
 
 The OpenAI edit request contains images and a prompt, with no mask.
 Crop/markup creates a flattened reference image; there is no stored region model,

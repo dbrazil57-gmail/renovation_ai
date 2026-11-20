@@ -285,6 +285,28 @@ remain optional; an assistant name alone is not an image API.
 
 ### 5. Implement genuine controlled precision editing
 
+- [x] Review competitor paint/material tools and inspect our existing editor on
+  20 November. Record a local-finishes-first design in docs/PRODUCT_NOTES.md;
+  this is research, with no paint/wallpaper editor implemented yet.
+- [ ] Next functional batch: local wall paint on an original or saved AI design.
+  Select once with polygon/brush/eraser, correct edges and exclude foreground
+  objects; reuse that mask for palette trials without AI calls or a key.
+- [ ] Preserve shading/texture where feasible; add per-wall colours, swatch picking,
+  undo/redo, source-design comparison and explicit Save version. Keep the image
+  visible with a compact Finishes sheet instead of more full-page controls.
+- [ ] Persist source-bound masks/layers and local-edit provenance through autosave,
+  history and plain/protected project copies. Preserve original/generation records;
+  invalidate or explicitly realign masks for a changed image/viewpoint.
+- [ ] Verify zero network/provider calls in manual mode and decoded pixel equality
+  outside the allowed edit/feather region in lossless full-frame output. Benchmark
+  Chrome/S21 preview and export; keep originals/approved baselines unchanged.
+- [ ] Follow with local wallpaper: sample import, repeat scale/rotation/offset,
+  perspective and foreground exclusions; then evaluate floor/cabinet finishes.
+- [ ] Assess optional wall-selection assistance separately. Reuse accepted masks;
+  do not invoke a paid model for each colour tap or equate text analysis with masks.
+
+Shared foundations for subsequent AI region editing:
+
 - [ ] Persist editable region/annotation geometry and distinguish markup guidance
   from an edit mask. Keep original references intact.
 - [ ] Add supported mask transport with correct image dimensions/orientation.
@@ -301,8 +323,8 @@ Prompt wording alone does not meet this acceptance condition.
 
 - [ ] Time startup/route first paint, editor preview, API image preparation and
   plain/protected backup operations on representative S21 and Chrome projects.
-- [ ] Add a startup loading/error/recovery surface; avoid a blank launch while
-  opening large eager image boxes.
+- [x] Add startup loading/error Retry before opening existing Hive boxes (1.0.13).
+  Eager image loading and journaled crash recovery still need separate work.
 - [ ] Bound image decoding/version-thumbnail work. Review web worker/background
   options for heavy image/export work; native isolates already handle some tasks.
 - [ ] Plan lazy/photo-file storage only if benchmarks justify it, with a reversible,
@@ -314,6 +336,8 @@ Prompt wording alone does not meet this acceptance condition.
   discovery content and keep inspiration chiefly in Explore.
 - [ ] Room: consolidate active image/baseline information; surface photos/analysis.
 - [ ] Style: show current style/palette compactly; open a sheet/picker for all choices.
+- [ ] Assess separate base style and cultural/regional influence choices, including
+  Japanese and Italian, alongside existing custom text and Modern/Contemporary.
 - [ ] Refine: distinguish **Create concepts** from **Refine selected design** and
   show source/mode without opening an advanced accordion.
 - [ ] Ideas: history/selection before secondary manual-AI copy/import controls.
@@ -377,6 +401,8 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 | Comprehensive room list, more palettes/styles | 42 types / 19 styles / 12 palettes; more illustrated examples pending |
 | Multiple room images and consolidated context | Implemented; up to six originals, explicit primary/supporting roles |
 | Colour selection, smarter prompt, AI photo analysis | Implemented with per-generation analysis/settings snapshots; facts caching/reanalysis needs work |
+| Change paint/wallpaper without regenerating a room | Competitor/source review completed 20 November; local mask/paint renderer is the recommended next batch, wallpaper follows; not yet coded |
+| Japanese/Italian and other regional influences | Some existing influences and custom text work; dedicated choices and separate influence picker proposed |
 | Modern equals contemporary; mixed styles | Combined label; blending and separate-style comparisons implemented |
 | Whole-room default, clutter/floors/appliances | Implemented defaults plus optional room-specific Keep/Replace overrides |
 | Multiple genuinely different concepts | 1/2/3 distinct-direction requests implemented; semantic diversity validation pending |

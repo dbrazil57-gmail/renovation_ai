@@ -614,6 +614,96 @@ and branching already exist and should be reused rather than replaced.
 
 ## Competitor review
 
+### Local finish editing review — 20 November 2026
+
+User direction: use AI when it adds value; changing only wall paint or wallpaper
+on an otherwise accepted photo/design should not require a new whole-room AI
+render. This is an ideas/architecture review, not an implemented editor or a
+paid competitor benchmark. Existing project data, source images and APK stay intact.
+
+**Published patterns worth adopting:**
+
+| Official evidence | Useful pattern for RenoVision |
+| --- | --- |
+| [Renovate AI paint guide](https://help.renovateai.app/en/article/painting-your-house-or-building-interior-walls-1dnnx96/) describes wall detection, palettes, mobile brush/Smart Fill, undo/reset, using earlier renovations and downloading | Edit the selected existing result, select walls, and keep colour choices beside the image. Reuse a corrected selection for further colour trials. The guide does not establish which steps run locally or incur AI usage. |
+| [Renovate AI Color Finder](https://help.renovateai.app/en/article/how-to-use-the-color-tool-to-find-paint-colors-1woiafn/) documents extracting suggested room colours without changing the image | Add an eyedropper and saved swatches; later offer dominant-colour extraction. Sampled photo RGB is an appearance reference, not proof of an exact branded paint match. |
+| [Benjamin Moore FAQ](https://www.benjaminmoore.com/en-us/faq), Website Questions 48, describes masking multiple surfaces on an uploaded photo and selecting colours; its Personal Color Viewer is not optimised for phones | Keep separate wall selections and colours, with deliberate phone-sized controls. Treat surface identity/selection as reusable editing data. This source does not disclose its internal algorithms. |
+| [Roomvo paint feature sheet](https://hello.roomvo.com/hubfs/_Inbound%20Assets/Feature%20Sheets/inbound-feature-sheet-roomvo-paint-visualizer.pdf) describes different wall colours, retained surface texture, comparison, favourites, image download/share and product details | Make colour trials visual, comparable and easy to save; later attach selected material names/codes to a room board. Its realism/speed claims are marketing, not our measured acceptance standard. |
+
+Renovate AI's [exterior paint page](https://renovateai.app/exterior-paint-visualizer)
+also explicitly advertises AI-generated repaint renders. Similar-looking tools
+can therefore use different pipelines; do not claim every competitor palette
+change is a local operation. Its [homepage](https://renovateai.app/) lists paint,
+wallpaper, flooring and cabinetry visualizers, but that alone does not establish
+all features in every consumer plan or prove they work without AI.
+
+**Actual app position:** `reference_editor.dart` / `reference_markup.dart` provide
+crop and annotation geometry during editing, but save flattened reference images.
+Their Select tool selects annotations, not room surfaces. `screens.dart` records
+these as new image versions. `design_palettes.dart` supplies AI prompt directions;
+it does not recolour pixels. There is no persisted surface mask, local paint/
+wallpaper renderer or editable material-layer recipe yet. `RoomAnalysis` contains
+text observations, not a usable wall segmentation map. Existing before/after,
+version history, local storage and save/share controls are foundations to reuse.
+
+**Recommended next functional batch: local wall paint.** Open an original or
+accepted AI result, choose Finishes > Paint, select the wall once, and try colours
+from a compact strip. Use a manual polygon/brush plus erase/edge correction first;
+allow exclusions for windows, trim, furniture and fittings. A later optional
+wall-detection assist could use an on-device model or a consented cloud call.
+Once a suitable mask exists, palette changes can render on the device with no
+generative request or API key. Never make a silent paid request when a swatch is
+tapped. Show selection/preparation progress separately from ordinary colour updates.
+
+The renderer should modify only the selected area and aim to retain its texture,
+brightness variation and shadows. Flat colour fill alone gives an unrealistic
+paint-over effect. Dark-to-light changes, reflections and missing texture limit
+what simple compositing can reproduce; show a visual approximation, not an exact
+paint/lighting simulation. Do not promise instant performance until measured on
+Chrome and the S21.
+
+Save named selections and editable layers against the source image ID, decoded
+dimensions/orientation and source revision. Keep the base image untouched. New
+AI renders, crops or different viewpoints need fresh or explicitly realigned
+selections; they must not silently inherit an old mask. Store the selected colour,
+blend parameters, mask and local-operation provenance in a compatible portable
+recipe. Preserve the source generation's history separately; do not label a local
+paint version as a new AI generation or assign it an invented model/request ID.
+Autosave the working edit; Save version adds a child with a lossless full-frame
+PNG and its editable settings. Approval remains explicit. Reuse existing sharing.
+
+**Then wallpaper, followed by floor/cabinet finish trials.** Wallpaper needs an
+image/swatch, repeat scale, offset/rotation and perspective controls; a flat
+pattern over the entire photo is inadequate. Reuse the surface mask and excluded
+foreground regions. Begin with owned sample patterns and user-imported swatches.
+Preserve existing 3D shape; adding cabinets, changing layout, removing an object
+or revealing hidden background remains a different AI/geometry task. Photo scale
+is not a verified measurement. More complex reflections/occlusion need separate
+quality work rather than a promise that every material swap is trivial.
+
+**Phone workflow:** selected image stays visible; one Finishes action opens Paint
+/ Wallpaper / later Floor / Cabinets. Pick a named surface, then use swatches in
+a short bottom sheet, with Undo/Redo, compare to the starting design, Save version
+and existing Save image / Share creation. Multiple paint choices can be compared
+locally without spending a generation per colour. Keep the current AI New design
+and Precise correction paths for edits that need synthesis. A no-key user can
+still get useful manual finish previews, supporting the Standard launch plan.
+
+Other worthwhile follow-ups: typed inspiration/material references, a simple room
+material board, per-surface saved favourites and a base-style plus regional-
+influence picker (e.g. Contemporary + Japanese/Italian). Current 19 styles include
+Japandi/Mediterranean/French provincial/Scandinavian, but no dedicated Japanese or
+Italian buttons. These are proposed additions, not features in APK 1.0.13.
+
+**Acceptance before shipping:** zero provider calls in manual/local mode, including
+without a key/offline; correct mask mapping when zooming/rotating/resizing; saved
+selections and layered recipes survive restart and plain/protected portable copies;
+undo/cancel and failed saves preserve prior data; compare against the actual source
+design; test occlusion/edges and dark/light paint; measure preview/export latency.
+For a local full-frame PNG, assert decoded pixels outside the allowed mask/feather
+band remain unchanged in the same oriented working frame. That guarantee belongs
+to the tested compositor, not prompt wording or the current annotation tools.
+
 
 
 Reviewed 14 November 2026 against RENOVISION_PROJECT_BRIEF.md and the current
