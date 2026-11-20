@@ -204,6 +204,61 @@ Check local saving writes/reads disposable diagnostic records in the current
 stores. Reopening the same address/profile and confirming real project contents
 is the persistence test. Do not interpret a successful diagnostic as a backup.
 
+## Feedback setup
+
+Source after APK 1.0.13 adds Help > Feedback and Settings > Feedback and ideas.
+Choose Report an issue or Suggest a feature, enter a title/details, and review
+the report. Build ID/platform can be omitted. Photos, project names/files, logs,
+API connection settings and keys are not gathered. Text the user types remains
+their responsibility; preview it before copying/sending. No analytics/report is
+sent just by opening or typing in this screen.
+
+The draft autosaves separately in `settings:feedback_draft`, outside portable
+project exports. Normal Back waits for saves; errors retain text and allow retry.
+Clear draft requires confirmation. It does not delete any project/image. A process
+kill can still interrupt an unfinished write, as with other local drafts.
+
+**Destination is currently unconfigured.** The owner was asked for a support
+email or an existing HTTPS form URL; do not infer one from the private Git remote.
+Public release configuration accepts `RENOVISION_SUPPORT_EMAIL` or
+`RENOVISION_FEEDBACK_URL` using Flutter `--dart-define` / `--dart-define-from-file`.
+Only put public contact details in these definitions, never provider keys.
+Use an ignored `.local/feedback.json` for local build configuration if needed:
+
+```json
+{"RENOVISION_SUPPORT_EMAIL":"support@example.test"}
+```
+
+That example is not a working inbox. Email takes priority if both definitions
+are supplied; invalid email, insecure form URL or missing contact leaves delivery
+unconfigured. These definitions are read at build/start time; the ordinary preview
+launcher does not load that JSON automatically. Supply it explicitly when running
+the fixed-origin preview, for example:
+
+```powershell
+flutter run -d web-server --web-hostname localhost --web-port 7357 --dart-define-from-file=.local/feedback.json
+```
+
+Open email requests a populated composer; the user still sends it in their email
+app. Open feedback form opens the configured HTTPS page without report data in
+its URL; use Copy report, paste and submit there. There is no generic HTTP POST,
+guaranteed browser email-client detection or server receipt acknowledgement.
+No client/blocked browser leaves Copy report and selectable Review report as
+fallbacks; handoffs retain the local draft and never say feedback was delivered.
+Native support is Android; browser support uses normal email/HTTPS links.
+
+Verification: all 305 tests passed, analysis clean (5.0 seconds), Chrome release
+build passed (42.2 seconds) and Android Kotlin compilation passed. Logs:
+`output/feedback-analyze.log`, `feedback-regression.log`, `feedback-web-build.log`,
+`feedback-android-kotlin.log`; source stamp `937602d939`. All launchers were mocked
+in tests; no real email/form submission was made. APK 1.0.13 SHA256 is unchanged.
+No new APK is authorised by this feedback follow-up alone.
+
+Manual acceptance after contact setup: create both report types; reopen the draft;
+check diagnostic opt-out and report preview; confirm a real email/form reaches
+the owner; test cancellation, no mail client and an offline connection. Verify the
+chosen form's anonymous-access setting before promising account-free online use.
+
 ## Saving and storage
 
 ### Save and share a creation

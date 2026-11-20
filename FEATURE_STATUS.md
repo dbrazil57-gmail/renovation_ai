@@ -1,5 +1,12 @@
 # Renovision feature status
 
+**Source after APK 1.0.13:** Feedback in Help/Settings now offers issue reports,
+feature suggestions, persistent local drafts, preview/copy and email/HTTPS-form
+handoff hooks. All **305 tests pass**, analysis is clean, Chrome release build and
+Android Kotlin compilation pass. The owner has not provided a delivery email/URL;
+online delivery remains unconfigured and no real submission/receipt is verified.
+The existing APK does not contain this follow-up; it remains unchanged.
+
 **Verified source update, 20 November:** Open/resume conflict handling, per-version
 settings snapshots/reuse and startup loading/Retry pass regression tests.
 **All 296 tests pass**, static analysis is clean and the final release web build
@@ -137,6 +144,7 @@ provider quality, physical-camera behaviour or durable storage on every device.
 | Project files | Portable rooms/photos/designs/choices/history/recipes; Open preserves IDs, resumes unchanged matching work and offers Keep local / Open file as copy for conflicts; Restore copy is independent | Browser linkage is session-only; Android does not retain an overwrite destination; no divergent-revision merge |
 | Appearance/help | Focus Canvas B, pinned preview and Room/Style/Refine/Ideas controls, desktop split view, contextual toolbars, compact text, tap/hover help with seven offline sample walkthroughs, stock/user-selectable home cover, five saved app themes | More hierarchy work and real-phone accessibility checks needed; themes are separate from renovation palettes |
 | Storage/privacy | Actual local storage/origin details, diagnostics; optional password-protected portable backup; Android encrypted API-key storage | Local photo/metadata database is not encrypted by the app; OS backup policy needs an explicit decision |
+| Feedback | Source-only Help/Settings form, issue/feature categories, saved local draft, report preview/copy, optional build/platform and email/form handoff hooks | Contact destination pending; no submission backend, receipt confirmation, ticket history, voting or screenshot attachments; outside existing APK |
 
 ## Corrections and incomplete requirements
 

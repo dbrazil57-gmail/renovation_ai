@@ -1,5 +1,11 @@
 # Renovision AI
 
+Latest source follow-up: **305 tests pass**; Feedback in Help/Settings supports
+saved issue/feature drafts, preview/copy and email/form handoff hooks. The owner's
+support address/form URL is still needed to activate delivery. Chrome release
+and Android Kotlin compilation pass. This is after the APK described below;
+no further APK was built or actual feedback sent.
+
 Verified 20 November 2026: **296 tests pass**, static analysis is clean and the
 release web build passes. The requested Android **1.0.13+14** update is built and
 verified. Existing icons remain in place while six design/colour alternatives
@@ -114,6 +120,12 @@ it never starts a generation by itself or changes saved room output counts.
 Each uses a fictional kitchen with Next/Previous steps. These are read-only
 examples, available without a key; they do not capture photos or send AI requests.
 Walkthroughs are included in the source for the requested 1.0.13 package.
+
+Help > Feedback and Settings > Feedback and ideas open the same saved local
+draft. No photo/project/AI settings are attached; optional build/platform details
+are shown in Review report. Email/form handoff needs a configured public contact.
+Opening another app is not a delivery confirmation. Keep/copy the draft until
+you have actually submitted it. See [feedback setup](docs/TESTING_GUIDE.md#feedback-setup).
 
 ## Save and resume
 

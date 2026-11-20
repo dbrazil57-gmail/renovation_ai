@@ -1,5 +1,29 @@
 # Product and research reference
 
+## Feedback entry points — 20 November 2026
+
+The user wants online feature suggestions and issue reporting. The source now
+adds Feedback to contextual Help and Feedback and ideas to Settings, with a shared
+local draft, issue/feature categories, title/details, preview, optional build/
+platform and copying. Draft failures retain text with visible retry feedback;
+normal Back saves, and clearing requires confirmation. Drafts are not project data
+or portable-export content. No photos, logs, project files/names or AI settings
+are collected automatically. This needs no RenoVision login.
+
+The email/HTTPS-form hooks are implemented, but delivery is not connected: the
+owner has not yet supplied a support email or feedback URL. Both public build
+definitions default empty. A private source repository is not a public feedback
+destination. Email opens a composer for the user to send; a hosted form requires
+copy/paste and explicit submission there. A handoff is not a receipt. No real
+report was sent, and no service account/backend was created. Screenshot uploads,
+public voting/roadmap, automated crash reports and ticket tracking remain later
+options rather than hidden telemetry in the first version.
+
+Verified with 305 tests, clean analyzer, final release web compilation and Android
+Kotlin compilation. Existing APK 1.0.13 remains unchanged; this source awaits a
+future requested package. See the Testing guide for contact setup and real
+Chrome/S21 receipt checks. This keeps initial feedback costs/support simple.
+
 ## Launch direction confirmed — 20 November 2026
 
 Start with **Standard using the user's own AI API key**. The existing OpenAI and

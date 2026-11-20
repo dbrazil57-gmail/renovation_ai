@@ -14,6 +14,7 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         CreationExportBridge(this).register(flutterEngine.dartExecutor.binaryMessenger)
+        FeedbackBridge(this).register(flutterEngine.dartExecutor.binaryMessenger)
         val vault = KeyVault(applicationContext)
         val geminiVault = KeyVault(applicationContext, "gemini")
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "renovision/secrets")

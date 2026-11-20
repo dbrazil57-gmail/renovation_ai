@@ -5,6 +5,27 @@ Current task list after the full code/conversation/design audit, 19 November
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Feedback follow-up — source after APK 1.0.13, 20 November
+
+- [x] Add Feedback in contextual Help and Feedback and ideas in Settings, with
+  Report an issue / Suggest a feature, title/details and a report preview.
+- [x] Autosave a separate device-local feedback draft; reopen it from either
+  entry point. Keep failed saves open for retry; confirm deliberate draft clearing.
+  Feedback text stays out of portable projects and does not change room data.
+- [x] Add Copy report and public email/HTTPS-form handoff hooks. Optional diagnostics
+  contain only build/platform; no automatic photos, projects, logs or AI settings.
+  A handoff never claims delivery, and retains the draft. No submission API/telemetry.
+- [x] Verify all 305 tests, clean analysis, Chrome release compilation (42.2 seconds)
+  and Android Kotlin compilation. Source stamp `937602d939`. APK 1.0.13 is unchanged;
+  no new APK requested/built, paid AI call or actual report sent.
+- [ ] Connect the owner's support email or existing HTTPS feedback-form URL. An
+  asynchronous choice is pending; both build-time contact flags currently default
+  empty, so delivery is explicitly unconfigured. Do not use the private code repo.
+- [ ] Verify real delivery/receipt on Chrome and S21 after contact configuration;
+  check missing email client, form login/privacy settings and browser restrictions.
+  Hosted forms need the user to paste/submit the copied report; there is no direct
+  form POST or server receipt confirmation. See docs/TESTING_GUIDE.md.
+
 ## Verified outstanding-items batch — 20 November
 
 Credits/approval review are available again. **All 296 tests pass**, static
@@ -429,6 +450,7 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 | Smaller room icons, type-based Live room label | Compact icons in 1.0.12; final type-based automatic naming in requested 1.0.13; phone acceptance pending |
 | Themes and settings storage/encryption TODOs | Five themes, storage details, encrypted export completed; internal encryption/OS backup policy pending |
 | Competitor/review/pricing research | Public pricing refreshed 20 November for DecAI/Renovate AI/Remodel AI; currencies/platforms/allowances separated; Android checkout and own cost/value testing pending |
+| Online feature/issue feedback | Form, saved drafts, copy and email/form handoff hooks in source; owner's delivery address/URL and real receipt test pending; not in APK 1.0.13 |
 | Cleanup, minimal docs, Git ignore, commits | Four root/two guide documents; generated/private data ignored; local verified commits, no push |
 | APKs only when requested | Honoured; current 1.0.13 package explicitly requested and reconfirmed after credits renewed |
 

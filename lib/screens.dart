@@ -37,6 +37,8 @@ import 'live_design_screen.dart';
 import 'app_appearance_widgets.dart';
 import 'storage_privacy_widgets.dart';
 import 'design_recipe_widgets.dart';
+import 'feedback_widgets.dart';
+import 'feedback_storage.dart';
 
 Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
     room.setupComplete
@@ -1246,6 +1248,7 @@ class SettingsTab extends StatelessWidget {
         AiConnectionSettingsCard(ai: store.ai),
         HomeCoverSettingsCard(store: store),
         StoragePrivacyCard(store: store),
+        FeedbackCard(drafts: LocalFeedbackDrafts(store.records)),
         AppAppearanceSettingsCard(store: store),
         ?roomSaving,
         Text('Save and restore', style: Theme.of(context).textTheme.titleLarge),

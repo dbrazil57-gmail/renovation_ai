@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import 'walkthrough_screen.dart';
+import 'feedback_widgets.dart';
 
 Future<void> showContextHelp(
   BuildContext context, {
@@ -8,6 +9,7 @@ Future<void> showContextHelp(
   required String message,
 }) {
   Tooltip.dismissAllToolTips();
+  final feedback = FeedbackScope.maybeOf(context);
   return showDialog<void>(
     context: context,
     builder: (dialogContext) => AlertDialog(
@@ -15,6 +17,15 @@ Future<void> showContextHelp(
       scrollable: true,
       content: SelectableText(message),
       actions: [
+        if (feedback != null)
+          TextButton.icon(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              openFeedback(context, feedback.drafts);
+            },
+            icon: const Icon(Icons.feedback_outlined),
+            label: const Text('Feedback'),
+          ),
         TextButton.icon(
           onPressed: () {
             Navigator.pop(dialogContext);

@@ -6,6 +6,8 @@ import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import 'screens.dart';
 import 'store.dart';
 import 'app_appearance.dart';
+import 'feedback_widgets.dart';
+import 'feedback_storage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -120,13 +122,16 @@ class RenovisionApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<AppThemeChoice>(
-      valueListenable: store.appearance,
-      builder: (context, choice, _) => MaterialApp(
-        title: 'RenoVision',
-        debugShowCheckedModeBanner: false,
-        theme: buildRenovisionTheme(choice: choice),
-        home: AppShell(store: store),
+    return FeedbackScope(
+      drafts: LocalFeedbackDrafts(store.records),
+      child: ValueListenableBuilder<AppThemeChoice>(
+        valueListenable: store.appearance,
+        builder: (context, choice, _) => MaterialApp(
+          title: 'RenoVision',
+          debugShowCheckedModeBanner: false,
+          theme: buildRenovisionTheme(choice: choice),
+          home: AppShell(store: store),
+        ),
       ),
     );
   }
