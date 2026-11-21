@@ -11,6 +11,11 @@ AI image copies and portable backups are already present. All 327 existing tests
 pass; this audit made no runtime changes or additional test/paid-API claim.
 Use [the launch gates](CODEX_NEXT_STEPS.md#public-launch-review--21-november-2026)
 instead of treating the whole future feature backlog as necessary for v1.
+The owner now prefers account registration/payment after release-candidate polish.
+Apple is not release-ready: its project/plugins exist, but Save/Open, image export/
+share, native feedback and persistent Keychain support are missing or Android-only.
+No Mac/iPhone build has been verified. Personal feedback email should remain on a
+receiver service; a separate public support contact is required for Play.
 
 **Desktop refresh, 21 November:** current shared source `aba3ee136c` is rebuilt
 and served at **http://localhost:7357** in release mode (51.2s). All **327 tests

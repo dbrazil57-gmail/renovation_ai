@@ -15,13 +15,22 @@ paint/help/room changes. The user confirms they have **no Play Console account y
 Keep Standard with users' own OpenAI/Gemini keys as the proposed first-release scope.
 The original brief remains unchanged; this is the later launch-readiness assessment.
 
+Owner clarification after this review: **finish the app to release-candidate
+standard before paying/registering for Play Console**. Do not create an account,
+make a payment or invite testers now. Google-managed checkout is preferred; the
+paid-download versus in-app unlock choice remains undecided. Keep the owner's
+personal feedback email private using a receiving service and separate public
+support mailbox/alias, rather than an email/decryption key embedded in the app.
+
 ### Launch gates, in implementation order
 
-- [ ] **Owner setup/decisions:** register/verify Play Console, choose individual or
+- [ ] **Owner setup/decisions:** when the release candidate is ready, register/verify
+  Play Console; first choose individual or
   genuine organisation publishing, developer identity/support email/privacy host,
   permanent production package ID, initial countries and free/paid/unlock approach.
   A new personal account needs 12 continuously opted-in closed testers for 14 days,
-  followed by a production-access application. Begin recruiting while code work proceeds.
+  followed by a production-access application. The later test is an invited
+  opt-in test, not the first downloads or a request for public star ratings.
 - [ ] **AI reporting and safety:** add Report this design inside the app with real
   in-app submission, delivery status and owner review. Current saved feedback drafts
   and external email/form handoff are insufficient for the AI-content reporting rule.
@@ -76,6 +85,22 @@ Official requirements and links are in
 [release acceptance](docs/TESTING_GUIDE.md#public-release-acceptance--21-november-review)
 tracks manual evidence. No account, signing identity, key, backend, build or upload
 was created/changed by this review. No paid AI calls or customer-data edits occurred.
+
+## Apple readiness — inspected 21 November
+
+- [x] Confirm shared Flutter/iOS project, camera/photo purpose strings, iOS-capable
+  camera/gallery/video plugins and shared room/design code exist. No iOS build or
+  physical iPhone acceptance has been performed.
+- [ ] Implement iOS project Save/Open/backup restore: file_transfer_native.dart
+  currently supports only Android.
+- [ ] Implement iOS image save/share: creation_export_native.dart selects an
+  unsupported implementation outside Android.
+- [ ] Add persistent provider-key storage with iOS Keychain; current iOS path uses
+  SessionSecretStore, losing the key on restart. Native feedback handoff also remains
+  Android-only; future in-app HTTPS reporting should have a shared implementation.
+- [ ] Finalize iOS display name (currently Renovision Ai), bundle ID/signing and
+  permissions; build/test on macOS/Xcode and iPhone, then consider TestFlight/App Store.
+  This is a port/verification batch using the shared app, not a second rewrite.
 
 ## Room management, paint and recorded help — source after 1.0.15
 

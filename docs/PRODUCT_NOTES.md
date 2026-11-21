@@ -1,5 +1,51 @@
 # Product and research reference
 
+## Owner privacy, payments, testers and Apple — 21 November follow-up
+
+The owner prefers to finish the app before paying the Play registration fee.
+Registration/payment and tester recruitment are deferred; no account/service was
+created. Google-managed checkout is preferred, but the pricing model is not chosen.
+
+Feedback proposal: send the in-app form to a small HTTPS receiving service; keep
+the destination email and mail-service credentials in its private configuration.
+This also supports AI-output reporting without leaving the app. Encrypting an email
+and shipping its decryption key inside the package only obscures it; see
+[Android's hardcoded-secret guidance](https://developer.android.com/privacy-and-security/risks/hardcoded-cryptographic-secrets).
+Public-key encryption can separately protect report contents if desired, with the
+private key kept off the app; it does not remove the need for delivery infrastructure.
+Google Play still requires a public support email: use a dedicated mailbox/forwarding
+alias rather than the owner's personal address. Configure replies through that
+identity too. See [support contact requirements](https://support.google.com/googleplay/android-developer/answer/113477?hl=en).
+No private email/key has been supplied or embedded, and delivery remains unconfigured.
+
+For digital app purchases/upgrades, use Google Play's paid-download/Play Billing
+path, rather than the Google Pay API for physical goods/services. Google processes
+customer checkout, but a merchant payments profile and verified payout bank account
+are still needed to receive revenue. An eligible separate payout account may keep
+finances separate; users do not enter bank/card details into our app. Sources:
+[Google Pay versus Play Billing](https://developers.google.com/pay/api/android/support/faq),
+[payout bank requirements](https://support.google.com/googleplay/android-developer/answer/7161440?hl=en).
+Selling in-app unlocks/subscriptions would require billing/entitlement work; a
+store-managed paid download does not itself need an in-app purchase screen.
+
+The 12-testers requirement is for a future new personal account's invited closed
+test: recruits may be friends/family or volunteers found online, with Google accounts
+and access to Android devices. They opt in via the Play test link and stay for the
+required consecutive 14 days, actually exercise features and provide feedback.
+It is not the first ten public installs or a star-rating campaign; feedback can be
+private. See [testing rules](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en).
+
+Apple code inspection confirms an iOS scaffold, purpose strings and compatible
+camera/gallery/video plugins, but no completed iPhone release. Project file transfer,
+creation save/share and native feedback adapters are Android-only; provider secrets
+fall back to session memory on iOS. The iOS label and example bundle identity also
+need release work. Keep the shared Flutter design/AI/local-data code and add native
+adapters, iOS Keychain, Mac/Xcode and real-device checks. Official
+[Flutter iOS release instructions](https://docs.flutter.dev/deployment/ios) require
+macOS/Xcode; App Store distribution uses a separate Apple Developer membership,
+currently [US$99 per year](https://developer.apple.com/help/account/membership/program-enrollment/).
+No iOS parity, purchase integration or completed feedback service is claimed.
+
 ## Google Play launch requirements — checked 21 November 2026
 
 This is a dated policy/product audit using Google's primary documentation. The
