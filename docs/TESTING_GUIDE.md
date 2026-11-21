@@ -1,5 +1,41 @@
 # Testing and storage reference
 
+## Requested APK acceptance — 1.0.16+17, 21 November
+
+Latest package: `output/mobile-test/renovision-test-1.0.16.apk`, alias
+`renovision-test.apk`; source `aba3ee136c`; 83,668,388 bytes; SHA256
+`F70B4277E1259501EB76D09EB2316E9364B9913E83FC6576A87411840F1245FF`.
+**327 tests pass**, clean analysis (8.0s), Android release build passes (20.4s
+after asset correction). Version/signature match the existing update path, A icon
+is retained, public assets match their hashes, and private files are excluded.
+64-bit ELF and ZIP 16KB alignment pass; an actual 16KB-runtime test is still needed.
+
+The initial, unreleased candidate exposed wrong help-video duration/frozen frames
+on Android despite passing Chrome checks. All seven recordings were re-encoded
+with zero-based constant-rate H.264 baseline video, no audio and fast-start MP4.
+Codec, duration and full-decode checks pass before assets are published. The
+unreleased candidate stays ignored and is not the delivered package.
+
+Final native evidence: install/update and launch pass on the isolated read-only
+API 37 emulator, **4KB pages**, with existing project metadata retained. Native
+video advances to a different frame and pauses at 3s, reports 27s duration, seeks
+to an asserted 25s position, enters/exits fullscreen and opens Read steps. UI
+automation must pause via known control coordinates before dumping its hierarchy:
+waiting for UI idle during playback can wait until the entire animation ends.
+Immediate software-emulator screenshots can be temporarily black; settled frames
+were inspected. This is not physical S21 or 16KB-runtime acceptance. Logs:
+`emulator-final-1.0.16.log`, `native-video-state-1.0.16.log`; desktop release build
+(66.3s) and actual playback/seek at localhost:7357 pass in `web-smoke-1.0.16.log`.
+
+S21 checklist: install as an update, never uninstall/clear data; confirm existing
+projects/photos/versions and AI settings. In a disposable room, test typed deletion,
+Undo/Deleted rooms recovery, tap-wall selection, replacement colour, saved layers,
+delete one/all and reopen. Test Help play/pause/near-end seek/full screen and Live
+capture/overlay. Finish with AI prepares a correction and must not auto-generate.
+Real OpenAI/Gemini comparisons, physical camera/share/Gallery and release stress
+tests remain manual. No paid requests or real project modifications in packaging.
+Evidence is under `output/mobile-test/*1.0.16*`; older published APKs are unchanged.
+
 ## Public release acceptance — 21 November review
 
 The user has no Play Console account yet. This audit uses the existing 327-test
@@ -42,7 +78,7 @@ or paid provider benchmark. Track the focused gates in CODEX_NEXT_STEPS.md.
 
 ## Source follow-up acceptance — after APK 1.0.15, 21 November
 
-These features are in source until another APK is requested. Do not uninstall
+These features are now included in the requested 1.0.16 APK. Do not uninstall
 the current app or clear storage. Tests/recordings use disposable stores and
 fictional photos, never Claylands, customer keys or a paid provider request.
 Verified source `aba3ee136c`: **326 tests pass**, clean analysis, Chrome release
@@ -91,10 +127,15 @@ commands. No global feature/Developer Mode setting was changed.
 Run `flutter test tool/record_walkthroughs_test.dart --dart-define=RECORD_APP_DEMOS=true
 --dart-define=RECORD_FONT_DIR=C:/Users/dbraz/Documents/flutter/bin/cache/artifacts/material_fonts`.
 Then run the SDK Dart VM with `--packages=.dart_tool/package_config.json
-tool/encode_walkthroughs.dart` (optional clip IDs). Encoding uses loopback and
-its own headless Chrome profile, H.264 MP4 and metadata/seek/decode/timing checks.
-No external service/downloaded encoder is needed. Frames/profiles/logs stay ignored
-in output; only public MP4s/posters/catalog are bundled under assets/walkthroughs.
+tool/encode_walkthroughs.dart` (optional clip IDs). Install developer-only FFmpeg
+and ffprobe, or set `RENOVISION_FFMPEG` and `RENOVISION_FFPROBE` to their executable
+paths. This machine uses checksum-verified portable tools under ignored output,
+without a global install. The encoder stages standard H.264 baseline, zero-based
+constant-rate 10fps silent MP4s and validates codec/duration/full decode before
+publishing. Encode all seven once when changing formats. Test actual Android and
+Chrome playback/seek as well. No AI service is involved; FFmpeg is not bundled.
+Frames/tools/logs stay ignored in output; only public MP4s/posters/catalog are
+bundled under assets/walkthroughs.
 
 Future APK verification must allow public walkthrough assets alongside inspiration
 samples, while still rejecting private photos/settings/keys. Published APKs stay
@@ -317,11 +358,11 @@ Earlier comparison-stage verification: 36 focused tests and all 283 tests pass; 
 clean; release web build passed (83.3 seconds). No live Gemini test, customer-key
 use, physical phone acceptance or new APK in this batch.
 
-Latest test APK: **1.0.15+16**, source `ce6b2da600`:
-`output/mobile-test/renovision-test-1.0.15.apk`, alias `renovision-test.apk`.
-SHA256: `E0A4487484CE5F595559201C39FAB1265F5033528A6C21856770897A8CCC3E0D`.
-Size: 77,161,254 bytes. Its application ID/signature match 1.0.14 for an in-place
-update. Previous APKs 1.0.14/1.0.13/1.0.12/1.0.11/1.0.10 retain their checksums;
+Latest test APK: **1.0.16+17**, source `aba3ee136c`:
+`output/mobile-test/renovision-test-1.0.16.apk`, alias `renovision-test.apk`.
+SHA256: `F70B4277E1259501EB76D09EB2316E9364B9913E83FC6576A87411840F1245FF`.
+Size: 83,668,388 bytes. Its application ID/signature match 1.0.15 for an in-place
+update. Previous APKs 1.0.15/1.0.14/1.0.13/1.0.12/1.0.11/1.0.10 retain their checksums;
 obsolete 1.0.8/1.0.9 were removed during cleanup. Development signing is not
 public-release signing. ARM64, optional camera and internet are verified; no
 microphone/storage-write permission or private project/credential assets.
@@ -330,7 +371,8 @@ Includes all completed 20 November changes: AI settings/models, visible deletion
 multiple precise variations, creative briefs, Gemini, typed Live names, help/model
 comparison, project Open/resume/conflicts, generation recipes/reuse/refinement,
 startup Retry and Save image / Share creation, plus 21 November local paint,
-regional choices, feedback tools and confirmed icon A. **315 tests pass**, icon export passes, analysis is clean, and Chrome/Android release builds pass (138.1/155.1 seconds). S21 acceptance
+regional choices, feedback tools, confirmed icon A and all completed room/paint/help
+follow-ups. **327 tests pass**, analysis is clean and release builds pass. S21 acceptance
 remains. **Do not build another APK unless the user asks.** No real AI calls or
 stored-user-data changes during packaging. Confirmed A is applied in 1.0.15.
 

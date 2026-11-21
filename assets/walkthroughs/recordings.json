@@ -1,68 +1,69 @@
 {
   "source": "Recorded real app widgets with fictional photos, simulated AI/camera and disposable storage.",
+  "encoding": "h264-baseline-cfr",
   "recordings": {
     "design": {
       "id": "design",
       "file": "design.mp4",
-      "durationMs": 24776,
+      "durationMs": 23400,
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 240249
+      "bytes": 1048596
     },
     "capture": {
       "id": "capture",
       "file": "capture.mp4",
-      "durationMs": 8265,
+      "durationMs": 7900,
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 118904
+      "bytes": 303928
     },
     "live": {
       "id": "live",
       "file": "live.mp4",
-      "durationMs": 13619,
+      "durationMs": 12800,
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 215131
+      "bytes": 646675
     },
     "paint": {
       "id": "paint",
       "file": "paint.mp4",
-      "durationMs": 28876,
+      "durationMs": 27100,
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 399495
+      "bytes": 977528
     },
     "library": {
       "id": "library",
       "file": "library.mp4",
-      "durationMs": 19764,
+      "durationMs": 18600,
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 271839
+      "bytes": 532884
     },
     "models": {
       "id": "models",
       "file": "models.mp4",
-      "durationMs": 9565,
+      "durationMs": 9100,
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 149564
+      "bytes": 379111
     },
     "saving": {
       "id": "saving",
       "file": "saving.mp4",
-      "durationMs": 14743,
+      "durationMs": 14200,
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 204892
+      "bytes": 473651
     }
   }
 }

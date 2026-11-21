@@ -5,13 +5,45 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Requested test APK — 21 November, 1.0.16+17
+
+- [x] Package all completed features from shared source `aba3ee136c`, including
+  room deletion/recovery, typed Live names, tap-wall recolouring/layer deletion,
+  save-then-review AI finishing and seven recorded help transactions.
+- [x] Pass **327 tests**, clean analysis and Android release compilation (20.4s
+  after the video correction). Verify identity/signature against 1.0.15, icon A,
+  public asset hashes, private-file exclusion, optional camera and restricted sharing.
+- [x] Verify 64-bit ELF LOAD and APK ZIP **16KB alignment**. Runtime acceptance on
+  an actual 16KB Android device/emulator remains a launch gate.
+- [x] Install/launch the final APK on an isolated read-only API 37 emulator
+  (4KB pages), retaining its existing project data. Native help confirms 27s
+  duration, advancing frames, pause, actual seek to 25s, fullscreen and written
+  fallback. Chrome release rebuild (66.3s) and actual help/seek checks pass at the
+  existing localhost:7357 origin using a disposable test profile.
+- [x] Replace browser-generated video timestamps after native playback exposed
+  incorrect duration/frozen frames. Re-encode all seven clips as silent, zero-based
+  constant-rate H.264 baseline MP4s; full-decode/timing checks pass. FFmpeg is a
+  development tool only, absent from the app and source control.
+- [x] Preserve published APKs 1.0.10–1.0.15 and their checksums, app identity,
+  customer stores/keys, original photos and the brief. No paid AI calls or publication.
+- [ ] Complete S21 acceptance: install over the current app, check existing work/
+  keys, room delete/recovery, wall recolour/delete/reopen, help playback and Live.
+  Test real OpenAI/Gemini output and failures separately with owner-approved spend.
+
+Package: `output/mobile-test/renovision-test-1.0.16.apk`, alias `renovision-test.apk`.
+83,668,388 bytes; SHA256
+`F70B4277E1259501EB76D09EB2316E9364B9913E83FC6576A87411840F1245FF`.
+This is a private-test update, not a Play production release. Further APKs need
+a user request. All launch gates below remain applicable.
+
 ## Public launch review — 21 November 2026
 
 **Decision: enough working product for a controlled beta; not ready for public
 Google Play production.** The existing 327 passing tests/clean analysis are evidence
 for source behaviour, not store compliance or current phone acceptance. Shared source
-is `aba3ee136c`; the newest installed-test package remains 1.0.15, before the latest
-paint/help/room changes. The user confirms they have **no Play Console account yet**.
+is `aba3ee136c`; the requested 1.0.16 package includes the latest paint/help/room
+changes. Current physical-phone acceptance remains. The user confirms they have
+**no Play Console account yet**.
 Keep Standard with users' own OpenAI/Gemini keys as the proposed first-release scope.
 The original brief remains unchanged; this is the later launch-readiness assessment.
 
@@ -129,7 +161,8 @@ was created/changed by this review. No paid AI calls or customer-data edits occu
 - [ ] Phone acceptance of tap-wall boundaries/speed, video playback and room
   delete/restore. Keep existing data when installing a future requested update.
 
-No new APK requested for this batch. Keep 1.0.15 and confirmed icon A unchanged;
+That source batch did not package an APK; it is now included in 1.0.16 above.
+Keep published 1.0.15 and confirmed icon A unchanged;
 build another package only on request. Remaining main priorities are durable
 Android file linkage, reusing photo facts independently of design preferences,
 enforced AI masks and representative larger-project/device/provider measurements.

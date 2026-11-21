@@ -3,7 +3,18 @@
 Launch review, **21 November 2026**: suitable for controlled beta preparation;
 Google Play production still needs the focused
 [launch gates](CODEX_NEXT_STEPS.md#public-launch-review--21-november-2026).
-The user has no Play Console account yet. No new build or publication was made.
+The user has no Play Console account yet. No store publication was made.
+
+Requested test update, **21 November 2026 — 1.0.16+17**: all completed room,
+paint, Live naming and recorded-help changes below are now packaged. All **327
+tests pass**, analysis is clean, and the release APK is built from source
+`aba3ee136c`. The confirmed olive/cream A icon, app ID and signing identity stay
+the same. Install over the existing app; do not uninstall or clear its data.
+Android checks caught incompatible help-video timestamps, now corrected with
+standard H.264 MP4s. The updated APK installs/launches on an isolated API 37
+emulator; playback, pause, actual near-end seek, fullscreen and written fallback
+pass. Chrome is current at the same address. Physical S21 acceptance and
+real-provider comparisons remain.
 
 Source follow-up, **21 November 2026**, after APK 1.0.15: Help opens recorded app
 workflows with playback/seek/full-screen controls and optional written steps.
@@ -14,14 +25,14 @@ with tap-to-select and colour; individual/all wall layers can be deleted after
 reopening. Recolour the same layer without selecting again; **Finish with AI**
 saves a rough preview and prepares a correction for review before generation.
 Feedback explicitly says when its draft has not been sent.
-These changes are not in the existing APK; another APK requires a request.
+These changes are included in the requested 1.0.16 APK.
 Verification results and remaining work are in the linked status/next-steps files.
 **327 tests pass**, analysis is clean, Chrome release and Android Kotlin/plugin
 compilation pass. Source `aba3ee136c`; physical-phone acceptance remains.
 The desktop browser preview is current at **http://localhost:7357**; its release
 server supports reliable seeking through the new help videos.
 
-Current test update: **1.0.15+16** applies the user's confirmed **A** icon for now:
+Previous test update: **1.0.15+16** applies the user's confirmed **A** icon for now:
 olive green with a cream room outline and sparkle. Launcher assets, app header,
 startup mark and web icons match. **315 tests pass**, icon export passes, analysis is clean, and Chrome/Android release builds pass (138.1/155.1 seconds). Source `ce6b2da600`.
 The previous 1.0.14 package remains unchanged for rollback.
@@ -68,10 +79,12 @@ own settings, analysis and model/quality with Saved settings / Use these setting
 Refine this design actions. Startup shows loading and a non-destructive Retry.
 Older versions remain readable without inventing missing historical settings.
 
-Latest test package: **1.0.15+16**, source `ce6b2da600`, at
-`output/mobile-test/renovision-test-1.0.15.apk` (also `renovision-test.apk`).
-APK identity, matching 1.0.14 signing certificate, ARM64,
-optional camera, restricted share paths and sample-only assets were checked.
+Latest test package: **1.0.16+17**, source `aba3ee136c`, at
+`output/mobile-test/renovision-test-1.0.16.apk` (also `renovision-test.apk`).
+APK identity, matching 1.0.15 signing certificate, ARM64,
+optional camera, restricted share paths, public-only assets and native ELF/ZIP
+16KB alignment were checked. Size: 83,668,388 bytes; SHA256
+`F70B4277E1259501EB76D09EB2316E9364B9913E83FC6576A87411840F1245FF`.
 Install over the existing app without uninstalling. Older APKs remain for rollback.
 Physical S21 acceptance and live Gemini comparisons remain. No paid AI calls or
 user-data reset were performed.

@@ -1,11 +1,25 @@
 # Renovision feature status
 
+**Requested APK, 21 November — 1.0.16+17:** all completed source features below
+are now packaged, including recorded help, room deletion/recovery, tap-wall paint
+and AI finishing handoff. **327 tests pass**, analysis is clean and Android release
+compilation passes (20.4s after corrected assets). Native testing found browser
+video timestamp incompatibility; all seven clips now use standard silent H.264
+baseline MP4s with verified duration/decode. Signature, A icon, public-only assets,
+restricted sharing and 64-bit ELF/ZIP 16KB alignment pass. Physical S21 and actual
+16KB-runtime acceptance remain; no paid provider calls or real project edits.
+The final APK installs/launches on the read-only API 37 emulator (4KB pages),
+retaining existing project metadata. Its help clip plays advancing frames with
+correct 27s duration; pause, actual seek to 25s, fullscreen and written fallback
+pass. Desktop rebuild (66.3s) and actual playback/seek checks also pass at the
+same localhost:7357 address with an isolated test profile.
+
 **Public launch assessment, 21 November:** a working controlled-beta product,
 not yet a production-ready Google Play release. The user has no Play Console
 account yet. Code inspection confirms example package ID/debug signing, no public
 privacy-policy entry, no connected in-app offensive-output reporting, no billing/
 entitlement integration and incomplete permanent-delete/OS-backup decisions. Latest
-phone acceptance, native 16KB verification, real-provider comparisons and release
+phone acceptance, native 16KB runtime verification, real-provider comparisons and release
 listing assets remain. Target SDK 36, Android Keystore keys, consent, metadata-stripped
 AI image copies and portable backups are already present. All 327 existing tests
 pass; this audit made no runtime changes or additional test/paid-API claim.
@@ -28,7 +42,8 @@ server could play fragmented MP4s but could not reliably seek; the release launc
 now builds then serves the public bundle with byte ranges and no-store caching.
 Flutter engine assets are served locally. The same hostname/port/profile and app
 store names are preserved; no customer browser/project data or paid AI was used.
-Native Windows packaging remains a later stage; the existing Android APK is unchanged.
+Native Windows packaging remains a later stage; the subsequent requested 1.0.16
+APK includes these shared features.
 
 **Source follow-up, 21 November, after APK 1.0.15:** recorded walkthroughs now
 replace the default text-first presentation (seven bundled MP4s, eight guides;
@@ -49,7 +64,7 @@ save the rough preview, then review a colour-specific correction before generati
 Actual Chrome release playback passes Help navigation, play/pause, near-end seeking,
 full-screen round trip and written fallback/disposal in a separate test profile.
 Physical S21 playback/boundaries and real AI finishing quality remain unverified.
-No new APK was requested; the distributed package is still 1.0.15 and icon A stays.
+This source batch was subsequently packaged in requested APK 1.0.16; icon A stays.
 
 **Confirmed icon update, 21 November — 1.0.15+16:** the user chose A for now.
 The olive/cream room-and-sparkle mark is applied to Android adaptive/legacy/themed
@@ -161,19 +176,19 @@ Unspecified (Live) until confirmed. Existing custom names/photos are preserved.
 
 | Item | Verified position |
 | --- | --- |
-| Latest existing APK | **1.0.15+16**, source stamp `ce6b2da600`; `output/mobile-test/renovision-test-1.0.15.apk`, also `renovision-test.apk` |
-| APK contents | Focus Canvas, embedded camera, manual same-view overlay, Live design and completed changes through 1.0.15; later source work is listed separately |
+| Latest existing APK | **1.0.16+17**, source stamp `aba3ee136c`; `output/mobile-test/renovision-test-1.0.16.apk`, also `renovision-test.apk` |
+| APK contents | Focus Canvas, embedded camera, manual same-view overlay, Live design and all completed shared features through 1.0.16 |
 | New in 1.0.13 | AI settings discovery, visible delete, 1/2/3 correction choices, creative prompts, typed Live names, OpenAI/Gemini presets, seven help guides, fixed-brief tests, Open/resume/conflict handling, saved recipes/reuse/refine, startup Retry, Save image / Share creation |
 | New in 1.0.14 | Local paint and editable layers, regional style choices, saved feedback drafts/copy and optional contact handoff |
 | New in 1.0.15 | Confirmed A icon, consistent launcher/startup/header/web branding; same app identity and storage |
-| Source after 1.0.15 | Recorded help, typed room deletion/recovery, legacy/immediate-save Live names, tap-wall recolouring, persistent wall deletion and save-then-review AI finishing; requires a future requested APK |
-| Last APK checks | **315 tests pass**, icon export passes, analysis is clean, and Chrome/Android release builds pass (138.1/155.1 seconds). Matching signing certificate, compiled olive/cream icon, restricted share provider and private-file exclusion verified |
+| New in 1.0.16 | Recorded help with corrected native video timing, typed room deletion/recovery, legacy/immediate-save Live names, tap-wall recolouring, persistent wall deletion and save-then-review AI finishing |
+| Last APK checks | **327 tests pass**, clean analysis, Android release build passes; matching 1.0.15 signing certificate, olive/cream icon, public asset hashes, restricted share provider, private-file exclusion and 64-bit ELF/ZIP 16KB alignment verified |
 | Earlier audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. The subsequent requested APK build made no paid AI call or data migration |
 | Real user evidence | User reports successful phone installation, direct AI analysis/generation, good generated designs, project auto-reload and useful comparison/camera overlay. This does not validate every newer source change |
 
 APK SHA256:
-`E0A4487484CE5F595559201C39FAB1265F5033528A6C21856770897A8CCC3E0D`.
-Size: 77,161,254 bytes. Signature matches 1.0.14; its checksum and rollback
+`F70B4277E1259501EB76D09EB2316E9364B9913E83FC6576A87411840F1245FF`.
+Size: 83,668,388 bytes. Signature matches 1.0.15; its checksum and rollback
 packages remain unchanged. Camera hardware is optional, ARM64 is included, and
 no microphone/storage-write permission or private project/credential files are
 bundled. Its release-mode build uses the development signing key and example

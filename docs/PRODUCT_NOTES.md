@@ -1,5 +1,23 @@
 # Product and research reference
 
+## Requested private APK — 21 November, 1.0.16+17
+
+The latest shared source `aba3ee136c` is now packaged with all completed room,
+paint, Live-name and recorded-help improvements, retaining icon A, signing identity
+and project stores. **327 tests pass**, analysis is clean, and the corrected Android
+release build passes (20.4s). An unreleased emulator candidate exposed browser MP4
+timestamp incompatibility; all seven clips now use developer-encoded standard H.264
+baseline, zero-based constant-rate silent MP4s. FFmpeg is not shipped in the app.
+The final APK verifies public-only asset hashes, signature, permissions, restricted
+sharing and native ELF/ZIP 16KB alignment; 16KB runtime and S21 acceptance remain.
+The final APK installs/launches on a read-only API 37/4KB emulator with existing
+project metadata retained. Playback shows advancing frames, correct 27s duration,
+pause, actual seek to 25s, fullscreen and written fallback. Chrome is rebuilt
+(66.3s) at the same localhost:7357 address; actual desktop playback/seek also pass.
+Older published APKs, real projects, photos, keys and the original brief are intact;
+no paid AI call, store upload or production identity change. Launch gaps below
+are unaffected: this requested package is for private acceptance, not public release.
+
 ## Owner privacy, payments, testers and Apple — 21 November follow-up
 
 The owner prefers to finish the app before paying the Play registration fee.
@@ -58,7 +76,7 @@ payment, provider call or publication was made during this review.
 | Publisher account | US$25 one-time registration, identity/contact verification; personal owners also verify an Android device. Organisation setup generally needs a D-U-N-S number and matching business details. Choose the real publisher type and check public profile visibility. | [Registration](https://support.google.com/googleplay/android-developer/answer/6112435?hl=en), [identity details](https://support.google.com/googleplay/android-developer/answer/13628312?hl=en) |
 | New personal account testing | Accounts created after 13 November 2023 need at least 12 testers continuously opted in to a closed test for 14 days, then apply for production access and describe testing. Internal testing does not satisfy this closed-test gate. | [Testing requirements](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en) |
 | Upload/signing | Prepare a signed AAB and Play App Signing; APKs remain useful for direct tests. Current Gradle uses com.example.renovision_ai and the debug signing configuration. Establish the production ID/upload key and safe project transfer first. | [App Bundles](https://developer.android.com/guide/app-bundle), [signing](https://developer.android.com/studio/publish/app-signing) |
-| Compatibility | Current SDK/last APK target Android 16/API 36, matching today's new-app baseline. Final Flutter/native dependencies still need 16KB alignment/runtime checks. Recheck Console at submission; dates change. | [Target API](https://developer.android.com/google/play/requirements/target-sdk), [16KB support](https://developer.android.com/guide/practices/page-sizes) |
+| Compatibility | Current SDK/last APK target Android 16/API 36, matching today's new-app baseline. APK 1.0.16 passes native ELF/ZIP 16KB alignment; final AAB alignment and 16KB runtime still need checks. Recheck Console at submission; dates change. | [Target API](https://developer.android.com/google/play/requirements/target-sdk), [16KB support](https://developer.android.com/guide/practices/page-sizes) |
 | AI output reporting/safety | Add real offensive-output reporting without leaving the app and a process for receiving/reviewing it. General drafts/external email or browser handoff are not that implementation. Test provider refusals and protections. | [AI content policy](https://support.google.com/googleplay/android-developer/answer/13985936?hl=en) |
 | Privacy/Data safety | Public app-specific privacy webpage plus in-app access; document cloud photo/prompt processing, providers, keys, backups, reports, retention/deletion and SDK behaviour. Off-device provider traffic cannot be ignored just because the app owner has no server. Collection/sharing exceptions must be evaluated rather than guessed. | [User Data](https://support.google.com/googleplay/android-developer/answer/10144311?hl=en), [Data safety](https://support.google.com/googleplay/android-developer/answer/10787469?hl=en) |
 | Listing | App name up to 30 characters; short/full descriptions 80/4,000. Use approved A artwork as a 512px square PNG; create a 1024×500 feature graphic and 2–8 real phone screenshots. A longer YouTube preview is optional; phone help clips remain a separate user requirement. | [App setup](https://support.google.com/googleplay/android-developer/answer/9859152?hl=en), [assets](https://support.google.com/googleplay/android-developer/answer/9866151?hl=en), [icon](https://developer.android.com/distribute/google-play/resources/icon-design-specifications) |
