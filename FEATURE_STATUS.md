@@ -1,5 +1,18 @@
 # Renovision feature status
 
+**Desktop refresh, 21 November:** current shared source `aba3ee136c` is rebuilt
+and served at **http://localhost:7357** in release mode (51.2s). All **327 tests
+pass**, including a new real HTTP check for full/HEAD/range responses and exclusion
+of files outside the public web bundle; analysis is clean. Eight focused responsive
+workspace checks also pass. At 1440px, an isolated Chrome profile confirms the
+served source, Settings/help navigation, play/pause, accurate duration, near-end
+seek, full-screen round trip and written fallback. The earlier Flutter development
+server could play fragmented MP4s but could not reliably seek; the release launcher
+now builds then serves the public bundle with byte ranges and no-store caching.
+Flutter engine assets are served locally. The same hostname/port/profile and app
+store names are preserved; no customer browser/project data or paid AI was used.
+Native Windows packaging remains a later stage; the existing Android APK is unchanged.
+
 **Source follow-up, 21 November, after APK 1.0.15:** recorded walkthroughs now
 replace the default text-first presentation (seven bundled MP4s, eight guides;
 real app widgets with fictional data and clearly simulated AI/camera/file pickers).

@@ -11,8 +11,10 @@ saves a rough preview and prepares a correction for review before generation.
 Feedback explicitly says when its draft has not been sent.
 These changes are not in the existing APK; another APK requires a request.
 Verification results and remaining work are in the linked status/next-steps files.
-**326 tests pass**, analysis is clean, Chrome release and Android Kotlin/plugin
+**327 tests pass**, analysis is clean, Chrome release and Android Kotlin/plugin
 compilation pass. Source `aba3ee136c`; physical-phone acceptance remains.
+The desktop browser preview is current at **http://localhost:7357**; its release
+server supports reliable seeking through the new help videos.
 
 Current test update: **1.0.15+16** applies the user's confirmed **A** icon for now:
 olive green with a cream room outline and sparkle. Launcher assets, app header,
@@ -108,14 +110,18 @@ The next work should strengthen the existing product, not replace it with a temp
 ```powershell
 cd C:\Dev\renovision_ai
 flutter doctor
-flutter pub get
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tool\start_web_test.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tool\start_web_test.ps1 -Release
 ```
 
 Open **http://localhost:7357** in the same normal Chrome profile each time.
 Bookmark it. Different ports, profiles and Incognito have separate saved stores.
 Do not clear site data to fix missing projects. The launcher keeps browser ownership
 with Chrome rather than creating a disposable Flutter Chrome profile.
+The launcher resolves packages for the web target and avoids unnecessary desktop
+plugin symlinks without changing global Flutter settings. `-Release` runs the
+desktop browser app with production compilation; omit it for development debugging.
+The current desktop build is `aba3ee136c`, including all completed source features
+listed above. A packaged native Windows companion remains a separate future stage.
 Settings > App build and saved data shows the build/address/counts and offers
 Check local saving. That confirms a read/write, not survival of a later crash.
 See [recovered projects](docs/TESTING_GUIDE.md#recovered-projects) if an old test

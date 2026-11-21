@@ -1,5 +1,23 @@
 # Product and research reference
 
+## Desktop preview parity — 21 November
+
+The desktop browser now serves all current shared Flutter features from source
+`aba3ee136c` at the same localhost:7357 origin. Native Windows packaging remains
+future work. A real desktop check found that Flutter's development server could
+play the fragmented MP4 demonstrations but reported an incomplete duration and
+could not seek near the end. The optional release launcher now compiles then
+serves only build/web through a loopback static server with validated file paths,
+correct MIME/HEAD/range responses and no-store caching. Flutter engine assets
+are local. This changes serving, not browser project storage or source data.
+
+All **327 tests pass**, analysis is clean and the release rebuild takes 51.2s.
+Eight focused responsive cases pass. An isolated 1440px Chrome check confirms
+the served source, Settings/help, duration/near-end seek, play/pause, full-screen
+and written fallback. No paid AI, customer project/profile edit, new APK or native
+Windows installer was involved. Restart through the existing preview launcher
+with `-Release` and keep the same normal profile/origin for saved work.
+
 ## Help video direction for launch — 21 November clarification
 
 The user wants in-app help to be short sections of the walkthrough eventually

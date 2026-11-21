@@ -61,6 +61,20 @@ selection does not complete the production recording requirement.
 
 No new APK, paid generation or store publication is requested by this clarification.
 
+## Desktop kept current — 21 November
+
+- [x] Rebuild shared source `aba3ee136c` for desktop/Chrome and serve it at the same
+  **http://localhost:7357** address. All current room/paint/AI/help changes are included.
+- [x] Add optional `-Release` to the existing launcher, with web-scoped feature
+  overrides, local Flutter engine assets and a public-bundle-only static server.
+  Byte-range responses fix MP4 duration/near-end seeking on desktop. No-store caching
+  updates code/assets without replacing saved browser projects or settings.
+- [x] Pass **327 tests**, clean analysis, eight focused responsive checks and the
+  actual 1440px Chrome Settings/help/play/pause/seek/full-screen/fallback test.
+  Release rebuild: 51.2s. No paid AI, customer-data edits or new APK.
+- [x] Document how to restart the same preview after closing it/restarting Windows.
+  The packaged native Windows companion remains separate future work.
+
 ## Confirmed A icon — 21 November, requested 1.0.15+16
 
 - [x] User confirmed A for now: olive green, cream room outline and sparkle.

@@ -307,8 +307,7 @@ storage/theme tests need no AI calls.
 
 ```powershell
 cd C:\Dev\renovision_ai
-flutter pub get
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tool\start_web_test.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tool\start_web_test.ps1 -Release
 ```
 
 Use **http://localhost:7357**, the same normal Chrome profile, and no Incognito.
@@ -316,6 +315,28 @@ Do not replace the profile or clear its storage. A different scheme/host/port or
 profile has a different project store. The launcher deliberately avoids Flutter's
 temporary Chrome profiles. Settings > App build and saved data identifies the
 running build/origin and project/room/image/version counts.
+
+Desktop refresh, 21 November: current source `aba3ee136c` is rebuilt/served at
+the same address in release mode (51.2s). All **327 tests pass** and analysis is
+clean; eight focused responsive workspace checks pass. The launcher scopes
+Windows/Linux feature overrides to its web run
+and restores them on exit, so web-only plugin resolution does not need desktop
+symlinks or global feature/Developer Mode changes. Flutter resolves packages itself;
+no separate unscoped pub get is needed. Omit `-Release` for development debugging.
+Release builds use local Flutter engine assets and `tool/serve_web_preview.dart`,
+bound only to loopback, with byte ranges for MP4 duration/seek and no-store caching.
+The earlier Flutter development server could play a clip but failed near-end seeks;
+use the release launcher when testing recorded help. Actual 1440px Chrome verifies
+the served source, Settings/help, play/pause, accurate duration, near-end seek,
+full-screen round trip and written fallback. Browser tests use an isolated profile.
+Logs are ignored under `output/desktop-preview.log`, `desktop-preview-errors.log`,
+`desktop-responsive-tests.log`, `desktop-server-tests.log`, `desktop-full-tests.log`,
+`desktop-analysis.log` and `desktop-browser-smoke.log`. The server runs
+until stopped or the PC restarts; relaunch with the same command/address/profile.
+This desktop target is Chrome; native Windows packaging is still future work.
+Refresh an existing tab; use Ctrl+F5 if it still shows old code. Keep the same
+normal Chrome profile and do not clear site data. The HTTP server serves only
+compiled public web files and cannot open the project's private folders or databases.
 
 Check local saving writes/reads disposable diagnostic records in the current
 stores. Reopening the same address/profile and confirming real project contents

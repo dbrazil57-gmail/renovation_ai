@@ -1,4 +1,7 @@
-param([ValidateRange(1024, 65535)][int]$Port = 7357)
+param(
+    [ValidateRange(1024, 65535)][int]$Port = 7357,
+    [switch]$Release
+)
 $ErrorActionPreference = 'Stop'
 $projectPath = Split-Path -Parent $PSScriptRoot
 $flutterCommand = Get-Command flutter -ErrorAction SilentlyContinue
@@ -23,8 +26,27 @@ Write-Host 'Keep using this exact address. The launcher will not switch ports if
 Write-Host 'If old test projects are missing, restore a project backup into this profile.'
 Write-Host 'This launcher does not copy, replace or delete browser data.'
 Push-Location -LiteralPath $projectPath
+$previousWindowsFeature = $env:FLUTTER_WINDOWS
+$previousLinuxFeature = $env:FLUTTER_LINUX
 try {
-    & $flutterPath run -d web-server --web-hostname localhost --web-port $Port "--dart-define=RENOVISION_BUILD_ID=$buildId"
+    # This launcher targets Chrome only. Avoid unnecessary desktop-plugin
+    # symlinks on Windows without changing global Flutter feature settings.
+    $env:FLUTTER_WINDOWS = 'false'
+    $env:FLUTTER_LINUX = 'false'
+    if ($Release) {
+        Write-Host 'Desktop preview: release mode.'
+        & $flutterPath build web --release --no-wasm-dry-run --no-web-resources-cdn "--dart-define=RENOVISION_BUILD_ID=$buildId"
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        $dartPath = Join-Path (Split-Path -Parent $flutterPath) 'cache\dart-sdk\bin\dart.exe'
+        if (-not (Test-Path -LiteralPath $dartPath)) { throw 'The Flutter SDK Dart runtime is unavailable.' }
+        & $dartPath (Join-Path $PSScriptRoot 'serve_web_preview.dart') "$Port"
+    } else {
+        & $flutterPath run -d web-server --web-hostname localhost --web-port $Port "--dart-define=RENOVISION_BUILD_ID=$buildId"
+    }
     $runExitCode = $LASTEXITCODE
-} finally { Pop-Location }
+} finally {
+    $env:FLUTTER_WINDOWS = $previousWindowsFeature
+    $env:FLUTTER_LINUX = $previousLinuxFeature
+    Pop-Location
+}
 exit $runExitCode
