@@ -1,5 +1,10 @@
 # Renovision AI
 
+Launch review, **21 November 2026**: suitable for controlled beta preparation;
+Google Play production still needs the focused
+[launch gates](CODEX_NEXT_STEPS.md#public-launch-review--21-november-2026).
+The user has no Play Console account yet. No new build or publication was made.
+
 Source follow-up, **21 November 2026**, after APK 1.0.15: Help opens recorded app
 workflows with playback/seek/full-screen controls and optional written steps.
 Rooms have typed-name deletion and a persistent **Deleted rooms** recovery list.

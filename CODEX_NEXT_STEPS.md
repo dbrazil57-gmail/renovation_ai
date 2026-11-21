@@ -5,6 +5,78 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Public launch review — 21 November 2026
+
+**Decision: enough working product for a controlled beta; not ready for public
+Google Play production.** The existing 327 passing tests/clean analysis are evidence
+for source behaviour, not store compliance or current phone acceptance. Shared source
+is `aba3ee136c`; the newest installed-test package remains 1.0.15, before the latest
+paint/help/room changes. The user confirms they have **no Play Console account yet**.
+Keep Standard with users' own OpenAI/Gemini keys as the proposed first-release scope.
+The original brief remains unchanged; this is the later launch-readiness assessment.
+
+### Launch gates, in implementation order
+
+- [ ] **Owner setup/decisions:** register/verify Play Console, choose individual or
+  genuine organisation publishing, developer identity/support email/privacy host,
+  permanent production package ID, initial countries and free/paid/unlock approach.
+  A new personal account needs 12 continuously opted-in closed testers for 14 days,
+  followed by a production-access application. Begin recruiting while code work proceeds.
+- [ ] **AI reporting and safety:** add Report this design inside the app with real
+  in-app submission, delivery status and owner review. Current saved feedback drafts
+  and external email/form handoff are insufficient for the AI-content reporting rule.
+  Choose a minimal reporting endpoint/service and retention policy; never send API
+  keys or automatically attach private room photos. Verify provider safety/refusal paths.
+- [ ] **Privacy/deletion:** publish an app-specific privacy page and link it in the
+  app/listing. Map photos, prompts, provider traffic, keys, reports, sharing and SDKs
+  into Data safety. Choose/disclose Android OS backup behaviour: current XML excludes
+  only the two provider secret stores, not project/photo data. Add or clearly document
+  permanent local deletion and trash retention; recoverable room/design deletion is
+  not a purge. Review the merged legacy READ_EXTERNAL_STORAGE permission. Do not
+  add broad media permissions when system pickers suffice.
+- [ ] **Production identity/signing:** replace the example identity and debug release
+  signing only after a migration plan. Use a private upload key/Play App Signing and
+  a signed Android App Bundle, with a new version code. Target SDK 36 is already
+  configured; verify the final bundle's native 16KB support, permissions and devices.
+  Existing test app stays installed until portable projects are restored/checked in
+  the production app. Changed identity/signature does not automatically migrate its
+  private Hive data or Keystore keys; provider keys are entered again separately.
+- [ ] **Phone release acceptance:** package the latest source when requested and test
+  on S21 plus Android 16/16KB emulator/device: install/update/import, restart, camera,
+  gallery, Live, 1/2/3 concepts, refinement, paint/recolour/delete, compare, videos,
+  Gallery/share, plain/protected backup and failures. Measure larger projects, memory
+  and the current 64MiB-photo/100MiB-file backup limits. Verify offline/rate-limit/
+  timeout/low-storage/background behaviour without duplicate paid retries. Current
+  Android file destinations are reselected, not durable Word-style overwrite links.
+- [ ] **Consumer/reviewer access:** make BYO developer-key setup and separate provider
+  costs clear before purchase/use; validate real OpenAI/Gemini image quality/cost.
+  Supply private, valid review instructions/access so Google can test AI without
+  creating/funding its own provider account. Do not embed a shared company key.
+- [ ] **Commercial/store preparation:** choose paid download versus free download
+  with later in-app unlock before launch; configure payments/entitlements if applicable.
+  A published free app cannot simply become a paid download. Prepare descriptions,
+  approved A store icon, feature graphic, real phone screenshots, content rating,
+  audience/ads/access declarations and licenses. Finish real task-based help clips;
+  the longer store preview video is optional. Remove prototype-facing release copy.
+- [ ] **Play rollout:** upload first to internal testing, fix pre-launch findings,
+  run the applicable closed test with genuine feedback, apply for production access,
+  then submit for production review. Monitor Android vitals and support after release.
+
+**Safe v1 scope:** room-photo/camera capture, AI concepts and prompt-guided refinement,
+local wall recolouring, comparison, history and portable projects. Explain that AI
+corrections have no enforced hard mask and Live is a generated still overlay at a
+matching viewpoint. Do not market instant moving-camera VR or guaranteed pixel locks.
+User RenoVision accounts, managed Pro credits, cloud sync, wallpaper, extra providers,
+semantic wall segmentation and native Windows packaging can follow. Durable linked
+files are desirable, but a clearly labelled, tested manual export/Open workflow can
+serve v1. Full local-photo encryption is an assessment, not a blanket release rule.
+
+Official requirements and links are in
+[the current Play research](docs/PRODUCT_NOTES.md#google-play-launch-requirements--checked-21-november-2026);
+[release acceptance](docs/TESTING_GUIDE.md#public-release-acceptance--21-november-review)
+tracks manual evidence. No account, signing identity, key, backend, build or upload
+was created/changed by this review. No paid AI calls or customer-data edits occurred.
+
 ## Room management, paint and recorded help — source after 1.0.15
 
 - [x] Replace default text-first help with recorded real-widget transactions:

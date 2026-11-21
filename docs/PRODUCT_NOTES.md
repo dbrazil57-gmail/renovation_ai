@@ -1,5 +1,49 @@
 # Product and research reference
 
+## Google Play launch requirements — checked 21 November 2026
+
+This is a dated policy/product audit using Google's primary documentation. The
+user confirms no Play Console account exists yet. The original prototype brief
+is unchanged; public-launch work is the later objective. No Console action,
+payment, provider call or publication was made during this review.
+
+| Requirement | Current evidence and next action | Primary source |
+| --- | --- | --- |
+| Publisher account | US$25 one-time registration, identity/contact verification; personal owners also verify an Android device. Organisation setup generally needs a D-U-N-S number and matching business details. Choose the real publisher type and check public profile visibility. | [Registration](https://support.google.com/googleplay/android-developer/answer/6112435?hl=en), [identity details](https://support.google.com/googleplay/android-developer/answer/13628312?hl=en) |
+| New personal account testing | Accounts created after 13 November 2023 need at least 12 testers continuously opted in to a closed test for 14 days, then apply for production access and describe testing. Internal testing does not satisfy this closed-test gate. | [Testing requirements](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en) |
+| Upload/signing | Prepare a signed AAB and Play App Signing; APKs remain useful for direct tests. Current Gradle uses com.example.renovision_ai and the debug signing configuration. Establish the production ID/upload key and safe project transfer first. | [App Bundles](https://developer.android.com/guide/app-bundle), [signing](https://developer.android.com/studio/publish/app-signing) |
+| Compatibility | Current SDK/last APK target Android 16/API 36, matching today's new-app baseline. Final Flutter/native dependencies still need 16KB alignment/runtime checks. Recheck Console at submission; dates change. | [Target API](https://developer.android.com/google/play/requirements/target-sdk), [16KB support](https://developer.android.com/guide/practices/page-sizes) |
+| AI output reporting/safety | Add real offensive-output reporting without leaving the app and a process for receiving/reviewing it. General drafts/external email or browser handoff are not that implementation. Test provider refusals and protections. | [AI content policy](https://support.google.com/googleplay/android-developer/answer/13985936?hl=en) |
+| Privacy/Data safety | Public app-specific privacy webpage plus in-app access; document cloud photo/prompt processing, providers, keys, backups, reports, retention/deletion and SDK behaviour. Off-device provider traffic cannot be ignored just because the app owner has no server. Collection/sharing exceptions must be evaluated rather than guessed. | [User Data](https://support.google.com/googleplay/android-developer/answer/10144311?hl=en), [Data safety](https://support.google.com/googleplay/android-developer/answer/10787469?hl=en) |
+| Listing | App name up to 30 characters; short/full descriptions 80/4,000. Use approved A artwork as a 512px square PNG; create a 1024×500 feature graphic and 2–8 real phone screenshots. A longer YouTube preview is optional; phone help clips remain a separate user requirement. | [App setup](https://support.google.com/googleplay/android-developer/answer/9859152?hl=en), [assets](https://support.google.com/googleplay/android-developer/answer/9866151?hl=en), [icon](https://developer.android.com/distribute/google-play/resources/icon-design-specifications) |
+| Declarations/reviewer access | Complete audience, content-rating, ads, privacy/Data safety and access declarations. Supply private instructions/access for all AI functions; do not expect Google to create/fund its own provider account or publish a review key in the app. | [Review preparation](https://support.google.com/googleplay/android-developer/answer/9859455?hl=en), [review access](https://support.google.com/googleplay/android-developer/answer/15748846) |
+| Money | Choose paid download versus free app with an in-app unlock before release. A free download cannot later become a paid download under that same app. Paid in-app digital features/credits need the applicable Play billing programme. Paid sales also require a payments profile; provider API bills remain separate. | [Pricing](https://support.google.com/googleplay/android-developer/answer/6334373?hl=en), [payments policy](https://support.google.com/googleplay/android-developer/answer/9858738?hl=en), [merchant setup](https://support.google.com/googleplay/android-developer/answer/3092739?hl=en) |
+
+Data-flow findings from actual source: direct AI sends selected, resized, metadata-
+stripped PNG copies and the brief over HTTPS after confirmation; originals remain
+in Hive. Live sends a captured reference, not continuous video. Android API keys
+use Keystore encryption and their two preference files are excluded from OS backup.
+Other app data is not explicitly excluded: Android may back it up under system
+settings. Confirm/disclose the intended policy against
+[Android Auto Backup](https://developer.android.com/identity/data/autobackup).
+Recoverable room/design deletion retains bytes; permanent project/trash cleanup
+is unfinished. Local-photo encryption is not implemented; export encryption is.
+No RenoVision account, managed subscription service or analytics/billing SDK is
+implemented. Do not claim that every photo stays on-device or that all stored
+photos are encrypted. Review merged legacy READ_EXTERNAL_STORAGE and prefer
+[system photo pickers](https://support.google.com/googleplay/android-developer/answer/16558241?hl=en)
+over unnecessary broad media permissions.
+
+Product gaps can be scoped honestly: v1 can offer concepts, prompt-guided
+corrections, local paint, comparison and manual project exports. Hard AI masks,
+tracked moving-view AR, wallpaper, native Windows, sync and managed Pro are future
+work. Current 64MiB raw-photo/100MiB portable-file limits and whole-image Hive
+storage need realistic project measurements. Existing passing tests cannot prove
+real device memory, provider quality, billing outcomes or store approval. Start
+with an internal release candidate and use
+[Play pre-launch reports](https://support.google.com/googleplay/android-developer/answer/9842757?hl=en)
+alongside real S21/Android 16 testing. Record phone help against the settled UI.
+
 ## Desktop preview parity — 21 November
 
 The desktop browser now serves all current shared Flutter features from source

@@ -1,5 +1,45 @@
 # Testing and storage reference
 
+## Public release acceptance — 21 November review
+
+The user has no Play Console account yet. This audit uses the existing 327-test
+baseline; it does not claim a new phone run, signed store bundle, policy approval
+or paid provider benchmark. Track the focused gates in CODEX_NEXT_STEPS.md.
+
+1. Decide the production package/signing identity before uploading. The current
+   app uses the example ID and debug release key. Export plain/protected project
+   files from the existing test app and verify that they open with rooms, photos,
+   versions, settings and approvals in the production app. A new package is a
+   separate app; a changed certificate cannot simply update the old sideload.
+   Keep the old install until transfers are verified; enter API keys separately.
+2. Test a current release candidate on S21 and Android 16/16KB: camera/gallery,
+   permission denial/cancel, Live capture→analysis→generated overlay→refine, image
+   zoom/landscape/compare, 1/2/3 materially different designs and narrow corrections,
+   tap-wall replacement colours, persistent layer deletion, room recovery and videos.
+   Check real OpenAI/Gemini accounts with explicitly approved spending or manual
+   user tests. Default provider protections/refusals must remain effective.
+3. Exercise restart, background/process termination, bad/no key, no credit, offline,
+   timeout, low storage, larger image libraries and backup limits. Record what
+   happens to a charged in-flight job when the app is killed; do not imply durable
+   recovery or automatically retry paid generation. Save/open/share plain/protected
+   copies and check original/base/branch preservation. Android's destination chooser
+   currently appears again rather than retaining a durable overwrite link.
+4. Verify a privacy-policy entry and public page, disclosure/consent, final SDK/data
+   flow inventory, and the chosen OS backup and permanent-delete/trash retention
+   policy. Current backup XML excludes secret preferences only. Retest final merged
+   permissions, native 16KB alignment, camera optionality, signing, no bundled private
+   settings and Keystore separation. Store signing keys stay outside Git/project files.
+5. Report a generated design without leaving the app; verify owner receipt, failure/
+   retry state and retention. No automatic private-image/key attachments. Current
+   feedback draft/email/browser handoff is not sufficient for this acceptance case.
+6. Check fresh-user BYO-key onboarding, price/extra provider-cost clarity, help
+   captions and truthful precision/Live wording. Supply valid private reviewer access
+   in Play Console; keep secrets out of screenshots/footage. Prepare the icon/banner,
+   screenshots, descriptions and app-content declarations against the final UI.
+7. Upload a properly signed AAB to internal testing when requested. Address the
+   pre-launch report, then run the applicable closed-test/production-access process
+   and final production review. Do not treat elapsed tester days as automatic approval.
+
 ## Source follow-up acceptance — after APK 1.0.15, 21 November
 
 These features are in source until another APK is requested. Do not uninstall

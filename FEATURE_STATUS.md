@@ -1,5 +1,17 @@
 # Renovision feature status
 
+**Public launch assessment, 21 November:** a working controlled-beta product,
+not yet a production-ready Google Play release. The user has no Play Console
+account yet. Code inspection confirms example package ID/debug signing, no public
+privacy-policy entry, no connected in-app offensive-output reporting, no billing/
+entitlement integration and incomplete permanent-delete/OS-backup decisions. Latest
+phone acceptance, native 16KB verification, real-provider comparisons and release
+listing assets remain. Target SDK 36, Android Keystore keys, consent, metadata-stripped
+AI image copies and portable backups are already present. All 327 existing tests
+pass; this audit made no runtime changes or additional test/paid-API claim.
+Use [the launch gates](CODEX_NEXT_STEPS.md#public-launch-review--21-november-2026)
+instead of treating the whole future feature backlog as necessary for v1.
+
 **Desktop refresh, 21 November:** current shared source `aba3ee136c` is rebuilt
 and served at **http://localhost:7357** in release mode (51.2s). All **327 tests
 pass**, including a new real HTTP check for full/HEAD/range responses and exclusion
