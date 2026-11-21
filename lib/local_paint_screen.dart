@@ -7,8 +7,9 @@ import 'package:material_ui/material_ui.dart';
 import 'context_help.dart';
 import 'design_palettes.dart';
 import 'local_paint.dart';
+import 'wall_selection.dart';
 
-enum _PaintTool { polygon, brush, erase, move }
+enum _PaintTool { automatic, polygon, brush, erase, move }
 
 class LocalPaintScreen extends StatefulWidget {
   final Uint8List source, before;
@@ -16,6 +17,7 @@ class LocalPaintScreen extends StatefulWidget {
   final LocalPaintRecipe? savedRecipe;
   final Future<void> Function(LocalPaintRecipe) saveDraft;
   final Future<void> Function(PaintRenderResult, LocalPaintRecipe) saveVersion;
+  final VoidCallback? requestAiFinish;
   const LocalPaintScreen({
     super.key,
     required this.source,
@@ -24,6 +26,7 @@ class LocalPaintScreen extends StatefulWidget {
     this.savedRecipe,
     required this.saveDraft,
     required this.saveVersion,
+    this.requestAiFinish,
   });
   @override
   State<LocalPaintScreen> createState() => _LocalPaintScreenState();
@@ -39,18 +42,22 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
   List<PaintPoint> live = [];
   int selected = 0, panel = 0, revision = 0, savedRevision = 0, serial = 0;
   int? polygonIndex;
-  _PaintTool tool = _PaintTool.polygon;
+  _PaintTool tool = _PaintTool.automatic;
   double brushWidth = .035;
   bool busy = false, rendering = false, queued = false, loading = true;
   bool compare = false, showSelection = false, allowClose = false;
   bool strokeLimitWarned = false;
+  bool selectingWall = false;
+  double sensitivity = 28;
   String? error;
   Timer? previewTimer, draftTimer;
   Future<void> draftWrites = Future.value();
   PaintRenderResult? fullResult;
   int? fullRevision;
   bool get dirty => revision != savedRevision;
-  PaintSurface get wall => recipe!.surfaces[selected];
+  PaintSurface get wall => recipe!.surfaces.isEmpty
+      ? PaintSurface(name: 'Wall 1')
+      : recipe!.surfaces[selected];
 
   @override
   void initState() {
@@ -77,6 +84,13 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         prepared = image;
         beforePreview = before;
         recipe = initial;
+        sensitivity =
+            initial.surfaces.firstOrNull?.marks
+                .where((mark) => mark.region != null)
+                .firstOrNull
+                ?.region
+                ?.sensitivity ??
+            28;
         rendered = image.preview;
         loading = false;
       });
@@ -108,7 +122,9 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
     }
     setState(() {
       recipe = next;
-      selected = selected.clamp(0, next.surfaces.length - 1);
+      selected = next.surfaces.isEmpty
+          ? 0
+          : selected.clamp(0, next.surfaces.length - 1);
       revision++;
       error = null;
       compare = false;
@@ -121,12 +137,96 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
 
   void changeWall(PaintSurface next) {
     try {
-      change(recipe!.replaceSurface(selected, next));
+      change(
+        recipe!.surfaces.isEmpty
+            ? LocalPaintRecipe(
+                width: recipe!.width,
+                height: recipe!.height,
+                surfaces: [next],
+              )
+            : recipe!.replaceSurface(selected, next),
+      );
     } on FormatException {
       tell(
         'This selection is full. Finish the stroke or use Undo before adding more.',
       );
     }
+  }
+
+  Future<void> selectWall(PaintPoint seed) async {
+    if (busy || selectingWall || prepared == null) return;
+    setState(() => selectingWall = true);
+    try {
+      final result = await compute(
+        selectWallRegion,
+        WallSelectionInput(prepared!.preview, seed, sensitivity: sensitivity),
+      );
+      if (!mounted) return;
+      polygonIndex = null;
+      changeWall(
+        wall.copyWith(
+          marks: [
+            PaintMark(PaintMarkKind.region, [seed], region: result.region),
+          ],
+        ),
+      );
+      setState(() {
+        panel = 1;
+        showSelection = true;
+      });
+      if (result.pixels / (result.region.width * result.region.height) > .65) {
+        tell(
+          'Large area selected. Check the boundary; lower sensitivity if it includes other surfaces.',
+        );
+      }
+    } on FormatException catch (failure) {
+      tell(failure.message.toString());
+    } catch (_) {
+      tell(
+        'This wall could not be selected. Try a clearer point or adjust sensitivity.',
+      );
+    } finally {
+      if (mounted) setState(() => selectingWall = false);
+    }
+  }
+
+  Future<void> removeWalls({required bool all}) async {
+    if (busy || selectingWall || recipe!.surfaces.isEmpty) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(all ? 'Delete all wall layers?' : 'Delete ${wall.name}?'),
+        content: const Text(
+          'This removes the working paint selection and colour. Original photos and saved versions stay unchanged. You can Undo while this editor is open.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    final surfaces = [...recipe!.surfaces];
+    if (all) {
+      surfaces.clear();
+    } else {
+      surfaces.removeAt(selected);
+    }
+    polygonIndex = null;
+    live = [];
+    change(
+      LocalPaintRecipe(
+        width: recipe!.width,
+        height: recipe!.height,
+        surfaces: surfaces,
+      ),
+    );
   }
 
   void requestPreview() {
@@ -195,8 +295,8 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
     }
   }
 
-  Future<void> save() async {
-    if (busy || recipe == null) return;
+  Future<void> save({bool finishWithAi = false}) async {
+    if (busy || selectingWall || recipe == null) return;
     setState(() => busy = true);
     try {
       if (!await flush() || !mounted) return;
@@ -209,12 +309,18 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             );
       fullResult = result;
       fullRevision = version;
-      if (result.changedPixels == 0) {
+      final revertingSavedPaint =
+          widget.savedRecipe?.surfaces.any(
+            (surface) => surface.marks.isNotEmpty && surface.coverage > 0,
+          ) ??
+          false;
+      if (result.changedPixels == 0 && !revertingSavedPaint) {
         tell('Select a wall and choose a colour before saving a version.');
         return;
       }
       await widget.saveVersion(result, current);
       if (mounted) {
+        if (finishWithAi) widget.requestAiFinish?.call();
         setState(() => allowClose = true);
         Navigator.pop(context, true);
       }
@@ -232,7 +338,9 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
     if (from.isEmpty) return;
     to.add(recipe!);
     final next = from.removeLast();
-    selected = selected.clamp(0, next.surfaces.length - 1);
+    selected = next.surfaces.isEmpty
+        ? 0
+        : selected.clamp(0, next.surfaces.length - 1);
     polygonIndex = null;
     live = [];
     change(next, remember: false);
@@ -313,6 +421,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
       return;
     }
     changeWall(wall.copyWith(rgb: int.parse(text, radix: 16)));
+    setState(() => showSelection = false);
   }
 
   @override
@@ -352,8 +461,20 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                       return GestureDetector(
                         key: const ValueKey('paint-canvas'),
                         behavior: HitTestBehavior.opaque,
-                        onTapUp: tool == _PaintTool.polygon && !compare
-                            ? (tap) => addCorner(point(tap.localPosition, size))
+                        onTapUp:
+                            (tool == _PaintTool.polygon ||
+                                    tool == _PaintTool.automatic) &&
+                                !compare &&
+                                !busy &&
+                                !selectingWall
+                            ? (tap) {
+                                final seed = point(tap.localPosition, size);
+                                if (tool == _PaintTool.automatic) {
+                                  unawaited(selectWall(seed));
+                                } else {
+                                  addCorner(seed);
+                                }
+                              }
                             : null,
                         onPanStart:
                             (tool == _PaintTool.brush ||
@@ -431,240 +552,339 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
     ),
   );
 
-  Widget controls() => AbsorbPointer(
-    absorbing: busy,
-    child: ListView(
-      padding: const EdgeInsets.all(10),
-      children: [
-        const Text('Local paint · no AI requests'),
-        const SizedBox(height: 6),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              for (var i = 0; i < recipe!.surfaces.length; i++)
-                ChoiceChip(
-                  label: Text(recipe!.surfaces[i].name),
-                  selected: selected == i,
-                  onSelected: (_) => setState(() {
-                    selected = i;
-                    polygonIndex = null;
-                    live = [];
-                  }),
-                ),
-              IconButton(
-                tooltip: 'Add wall',
-                onPressed: recipe!.surfaces.length >= 8
-                    ? null
-                    : () {
+  Widget controls() {
+    final content = <Widget>[
+      const Text('Local paint · no AI requests'),
+      const SizedBox(height: 6),
+      Row(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (var i = 0; i < recipe!.surfaces.length; i++)
+                    ChoiceChip(
+                      label: Text(recipe!.surfaces[i].name),
+                      selected: selected == i,
+                      onSelected: (_) => setState(() {
+                        selected = i;
                         polygonIndex = null;
-                        change(
-                          LocalPaintRecipe(
-                            width: recipe!.width,
-                            height: recipe!.height,
-                            surfaces: [
-                              ...recipe!.surfaces,
-                              PaintSurface(
-                                name: 'Wall ${recipe!.surfaces.length + 1}',
-                              ),
-                            ],
-                          ),
-                        );
-                        setState(() => selected = recipe!.surfaces.length - 1);
-                      },
-                icon: const Icon(Icons.add),
-              ),
-            ],
-          ),
-        ),
-        Row(
-          children: [
-            for (final entry in {
-              0: '1 Select area',
-              1: '2 Paint colour',
-            }.entries)
-              Expanded(
-                child: TextButton(
-                  onPressed: () => setState(() => panel = entry.key),
-                  child: Text(
-                    entry.value,
-                    style: TextStyle(
-                      fontWeight: panel == entry.key
-                          ? FontWeight.bold
-                          : FontWeight.normal,
+                        live = [];
+                        sensitivity =
+                            wall.marks
+                                .where((m) => m.region != null)
+                                .firstOrNull
+                                ?.region
+                                ?.sensitivity ??
+                            28;
+                      }),
                     ),
+                ],
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: 'Add wall',
+            onPressed: recipe!.surfaces.length >= 8
+                ? null
+                : () {
+                    polygonIndex = null;
+                    var number = recipe!.surfaces.length + 1;
+                    while (recipe!.surfaces.any(
+                      (wall) => wall.name == 'Wall $number',
+                    )) {
+                      number++;
+                    }
+                    change(
+                      LocalPaintRecipe(
+                        width: recipe!.width,
+                        height: recipe!.height,
+                        surfaces: [
+                          ...recipe!.surfaces,
+                          PaintSurface(name: 'Wall $number'),
+                        ],
+                      ),
+                    );
+                    setState(() {
+                      selected = recipe!.surfaces.length - 1;
+                      panel = 0;
+                      tool = _PaintTool.automatic;
+                    });
+                  },
+            icon: const Icon(Icons.add),
+          ),
+          IconButton(
+            tooltip: 'Delete selected wall',
+            onPressed: recipe!.surfaces.isEmpty
+                ? null
+                : () => removeWalls(all: false),
+            icon: const Icon(Icons.delete_outline),
+          ),
+          IconButton(
+            tooltip: 'Delete all walls',
+            onPressed: recipe!.surfaces.isEmpty
+                ? null
+                : () => removeWalls(all: true),
+            icon: const Icon(Icons.layers_clear_outlined),
+          ),
+        ],
+      ),
+      Row(
+        children: [
+          for (final entry in {0: '1 Select area', 1: '2 Paint colour'}.entries)
+            Expanded(
+              child: TextButton(
+                onPressed: () => setState(() => panel = entry.key),
+                child: Text(
+                  entry.value,
+                  style: TextStyle(
+                    fontWeight: panel == entry.key
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 ),
               ),
+            ),
+        ],
+      ),
+      if (panel == 0)
+        Wrap(
+          spacing: 3,
+          children: [
+            for (final entry in {
+              _PaintTool.automatic: (
+                Icons.touch_app_outlined,
+                'Tap to select wall',
+              ),
+              _PaintTool.polygon: (Icons.polyline_outlined, 'Wall outline'),
+              _PaintTool.brush: (Icons.brush_outlined, 'Paint brush'),
+              _PaintTool.erase: (Icons.auto_fix_normal, 'Erase selection'),
+              _PaintTool.move: (Icons.pan_tool_outlined, 'Move / zoom'),
+            }.entries)
+              IconButton.filledTonal(
+                tooltip: entry.value.$2,
+                isSelected: tool == entry.key,
+                onPressed: () => setState(() {
+                  tool = entry.key;
+                  polygonIndex = null;
+                  live = [];
+                }),
+                icon: Icon(entry.value.$1),
+              ),
+            IconButton(
+              tooltip: 'Show selection',
+              isSelected: showSelection,
+              onPressed: () => setState(() => showSelection = !showSelection),
+              icon: const Icon(Icons.select_all),
+            ),
           ],
         ),
-        if (panel == 0)
-          Wrap(
-            spacing: 3,
-            children: [
-              for (final entry in {
-                _PaintTool.polygon: (Icons.polyline_outlined, 'Wall outline'),
-                _PaintTool.brush: (Icons.brush_outlined, 'Paint brush'),
-                _PaintTool.erase: (Icons.auto_fix_normal, 'Erase selection'),
-                _PaintTool.move: (Icons.pan_tool_outlined, 'Move / zoom'),
-              }.entries)
-                IconButton.filledTonal(
-                  tooltip: entry.value.$2,
-                  isSelected: tool == entry.key,
-                  onPressed: () => setState(() {
-                    tool = entry.key;
-                    polygonIndex = null;
-                    live = [];
-                  }),
-                  icon: Icon(entry.value.$1),
-                ),
-              IconButton(
-                tooltip: 'Show selection',
-                isSelected: showSelection,
-                onPressed: () => setState(() => showSelection = !showSelection),
-                icon: const Icon(Icons.select_all),
+      if (panel == 0 && tool == _PaintTool.polygon)
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Tap around a wall, then finish.'),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: polygonIndex == null
+                    ? null
+                    : () => setState(() => polygonIndex = null),
+                child: const Text('Finish outline'),
               ),
-            ],
-          ),
-        if (panel == 0 && tool == _PaintTool.polygon)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+          ],
+        ),
+      if (panel == 0 && tool == _PaintTool.automatic) ...[
+        const Text(
+          'Tap a wall in the photo. Check the boundary, then choose a colour.',
+        ),
+        Text('Selection sensitivity ${sensitivity.round()}'),
+        Slider(
+          min: 8,
+          max: 64,
+          divisions: 28,
+          value: sensitivity,
+          onChanged: (value) => setState(() => sensitivity = value),
+          onChangeEnd: (_) {
+            final region = wall.marks
+                .where((m) => m.region != null)
+                .firstOrNull;
+            if (region != null) unawaited(selectWall(region.points.single));
+          },
+        ),
+      ],
+      if (panel == 0 && (tool == _PaintTool.brush || tool == _PaintTool.erase))
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Brush size'),
+            Slider(
+              min: .008,
+              max: .15,
+              value: brushWidth,
+              onChanged: (value) => setState(() => brushWidth = value),
+            ),
+          ],
+        ),
+      if (panel == 1)
+        SizedBox(
+          height: 48,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
             children: [
-              const Text('Tap around a wall, then finish.'),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: polygonIndex == null
-                      ? null
-                      : () => setState(() => polygonIndex = null),
-                  child: const Text('Finish outline'),
-                ),
-              ),
-            ],
-          ),
-        if (panel == 0 &&
-            (tool == _PaintTool.brush || tool == _PaintTool.erase))
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Brush size'),
-              Slider(
-                min: .008,
-                max: .15,
-                value: brushWidth,
-                onChanged: (value) => setState(() => brushWidth = value),
-              ),
-            ],
-          ),
-        if (panel == 1)
-          SizedBox(
-            height: 48,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                for (final colour in {
-                  for (final palette in designPalettes)
-                    for (final colour in palette.colours) colour.rgb: colour,
-                }.values)
-                  Tooltip(
-                    message: '${colour.name} ${colour.hex}',
-                    child: InkWell(
-                      onTap: () => changeWall(wall.copyWith(rgb: colour.rgb)),
-                      customBorder: const CircleBorder(),
-                      child: Container(
-                        width: 42,
-                        height: 42,
-                        padding: const EdgeInsets.all(5),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFF000000 | colour.rgb),
-                            border: Border.all(
-                              width: wall.rgb == colour.rgb ? 3 : 1,
-                              color: wall.rgb == colour.rgb
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Colors.grey,
-                            ),
+              for (final colour in {
+                for (final palette in designPalettes)
+                  for (final colour in palette.colours) colour.rgb: colour,
+              }.values)
+                Tooltip(
+                  message: '${colour.name} ${colour.hex}',
+                  child: InkWell(
+                    onTap: () {
+                      changeWall(wall.copyWith(rgb: colour.rgb));
+                      setState(() => showSelection = false);
+                    },
+                    customBorder: const CircleBorder(),
+                    child: Container(
+                      width: 42,
+                      height: 42,
+                      padding: const EdgeInsets.all(5),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFF000000 | colour.rgb),
+                          border: Border.all(
+                            width: wall.rgb == colour.rgb ? 3 : 1,
+                            color: wall.rgb == colour.rgb
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.grey,
                           ),
                         ),
                       ),
                     ),
                   ),
-              ],
-            ),
-          ),
-        if (panel == 1)
-          TextButton.icon(
-            onPressed: customColour,
-            icon: const Icon(Icons.color_lens_outlined),
-            label: const Text('Custom colour'),
-          ),
-        if (panel == 1 && widget.savedRecipe != null)
-          TextButton(
-            onPressed: widget.savedRecipe == null
-                ? null
-                : () {
-                    polygonIndex = null;
-                    change(widget.savedRecipe!);
-                  },
-            child: const Text('Use saved version colours and selection'),
-          ),
-        if (panel == 1)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Coverage ${(wall.coverage * 100).round()}%'),
-              Slider(
-                min: 0,
-                max: 1,
-                divisions: 20,
-                value: wall.coverage,
-                onChanged: (value) =>
-                    changeWall(wall.copyWith(coverage: value)),
-              ),
+                ),
             ],
           ),
+        ),
+      if (panel == 1)
         Wrap(
           spacing: 6,
           children: [
-            OutlinedButton.icon(
-              onPressed: () => setState(() => compare = !compare),
-              icon: const Icon(Icons.compare),
-              label: Text(compare ? 'Show painted' : 'Compare before'),
+            TextButton.icon(
+              onPressed: customColour,
+              icon: const Icon(Icons.color_lens_outlined),
+              label: const Text('Custom colour'),
             ),
-            if (panel == 0)
-              TextButton(
-                onPressed: wall.marks.isEmpty
-                    ? null
-                    : () {
-                        polygonIndex = null;
-                        changeWall(wall.copyWith(marks: []));
-                      },
-                child: const Text('Clear wall selection'),
+            if (widget.requestAiFinish != null)
+              TextButton.icon(
+                onPressed:
+                    recipe!.surfaces.any(
+                      (wall) =>
+                          wall.coverage > 0 &&
+                          wall.marks.any(
+                            (mark) => mark.kind != PaintMarkKind.erase,
+                          ),
+                    )
+                    ? () => save(finishWithAi: true)
+                    : null,
+                icon: const Icon(Icons.auto_awesome_outlined),
+                label: const Text('Finish with AI'),
               ),
-            TextButton(
-              onPressed: () async {
-                await flush();
-              },
-              child: const Text('Save draft'),
+          ],
+        ),
+      if (panel == 1 && wall.marks.any((m) => m.region != null))
+        TextButton.icon(
+          onPressed: () => setState(() {
+            panel = 0;
+            tool = _PaintTool.automatic;
+            showSelection = true;
+          }),
+          icon: const Icon(Icons.tune),
+          label: const Text('Adjust wall boundary'),
+        ),
+      if (panel == 1 && widget.savedRecipe != null)
+        TextButton(
+          onPressed: widget.savedRecipe == null
+              ? null
+              : () {
+                  polygonIndex = null;
+                  change(widget.savedRecipe!);
+                },
+          child: const Text('Use saved version colours and selection'),
+        ),
+      if (panel == 1)
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Coverage ${(wall.coverage * 100).round()}%'),
+            Slider(
+              min: 0,
+              max: 1,
+              divisions: 20,
+              value: wall.coverage,
+              onChanged: (value) => changeWall(wall.copyWith(coverage: value)),
             ),
           ],
         ),
-        Text(
-          error ??
-              (dirty
-                  ? 'Saving paint draft…'
-                  : 'Paint draft saved · Save version adds it to Ideas'),
+      Wrap(
+        spacing: 6,
+        children: [
+          OutlinedButton.icon(
+            onPressed: () => setState(() => compare = !compare),
+            icon: const Icon(Icons.compare),
+            label: Text(compare ? 'Show painted' : 'Compare before'),
+          ),
+          if (panel == 0)
+            TextButton(
+              onPressed: wall.marks.isEmpty
+                  ? null
+                  : () {
+                      polygonIndex = null;
+                      changeWall(wall.copyWith(marks: []));
+                    },
+              child: const Text('Clear wall selection'),
+            ),
+          TextButton(
+            onPressed: () async {
+              await flush();
+            },
+            child: const Text('Save draft'),
+          ),
+        ],
+      ),
+      Text(
+        error ??
+            (dirty
+                ? 'Saving paint draft…'
+                : 'Paint draft saved · Save version adds it to Ideas'),
+      ),
+    ];
+    return AbsorbPointer(
+      absorbing: busy || selectingWall,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            ...content.take(4),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: content.skip(4).toList(),
+              ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => PopScope(
-    canPop: allowClose || (!busy && !dirty),
+    canPop: allowClose || (!busy && !selectingWall && !dirty),
     onPopInvokedWithResult: (didPop, _) async {
-      if (didPop || busy) return;
+      if (didPop || busy || selectingWall) return;
       if (await flush() && context.mounted && !dirty) Navigator.pop(context);
     },
     child: Scaffold(
@@ -673,22 +893,28 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         actions: [
           IconButton(
             tooltip: 'Undo paint',
-            onPressed: busy || undo.isEmpty ? null : () => history(true),
+            onPressed: busy || selectingWall || undo.isEmpty
+                ? null
+                : () => history(true),
             icon: const Icon(Icons.undo),
           ),
           IconButton(
             tooltip: 'Redo paint',
-            onPressed: busy || redo.isEmpty ? null : () => history(false),
+            onPressed: busy || selectingWall || redo.isEmpty
+                ? null
+                : () => history(false),
             icon: const Icon(Icons.redo),
           ),
           IconButton(
             tooltip: 'Save paint version',
-            onPressed: busy || loading || recipe == null ? null : save,
+            onPressed: busy || selectingWall || loading || recipe == null
+                ? null
+                : save,
             icon: const Icon(Icons.save_outlined),
           ),
           HelpIcon(
             title: 'Local paint',
-            message: 'Select a wall with an outline or brush. Erase windows, trim and foreground objects from the selection. Use Move / zoom to magnify, then switch back to a drawing tool. Colour changes run locally without AI. Existing shadows and texture guide the preview; it is not an exact paint-brand match. Back keeps your draft; Save version adds a new image without changing the original or approving it.',
+            message: 'Tap a wall, check its highlighted boundary, then choose a colour. Choose another colour on the same layer to replace it; the selection is reused. Selection uses connected colours and edges, not AI wall recognition; similar surfaces can merge. Adjust sensitivity or use optional outline/erase tools for difficult edges. Delete a selected wall or all layers using the layer controls, even after reopening. Finish with AI saves this preview and opens a correction to review before generation; it needs your AI connection and uses paid provider requests only when confirmed. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
           ),
         ],
       ),
@@ -703,7 +929,9 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             )
           : Column(
               children: [
-                if (busy || rendering) const LinearProgressIndicator(),
+                if (busy || selectingWall || rendering)
+                  const LinearProgressIndicator(),
+                if (selectingWall) const Text('Selecting wall…'),
                 if (busy) const Text('Saving full-resolution paint version…'),
                 Expanded(
                   child: LayoutBuilder(
@@ -760,6 +988,33 @@ class _PaintOverlay extends CustomPainter {
     if (marks.isNotEmpty) {
       canvas.saveLayer(Offset.zero & size, Paint());
       for (final mark in marks) {
+        if (mark.region != null) {
+          final region = mark.region!;
+          final shape = Path();
+          for (var y = 0; y < region.height; y++) {
+            var x = 0;
+            while (x < region.width) {
+              if (!region.contains(x, y)) {
+                x++;
+                continue;
+              }
+              final start = x;
+              while (x < region.width && region.contains(x, y)) {
+                x++;
+              }
+              shape.addRect(
+                Rect.fromLTRB(
+                  start * size.width / region.width,
+                  y * size.height / region.height,
+                  x * size.width / region.width,
+                  (y + 1) * size.height / region.height,
+                ),
+              );
+            }
+          }
+          canvas.drawPath(shape, Paint()..color = Colors.white);
+          continue;
+        }
         final paint = Paint()
           ..color = Colors.white
           ..strokeCap = StrokeCap.round

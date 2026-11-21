@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import 'walkthrough_content.dart';
+import 'walkthrough_video.dart';
 
 Future<void> showAppWalkthroughs(BuildContext context) => Navigator.push<void>(
   context,
@@ -43,16 +44,17 @@ class AppWalkthroughsScreen extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(14),
                 child: Image.asset(
-                  'assets/inspiration/charcoal-kitchen.png',
+                  'assets/walkthroughs/design-poster.png',
                   height: 125,
                   fit: BoxFit.cover,
                   semanticLabel:
-                      'Fictional sample kitchen, for illustration only',
+                      'Recorded RenoVision workflow using sample data',
                   cacheWidth: 960,
+                  errorBuilder: (_, _, _) => const SizedBox(height: 125),
                 ),
               ),
               const SizedBox(height: 10),
-              const Text('Follow a sample kitchen, one step at a time.'),
+              const Text('Watch a complete workflow in the app.'),
               const Text(
                 'Examples only · no key needed · no photos sent or projects changed.',
               ),
@@ -101,6 +103,7 @@ class AppWalkthroughsScreen extends StatelessWidget {
               for (final (guide, icon) in [
                 (designWalkthrough, Icons.auto_awesome_outlined),
                 (toolsWalkthrough, Icons.compare_outlined),
+                (paintWalkthrough, Icons.format_paint_outlined),
                 (savingWalkthrough, Icons.save_outlined),
                 (modelComparisonWalkthrough, Icons.balance_outlined),
               ])
@@ -109,7 +112,7 @@ class AppWalkthroughsScreen extends StatelessWidget {
                     leading: Icon(icon),
                     title: Text(guide.title),
                     subtitle: Text(guide.summary),
-                    trailing: const Icon(Icons.chevron_right),
+                    trailing: const Icon(Icons.play_circle_outline),
                     onTap: () => _open(context, guide),
                   ),
                 ),
@@ -130,6 +133,7 @@ class WalkthroughScreen extends StatefulWidget {
 
 class _WalkthroughScreenState extends State<WalkthroughScreen> {
   int index = 0;
+  bool written = false;
   final scroll = ScrollController();
   void move(int value) {
     setState(() => index = value);
@@ -150,108 +154,157 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(guide.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-      ),
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Step ${index + 1} of ${guide.steps.length}',
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      const SizedBox(height: 6),
-                      LinearProgressIndicator(
-                        value: (index + 1) / guide.steps.length,
-                        semanticsLabel:
-                            'Walkthrough progress: step ${index + 1} of ${guide.steps.length}',
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    controller: scroll,
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      key: ValueKey('${guide.id}-step-$index'),
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Semantics(
-                          header: true,
-                          child: Text(
-                            step.title,
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(step.instruction),
-                        const SizedBox(height: 16),
-                        Card(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .secondaryContainer,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Sample kitchen',
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                                const SizedBox(height: 8),
-                                SelectableText(step.example),
-                              ],
-                            ),
-                          ),
-                        ),
-                        if (step.note != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 12),
-                            child: Text(
-                              step.note!,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                  child: OverflowBar(
-                    alignment: MainAxisAlignment.spaceBetween,
-                    spacing: 12,
-                    overflowSpacing: 4,
-                    children: [
-                      TextButton.icon(
-                        onPressed: index == 0 ? null : () => move(index - 1),
-                        icon: const Icon(Icons.arrow_back),
-                        label: const Text('Previous'),
-                      ),
-                      FilledButton.icon(
-                        onPressed: last
-                            ? () => Navigator.pop(context)
-                            : () => move(index + 1),
-                        icon: Icon(last ? Icons.check : Icons.arrow_forward),
-                        label: Text(last ? 'Done' : 'Next'),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+        actions: [
+          IconButton(
+            tooltip: written ? 'Watch recording' : 'Read steps',
+            onPressed: () => setState(() => written = !written),
+            icon: Icon(
+              written ? Icons.play_circle_outline : Icons.article_outlined,
             ),
           ),
-        ),
+        ],
       ),
+      body: !written
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: WalkthroughVideo(
+                        recording: recordingForGuide(guide.id),
+                      ),
+                    ),
+                    OverflowBar(
+                      alignment: MainAxisAlignment.spaceBetween,
+                      spacing: 8,
+                      overflowSpacing: 4,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () => setState(() => written = true),
+                          icon: const Icon(Icons.article_outlined),
+                          label: const Text('Read steps'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Done'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : SafeArea(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Step ${index + 1} of ${guide.steps.length}',
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            const SizedBox(height: 6),
+                            LinearProgressIndicator(
+                              value: (index + 1) / guide.steps.length,
+                              semanticsLabel:
+                                  'Walkthrough progress: step ${index + 1} of ${guide.steps.length}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: scroll,
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            key: ValueKey('${guide.id}-step-$index'),
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Semantics(
+                                header: true,
+                                child: Text(
+                                  step.title,
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(step.instruction),
+                              const SizedBox(height: 16),
+                              Card(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .secondaryContainer,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Sample kitchen',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      SelectableText(step.example),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              if (step.note != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 12),
+                                  child: Text(
+                                    step.note!,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                        child: OverflowBar(
+                          alignment: MainAxisAlignment.spaceBetween,
+                          spacing: 12,
+                          overflowSpacing: 4,
+                          children: [
+                            TextButton.icon(
+                              onPressed: index == 0
+                                  ? null
+                                  : () => move(index - 1),
+                              icon: const Icon(Icons.arrow_back),
+                              label: const Text('Previous'),
+                            ),
+                            FilledButton.icon(
+                              onPressed: last
+                                  ? () => Navigator.pop(context)
+                                  : () => move(index + 1),
+                              icon: Icon(
+                                last ? Icons.check : Icons.arrow_forward,
+                              ),
+                              label: Text(last ? 'Done' : 'Next'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
     );
   }
 }

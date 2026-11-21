@@ -5,6 +5,38 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Room management, paint and recorded help — source after 1.0.15
+
+- [x] Replace default text-first help with recorded real-widget transactions:
+  seven captioned MP4s, playback/seek/full-screen controls and written fallback.
+  Use fictional samples/disposable stores; label simulated AI/camera/file pickers.
+- [x] Add visible room deletion with exact-name confirmation, Undo and persistent
+  Deleted rooms recovery. Retain photos/designs/settings/approvals and include
+  deleted rooms in portable copies. Block deletion during active AI requests.
+- [x] Save Live room type immediately even with autosave off; normalize old stored
+  type labels and generic Unspecified/Live names without overwriting custom names.
+- [x] Make tap-wall then colour the default local paint path. Add boundary
+  sensitivity, compact reusable regions and pinned delete selected/all controls.
+  Keep optional manual tools for ambiguous boundaries, not mandatory brushing.
+- [x] Persist empty/edited layers through reopening; clearing saved paint can
+  create a new unpainted version without changing its parent or original.
+- [x] Reuse the same wall selection for replacement colours. Finish with AI saves
+  a rough preview and prepares a reviewable correction; it does not call AI itself.
+- [x] Make unsent local feedback explicit. The owner destination remains pending;
+  no email, form submission or paid app AI call was sent during this batch.
+- [x] Verify **326 tests**, clean analysis, Chrome release compilation (78.9s),
+  Android Kotlin/plugins (2m 52s), seven MP4 metadata/decode/seek/timing probes,
+  and documentation links. Source `aba3ee136c`; no new APK or paid app AI request.
+- [x] Check actual Chrome release Help navigation, playback/pause, near-end seek,
+  full-screen round trip and written fallback/disposal in an isolated profile.
+- [ ] Phone acceptance of tap-wall boundaries/speed, video playback and room
+  delete/restore. Keep existing data when installing a future requested update.
+
+No new APK requested for this batch. Keep 1.0.15 and confirmed icon A unchanged;
+build another package only on request. Remaining main priorities are durable
+Android file linkage, reusing photo facts independently of design preferences,
+enforced AI masks and representative larger-project/device/provider measurements.
+
 ## Confirmed A icon — 21 November, requested 1.0.15+16
 
 - [x] User confirmed A for now: olive green, cream room outline and sparkle.
@@ -365,8 +397,8 @@ remain optional; an assistant name alone is not an image API.
   reflections and dark/light changes. The preview is an approximate colour trial.
 - [ ] Follow with local wallpaper: sample import, repeat scale/rotation/offset,
   perspective and foreground exclusions; then evaluate floor/cabinet finishes.
-- [ ] Assess optional wall-selection assistance separately. Reuse accepted masks;
-  do not invoke a paid model for each colour tap or equate text analysis with masks.
+- [x] Add local colour/edge tap-selection and reuse accepted masks, without a paid
+  model on each colour tap. Semantic selection and tricky-boundary refinement remain.
 
 Shared foundations for subsequent AI region editing:
 
@@ -415,7 +447,8 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 - [ ] Typed inspiration/material/sketch/plan reference attachments, separately
   labelled from other angles of the real room; apply sample presets to an existing room.
 - [ ] Broader illustrated room/style samples; optional material/options design boards.
-- [ ] Room/project deletion with confirmation/recovery, secondary-photo management,
+- [x] Room deletion with typed confirmation, Undo and persistent recovery.
+- [ ] Project deletion, secondary-photo management,
   storage usage and permanent purge rules respecting version references.
 - [x] Add Save image / Share creation in the full-screen viewer: Android 10+
   Gallery, older Android chooser, native share sheet; Chrome sharing/download
@@ -468,7 +501,7 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 | Comprehensive room list, more palettes/styles | 42 types / 23 styles / 12 palettes; more illustrated examples pending |
 | Multiple room images and consolidated context | Implemented; up to six originals, explicit primary/supporting roles |
 | Colour selection, smarter prompt, AI photo analysis | Implemented with per-generation analysis/settings snapshots; facts caching/reanalysis needs work |
-| Change paint/wallpaper without regenerating a room | Manual local paint/layers implemented in 1.0.14; wallpaper/perspective and automatic selection remain |
+| Change paint/wallpaper without regenerating a room | Manual paint in 1.0.14; source now adds local tap-selection and persistent layer deletion; semantic boundaries and wallpaper/perspective remain |
 | Japanese/Italian and other regional influences | Japanese/Italian/Moroccan/Indian added, grouped with existing regional styles; custom text remains |
 | Modern equals contemporary; mixed styles | Combined label; blending and separate-style comparisons implemented |
 | Whole-room default, clutter/floors/appliances | Implemented defaults plus optional room-specific Keep/Replace overrides |
@@ -476,7 +509,7 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 | Select and improve a generated design | Branching/precise correction, explicit modes and saved settings reuse/refinement implemented |
 | Zoom/landscape and before/after slider | Implemented; real device acceptance continues |
 | Crop handles, colours/shapes/comments | Implemented; editable saved geometry and true masks/compositing pending |
-| Delete generated images | Recoverable delete/undo implemented; permanent purge/project-room deletion pending |
+| Delete generated images and rooms | Recoverable design deletion and typed room deletion/restore implemented; permanent purge/project deletion pending |
 | Autosave shortcut, Save on exit, Save as/Open | Open resumes matching work with explicit conflict choices; persistent Android destination retention incomplete |
 | Lost work after a new localhost URL | Fixed preview origin/provided recovered copies; keep same Chrome address/profile |
 | Repeated restored text | Suffix fixed; unchanged repeat Open now resumes one project; Restore copy deliberately duplicates |
@@ -494,6 +527,7 @@ See the [screen-by-screen design assessment](docs/PRODUCT_NOTES.md#whole-project
 | Themes and settings storage/encryption TODOs | Five themes, storage details, encrypted export completed; internal encryption/OS backup policy pending |
 | Competitor/review/pricing research | Public pricing refreshed 20 November for DecAI/Renovate AI/Remodel AI; currencies/platforms/allowances separated; Android checkout and own cost/value testing pending |
 | Online feature/issue feedback | Form, saved drafts, copy and email/form handoff hooks included in 1.0.14; owner's delivery address/URL and real receipt test pending |
+| Video-style walkthroughs | Seven recordings of real app transactions with sample data; eight guides, playback and written fallback; physical Android playback acceptance remains |
 | Cleanup, minimal docs, Git ignore, commits | Four root/two guide documents; generated/private data ignored; local verified commits, no push |
 | APKs only when requested | Honoured; A selection accepts the offered updated 1.0.15 APK; further builds need a request |
 

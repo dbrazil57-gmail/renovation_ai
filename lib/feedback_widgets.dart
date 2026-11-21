@@ -335,7 +335,7 @@ class _FeedbackScreenState extends State<FeedbackScreen>
               const SizedBox(height: 8),
               if (destination == null)
                 const Text(
-                  'Online delivery is not connected yet. You can save or copy your report.',
+                  'Saved on this device only. Not sent—no feedback address is set.',
                 )
               else
                 Text(

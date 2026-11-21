@@ -1,5 +1,26 @@
 # Renovision feature status
 
+**Source follow-up, 21 November, after APK 1.0.15:** recorded walkthroughs now
+replace the default text-first presentation (seven bundled MP4s, eight guides;
+real app widgets with fictional data and clearly simulated AI/camera/file pickers).
+Playback includes seek/full screen/background pause, retry and Read steps.
+Room deletion requires the displayed room name; Undo and Deleted rooms restore
+all retained work. Backups include deleted rooms. Live type changes save even
+with autosave off, and legacy type labels produce Kitchen (Live), etc.
+Local paint defaults to tap-selection then colour, with persistent selected/all
+layer deletion. Its colour/edge heuristic is not semantic wall segmentation;
+review boundaries, especially on similar adjacent surfaces. Outside-mask output
+pixels remain unchanged. Feedback still needs the owner's email/form URL.
+**326 tests pass**, static analysis is clean, the Chrome release build passes
+(78.9 seconds) and Android Kotlin/plugin compilation passes (2m 52s). Source
+`aba3ee136c`. Seven MP4s pass Chrome metadata/decode/seek/timing probes; all public
+walkthrough assets total 2,496,530 bytes. Local paint also offers **Finish with AI**:
+save the rough preview, then review a colour-specific correction before generating.
+Actual Chrome release playback passes Help navigation, play/pause, near-end seeking,
+full-screen round trip and written fallback/disposal in a separate test profile.
+Physical S21 playback/boundaries and real AI finishing quality remain unverified.
+No new APK was requested; the distributed package is still 1.0.15 and icon A stays.
+
 **Confirmed icon update, 21 November — 1.0.15+16:** the user chose A for now.
 The olive/cream room-and-sparkle mark is applied to Android adaptive/legacy/themed
 launcher resources, web icons, the startup screen and app header. All 40 generated
@@ -111,10 +132,11 @@ Unspecified (Live) until confirmed. Existing custom names/photos are preserved.
 | Item | Verified position |
 | --- | --- |
 | Latest existing APK | **1.0.15+16**, source stamp `ce6b2da600`; `output/mobile-test/renovision-test-1.0.15.apk`, also `renovision-test.apk` |
-| APK contents | Focus Canvas, embedded camera, manual same-view overlay, Live design and all completed source follow-ups below |
+| APK contents | Focus Canvas, embedded camera, manual same-view overlay, Live design and completed changes through 1.0.15; later source work is listed separately |
 | New in 1.0.13 | AI settings discovery, visible delete, 1/2/3 correction choices, creative prompts, typed Live names, OpenAI/Gemini presets, seven help guides, fixed-brief tests, Open/resume/conflict handling, saved recipes/reuse/refine, startup Retry, Save image / Share creation |
 | New in 1.0.14 | Local paint and editable layers, regional style choices, saved feedback drafts/copy and optional contact handoff |
 | New in 1.0.15 | Confirmed A icon, consistent launcher/startup/header/web branding; same app identity and storage |
+| Source after 1.0.15 | Recorded help, typed room deletion/recovery, legacy/immediate-save Live names, tap-wall recolouring, persistent wall deletion and save-then-review AI finishing; requires a future requested APK |
 | Last APK checks | **315 tests pass**, icon export passes, analysis is clean, and Chrome/Android release builds pass (138.1/155.1 seconds). Matching signing certificate, compiled olive/cream icon, restricted share provider and private-file exclusion verified |
 | Earlier audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. The subsequent requested APK build made no paid AI call or data migration |
 | Real user evidence | User reports successful phone installation, direct AI analysis/generation, good generated designs, project auto-reload and useful comparison/camera overlay. This does not validate every newer source change |
@@ -134,13 +156,13 @@ provider quality, physical-camera behaviour or durable storage on every device.
 
 | Area | What exists | Limits / unfinished work |
 | --- | --- | --- |
-| Projects and rooms | Local projects/rooms, rename, continue last room, saved setup progress, immutable originals | No room/project deletion or permanent storage cleanup |
+| Projects and rooms | Local projects/rooms, rename, continue last room, saved setup progress, immutable originals; typed room deletion, Undo/persistent recovery, deleted-room backup support | Project deletion and permanent storage cleanup remain |
 | Room catalogue | 42 home/utility/outdoor types, categories/search/custom names; compact photo-backed main types | Six sample images cover five main room types, not every room/style |
 | Design direction | 23 styles, 12 palettes, custom text, blending/separate comparisons; Modern/Contemporary combined; expandable regional choices include Japanese/Italian/Moroccan/Indian | More illustrated samples and real-model quality comparisons remain |
 | Guided start | Photos → Direction → Analyse/review → Final options; Finish later resumes | Room identification is not a structured AI result that automatically fills the room selector |
 | Photo entry | Phone camera, gallery/multiple-photo import, embedded live preview, primary view and additional angles | Up to six original room views; reference images have no separate inspiration/material/sketch role |
 | Room scope | Whole-room defaults coordinate surfaces, fittings/appliances, lighting and loose-clutter removal; optional room-specific Keep/Replace and precise correction | Fixed uncertain fittings need explicit instructions; AI compliance is not guaranteed |
-| Local paint/material editing | Manual polygon/brush/erase masks, up to eight wall layers, swatches/custom hex/coverage, local shading approximation, undo/redo, compare, source-bound autosaved drafts and editable lossless PNG versions; plain/protected backup support; no API calls | Manual edges/exclusions; preview long edge up to 1000 pixels, source up to 24MP; phone/web latency acceptance, automatic selection, wallpaper/perspective and floor/cabinet tools remain |
+| Local paint/material editing | Tap a connected wall region then choose colour; sensitivity and optional polygon/brush/erase; eight layers, persistent delete one/all, swatches/custom hex/coverage, shading approximation, undo/redo, compare, source-bound drafts and editable lossless PNG versions; plain/protected copies; no API calls | Heuristic boundaries need review; semantic segmentation, wallpaper/perspective and floor/cabinet tools remain; preview up to 1000px, source up to 24MP; phone latency acceptance pending |
 | AI analysis | Sends selected photos/preferences to a vision model; saves observations, questions, editable prompt and provenance; new generated versions keep their matching analysis | Normal workspace can still require reanalysis after preference changes |
 | Prompt preparation | Offline deterministic fallback, AI-written prompt option, preview/copy, current requirements/protected features, correct working/supporting-image roles | Copying text does not attach photos or automatically return external results |
 | In-app AI | OpenAI/Gemini direct HTTPS with separate personal keys and saved model choices; curated image recommendations; optional OpenAI laptop relay; confirmation, progress stages/elapsed time, storage-only result retry | Gemini live account/image quality acceptance pending; no Claude/Bedrock adapter, in-flight paid-job cancellation, actual billed-cost meter or automatic output critique |
@@ -153,7 +175,7 @@ provider quality, physical-camera behaviour or durable storage on every device.
 | Live design | Consent → one automatic reference capture/analysis → Room/style/Palette/Brief → confirmed generation → saved preview over camera → Continue to refine | Model latency remains; no continuous room scan, instant video transformation, moving-view redesign or composite/video export |
 | Autosave | Debounced drafts, compact status, menu shortcut, manual save, save on normal exit, pending-request guards | Process termination can interrupt pending writes; no journaled crash/corruption recovery |
 | Project files | Portable rooms/photos/designs/choices/history/recipes; Open preserves IDs, resumes unchanged matching work and offers Keep local / Open file as copy for conflicts; Restore copy is independent | Browser linkage is session-only; Android does not retain an overwrite destination; no divergent-revision merge |
-| Appearance/help | Focus Canvas B, pinned preview and Room/Style/Refine/Ideas controls, desktop split view, contextual toolbars, compact text, tap/hover help with seven offline sample walkthroughs, stock/user-selectable home cover, five saved app themes | More hierarchy work and real-phone accessibility checks needed; themes are separate from renovation palettes |
+| Appearance/help | Focus Canvas B, pinned preview and Room/Style/Refine/Ideas controls, desktop split view, contextual toolbars, compact text, tap/hover help with eight offline guides/seven recorded app workflows, stock/user-selectable home cover, five saved app themes | Native video/phone accessibility acceptance remains; demo AI/camera/file pickers are simulated; themes are separate from renovation palettes |
 | Storage/privacy | Actual local storage/origin details, diagnostics; optional password-protected portable backup; Android encrypted API-key storage | Local photo/metadata database is not encrypted by the app; OS backup policy needs an explicit decision |
 | Feedback | Included in 1.0.14: Help/Settings form, issue/feature categories, saved local draft, report preview/copy, optional build/platform and email/form handoff hooks | Contact destination pending; no submission backend, receipt confirmation, ticket history, voting or screenshot attachments |
 

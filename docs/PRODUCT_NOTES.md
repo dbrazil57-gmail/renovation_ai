@@ -1,5 +1,47 @@
 # Product and research reference
 
+## Recorded help, room recovery and tap paint — 21 November source follow-up
+
+Video-first help now has seven bundled recordings covering photo/design, capture,
+Live, paint, library/recovery, Save/Open and models. They capture real production
+Flutter widgets and disposable-store transactions with pointer highlights/captions.
+They are not physical-camera footage or real-provider benchmarks: AI/camera/native
+file selection are explicitly labelled simulations. Eight guides retain written
+instructions. Playback is lazy, offline, muted, seekable and full-screen; it pauses
+in the background. The official Flutter
+[video_player package](https://pub.dev/packages/video_player) provides shared
+web/Android playback; physical S21 decoder acceptance remains.
+
+Rooms now have visible deletion with exact displayed-name confirmation. Records
+are hidden from active lists/library and retained with photos/designs/approvals,
+Undo and persistent Deleted rooms recovery. Project exports include deleted rooms.
+No destructive migration/purge is performed. Project deletion is separate work.
+Live type choices save immediately even with autosave off; legacy label/ID and
+generic-name normalization gives Kitchen (Live), etc., without changing custom names.
+
+Paint defaults to tap a connected colour/edge region, then choose a colour. A
+dilated gradient barrier reduces leaks across frames/seams; similar adjacent
+surfaces may still merge. Sensitivity and optional manual corrections remain.
+Compact row-span masks (up to 1000px/eight layers) persist through drafts/history/
+backups. Individual/all layer deletion works after reopening; clearing a saved
+recipe can create an unpainted child. Local lossless output preserves pixels
+outside the selection; source/parent images and approvals remain unchanged.
+
+Changing the selected layer's colour replaces its RGB target and rerenders from
+the same original base, without new selection or accumulated blending. Optional
+Finish with AI saves this rough preview and prepares a precise correction with
+the selected colours. Previous notes remain and stale AI-written briefs are disabled.
+Generation needs separate confirmation; it creates a new version and may alter
+other details because hard AI edit masks remain unfinished.
+
+Feedback stays device-local until the owner provides a public support email or
+HTTPS form. The UI explicitly says it has not been sent; no destination/receipt
+is invented. No APK was requested for this batch; icon A and the 1.0.15 package
+stay unchanged. Current source checks are recorded in Feature status.
+Source `aba3ee136c` passes all **326 tests**, clean analysis, Chrome release
+compilation (78.9s), Android Kotlin/plugin compilation (2m 52s), and seven local
+video decode/seek/timing checks. Public demo assets total about 2.5MB.
+
 ## A confirmed for current branding — 21 November 2026
 
 The user confirmed "yes a for now": RenoVision keeps the olive green background,

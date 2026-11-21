@@ -117,6 +117,9 @@ class ProjectBackup {
       }
       for (final room in roomData) {
         _record(room, 'name');
+        if (room['deleted'] != null && room['deleted'] is! bool) {
+          throw const FormatException();
+        }
         for (final field in ['projectId', 'originalId']) {
           _string(room[field]);
         }

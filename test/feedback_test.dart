@@ -178,10 +178,7 @@ void main() {
     (tester) async {
       final drafts = FeedbackTestDrafts(), launcher = FeedbackTestLauncher();
       await enter(tester, drafts, launcher: launcher);
-      expect(
-        find.textContaining('Online delivery is not connected yet'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Saved on this device only'), findsOneWidget);
       await tester.ensureVisible(find.text('Copy report'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Copy report'));

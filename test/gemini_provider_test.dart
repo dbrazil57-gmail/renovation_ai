@@ -538,6 +538,8 @@ void main() {
       await tester.tap(find.text('How to compare models'));
       await tester.pumpAndSettle();
       expect(find.byType(WalkthroughScreen), findsOneWidget);
+      await tester.tap(find.byTooltip('Read steps'));
+      await tester.pumpAndSettle();
       expect(find.text('Start with the image-model shortlist'), findsOneWidget);
       await tester.tap(find.byTooltip('Back'));
       await tester.pumpAndSettle();

@@ -61,6 +61,9 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Live view'));
       await tester.pumpAndSettle();
+      expect(find.textContaining('Recorded app screens'), findsOneWidget);
+      await tester.tap(find.text('Read steps'));
+      await tester.pumpAndSettle();
       expect(find.text('Open Live design'), findsOneWidget);
       await tester.tap(find.byTooltip('Back'));
       await tester.pumpAndSettle();
@@ -93,6 +96,8 @@ void main() {
         await tester.ensureVisible(find.text(guide.title));
         await tester.pumpAndSettle();
         await tester.tap(find.text(guide.title));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Read steps'));
         await tester.pumpAndSettle();
         expect(find.text('Step 1 of ${guide.steps.length}'), findsOneWidget);
         await tester.tap(find.text('Next'));
@@ -141,6 +146,8 @@ void main() {
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Live view'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Read steps'));
       await tester.pumpAndSettle();
       for (var i = 1; i < liveWalkthrough.steps.length; i++) {
         await tester.tap(find.text('Next'));

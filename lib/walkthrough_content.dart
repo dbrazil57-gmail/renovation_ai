@@ -274,6 +274,34 @@ const modelComparisonWalkthrough = AppWalkthrough(
   ],
 );
 
+const paintWalkthrough = AppWalkthrough(
+  'paint',
+  'Tap to paint walls',
+  'Select a wall, try colours and manage saved layers without an AI request.',
+  [
+    WalkthroughStep(
+      'Tap the wall',
+      'Open Paint walls on an original or saved design. Tap a clear part of the wall and check the highlighted boundary.',
+      'Use a bedroom wall. Connected colours and edges guide the selection; similar surfaces can merge.',
+    ),
+    WalkthroughStep(
+      'Choose a colour',
+      'Pick a swatch or custom colour. The selected area repaints locally. Use Adjust wall boundary if the selection needs different sensitivity.',
+      'Try soft sage, then compare before. No key or paid image generation is needed.',
+    ),
+    WalkthroughStep(
+      'Remove or keep wall layers',
+      'Select a wall chip and Delete selected wall, or use Delete all walls. Confirm the deletion. These controls also work after reopening; Undo history lasts only for the open editing session.',
+      'Remove Wall 2 while keeping Wall 1. Original photos and saved versions stay unchanged.',
+    ),
+    WalkthroughStep(
+      'Save a version',
+      'Back keeps the working draft. Save paint version adds a new image with editable wall layers.',
+      'Reopen the saved version to try another colour.',
+    ),
+  ],
+);
+
 const appWalkthroughs = [
   photoWalkthrough,
   cameraWalkthrough,
@@ -282,4 +310,5 @@ const appWalkthroughs = [
   toolsWalkthrough,
   savingWalkthrough,
   modelComparisonWalkthrough,
+  paintWalkthrough,
 ];

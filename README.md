@@ -1,5 +1,19 @@
 # Renovision AI
 
+Source follow-up, **21 November 2026**, after APK 1.0.15: Help opens recorded app
+workflows with playback/seek/full-screen controls and optional written steps.
+Rooms have typed-name deletion and a persistent **Deleted rooms** recovery list.
+Live room types save immediately and legacy type labels are normalized for
+automatic names such as **Kitchen (Live)**. **Paint walls without AI** starts
+with tap-to-select and colour; individual/all wall layers can be deleted after
+reopening. Recolour the same layer without selecting again; **Finish with AI**
+saves a rough preview and prepares a correction for review before generation.
+Feedback explicitly says when its draft has not been sent.
+These changes are not in the existing APK; another APK requires a request.
+Verification results and remaining work are in the linked status/next-steps files.
+**326 tests pass**, analysis is clean, Chrome release and Android Kotlin/plugin
+compilation pass. Source `aba3ee136c`; physical-phone acceptance remains.
+
 Current test update: **1.0.15+16** applies the user's confirmed **A** icon for now:
 olive green with a cream room outline and sparkle. Launcher assets, app header,
 startup mark and web icons match. **315 tests pass**, icon export passes, analysis is clean, and Chrome/Android release builds pass (138.1/155.1 seconds). Source `ce6b2da600`.
@@ -37,8 +51,8 @@ or store-ready release is included.
 
 The latest source adds prominent expandable AI settings, visible recoverable
 design deletion, New design / Precise correction with separate 1/2/3 output
-choices, stronger creative briefs, OpenAI/Gemini model presets, seven offline
-walkthroughs and a fixed-brief model comparison aid. Automatic Live room names
+choices, stronger creative briefs, OpenAI/Gemini model presets, eight offline
+guides with seven short recorded workflows and a fixed-brief model comparison aid. Automatic Live room names
 use the actual type, such as Bedroom (Live), while preserving custom names.
 
 Open project now resumes unchanged matching work; conflicting file/local
@@ -56,13 +70,21 @@ Physical S21 acceptance and live Gemini comparisons remain. No paid AI calls or
 user-data reset were performed.
 Build further APKs only when requested.
 
-In the Design workspace, choose **Paint walls without AI**. Outline or brush a
-wall, erase exclusions, then try the colour strip or a custom hex colour. Drafts
+In the Design workspace, choose **Paint walls without AI**. Tap a clear part of a
+wall, check the highlighted boundary, then choose a swatch or custom hex colour.
+Adjust sensitivity if needed; outline/brush/erase remain optional fallbacks. Drafts
 save locally; **Save paint version** creates a lossless PNG and editable layers,
 leaving the source and approved baseline intact. Undo/Redo and Compare before
-are available. This is manual selection and approximate colour/shading, with no
-AI call; automatic wall detection and wallpaper are later work. Local paint
+are available. Layer chips and Delete selected wall / Delete all walls remain
+available after reopening. Tap selection uses local colour/edge connectivity,
+not semantic recognition: similarly coloured adjacent objects may need correction.
+Colour/shading is approximate, with no AI call; wallpaper remains later work. Local paint
 preserves unselected pixels; that does not establish the same guarantee for AI edits.
+
+Choose another colour on the same wall layer to replace it, without selecting
+again. **Finish with AI** saves the local preview and opens Precise correction
+with its wall colours. Review and explicitly generate when ready; this uses your
+AI connection and may alter details because hard AI edit masks remain unfinished.
 
 **Style > Regional influences** now includes Japanese, Italian, Moroccan and
 Indian, alongside Scandinavian, Japandi, Mediterranean and French provincial.
@@ -128,9 +150,13 @@ recommendations are a starting shortlist, with ranking left to actual results.
 Enable **Use fixed brief for model tests** and select one result to skip the
 normal rotating creative direction. This test switch resets off after restart;
 it never starts a generation by itself or changes saved room output counts.
-Each uses a fictional kitchen with Next/Previous steps. These are read-only
-examples, available without a key; they do not capture photos or send AI requests.
-Walkthroughs are included in the source for the requested 1.0.13 package.
+Help now defaults to recordings of real app widgets and transactions, with tap
+highlights, captions, play/pause, seeking and full screen. Seven short bundled
+MP4s cover photos/design, capture, Live, paint, library/recovery, Save/Open and models;
+eight guides retain **Read steps** as an alternative. Fictional photos, simulated
+AI/camera/file selection and disposable storage keep demonstrations separate from
+your work. Viewing them needs no key and makes no project or provider requests.
+The recordings replace the text-first examples in source after APK 1.0.15.
 
 Help > Feedback and Settings > Feedback and ideas open the same saved local
 draft. No photo/project/AI settings are attached; optional build/platform details

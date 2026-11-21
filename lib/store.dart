@@ -217,11 +217,16 @@ class RenovisionStore extends ChangeNotifier {
           .toList()
         ..sort((a, b) => b.created.compareTo(a.created));
 
-  List<RenovationRoom> roomsFor(String projectId) =>
+  List<RenovationRoom> roomsFor(
+    String projectId, {
+    bool includeDeleted = false,
+  }) =>
       records.keys
           .where((key) => key.toString().startsWith('room:'))
           .map((key) => RenovationRoom.fromMap(records.get(key) as Map))
-          .where((r) => r.projectId == projectId)
+          .where(
+            (r) => r.projectId == projectId && (includeDeleted || !r.deleted),
+          )
           .toList()
         ..sort((a, b) => b.created.compareTo(a.created));
 
@@ -232,8 +237,18 @@ class RenovisionStore extends ChangeNotifier {
           .toList()
         ..sort((a, b) => b.created.compareTo(a.created));
 
-  List<DesignVersion> get allDesigns =>
-      _storedDesigns.where((d) => !d.deleted).toList();
+  List<DesignVersion> get allDesigns {
+    final deletedRooms = <String>{
+      for (final key in records.keys)
+        if (key.toString().startsWith('room:') &&
+            records.get(key) is Map &&
+            (records.get(key) as Map)['deleted'] == true)
+          key.toString().substring(5),
+    };
+    return _storedDesigns
+        .where((d) => !d.deleted && !deletedRooms.contains(d.roomId))
+        .toList();
+  }
 
   List<DesignVersion> deletedDesignsFor(String roomId) =>
       _storedDesigns.where((d) => d.roomId == roomId && d.deleted).toList();
@@ -281,7 +296,40 @@ class RenovisionStore extends ChangeNotifier {
 
   RenovationRoom? roomById(String id) {
     final value = records.get('room:$id');
-    return value is Map ? RenovationRoom.fromMap(value) : null;
+    if (value is! Map) return null;
+    final room = RenovationRoom.fromMap(value);
+    return room.deleted ? null : room;
+  }
+
+  List<RenovationRoom> deletedRoomsFor(String projectId) => roomsFor(
+    projectId,
+    includeDeleted: true,
+  ).where((r) => r.deleted).toList();
+
+  Future<void> deleteRoom(String id, {required String confirmation}) async {
+    if (ai.activity.active) {
+      throw StateError('Wait for the AI request to finish.');
+    }
+    final room = roomById(id);
+    if (room == null) throw StateError('Room is unavailable.');
+    if (confirmation.trim() != room.displayName) {
+      throw ArgumentError('Enter the room name exactly to delete it.');
+    }
+    await records.put('room:$id', room.copyWith(deleted: true).toMap());
+    notifyListeners();
+  }
+
+  Future<void> restoreRoom(String id) async {
+    final value = records.get('room:$id');
+    if (value is! Map || value['deleted'] != true) {
+      throw StateError('Deleted room is unavailable.');
+    }
+    final room = RenovationRoom.fromMap(value);
+    if (projectById(room.projectId) == null) {
+      throw StateError('Project is unavailable.');
+    }
+    await records.put('room:$id', room.copyWith(deleted: false).toMap());
+    notifyListeners();
   }
 
   Uint8List? imageFor(String id) {
@@ -294,7 +342,7 @@ class RenovisionStore extends ChangeNotifier {
   ProjectBackup backupFor(String projectId) {
     final raw = records.get('project:$projectId');
     if (raw is! Map) throw const BackupFailure('Project is unavailable.');
-    final rooms = roomsFor(projectId);
+    final rooms = roomsFor(projectId, includeDeleted: true);
     final roomIds = rooms.map((room) => room.id).toSet();
     final designs = _storedDesigns
         .where((design) => roomIds.contains(design.roomId))
@@ -714,6 +762,10 @@ class RenovisionStore extends ChangeNotifier {
   }
 
   Future<void> updateRoom(RenovationRoom room) async {
+    final saved = records.get('room:${room.id}');
+    if (saved is Map && saved['deleted'] == true && !room.deleted) {
+      throw StateError('This room was deleted. Restore it from Deleted rooms.');
+    }
     await records.put('room:${room.id}', room.toMap());
     notifyListeners();
   }

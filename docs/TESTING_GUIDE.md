@@ -1,5 +1,65 @@
 # Testing and storage reference
 
+## Source follow-up acceptance — after APK 1.0.15, 21 November
+
+These features are in source until another APK is requested. Do not uninstall
+the current app or clear storage. Tests/recordings use disposable stores and
+fictional photos, never Claylands, customer keys or a paid provider request.
+Verified source `aba3ee136c`: **326 tests pass**, clean analysis, Chrome release
+build (78.9s), Android Kotlin/plugin compile (2m 52s), seven MP4 decode/seek/timing
+probes. Logs: `output/review-final-tests.log`, `review-final-analysis.log`,
+`review-web-build.log`, `review-android-compile.log`, `walkthrough-final-encode.log`.
+`output/help-web-smoke.log` records actual Chrome release navigation/play/pause,
+near-end seek, full-screen round trip and Read steps/disposal. It uses an isolated
+browser profile and a local static server with byte-range video serving.
+
+1. Rooms and spaces: tap Delete beside a room. Cancel once; enter the wrong name
+   (Delete stays disabled), then the exact displayed name. Undo restores the room.
+   Delete again, leave/reopen and restore from Deleted rooms. Photos, versions,
+   approvals and choices remain. Repeat through plain/protected portable copies.
+   This is recoverable deletion, not permanent disk cleanup; active AI blocks it.
+2. Start Live with Kitchen and check **Kitchen (Live)**. Change to Bedroom, leave
+   and reopen with autosave off; the confirmed type still saves. Legacy stored
+   labels are normalized; custom names stay intact. A genuinely unknown type
+   remains Unspecified until selected rather than being guessed.
+3. Paint walls: tap a clear wall, inspect its highlight and choose a colour, then
+   another colour on that same layer. The selection stays and the new colour
+   replaces the old one against the unchanged base. Adjust sensitivity for edges;
+   outline/erase remain optional. Check walls beside similar-coloured furniture:
+   this is a local colour/edge heuristic, not semantic recognition. No key needed.
+4. Add a second layer, delete one, leave/reopen, delete all and reopen again.
+   Undo is session-only; layer deletion persists. Empty recipes are valid. Clear
+   a saved paint version and Save to create an unpainted child from its base;
+   originals, parents and approvals remain unchanged.
+5. **Finish with AI** saves the preview and opens Precise correction containing
+   the wall colours. Previous notes remain and a stale AI-written prompt is disabled.
+   No provider request starts from the shortcut. Review, connect a provider and
+   explicitly generate when ready. AI creates a new version and may change other
+   details: current transport does not enforce the local selection as a hard mask.
+6. Help > Sample walkthroughs: play/pause, seek, full screen, background/return,
+   Read steps, retry and Back. Seven MP4s show real app transactions with captions
+   and tap highlights. AI/camera/native file pickers are explicitly simulated.
+   Save & reopen demonstrates export/import against disposable file storage.
+   Viewing recordings needs no key, changes no project and sends no photos.
+7. Feedback without a destination must state that it is saved locally and not
+   sent. Draft/copy still work. Actual delivery awaits the owner's public support
+   email/form URL and a receipt test in Feedback setup below.
+
+Re-recording is opt-in. On this Windows machine without desktop symlinks, set
+per-process `FLUTTER_WINDOWS=false` and `FLUTTER_LINUX=false` before Flutter
+commands. No global feature/Developer Mode setting was changed.
+Run `flutter test tool/record_walkthroughs_test.dart --dart-define=RECORD_APP_DEMOS=true
+--dart-define=RECORD_FONT_DIR=C:/Users/dbraz/Documents/flutter/bin/cache/artifacts/material_fonts`.
+Then run the SDK Dart VM with `--packages=.dart_tool/package_config.json
+tool/encode_walkthroughs.dart` (optional clip IDs). Encoding uses loopback and
+its own headless Chrome profile, H.264 MP4 and metadata/seek/decode/timing checks.
+No external service/downloaded encoder is needed. Frames/profiles/logs stay ignored
+in output; only public MP4s/posters/catalog are bundled under assets/walkthroughs.
+
+Future APK verification must allow public walkthrough assets alongside inspiration
+samples, while still rejecting private photos/settings/keys. Published APKs stay
+unchanged until another build is requested. Check results are in Feature status.
+
 ## Confirmed icon A test package — 21 November, 1.0.15+16
 
 The user confirmed A for now and accepted the offered updated test APK.
@@ -177,7 +237,7 @@ this naming-only correction.
 
 ## Current source and phone package
 
-Walkthrough acceptance (included in requested 1.0.13):
+Historical text-guide acceptance (included in 1.0.13; recorded replacement above):
 
 1. Tap the information/Help icon, then Sample walkthroughs. Current screen help
    should still be readable and Close should still work.

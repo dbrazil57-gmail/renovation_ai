@@ -6,6 +6,20 @@ import 'room_features.dart';
 import 'design_recipe.dart';
 import 'local_paint.dart';
 
+String _storedRoomType(Object? value) {
+  final original = (value ?? '').toString();
+  String normalized(String text) =>
+      text.trim().toLowerCase().replaceAll(RegExp(r'[\s_/-]'), '');
+  final candidate = normalized(original);
+  for (final entry in roomTypes.entries) {
+    if (normalized(entry.key) == candidate ||
+        normalized(entry.value) == candidate) {
+      return entry.key;
+    }
+  }
+  return original;
+}
+
 class RenovationProject {
   final String id;
   final String name;
@@ -32,6 +46,7 @@ class RenovationProject {
 }
 
 class RenovationRoom {
+  final bool deleted;
   final String id;
   final String projectId;
   final String name;
@@ -71,8 +86,19 @@ class RenovationRoom {
       'live view',
       'room (live)',
       'room (live view)',
+      'unspecified (live)',
+      'unspecified (live view)',
+      'other (live)',
     }.contains(name.trim().toLowerCase());
     if (!automaticLiveName && !legacyLiveName) {
+      if (const {
+            'unspecified',
+            'other room',
+          }.contains(name.trim().toLowerCase()) &&
+          roomTypeId.isNotEmpty &&
+          roomTypeId != 'other') {
+        return roomTypes[roomTypeId] ?? name;
+      }
       return name;
     }
     final typeName = switch (roomTypeId) {
@@ -86,6 +112,7 @@ class RenovationRoom {
   final DateTime created;
 
   RenovationRoom({
+    this.deleted = false,
     required this.id,
     required this.projectId,
     required this.name,
@@ -120,6 +147,7 @@ class RenovationRoom {
   });
 
   RenovationRoom copyWith({
+    bool? deleted,
     String? instructions,
     String? correctionInstructions,
     int? setupStep,
@@ -148,6 +176,7 @@ class RenovationRoom {
     Map<String, String>? roomItemChoices,
     Map<String, LocalPaintRecipe>? paintDrafts,
   }) => RenovationRoom(
+    deleted: deleted ?? this.deleted,
     id: id,
     projectId: projectId,
     name: name,
@@ -185,6 +214,7 @@ class RenovationRoom {
   );
 
   Map<String, dynamic> toMap() => {
+    'deleted': deleted,
     'id': id,
     'projectId': projectId,
     'name': name,
@@ -221,6 +251,7 @@ class RenovationRoom {
   };
 
   factory RenovationRoom.fromMap(Map<dynamic, dynamic> data) => RenovationRoom(
+    deleted: data['deleted'] == true,
     paintDrafts: {
       for (final entry in (data['paintDrafts'] as Map? ?? const {}).entries)
         entry.key as String: LocalPaintRecipe.fromMap(entry.value as Map),
@@ -264,7 +295,7 @@ class RenovationRoom {
     ),
     flooringNotes: (data['flooringNotes'] ?? '').toString(),
     removeItems: (data['removeItems'] ?? '').toString(),
-    roomTypeId: (data['roomTypeId'] ?? '').toString(),
+    roomTypeId: _storedRoomType(data['roomTypeId']),
     automaticLiveName: data['automaticLiveName'] == true,
     roomItemChoices: Map<String, String>.from(
       data['roomItemChoices'] as Map? ?? const {},

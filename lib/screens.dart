@@ -40,7 +40,9 @@ import 'design_recipe_widgets.dart';
 import 'feedback_widgets.dart';
 import 'feedback_storage.dart';
 import 'local_paint_screen.dart';
+import 'local_paint.dart' show paintRefinementPrompt;
 import 'brand_mark.dart';
+import 'room_delete_widgets.dart';
 
 Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
     room.setupComplete
@@ -787,6 +789,20 @@ class ProjectScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 18),
+          if (store.deletedRoomsFor(project.id).isNotEmpty)
+            TextButton.icon(
+              icon: const Icon(Icons.restore_from_trash_outlined),
+              label: Text(
+                'Deleted rooms (${store.deletedRoomsFor(project.id).length})',
+              ),
+              onPressed: () => Navigator.push<void>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      DeletedRoomsScreen(store: store, projectId: project.id),
+                ),
+              ),
+            ),
           if (store.roomsFor(project.id).isEmpty)
             const EmptyMessage(
               icon: Icons.photo_library_outlined,
@@ -807,7 +823,17 @@ class ProjectScreen extends StatelessWidget {
                       subtitle: Text(
                         '${room.photoIds.length} photos · ${store.designsFor(room.id).length} design versions',
                       ),
-                      trailing: const Icon(Icons.chevron_right),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          DeleteRoomButton(
+                            key: ValueKey('delete-room-${room.id}'),
+                            store: store,
+                            room: room,
+                          ),
+                          const Icon(Icons.chevron_right),
+                        ],
+                      ),
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -2002,6 +2028,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     }
     final current = widget.store.roomById(room.id)!;
     DesignVersion? created;
+    var finishWithAi = false;
     await Navigator.push<bool>(
       context,
       MaterialPageRoute(
@@ -2010,15 +2037,17 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
           before: active,
           initial: current.paintDrafts[workingImageId] ?? selected?.paintRecipe,
           savedRecipe: selected?.paintRecipe,
+          requestAiFinish: () => finishWithAi = true,
           saveDraft: (recipe) =>
               widget.store.savePaintDraft(room.id, workingImageId, recipe),
           saveVersion: (result, recipe) async {
             created = await widget.store.createDesign(
               roomId: room.id,
               image: result.bytes,
-              title:
-                  'Local paint · ${recipe.surfaces.length} ${recipe.surfaces.length == 1 ? 'wall' : 'walls'}',
-              prompt: 'Local paint preview. Manual selections and colour blending; no AI request. See saved paint layers for colours and selections.',
+              title: recipe.surfaces.isEmpty
+                  ? 'Local paint removed'
+                  : 'Local paint · ${recipe.surfaces.length} ${recipe.surfaces.length == 1 ? 'wall' : 'walls'}',
+              prompt: 'Local paint preview. Saved wall selections and colour blending; no AI request. See saved paint layers for colours and selections.',
               parentId: parent,
               sourceImageId: sourceId,
               paintRecipe: recipe,
@@ -2027,7 +2056,28 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
         ),
       ),
     );
-    if (mounted && created != null) _selectDesign(created!.id);
+    if (mounted && created != null) {
+      _selectDesign(created!.id);
+      if (finishWithAi) {
+        final correction = paintRefinementPrompt(created!.paintRecipe!);
+        final previous = draft.correction.text.trim();
+        draft.correction.text = previous.isEmpty
+            ? correction
+            : '$previous\n\n$correction';
+        draft.setPrecise(true);
+        draft.setUseAiPrompt(false);
+        setState(() => focusSection = FocusSection.refine);
+        final saved = await draft.save();
+        if (mounted) {
+          notice(
+            context,
+            saved
+                ? 'Paint preview saved. Review the correction, then Generate AI design when ready.'
+                : 'Paint preview saved. Correction draft could not save; keep this screen open and retry Save.',
+          );
+        }
+      }
+    }
   }
 
   @override

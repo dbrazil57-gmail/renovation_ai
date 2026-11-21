@@ -144,7 +144,11 @@ void main() {
       );
       for (final invalid in [
         current.toMap()..['width'] = -1,
-        current.toMap()..['surfaces'] = [],
+        current.toMap()
+          ..['surfaces'] = List.generate(
+            9,
+            (_) => PaintSurface(name: 'Wall').toMap(),
+          ),
         current.toMap()
           ..['surfaces'] = [
             PaintSurface(name: 'x', coverage: double.nan).toMap(),
@@ -243,6 +247,8 @@ void main() {
       tester,
       () => find.byKey(const ValueKey('paint-canvas')).evaluate().isNotEmpty,
     );
+    await tester.tap(find.byTooltip('Wall outline'));
+    await tester.pump();
     final bounds = tester.getRect(find.byKey(const ValueKey('paint-canvas')));
     for (final p in const [
       Offset(.2, .2),
@@ -336,6 +342,70 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Local paint · no AI request'), findsOneWidget);
       expect(find.textContaining('older version'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'Finish with AI saves a local preview and prepares a correction without making a provider call',
+    (tester) async {
+      var requests = 0;
+      final store = RenovisionStore(
+        records: MemoryBox(),
+        photos: MemoryBox(),
+        ai: AiService(
+          clientFactory: () {
+            requests++;
+            throw StateError('AI must wait for confirmed generation');
+          },
+        ),
+      );
+      addTearDown(store.dispose);
+      final project = await store.createProject('Paint test');
+      final room = await store.createRoom(
+        projectId: project.id,
+        name: 'Bedroom',
+        originalImage: original,
+      );
+      await store.updateRoom(
+        room.copyWith(correctionInstructions: 'Keep the wall art.'),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WorkspaceScreen(store: store, roomId: room.id),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Paint walls without AI'));
+      await tester.pump();
+      await drawWall(tester);
+      await tester.tap(find.text('2 Paint colour'));
+      await tester.pump();
+      await tester.ensureVisible(find.text('Finish with AI'));
+      await tester.pump();
+      await tester.tap(find.text('Finish with AI'));
+      await tester.pump();
+      await waitFor(
+        tester,
+        () =>
+            store.designsFor(room.id).isNotEmpty &&
+            store.roomById(room.id)!.preciseEdit,
+      );
+      await tester.pumpAndSettle();
+      final painted = store.designsFor(room.id).single;
+      final current = store.roomById(room.id)!;
+      expect(painted.paintRecipe, isNotNull);
+      expect(painted.aiModel, isNull);
+      expect(current.correctionInstructions, startsWith('Keep the wall art.'));
+      expect(current.correctionInstructions, contains('#D7C7AC'));
+      expect(
+        current.correctionInstructions,
+        contains('rough local paint preview'),
+      );
+      expect(current.useAiPrompt, isFalse);
+      expect(find.byKey(const ValueKey('instructions-true')), findsOneWidget);
+      expect(store.imageFor(room.originalId), original);
+      expect(requests, 0);
+      expect(tester.takeException(), isNull);
     },
   );
 
@@ -514,6 +584,7 @@ void main() {
       );
       for (final tool in ['Paint brush', 'Erase selection', 'Move / zoom']) {
         await tester.ensureVisible(find.byTooltip(tool));
+        await tester.pump();
         await tester.tap(find.byTooltip(tool));
         await tester.pump();
         expect(tester.takeException(), isNull);

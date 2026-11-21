@@ -1,0 +1,68 @@
+{
+  "source": "Recorded real app widgets with fictional photos, simulated AI/camera and disposable storage.",
+  "recordings": {
+    "design": {
+      "id": "design",
+      "file": "design.mp4",
+      "durationMs": 24776,
+      "width": 390,
+      "height": 780,
+      "mime": "video/mp4",
+      "bytes": 240249
+    },
+    "capture": {
+      "id": "capture",
+      "file": "capture.mp4",
+      "durationMs": 8265,
+      "width": 390,
+      "height": 780,
+      "mime": "video/mp4",
+      "bytes": 118904
+    },
+    "live": {
+      "id": "live",
+      "file": "live.mp4",
+      "durationMs": 13619,
+      "width": 390,
+      "height": 780,
+      "mime": "video/mp4",
+      "bytes": 215131
+    },
+    "paint": {
+      "id": "paint",
+      "file": "paint.mp4",
+      "durationMs": 28876,
+      "width": 390,
+      "height": 780,
+      "mime": "video/mp4",
+      "bytes": 399495
+    },
+    "library": {
+      "id": "library",
+      "file": "library.mp4",
+      "durationMs": 19764,
+      "width": 390,
+      "height": 780,
+      "mime": "video/mp4",
+      "bytes": 271839
+    },
+    "models": {
+      "id": "models",
+      "file": "models.mp4",
+      "durationMs": 9565,
+      "width": 390,
+      "height": 780,
+      "mime": "video/mp4",
+      "bytes": 149564
+    },
+    "saving": {
+      "id": "saving",
+      "file": "saving.mp4",
+      "durationMs": 14743,
+      "width": 390,
+      "height": 780,
+      "mime": "video/mp4",
+      "bytes": 204892
+    }
+  }
+}

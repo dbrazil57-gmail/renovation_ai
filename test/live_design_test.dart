@@ -302,6 +302,32 @@ void main() {
   );
 
   testWidgets(
+    'live room type is saved immediately even when general autosave is off',
+    (tester) async {
+      await store.setAutosaveEnabled(false);
+      await show(
+        tester,
+        initialChoice: const RoomStartChoice(
+          'Kitchen',
+          'kitchen',
+          null,
+          method: RoomStartMethod.liveDesign,
+        ),
+      );
+      await start(tester);
+      final room = store.roomsFor(project.id).single;
+      expect(room.displayName, 'Kitchen (Live)');
+      final picker = tester.widget<DropdownButtonFormField<String>>(
+        find.byKey(const ValueKey('live-room-type-kitchen')),
+      );
+      picker.onChanged!('bedroom');
+      await tester.pumpAndSettle();
+      expect(store.roomById(room.id)!.displayName, 'Bedroom (Live)');
+      expect(ai.analyses, 1);
+    },
+  );
+
+  testWidgets(
     'opening/cancelling sends nothing; consent automatically captures and analyses once without a shutter',
     (tester) async {
       await show(tester);

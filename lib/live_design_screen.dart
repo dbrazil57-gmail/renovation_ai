@@ -775,8 +775,21 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
               ],
               onChanged: busy
                   ? null
-                  : (value) {
-                      if (value != null) draft!.setRoomType(value);
+                  : (value) async {
+                      if (value == null) return;
+                      draft!.setRoomType(value);
+                      setState(() => saving = true);
+                      try {
+                        if (!await draft!.save() && mounted) {
+                          setState(
+                            () => message =
+                                'Room type could not be saved. Please retry.',
+                          );
+                        }
+                      } finally {
+                        if (mounted) setState(() => saving = false);
+                        _changed();
+                      }
                     },
             ),
             DropdownButtonFormField<String>(
