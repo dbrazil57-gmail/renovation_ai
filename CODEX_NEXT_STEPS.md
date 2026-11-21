@@ -37,6 +37,30 @@ build another package only on request. Remaining main priorities are durable
 Android file linkage, reusing photo facts independently of design preferences,
 enforced AI masks and representative larger-project/device/provider measurements.
 
+## Launch walkthrough and short help videos — agreed direction, 21 November
+
+The in-app help should feel like small sections of a real launch walkthrough:
+show a person completing a task, the taps and the resulting change. The current
+seven recorded demo clips are the first implementation; simulated camera/AI/file
+selection does not complete the production recording requirement.
+
+- [ ] After the release interface is stable, record real Android transactions
+  using a dedicated sample project, native camera/gallery/file pickers and actual
+  saved results. Keep customer projects, notifications and credentials out of footage.
+- [ ] Split help into one task per clip: add a photo, choose style/palette, analyse,
+  generate/select concepts, refine a result, recolour a wall, compare, save/open,
+  share, and use Live design. Split combined clips where they teach different jobs.
+- [ ] Aim for roughly 20–45 seconds per task, with a clear starting screen,
+  readable captions, visible taps, natural pacing and a completed result. Longer
+  tasks can have chapters; shorten AI waits with an explicit cut/time label rather
+  than implying instant generation. Narration is optional; captions must stand alone.
+- [ ] Reuse the same footage for a longer launch/onboarding walkthrough covering
+  the complete journey. This is an asset plan, not a requested upload/publication.
+- [ ] Review on the S21 for legibility, matching controls, replay/seek and access
+  from the relevant screen. Re-record affected clips when the release UI changes.
+
+No new APK, paid generation or store publication is requested by this clarification.
+
 ## Confirmed A icon — 21 November, requested 1.0.15+16
 
 - [x] User confirmed A for now: olive green, cream room outline and sparkle.

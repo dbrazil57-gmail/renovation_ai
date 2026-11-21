@@ -1,5 +1,23 @@
 # Product and research reference
 
+## Help video direction for launch — 21 November clarification
+
+The user wants in-app help to be short sections of the walkthrough eventually
+used for launch: an actual task carried through to its result, with clear taps
+and captions. Treat the current seven demo recordings as an initial implementation,
+not finished launch footage. Once the interface is stable, capture real Android
+transactions and native pickers using a dedicated sample project and genuine saved
+outputs, without customer work or credentials in view.
+
+Each help clip should answer one question, such as adding a photo, choosing a
+palette, generating ideas, refining one, recolouring a selected wall, saving/opening
+or using Live design. Roughly 20–45 seconds is a pacing target, not a hard limit.
+Show the starting screen, taps and completed outcome; use readable captions and
+optional narration. Label any shortened AI wait. Assemble the same footage into
+a longer complete launch/onboarding walkthrough later. Final phone legibility,
+matching release controls and updates after UI changes are acceptance criteria.
+No store upload, paid generation or APK build is requested at this stage.
+
 ## Recorded help, room recovery and tap paint — 21 November source follow-up
 
 Video-first help now has seven bundled recordings covering photo/design, capture,
