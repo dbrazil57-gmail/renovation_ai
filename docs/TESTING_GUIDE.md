@@ -1,5 +1,58 @@
 # Testing and storage reference
 
+## Today's acceptance pass — 22 November
+
+This is the current manual test order for audit IDs T01–T19 in FEATURE_STATUS.md.
+Automated success is not visual acceptance of an AI result. Start with local/free
+checks; paid requests happen only when the owner confirms them inside the app.
+Keep existing projects/data and use a new separate test project/file.
+
+Already verified on current source: 374 automated tests, clean analysis and release
+web build; real Chrome 16 MB file bridge/every-byte read-back and empty-write
+rejection; app Open/Save/reload with a separate sample; and this audit's actual
+Room/Style/Refine/Ideas navigation at desktop and phone dimensions with inspected
+screenshots. The old workspace automation stall did not reproduce. This does not
+replace real provider, system file-picker/OneDrive or physical S21 acceptance.
+
+| Test | Actions | Expected result / record |
+| --- | --- | --- |
+| 1. Real file saving (T10–T11) | Open the separate fresh kitchen file below. Save project as a new filename in `C:\Users\dbraz\OneDrive\Documents\Renos`. Check Windows file size, reload the app, then Open that exact file. | Nonzero size; original photo, room, style/palette and instructions return. No missing work or success on an empty file. Preserve the old zero-byte file. |
+| 2. Autosave vs backup (T11) | With the working file open and Autosave on, edit a room instruction and wait for pending/saving to finish. Open the working file again. Export a backup snapshot, edit again, then restore the earlier snapshot. | Working file includes the edit while connected; restored snapshot creates a separate project with the older contents. Existing work is retained; no merge occurs. |
+| 3. Connection (T09) | Connect privately, note provider/image model/analysis model/quality. Visit Room, Style, Refine, Ideas and Settings. Reload the browser. | App tab navigation retains the connection. Page reload clears the session key with an enter-key notice; project data and saved nonsecret preferences remain. Never include a key in screenshots/reports. |
+| 4. Navigation and controls (T01–T05, T08) | Check Projects first and cog/Back. Select styles across two pages; change palette. In Style turn Whole room off, choose an individual update, then turn it on and choose a Keep exception. In Refine switch New / Partial / Precise. Open Ideas without results. | Ten style choices per page; selections persist. Compact palettes, editable Keep exceptions, separate instructions retained. New design on normal room entry. Ideas offers inspiration; manual copy/import is in Refine. |
+| 5. Generate/checklist (T03–T04) | Open brief checklist from each tab. On a low-coverage brief select Proceed with current brief; cancel at send confirmation. Open prompt preview and close it. | Generate/Brief % stay accessible. Optional low coverage does not block proceeding; cancel sends no request. Prompt details start collapsed. No automatic charge from changing choices. |
+| 6. Real analysis and one concept (T06–T08) | Use one kitchen photo first; optionally add another view and check included-photo confirmation. Choose New design, Whole room, style/palette and Keep choices before analysing. Review facts/plan, then preview and explicitly generate once. | Facts describe actual images; plan is future design direction. Current enabled plan appears with current instructions. Result retains architecture/layout while substantially updating allowed materials/fittings/main light. Record model/quality, duration and visual misses. |
+| 7. Reuse and refinement (T06–T07) | Change palette after analysis and preview without analysing again. Select a generated image, enter a precise instruction such as tap only, and confirm one correction if desired. Separately try 2 ideas when ready for two charges. | Current choices plus matching photo facts remain; stale plan is omitted. Precision stays focused. Multiple ideas should differ materially, not just add plants. This needs real-image acceptance. |
+| 8. Local finishes (T12) | Select a wall, change colour twice on the same layer, extend edge then Undo. On a separate surface choose kitchen Splashback tiles, alter scale/grout, save/reopen. | Colour replaces previous colour; same selection retained. Edge extension is undoable. Smaller patterns/finer grout persist. Outside pixels/original stay intact. Judge actual edges; preview is not perspective-correct material rendering. Finish with AI only prepares a separately confirmed polish. |
+| 9. Offline sample (T14) | Help > Sample walkthroughs > Try kitchen sample flow; replay stages, inspect brief/compare, create separate practice copy. | No key or AI spending; before/after and saved brief available; existing projects unchanged. Later idea board is a different-view sample, not a fake in-app generation. |
+| 10. Save completed work (T10–T11) | Save project after a real analysis/design and local finish; reopen that exact file. Export one image too. | Full project restores analysis, history, original, choices and saved layers. Image export contains only the chosen image. No credentials in project files. |
+
+**Recommended platform order:** use current Chrome at localhost:7357 for prompt,
+form, history and desktop file acceptance first. It is quicker to iterate, not
+proof of Android behaviour. Latest Chrome is `68527c827a`; APK 1.0.17+18 is older
+(`d19f2fd3d2`) and lacks the last two commits. Do not compare those as identical
+builds or silently rebuild an APK.
+
+After an explicitly requested APK of accepted current source, install over the
+existing S21 app (keep data). Repeat tests 1–10 with native file choosers and add:
+camera/gallery permissions and rotation; Live analyse/generate/overlay staying in
+the viewer; background/resume/interruption; secure key retention after restart;
+image save/share; offline/error recovery; real speed and enlarged text. Chrome
+cannot replace those device checks. iPhone acceptance follows separately.
+
+For fair AI comparison use the same original bytes, supporting views, provider,
+image/analysis model, quality, selected mode, instructions, plan toggle, style,
+palette and Keep choices on the same source build. Provider outputs can vary per
+request; matching input should give comparable capability, not identical images.
+Chrome and Android share prompt/provider/photo-preparation code. File permissions,
+credentials, camera and rendering/processing speed differ by platform. No evidence
+establishes that Chrome inherently uses a weaker image model.
+
+Known unfinished features should not be tested as if present: project merge;
+region/language selector; automatic web/product research; usage-based dollar
+balance; photorealistic tile textures/plane mapping; deployed funded test credits.
+Use the release guide for the remaining public-store gates.
+
 ## Fresh kitchen acceptance — current batch, 22 November
 
 Keep **http://localhost:7357/** and your normal browser profile. Do not clear

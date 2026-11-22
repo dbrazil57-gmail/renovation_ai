@@ -5,6 +5,31 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Today's audit and next acceptance pass — 22 November
+
+Use the **Request audit** at the top of FEATURE_STATUS.md for T01–T19 coverage,
+including partial and proposed features. Use **Today's acceptance pass** at the
+top of docs/TESTING_GUIDE.md for exact actions/expected results. These current
+sections take precedence over unchecked or source-only notes in older history.
+
+- [x] Reconcile today's 11 commit batches against the conversation and actual
+  source/tests. Distinguish implemented code, visual acceptance and future work.
+- [x] Confirm latest Chrome source `68527c827a`; latest APK remains 1.0.17+18
+  (`d19f2fd3d2`). Last two commits need packaging only when explicitly requested.
+- [x] Recheck actual desktop and phone-sized Chrome Room/Style/Refine/Ideas navigation and inspect
+  screenshots. Prior workspace automation stall did not reproduce in this pass.
+- [ ] **First:** accept real Save project as / Open using a new file in Renos,
+  then verify autosave changes, restore-as-copy and old-project preservation.
+- [ ] Accept the new compact controls and all three modes in Chrome, then one
+  owner-confirmed analysis/design and a narrow refinement on the actual kitchen.
+- [ ] Check actual splashback/wall preview edges and colour replacement; retain
+  local tiles' approximate-preview limitation until material/perspective work.
+- [ ] When Chrome acceptance is satisfactory, request a new APK and repeat S21
+  camera/Live, permissions, storage, vault/restart, save/share and performance tests.
+- [ ] Remaining plans, not completed fixes: region/language selector, AI usage/cost
+  ledger, sourced online references, realistic tile mapping, refreshed recordings,
+  funded tester service and public/iOS release gates. No merge is implemented.
+
 ## Prompt enhancement after 1.0.17 — 22 November
 
 ### Current test regroup — 22 November

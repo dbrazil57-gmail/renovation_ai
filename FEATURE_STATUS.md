@@ -1,5 +1,51 @@
 # Renovision feature status
 
+## Request audit — 22 November 2026
+
+This is the current audit of today's 11 committed batches and the requests in the
+conversation. Older dated notes below record history; an old unchecked packaging
+item is not evidence that a feature is absent from the current app.
+
+**Chrome:** source `68527c827a`, local commit `70ebf05`, localhost:7357.
+**Latest APK:** 1.0.17+18, source `d19f2fd3d2`. Its bundled sample, trial-access
+preparation and earlier 22 November changes are included. The last two commits
+(`e0ca6bc`, `70ebf05`) are Chrome/source only, pending an explicitly requested APK.
+
+Audit verification: the existing **374 passing tests**, clean analysis and web
+build still match this unchanged app source. Fresh actual Chrome checks at
+1280×900 and 390×844 pass Room/Style/Refine/Ideas navigation. Screenshots were
+inspected for compact palettes, mode controls, collapsed tools and empty Ideas.
+Evidence: `output/today-audit-browser.log`, `today-audit-phone-browser.log` and
+matching screenshots. A first phone-driver attempt clicked before resize settled;
+waiting for layout resolved it. The older workspace automation stall did not
+reproduce. No real provider call or physical-phone verification occurred.
+
+| ID | Today's request / issue | Code position and evidence | Acceptance still needed |
+| --- | --- | --- | --- |
+| T01 | Compact palettes; ten styles at a time | Implemented. Ten common styles, further pages, retained cross-page choices, smaller palette cards. Workspace/palette tests; current desktop/phone-sized Chrome screenshots inspected. | Physical-phone comfort with long labels and enlarged text. |
+| T02 | Whole-room default; selectable individual items; New/Partial/Precise | Implemented. Whole-room switch can be turned off; Keep exceptions stay editable. Normal entry starts New design; explicit Refine starts precise. Separate briefs/choices retained. | Try kitchen and bathroom choices manually; actual returned-image scope. |
+| T03 | Generate on all tabs; less text; manual AI tools in a sensible place | Implemented. Pinned Generate/Brief %, Autosave in More tools, collapsed details, manual copy/import in Refine, empty Ideas offers inspiration. Current desktop/phone-sized tab navigation/screenshots pass. | Physical-phone touch/scroll and a live request from the chosen tab. |
+| T04 | Brief percentage and ability to proceed below 75% | Implemented advisory checklist, Proceed checkbox, remembered >=75% review; required inputs/paid confirmation remain. Automated tests and earlier Chrome interaction pass. | User check that low-brief flow feels clear. |
+| T05 | Projects first; Settings via cog | Implemented and checked by navigation tests and earlier actual Chrome checks. | Physical-phone acceptance. |
+| T06 | Multiple photos analysed; facts plus AI-written design plan | Implemented shared setup/workspace/Live composition. Exact selected views are listed for consent. Matching facts are reused; stale plans are excluded without forced paid reanalysis. Tests verify composed requests. | Real multi-view analysis and generated-room consistency. |
+| T07 | Better concepts with little prompting; contemporary fittings, extractor and main light | Richer coordinated positive plans and fitting/main-light instructions implemented. Showcase concept explicitly chooses High; existing quality is not silently changed. Multiple concepts receive distinct directions. | Controlled paid comparison; visual appeal/distinctness and lighting replacement are not proven by mocked tests. |
+| T08 | Analysis/plan checkbox wording; other views; manual AI label; useful Ideas | Implemented explanations and labels; Ideas applies confirmed inspiration style/palette to the existing room. Widget tests and inspected desktop screens pass. | Review a real returned plan and copy/import flow. |
+| T09 | Browser API key seems lost | Tab/settings navigation retains it in tests. Reload/close deliberately clears the browser session key; explanatory status added. Android has separate persistent vault storage. | Real browser tab/reload and S21 restart acceptance; no browser key persistence added. |
+| T10 | Save reported success but file empty | Actual empty owner file confirmed. Added post-write size check and download fallback. Real Chrome bridge 16 MB read-back/empty rejection and actual app Open/Save/reload pass. | Real Windows chooser + OneDrive save/reopen. Root cause of the original incident remains unproven. |
+| T11 | Autosave / Save / backup / restore confusion | Clearer help and snapshot/duplicate names. Save includes rooms/photos/designs/choices; backup is fixed; restore adds a separate project. Tests cover contents/conflicts/autosave. | Check real chosen file updates; merge is not implemented. |
+| T12 | Wall paint misses edges; splashback looks cartoonish | Added explicit undoable edge extension, smaller splashback pattern, thinner grout and selection-overlay hiding on finish change. Tests verify masks, undo, saved recipes and unaffected pixels. | Visual check of the owner's actual surfaces. Real tile textures/perspective are unfinished. |
+| T13 | Outdoor spaces and fencing | Present: garden, exterior, balcony, patio/alfresco, deck, verandah, pool and room-specific fence/gate/balustrade choices. Prompts retain boundaries/positions. | Real outdoor concept and safety-sensitive boundary review; no survey/engineering verification. |
+| T14 | Offline sample, before/after, saved prompt, testing without paid AI | Implemented in 1.0.17 Help: authorised kitchen stages/replay, historical prompt, compare and separate practice copy. Sample tests and prior Chrome/emulator checks pass. | Test playback on S21; later-stage prompt is explicitly illustrative. Older help clips still need rerecording for the accepted UI. |
+| T15 | Small live AI allowance for testers | Client and capped HTTPS gateway prepared; separate encrypted invitations, counts/expiry/durable reservations tested. | Hosting, funding, measured quota and owner-approved spend control. Not deployed; counts are not a $1 balance. |
+| T16 | Language/region choices | Regional English meanings are included in prompts. | Actual AU/NZ/UK/US selector and translated interface are not implemented. |
+| T17 | Cost per image/room and money remaining | Not implemented; recorded as proposed work. | Usage collection, dated pricing and an explicit budget model. No provider-balance integration. |
+| T18 | Search current designs/products; reproduce the HTML ChatGPT workflow | Current app uses model knowledge and attached photos/analysis, not web search. Actual exported image inspected; full web-session transcript not found locally. | Optional sourced research and controlled comparison. No claim that the historical session searched online. |
+| T19 | Branding and Android then Apple release | Visible branding/sample and existing icon preserved; Google Play guide added. One shared Flutter codebase; Chrome current. | Production release gates, physical S21 acceptance, then iOS file/share/Keychain parity and real iPhone tests. |
+
+No new APK, paid provider call, hosting deployment, project reset or credential
+export was made during this audit. The next acceptance steps are in the testing
+guide under **Today's acceptance pass**.
+
 ## Current position — 22 November
 
 | Area | Current position |
