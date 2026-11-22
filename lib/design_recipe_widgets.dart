@@ -4,6 +4,7 @@ import 'models.dart';
 import 'design_styles.dart';
 import 'design_palettes.dart';
 import 'ai_model_choices.dart';
+import 'local_paint.dart';
 
 Future<bool?> showDesignRecipe(BuildContext context, DesignVersion design) {
   final saved = design.recipe?.toMap();
@@ -22,13 +23,20 @@ Future<bool?> showDesignRecipe(BuildContext context, DesignVersion design) {
             Text(design.title),
             const SizedBox(height: 12),
             if (design.paintRecipe != null) ...[
-              const Text('Local paint · no AI request'),
+              Text(
+                design.paintRecipe!.surfaces.any(
+                      (s) => s.finish != LocalFinish.paint,
+                    )
+                    ? 'Local finishes · no AI request'
+                    : 'Local paint · no AI request',
+              ),
               for (final surface in design.paintRecipe!.surfaces)
                 Text(
-                  '${surface.name}: #${surface.rgb.toRadixString(16).padLeft(6, '0').toUpperCase()} · ${(surface.coverage * 100).round()}% coverage',
+                  '${surface.name} (${localSurfaceLabels[surface.kind]}): ${localFinishLabels[surface.finish]} #${surface.rgb.toRadixString(16).padLeft(6, '0').toUpperCase()} · ${(surface.coverage * 100).round()}% coverage'
+                  '${surface.finish == LocalFinish.paint ? '' : ' · grout #${surface.groutRgb.toRadixString(16).padLeft(6, '0').toUpperCase()}, size ${(surface.tileSize * 100).round()}%, angle ${surface.tileAngle.round()}°'}',
                 ),
               const Text(
-                'Use Paint walls on this version to edit its selections and colours. Its source image and approved baseline are preserved.',
+                'Use Colours & tiles on this version to edit its surface selections and finishes. Its source image and approved baseline are preserved.',
               ),
             ] else if (saved == null)
               const Text(

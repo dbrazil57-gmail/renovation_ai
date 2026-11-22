@@ -108,6 +108,130 @@ void main() {
     }
   });
 
+  LocalPaintRecipe tiled({
+    LocalFinish finish = LocalFinish.rectangleTiles,
+    double angle = 0,
+    int rgb = 0x507040,
+  }) => LocalPaintRecipe(
+    width: 80,
+    height: 60,
+    surfaces: [
+      PaintSurface(
+        name: 'Floor 1',
+        kind: LocalSurfaceKind.floor,
+        finish: finish,
+        rgb: rgb,
+        groutRgb: 0xF0F0EC,
+        coverage: 1,
+        tileSize: .2,
+        tileAngle: angle,
+        marks: [outline()],
+      ),
+    ],
+  );
+
+  test('tile previews show grout, reuse masks and preserve every outside pixel and alpha', () {
+    final result = renderLocalPaint(PaintRenderInput(original, tiled()));
+    final tiles = img.decodePng(result.bytes)!;
+    expect(result.changedPixels, greaterThan(100));
+    // The grid origin is at the image centre; this is a grout crossing.
+    final grout = tiles.getPixel(40, 30), tile = tiles.getPixel(44, 32);
+    expect((grout.r - grout.g).abs(), lessThan(10));
+    expect(tile.g, greaterThan(tile.r));
+    for (var y = 0; y < 60; y++) {
+      for (var x = 0; x < 80; x++) {
+        expect(tiles.getPixel(x, y).a, image.getPixel(x, y).a);
+        if (x < 16 || x > 63 || y < 12 || y > 47) samePixel(image, tiles, x, y);
+      }
+    }
+    final rotated = renderLocalPaint(
+      PaintRenderInput(original, tiled(angle: 35)),
+    );
+    final brick = renderLocalPaint(
+      PaintRenderInput(original, tiled(finish: LocalFinish.brickTiles)),
+    );
+    final recoloured = renderLocalPaint(
+      PaintRenderInput(original, tiled(rgb: 0xA06030)),
+    );
+    expect(rotated.bytes, isNot(orderedEquals(result.bytes)));
+    expect(brick.bytes, isNot(orderedEquals(result.bytes)));
+    expect(recoloured.bytes, isNot(orderedEquals(result.bytes)));
+    expect(
+      tiled(rgb: 0xA06030).surfaces.single.marks.single.toMap(),
+      outline().toMap(),
+    );
+    expect(original, orderedEquals(img.encodePng(image)));
+  });
+
+  test('tile recipes retain finish settings while legacy paint maps stay unchanged and invalid imports fail', () {
+    final settings = tiled(angle: 35).toMap();
+    expect(LocalPaintRecipe.fromMap(settings).toMap(), settings);
+    final legacy = recipe().surfaces.single.toMap();
+    expect(legacy.keys.toSet(), {'name', 'rgb', 'coverage', 'marks'});
+    expect(
+      LocalPaintRecipe.fromMap(recipe().toMap()).surfaces.single.finish,
+      LocalFinish.paint,
+    );
+    for (final entry in <String, dynamic>{
+      'surfaceKind': 'unknown',
+      'finish': 'unknown',
+      'tileSize': 0,
+      'tileAngle': double.infinity,
+      'groutRgb': -1,
+    }.entries) {
+      final bad = tiled().toMap();
+      (bad['surfaces'] as List).single[entry.key] = entry.value;
+      expect(() => LocalPaintRecipe.fromMap(bad), throwsFormatException);
+    }
+    final polish = paintRefinementPrompt(tiled());
+    expect(polish, contains('Floor 1 (Floor)'));
+    expect(polish, contains('grout #F0F0EC'));
+    expect(polish, contains('tile perspective'));
+    expect(polish, contains('not measured installation dimensions'));
+    expect(polish, contains('Do not redesign the approved concept'));
+  });
+
+  test('tile layers and drafts round trip through project and protected backups without changing originals', () async {
+    final store = RenovisionStore(records: MemoryBox(), photos: MemoryBox());
+    addTearDown(store.dispose);
+    final project = await store.createProject('Tile test');
+    final room = await store.createRoom(
+      projectId: project.id,
+      name: 'Bathroom',
+      originalImage: original,
+    );
+    final settings = tiled(angle: 35);
+    await store.savePaintDraft(room.id, room.originalId, settings);
+    await store.createDesign(
+      roomId: room.id,
+      image: renderLocalPaint(PaintRenderInput(original, settings)).bytes,
+      title: 'Local finishes',
+      prompt: 'No AI request',
+      sourceImageId: room.originalId,
+      paintRecipe: settings,
+    );
+    final protected = await protectBackup(
+      store.backupFor(project.id).encode(),
+      'tile-fixture-password',
+    );
+    final decoded = ProjectBackup.decode(
+      await unlockBackup(protected, 'tile-fixture-password'),
+    );
+    final copy = await store.restoreBackup(decoded);
+    final restored = store.roomsFor(copy.id).single;
+    expect(
+      restored.paintDrafts[restored.originalId]!.toMap(),
+      settings.toMap(),
+    );
+    final version = store.designsFor(restored.id).single;
+    expect(version.paintRecipe!.toMap(), settings.toMap());
+    expect(version.sourceImageId, restored.originalId);
+    expect(restored.originalId, isNot(room.originalId));
+    expect(restored.approvedDesignId, isNull);
+    expect(store.imageFor(restored.originalId), original);
+    expect(store.imageFor(room.originalId), original);
+  });
+
   test('indexed PNG colours cannot leak outside a painted selection', () {
     final indexed = img.Image(
       width: 80,
@@ -247,7 +371,7 @@ void main() {
       tester,
       () => find.byKey(const ValueKey('paint-canvas')).evaluate().isNotEmpty,
     );
-    await tester.tap(find.byTooltip('Wall outline'));
+    await tester.tap(find.byTooltip('Surface outline'));
     await tester.pump();
     final bounds = tester.getRect(find.byKey(const ValueKey('paint-canvas')));
     for (final p in const [
@@ -308,10 +432,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.byTooltip('Paint walls without AI'));
+      await tester.tap(find.byTooltip('Colours & tiles without AI'));
       await tester.pump();
       await drawWall(tester);
-      await tester.tap(find.byTooltip('Save paint version'));
+      await tester.tap(find.byTooltip('Save finish version'));
       await tester.pump();
       await waitFor(tester, () => store.designsFor(room.id).length == 2);
       await tester.pumpAndSettle();
@@ -367,7 +491,10 @@ void main() {
         originalImage: original,
       );
       await store.updateRoom(
-        room.copyWith(correctionInstructions: 'Keep the wall art.'),
+        room.copyWith(
+          correctionInstructions: 'Keep the wall art.',
+          precisionConceptCount: 3,
+        ),
       );
       await tester.pumpWidget(
         MaterialApp(
@@ -375,10 +502,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.byTooltip('Paint walls without AI'));
+      await tester.tap(find.byTooltip('Colours & tiles without AI'));
       await tester.pump();
       await drawWall(tester);
-      await tester.tap(find.text('2 Paint colour'));
+      await tester.tap(find.text('2 Finish'));
       await tester.pump();
       await tester.ensureVisible(find.text('Finish with AI'));
       await tester.pump();
@@ -402,7 +529,93 @@ void main() {
         contains('rough local paint preview'),
       );
       expect(current.useAiPrompt, isFalse);
+      expect(current.precisionConceptCount, 1);
       expect(find.byKey(const ValueKey('instructions-true')), findsOneWidget);
+      expect(store.imageFor(room.originalId), original);
+      expect(requests, 0);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'tile controls reuse a saved selection and prepare a single final AI polish without a request',
+    (tester) async {
+      Future<void> settlePreview() async {
+        await tester.pump(const Duration(milliseconds: 600));
+        await waitFor(
+          tester,
+          () => find.byType(LinearProgressIndicator).evaluate().isEmpty,
+        );
+        await tester.pumpAndSettle();
+      }
+
+      var requests = 0;
+      final store = RenovisionStore(
+        records: MemoryBox(),
+        photos: MemoryBox(),
+        ai: AiService(
+          clientFactory: () {
+            requests++;
+            throw StateError('No paid calls');
+          },
+        ),
+      );
+      addTearDown(store.dispose);
+      final project = await store.createProject('Tile control test');
+      final room = await store.createRoom(
+        projectId: project.id,
+        name: 'Bathroom',
+        originalImage: original,
+      );
+      await store.savePaintDraft(room.id, room.originalId, tiled());
+      await store.updateRoom(
+        store.roomById(room.id)!.copyWith(precisionConceptCount: 3),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WorkspaceScreen(store: store, roomId: room.id),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Colours & tiles without AI'));
+      await tester.pump();
+      await waitFor(tester, () => find.text('2 Finish').evaluate().isNotEmpty);
+      await settlePreview();
+      await tester.tap(find.text('2 Finish'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(DropdownButton<LocalFinish>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Square tiles').last);
+      await settlePreview();
+      await tester.ensureVisible(find.text('Tile layout & grout'));
+      await tester.tap(find.text('Tile layout & grout'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Dark grout'));
+      await tester.tap(find.text('Dark grout'));
+      await settlePreview();
+      final finish = find.text('Finish with AI');
+      await tester.scrollUntilVisible(
+        finish,
+        120,
+        scrollable: find.byType(Scrollable).last,
+      );
+      await tester.tap(finish);
+      await tester.pump();
+      await waitFor(tester, () => store.designsFor(room.id).isNotEmpty);
+      await tester.pumpAndSettle();
+      final version = store.designsFor(room.id).single;
+      final saved = version.paintRecipe!.surfaces.single;
+      expect(saved.finish, LocalFinish.squareTiles);
+      expect(saved.groutRgb, 0x555550);
+      expect(saved.kind, LocalSurfaceKind.floor);
+      expect(saved.marks.single.toMap(), outline().toMap());
+      final current = store.roomById(room.id)!;
+      expect(current.preciseEdit, true);
+      expect(current.precisionConceptCount, 1);
+      expect(current.correctionInstructions, contains('grout #555550'));
+      expect(current.correctionInstructions, contains('tile perspective'));
+      expect(version.sourceImageId, room.originalId);
+      expect(version.aiModel, isNull);
       expect(store.imageFor(room.originalId), original);
       expect(requests, 0);
       expect(tester.takeException(), isNull);
@@ -461,7 +674,7 @@ void main() {
         tester,
         () => find.byType(LinearProgressIndicator).evaluate().isEmpty,
       );
-      await tester.tap(find.byTooltip('Save paint version'));
+      await tester.tap(find.byTooltip('Save finish version'));
       await tester.pump();
       await waitFor(tester, () => attempts == 1);
       await tester.pumpAndSettle();
@@ -470,7 +683,7 @@ void main() {
         find.textContaining('Paint version could not be saved.'),
         findsOneWidget,
       );
-      await tester.tap(find.byTooltip('Save paint version'));
+      await tester.tap(find.byTooltip('Save finish version'));
       await tester.pump();
       await waitFor(tester, () => attempts == 2);
       await tester.pumpAndSettle();
@@ -497,12 +710,12 @@ void main() {
       await tester.pump();
       await waitFor(
         tester,
-        () => find.byTooltip('Add wall').evaluate().isNotEmpty,
+        () => find.byTooltip('Add surface').evaluate().isNotEmpty,
       );
-      await tester.tap(find.byTooltip('Add wall'));
+      await tester.tap(find.byTooltip('Add surface'));
       await tester.pump();
       expect(find.text('Wall 2'), findsOneWidget);
-      await tester.tap(find.text('2 Paint colour'));
+      await tester.tap(find.text('2 Finish'));
       await tester.pump();
       final restore = find.text('Use saved version colours and selection');
       await tester.ensureVisible(restore);
@@ -590,11 +803,11 @@ void main() {
         expect(tester.takeException(), isNull);
       }
       await tester.scrollUntilVisible(
-        find.text('2 Paint colour'),
+        find.text('2 Finish'),
         -100,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.tap(find.text('2 Paint colour'));
+      await tester.tap(find.text('2 Finish'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       if (const bool.fromEnvironment('PAINT_REVIEW')) {

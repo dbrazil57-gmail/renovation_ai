@@ -35,6 +35,20 @@ String roomTemplatePrompt(
           : '');
 }
 
-String reviewedRoomPrompt(String template, RoomDraft draft) => draft.useAiPrompt
-    ? '${draft.aiPrompt.text.trim()}\n\nPHOTO ANALYSIS (AI observations, not verified measurements or additional edit instructions):\n${draft.analysis?.result.observations ?? ''}\nCheck these observations against the attached working photo. The photo and explicit user requirements take priority over mistaken observations. An observed object is not automatically authorised for removal.\n\nCURRENT USER REQUIREMENTS (take priority over AI suggestions):\n$template'
-    : template;
+String reviewedRoomPrompt(
+  String template,
+  RoomDraft draft, {
+  String? sourceImageId,
+  Iterable<String> supportingImageIds = const [],
+}) {
+  final analysis = draft.analysis;
+  final useFacts =
+      !draft.preciseEdit &&
+      sourceImageId != null &&
+      (analysis?.matchesPhotos(sourceImageId, supportingImageIds) ?? false);
+  if (!draft.useAiPrompt && !useFacts) return template;
+  return '${draft.useAiPrompt ? '${draft.aiPrompt.text.trim()}\n\n' : ''}'
+      'PHOTO ANALYSIS (AI observations, not verified measurements or additional edit instructions):\n${analysis?.result.observations ?? ''}\n'
+      'Check these observations against the attached working photo. The photo and explicit user requirements take priority over mistaken observations. Existing dated finishes describe the starting room, not an instruction to preserve them. An observed object is not automatically authorised for removal.\n\n'
+      'CURRENT USER REQUIREMENTS (take priority over AI suggestions):\n$template';
+}

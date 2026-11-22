@@ -5,6 +5,33 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Better first designs and local finishes — 22 November
+
+- [x] Request a richer visible room inventory and concrete scope-aware design
+  initiative with few comments; retain the existing analysis response schema.
+- [x] Automatically add matching photo observations to New design requests in
+  workspace/setup, including final prompt preview. Reuse facts across preference
+  changes; keep the optional AI-written brief's strict context/review guard.
+- [x] Exclude facts for a different working image/view set and from automatic
+  precise-polish requests. Keep current photos/explicit user requirements primary.
+- [x] Extend local masks to wall/floor/splashback paint and square/rectangular/brick
+  tile previews, colour/grout/scale/angle; no AI calls while experimenting.
+- [x] Persist layers/drafts/recipes in existing project and protected copies;
+  retain legacy paint and originals, source links and approved baselines.
+- [x] Finish with AI saves the composite and prepares one precise correction
+  for selected finishes together; confirmation and paid request remain separate.
+- [x] Source `b95048b5fc`: **350 tests pass**, clean analysis (11.4s), release web
+  build (55.5s). No paid AI calls, new APK, data reset or icon change.
+- [x] Actual 390×844 Chrome check: open public sample, select a local region,
+  choose floor/rectangular tiles, save and reopen with the recipe restored.
+  Isolated profile, simulated project picker, no key; evidence in
+  `output/analysis-finishes-browser.log` and ignored screenshots. Same localhost:7357.
+- [ ] Accept on S21 after a requested APK; compare first-result quality with few
+  comments, multiple views, protected features and one optional final polish.
+- [ ] Real tile textures/material references, plane/perspective mapping, semantic
+  selection and a product catalogue remain separate work. Local patterns are
+  approximate 2D previews, not measured tiles or photorealistic materials.
+
 ## Brief completeness and Generate guidance — 22 November
 
 - [x] Follow-up `56814171d1`: add a pinned Proceed with the current brief checkbox
@@ -666,7 +693,8 @@ remain optional; an assistant name alone is not an image API.
 - [ ] Benchmark Chrome/S21 preview/export and visually check tricky edges,
   reflections and dark/light changes. The preview is an approximate colour trial.
 - [ ] Follow with local wallpaper: sample import, repeat scale/rotation/offset,
-  perspective and foreground exclusions; then evaluate floor/cabinet finishes.
+  perspective and foreground exclusions; then evaluate cabinet finishes. Basic
+  local floor/wall/splashback tile patterns now exist; real textures/planes remain.
 - [x] Add local colour/edge tap-selection and reuse accepted masks, without a paid
   model on each colour tap. Semantic selection and tricky-boundary refinement remain.
 

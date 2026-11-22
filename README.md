@@ -1,5 +1,25 @@
 # Renovision AI
 
+Photo-first design and local finishes follow-up, **22 November**: analysis now
+asks for a fuller visible room inventory and a specific, coordinated scheme even
+with few comments. Matching photo observations automatically inform New design
+requests; the optional AI-written prompt still needs review. Changing style or
+palette can reuse those observations without another analysis charge. A different
+working image/view set and Precise correction do not inherit those facts.
+
+Use **Colours & tiles without AI** on the image toolbar. Select a surface once,
+choose Wall / Floor / Splashback and paint, square, rectangular or brick tiles in
+**2 Finish**, then try colours, grout, scale and angle locally. Tile layouts are
+approximate 2D previews, not measured products or reconstructed room planes.
+**Finish with AI** saves the preview and prepares one precise polish of its
+selected surfaces together. Review and explicitly confirm generation separately.
+Source/desktop follow-up only; the published APK 1.0.16 is unchanged.
+
+Source `b95048b5fc`: **350 tests pass**, clean analysis (11.4s), release web build
+(55.5s). Existing projects/settings and the same localhost:7357 origin are retained.
+An actual 390×844 Chrome check saved and reopened a local tile preview with its
+surface/pattern intact, using a public sample in a disposable profile and no key.
+
 Brief review follow-up, source `56814171d1`: the checklist has a pinned **Proceed
 with the current brief** checkbox. Ticking it changes Refine brief to Proceed,
 including below 75%. Proceed uses the normal connection/required-input/send path
@@ -134,20 +154,20 @@ Physical S21 acceptance and live Gemini comparisons remain. No paid AI calls or
 user-data reset were performed.
 Build further APKs only when requested.
 
-In the Design workspace, choose **Paint walls without AI**. Tap a clear part of a
-wall, check the highlighted boundary, then choose a swatch or custom hex colour.
+In the Design workspace, choose **Colours & tiles without AI**. Tap a clear part of a
+surface, check the highlighted boundary, then choose a finish, swatch or custom hex colour.
 Adjust sensitivity if needed; outline/brush/erase remain optional fallbacks. Drafts
-save locally; **Save paint version** creates a lossless PNG and editable layers,
+save locally; **Save finish version** creates a lossless PNG and editable layers,
 leaving the source and approved baseline intact. Undo/Redo and Compare before
-are available. Layer chips and Delete selected wall / Delete all walls remain
+are available. Layer chips and Delete selected surface / Delete all surfaces remain
 available after reopening. Tap selection uses local colour/edge connectivity,
 not semantic recognition: similarly coloured adjacent objects may need correction.
-Colour/shading is approximate, with no AI call; wallpaper remains later work. Local paint
+Colour/shading and tile patterns are approximate, with no AI call; imported wallpaper remains later work. Local editing
 preserves unselected pixels; that does not establish the same guarantee for AI edits.
 
 Choose another colour on the same wall layer to replace it, without selecting
 again. **Finish with AI** saves the local preview and opens Precise correction
-with its wall colours. Review and explicitly generate when ready; this uses your
+with its paint/tile choices and one output. Review and explicitly generate when ready; this uses your
 AI connection and may alter details because hard AI edit masks remain unfinished.
 
 **Style > Regional influences** now includes Japanese, Italian, Moroccan and
@@ -182,7 +202,7 @@ with Chrome rather than creating a disposable Flutter Chrome profile.
 The launcher resolves packages for the web target and avoids unnecessary desktop
 plugin symlinks without changing global Flutter settings. `-Release` runs the
 desktop browser app with production compilation; omit it for development debugging.
-The current desktop build is `56814171d1`, including all completed source features
+The current desktop build is `b95048b5fc`, including all completed source features
 listed above. A packaged native Windows companion remains a separate future stage.
 Settings > App build and saved data shows the build/address/counts and offers
 Check local saving. That confirms a read/write, not survival of a later crash.

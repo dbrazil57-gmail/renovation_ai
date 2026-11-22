@@ -195,9 +195,11 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(all ? 'Delete all wall layers?' : 'Delete ${wall.name}?'),
+        title: Text(
+          all ? 'Delete all surface layers?' : 'Delete ${wall.name}?',
+        ),
         content: const Text(
-          'This removes the working paint selection and colour. Original photos and saved versions stay unchanged. You can Undo while this editor is open.',
+          'This removes the working surface selection and finish. Original photos and saved versions stay unchanged. You can Undo while this editor is open.',
         ),
         actions: [
           TextButton(
@@ -315,7 +317,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
           ) ??
           false;
       if (result.changedPixels == 0 && !revertingSavedPaint) {
-        tell('Select a wall and choose a colour before saving a version.');
+        tell('Select a surface and choose a finish before saving a version.');
         return;
       }
       await widget.saveVersion(result, current);
@@ -554,7 +556,10 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
 
   Widget controls() {
     final content = <Widget>[
-      const Text('Local paint · no AI requests'),
+      Text(
+        'Local preview · no AI',
+        style: Theme.of(context).textTheme.labelMedium,
+      ),
       const SizedBox(height: 6),
       Row(
         children: [
@@ -585,7 +590,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             ),
           ),
           IconButton(
-            tooltip: 'Add wall',
+            tooltip: 'Add surface',
             onPressed: recipe!.surfaces.length >= 8
                 ? null
                 : () {
@@ -615,14 +620,14 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             icon: const Icon(Icons.add),
           ),
           IconButton(
-            tooltip: 'Delete selected wall',
+            tooltip: 'Delete selected surface',
             onPressed: recipe!.surfaces.isEmpty
                 ? null
                 : () => removeWalls(all: false),
             icon: const Icon(Icons.delete_outline),
           ),
           IconButton(
-            tooltip: 'Delete all walls',
+            tooltip: 'Delete all surfaces',
             onPressed: recipe!.surfaces.isEmpty
                 ? null
                 : () => removeWalls(all: true),
@@ -632,7 +637,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
       ),
       Row(
         children: [
-          for (final entry in {0: '1 Select area', 1: '2 Paint colour'}.entries)
+          for (final entry in {0: '1 Select area', 1: '2 Finish'}.entries)
             Expanded(
               child: TextButton(
                 onPressed: () => setState(() => panel = entry.key),
@@ -655,9 +660,9 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             for (final entry in {
               _PaintTool.automatic: (
                 Icons.touch_app_outlined,
-                'Tap to select wall',
+                'Tap to select surface',
               ),
-              _PaintTool.polygon: (Icons.polyline_outlined, 'Wall outline'),
+              _PaintTool.polygon: (Icons.polyline_outlined, 'Surface outline'),
               _PaintTool.brush: (Icons.brush_outlined, 'Paint brush'),
               _PaintTool.erase: (Icons.auto_fix_normal, 'Erase selection'),
               _PaintTool.move: (Icons.pan_tool_outlined, 'Move / zoom'),
@@ -684,7 +689,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Tap around a wall, then finish.'),
+            const Text('Tap around a surface, then finish.'),
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
@@ -698,7 +703,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         ),
       if (panel == 0 && tool == _PaintTool.automatic) ...[
         const Text(
-          'Tap a wall in the photo. Check the boundary, then choose a colour.',
+          'Tap a surface and check its boundary. Patterned floors may need the outline tool.',
         ),
         Text('Selection sensitivity ${sensitivity.round()}'),
         Slider(
@@ -728,6 +733,95 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             ),
           ],
         ),
+      if (panel == 1) ...[
+        DropdownButton<LocalSurfaceKind>(
+          isExpanded: true,
+          value: wall.kind,
+          hint: const Text('Surface'),
+          items: [
+            for (final kind in LocalSurfaceKind.values)
+              DropdownMenuItem(
+                value: kind,
+                child: Text(localSurfaceLabels[kind]!),
+              ),
+          ],
+          onChanged: (kind) {
+            if (kind == null) return;
+            final defaultName = RegExp(r'^(Wall|Floor|Splashback) \d+$')
+                .hasMatch(wall.name);
+            changeWall(
+              wall.copyWith(
+                kind: kind,
+                name: defaultName
+                    ? '${localSurfaceLabels[kind]} ${selected + 1}'
+                    : wall.name,
+              ),
+            );
+          },
+        ),
+        DropdownButton<LocalFinish>(
+          isExpanded: true,
+          value: wall.finish,
+          hint: const Text('Finish'),
+          items: [
+            for (final finish in LocalFinish.values)
+              DropdownMenuItem(
+                value: finish,
+                child: Text(localFinishLabels[finish]!),
+              ),
+          ],
+          onChanged: (finish) {
+            if (finish != null) {
+              changeWall(
+                wall.copyWith(
+                  finish: finish,
+                  coverage: finish == LocalFinish.paint ? wall.coverage : 1,
+                ),
+              );
+            }
+          },
+        ),
+        if (wall.finish != LocalFinish.paint)
+          ExpansionTile(
+            title: const Text('Tile layout & grout'),
+            children: [
+              const Text(
+                'Approximate 2D preview. Final AI polish can refine perspective.',
+              ),
+              Text('Pattern size ${(wall.tileSize * 100).round()}%'),
+              Slider(
+                min: .04,
+                max: .5,
+                value: wall.tileSize,
+                onChanged: (v) => changeWall(wall.copyWith(tileSize: v)),
+              ),
+              Text('Pattern angle ${wall.tileAngle.round()}°'),
+              Slider(
+                min: 0,
+                max: 180,
+                divisions: 36,
+                value: wall.tileAngle,
+                onChanged: (v) => changeWall(wall.copyWith(tileAngle: v)),
+              ),
+              Wrap(
+                spacing: 4,
+                children: [
+                  for (final entry in {
+                    0xDED8CE: 'Warm grout',
+                    0xF0F0EC: 'Light grout',
+                    0x555550: 'Dark grout',
+                  }.entries)
+                    ChoiceChip(
+                      label: Text(entry.value),
+                      selected: wall.groutRgb == entry.key,
+                      onSelected: (_) =>
+                          changeWall(wall.copyWith(groutRgb: entry.key)),
+                    ),
+                ],
+              ),
+            ],
+          ),
+      ],
       if (panel == 1)
         SizedBox(
           height: 48,
@@ -802,7 +896,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             showSelection = true;
           }),
           icon: const Icon(Icons.tune),
-          label: const Text('Adjust wall boundary'),
+          label: const Text('Adjust surface boundary'),
         ),
       if (panel == 1 && widget.savedRecipe != null)
         TextButton(
@@ -834,7 +928,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
           OutlinedButton.icon(
             onPressed: () => setState(() => compare = !compare),
             icon: const Icon(Icons.compare),
-            label: Text(compare ? 'Show painted' : 'Compare before'),
+            label: Text(compare ? 'Show finishes' : 'Compare before'),
           ),
           if (panel == 0)
             TextButton(
@@ -844,7 +938,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                       polygonIndex = null;
                       changeWall(wall.copyWith(marks: []));
                     },
-              child: const Text('Clear wall selection'),
+              child: const Text('Clear surface selection'),
             ),
           TextButton(
             onPressed: () async {
@@ -857,24 +951,28 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
       Text(
         error ??
             (dirty
-                ? 'Saving paint draft…'
-                : 'Paint draft saved · Save version adds it to Ideas'),
+                ? 'Saving finish draft…'
+                : 'Finish draft saved · Save version adds it to Ideas'),
       ),
     ];
     return AbsorbPointer(
       absorbing: busy || selectingWall,
       child: Padding(
         padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            ...content.take(4),
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: content.skip(4).toList(),
-              ),
-            ),
-          ],
+        child: LayoutBuilder(
+          builder: (context, bounds) => bounds.maxHeight < 260
+              ? ListView(padding: EdgeInsets.zero, children: content)
+              : Column(
+                  children: [
+                    ...content.take(4),
+                    Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.zero,
+                        children: content.skip(4).toList(),
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );
@@ -889,7 +987,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
     },
     child: Scaffold(
       appBar: AppBar(
-        title: const Text('Paint walls'),
+        title: const Text('Surface finishes'),
         actions: [
           IconButton(
             tooltip: 'Undo paint',
@@ -906,15 +1004,15 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             icon: const Icon(Icons.redo),
           ),
           IconButton(
-            tooltip: 'Save paint version',
+            tooltip: 'Save finish version',
             onPressed: busy || selectingWall || loading || recipe == null
                 ? null
                 : save,
             icon: const Icon(Icons.save_outlined),
           ),
           HelpIcon(
-            title: 'Local paint',
-            message: 'Tap a wall, check its highlighted boundary, then choose a colour. Choose another colour on the same layer to replace it; the selection is reused. Selection uses connected colours and edges, not AI wall recognition; similar surfaces can merge. Adjust sensitivity or use optional outline/erase tools for difficult edges. Delete a selected wall or all layers using the layer controls, even after reopening. Finish with AI saves this preview and opens a correction to review before generation; it needs your AI connection and uses paid provider requests only when confirmed. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
+            title: 'Colours & tiles',
+            message: 'Select a wall, floor or splashback, check its highlighted boundary, then choose paint or a tile pattern. Changing colour or pattern reuses the same selection and makes no AI request. Selection uses connected colours and edges; similar surfaces can merge. Use sensitivity, outline or erase for difficult edges and patterned floors. Tile scale and rotation are approximate 2D visual guidance, not measured installation dimensions or a product catalogue. Delete one surface or all layers, even after reopening. Finish with AI saves all local finishes and prepares one correction for review; only confirmed generation uses your paid AI connection. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
           ),
         ],
       ),

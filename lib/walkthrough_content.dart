@@ -276,28 +276,28 @@ const modelComparisonWalkthrough = AppWalkthrough(
 
 const paintWalkthrough = AppWalkthrough(
   'paint',
-  'Tap to paint walls',
-  'Select a wall, try colours and manage saved layers without an AI request.',
+  'Colours, tiles & final polish',
+  'Try local surface finishes, then optionally polish the selected design with AI.',
   [
     WalkthroughStep(
       'Tap the wall',
-      'Open Paint walls on an original or saved design. Tap a clear part of the wall and check the highlighted boundary.',
+      'Open Colours & tiles on an original or saved design. Tap a clear part of a surface and check the highlighted boundary. Use Surface outline for patterned floors or difficult edges.',
       'Use a bedroom wall. Connected colours and edges guide the selection; similar surfaces can merge.',
     ),
     WalkthroughStep(
       'Choose a colour',
-      'Pick a swatch or custom colour. The selected area repaints locally. Use Adjust wall boundary if the selection needs different sensitivity.',
+      'Open Finish. Choose Wall, Floor or Splashback, then Paint colour or a tile pattern. Use a swatch or custom colour. Changing colour or pattern reuses the same selected area.',
       'Try soft sage, then compare before. No key or paid image generation is needed.',
     ),
     WalkthroughStep(
-      'Remove or keep wall layers',
-      'Select a wall chip and Delete selected wall, or use Delete all walls. Confirm the deletion. These controls also work after reopening; Undo history lasts only for the open editing session.',
+      'Try tile layouts or remove a surface',
+      'Tile layout & grout adjusts pattern size, angle and grout. These are approximate 2D previews. Select a layer and Delete selected surface, or Delete all surfaces. Confirm the deletion. Undo history lasts only for the open editing session.',
       'Remove Wall 2 while keeping Wall 1. Original photos and saved versions stay unchanged.',
     ),
     WalkthroughStep(
       'Save a version',
-      'Back keeps the working draft. Save paint version adds a new image with editable wall layers.',
-      'Reopen the saved version to try another colour.',
+      'Back keeps the working draft. Save finish version adds a new image with editable surface layers. Finish with AI instead saves the preview and prepares one precise correction to polish its paint and tile choices together. Review and confirm generation separately.',
+      'Reopen the saved version to try another colour. Local edits need no key; only confirmed AI polishing uses your paid connection. Original photos and the approved design remain saved.',
     ),
   ],
 );

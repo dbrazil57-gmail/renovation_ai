@@ -47,6 +47,19 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
     }
   }
 
+  bool get currentPhotos {
+    try {
+      final request = widget.buildRequest();
+      return widget.draft.analysis?.matchesPhotos(
+            request.sourceImageId,
+            request.supportingImages.keys,
+          ) ??
+          false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<void> _analyse() async {
     if (busy ||
         !widget.store.ai.supportsAnalysis ||
@@ -242,7 +255,9 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                       ? 'Photos saved · not analysed yet. AI can identify visible features and help write your design prompt.'
                       : matches
                       ? 'Analysis available for the current photos and preferences.'
-                      : 'Photos or preferences have changed. Review a new analysis before using an AI prompt.',
+                      : currentPhotos
+                      ? 'Photo observations still match and can inform a new design. Your choices changed; the optional AI-written brief needs review before reuse.'
+                      : 'Photos have changed. Analyse the current view for fresh observations, or continue without this saved analysis.',
                 ),
                 if (!widget.store.ai.supportsAnalysis) ...[
                   const SizedBox(height: 6),

@@ -183,11 +183,11 @@ void main() {
         () => find.byKey(const ValueKey('paint-canvas')).evaluate().isNotEmpty,
       );
       await quiet(tester);
-      await tester.tap(find.byTooltip('Delete all walls'));
+      await tester.tap(find.byTooltip('Delete all surfaces'));
       await quiet(tester);
       await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
       await quiet(tester);
-      await tester.tap(find.byTooltip('Save paint version'));
+      await tester.tap(find.byTooltip('Save finish version'));
       await tester.pump();
       await ready(tester, () => savedImage != null);
       await tester.pumpAndSettle();
@@ -234,7 +234,7 @@ void main() {
       await tester.pump();
       await ready(
         tester,
-        () => find.text('Adjust wall boundary').evaluate().isNotEmpty,
+        () => find.text('Adjust surface boundary').evaluate().isNotEmpty,
       );
       await tester.pump(const Duration(milliseconds: 600));
       await ready(tester, () => saved?.surfaces.length == 1);
@@ -265,7 +265,7 @@ void main() {
         saved!.surfaces.single.marks.single.region!.bits,
         orderedEquals(selection),
       );
-      await tester.tap(find.byTooltip('Add wall'));
+      await tester.tap(find.byTooltip('Add surface'));
       await tester.pump(const Duration(milliseconds: 600));
       await ready(tester, () => saved?.surfaces.length == 2);
       await show(2);
@@ -278,12 +278,12 @@ void main() {
         tester,
         () => find.byType(LinearProgressIndicator).evaluate().isEmpty,
       );
-      await tester.tap(find.byTooltip('Delete selected wall'));
+      await tester.tap(find.byTooltip('Delete selected surface'));
       await quiet(tester);
       await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
       await tester.pump(const Duration(milliseconds: 600));
       await ready(tester, () => saved?.surfaces.length == 1);
-      await tester.tap(find.byTooltip('Delete all walls'));
+      await tester.tap(find.byTooltip('Delete all surfaces'));
       await quiet(tester);
       await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
       await tester.pump(const Duration(milliseconds: 600));

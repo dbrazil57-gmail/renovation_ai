@@ -1,5 +1,38 @@
 # Product and research reference
 
+## Photo-first design and local finishes — 22 November
+
+Product direction: the initial photo analysis should do more of the design work,
+so refinement improves an already coherent concept rather than filling gaps in
+the original brief. Analysis now inventories visible surfaces, fittings, main/task
+lighting, furniture, clutter and relationships across supplied views; uncertain
+or hidden geometry stays uncertain. It asks for concrete coordinated replacements
+within Full room / Partial / Precise scope, taking design initiative for a full
+room even when comments are sparse. Protected features stay authoritative.
+
+Workspace/setup now automatically reuse photo observations for New design only
+when the working image and included context IDs match. They can survive changes
+to style/palette/preferences without buying another analysis. The optional
+AI-written prompt remains a separate reviewed, context-checked choice. Facts do
+not silently follow a different generated viewpoint or enter precision polishing;
+descriptions of old finishes must not undo an approved design.
+
+The local editor now supports reusable wall/floor/splashback colour and tile
+pattern layers: square, rectangular and brick, with grout, scale and angle.
+These simple 2D patterns give inexpensive visual direction; they do not identify
+room planes, measure products, simulate calibrated materials or solve perspective.
+Tap selection is still a colour/edge heuristic; patterned floors may need outline
+and erase. Saved recipes retain choices and masks through normal/protected copies.
+Full PNG compositing preserves unselected source pixels and alpha.
+
+Finish with AI saves the local composite, selects it as the working image and
+prepares one precise polish of all selected paint/tile finishes together. It
+does not contact a provider. Users can review/edit and separately confirm paid
+generation. The prompt asks for boundary/material/perspective integration while
+retaining the chosen room; without hard AI masks, unchanged surroundings remain
+a requested behaviour, not a pixel guarantee. Real output quality needs a small,
+deliberate model comparison; automated tests cannot establish design appeal.
+
 Checklist follow-up, source `56814171d1`: the review dialog previously offered
 only Close and Refine, making low-score continuation hard to discover. A checkbox
 pinned above its actions now changes Refine brief into Proceed at any score.

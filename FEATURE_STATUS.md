@@ -1,5 +1,28 @@
 # Renovision feature status
 
+**Photo-first design and local finish follow-up, 22 November:** analysis requests
+a fuller inventory of visible surfaces, fittings, lighting, clutter and spatial
+relationships, then a concrete scheme within Full/Partial/Precise scope. Matching
+photo observations now automatically inform New design; the optional AI-written
+brief remains opt-in and context-checked. Preference changes reuse photo facts;
+different working images/view sets and precision polishing do not inherit them.
+No automatic paid analysis or measured geometry is implied.
+
+**Colours & tiles without AI** extends saved local layers to walls, floors and
+splashbacks, with square/rectangular/brick patterns, colour, grout, scale and angle.
+The same selection is reused; versions and drafts retain settings through plain
+and protected project copies. Tile previews are approximate 2D patterns, not a
+product catalogue, semantic plane detection or perspective-correct installation.
+Finish with AI prepares one reviewable correction from the saved composite;
+confirmed paid generation remains separate. Published APK 1.0.16 is unchanged.
+
+Source `b95048b5fc`: **350 tests pass**, clean analysis (11.4s), and release web
+compilation (55.5s). Automated coverage includes automatic facts reuse, mismatched
+photo/precision exclusion, legacy/tile recipe bounds, unselected pixels/alpha,
+protected/plain copy restoration and zero-request final-polish preparation.
+Actual 390×844 Chrome save/reopen restores the floor/pattern selection. Public
+sample and isolated profile only; phone latency and real provider results remain.
+
 **Checklist Proceed follow-up — source `56814171d1`:** a pinned checkbox changes
 Refine brief to Proceed at any coverage percentage. It opens the normal generation
 path (connection and required inputs still apply), suppressing duplicate guidance
@@ -261,8 +284,8 @@ provider quality, physical-camera behaviour or durable storage on every device.
 | Guided start | Photos → Direction → Analyse/review → Final options; Finish later resumes | Room identification is not a structured AI result that automatically fills the room selector |
 | Photo entry | Phone camera, gallery/multiple-photo import, embedded live preview, primary view and additional angles | Up to six original room views; reference images have no separate inspiration/material/sketch role |
 | Room scope | Whole-room defaults coordinate surfaces, fittings/appliances, lighting and loose-clutter removal; optional room-specific Keep/Replace and precise correction | Fixed uncertain fittings need explicit instructions; AI compliance is not guaranteed |
-| Local paint/material editing | Tap a connected wall region then choose colour; sensitivity and optional polygon/brush/erase; eight layers, persistent delete one/all, swatches/custom hex/coverage, shading approximation, undo/redo, compare, source-bound drafts and editable lossless PNG versions; plain/protected copies; no API calls | Heuristic boundaries need review; semantic segmentation, wallpaper/perspective and floor/cabinet tools remain; preview up to 1000px, source up to 24MP; phone latency acceptance pending |
-| AI analysis | Sends selected photos/preferences to a vision model; saves observations, questions, editable prompt and provenance; new generated versions keep their matching analysis | Normal workspace can still require reanalysis after preference changes |
+| Local paint/material editing | Tap or outline wall/floor/splashback; reusable paint/tile layers, square/rectangular/brick patterns, grout/size/angle, swatches/custom hex/coverage; persistent delete one/all, undo/redo, compare, source-bound drafts and lossless PNG versions; plain/protected copies; optional one-polish AI handoff | Heuristic boundaries need review; approximate 2D tile patterns, no semantic planes, measured scale, imported textures/wallpaper, perspective mapping or cabinetry tool; preview up to 1000px, source up to 24MP; phone latency acceptance pending |
+| AI analysis | Confirmed working photo plus context angles; fuller visible inventory/questions/editable brief; matching observations automatically inform New design across preference changes; optional AI-written brief stays reviewable | Different working image/view set needs fresh facts; optional AI-written brief still uses strict context freshness; no verified geometry, automatic quality critique or segmentation |
 | Prompt preparation | Offline deterministic fallback, AI-written prompt option, preview/copy, current requirements/protected features, correct working/supporting-image roles | Copying text does not attach photos or automatically return external results |
 | In-app AI | OpenAI/Gemini direct HTTPS with separate personal keys and saved model choices; curated image recommendations; optional OpenAI laptop relay; confirmation, progress stages/elapsed time, storage-only result retry | Gemini live account/image quality acceptance pending; no Claude/Bedrock adapter, in-flight paid-job cancellation, actual billed-cost meter or automatic output critique |
 | Multiple concepts | One/two/three sequential requests from a frozen source; distinct specified material/design directions; partial successes saved | Strong difference is requested, not measured. Only exact-byte duplicate detection, no semantic diversity scoring |
@@ -316,7 +339,8 @@ analysis can still need review. Exact paid request replay is not implemented.
 Local paint is implemented in 1.0.14: reusable manual selections and colour trials
 without regenerating the room. Its full-frame PNG compositor preserves pixels
 outside the selected area in the oriented source frame. It does not remove objects
-or infer missing geometry. Wallpaper/perspective remain later work. Existing
+or infer missing geometry. Local tile patterns now share these saved masks;
+wallpaper/imported textures and plane perspective remain later work. Existing
 AI prompt palettes and text analysis are not image-edit masks.
 
 The OpenAI edit request contains images and a prompt, with no mask.
@@ -327,12 +351,14 @@ largest gap against the brief's controlled-editing differentiation.
 
 ### 4. Analysis should separate photo facts from design preferences
 
-In the normal workspace, analysis matching includes the complete template
-context. A new palette/style/brief can invalidate the reviewed AI prompt and
-require reanalysis, or deselecting it to use the offline template. Live design
-already reuses observations when tuning palette/style. Unify these behaviours:
-cache visible facts by input images and regenerate the brief from current choices.
-Never relabel unanalysed photos as understood or reuse incompatible photo facts.
+The 22 November follow-up separates photo matching from brief-context matching.
+New designs automatically use observations only when working and supporting
+image IDs match; style/palette/brief changes do not require reanalysing those
+photos. The optional AI-written prompt retains its strict context guard, so it
+must be reviewed/reanalysed or switched off after preferences change. Precise
+corrections do not automatically inherit whole-room facts, protecting the approved
+image from old-finish descriptions. Live already reuses its matching reference.
+Observation quality and first-result design quality still need real model tests.
 
 ### 5. Reliability and speed need measured larger-project tests
 

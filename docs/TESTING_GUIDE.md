@@ -1,5 +1,41 @@
 # Testing and storage reference
 
+## Photo-first designs and local tile previews — 22 November
+
+At the unchanged desktop address, open a sample room and analyse its photos with
+normal confirmation. Leave Use this AI prompt off. Preview a New design request:
+matching PHOTO ANALYSIS observations should appear with current requirements.
+Change style/palette: facts can remain without another analysis. Change working
+image or included views: those old facts must disappear. Precise correction must
+not automatically inherit whole-room observations. The optional reviewed prompt
+still has its own strict freshness guard. Analysis and generation are separate
+paid actions; no paid provider test was run for this source batch.
+
+Open Colours & tiles without AI, tap a clear surface or outline a patterned floor,
+then choose 2 Finish. Pick Wall/Floor/Splashback and a tile pattern. Try another
+colour on the same selection; expand Tile layout & grout for size/angle/grout.
+Compare before, save/reopen, delete a surface/all layers and Undo. Test plain and
+protected project copies. Tile patterns are approximate 2D visual guidance.
+
+Finish with AI must save the preview as a new version, select it and prepare one
+precise polish with the paint/tile choices. It must not send a provider request.
+Reviewing and confirming Generate is a separate step. Check source images and
+approved baselines are unchanged. Phone performance, real AI image quality and
+physical S21 acceptance await a requested APK and user-controlled paid tests.
+
+Source `b95048b5fc`: **350 tests pass**, clean analysis (11.4s), Chrome release
+build (55.5s). Evidence: `output/analysis-finishes-tests.log`,
+`output/analysis-finishes-analysis.log` and `output/analysis-finishes-web.log`.
+Tests include legacy/tile bounds, every unselected full-PNG pixel and alpha,
+protected/plain recipe restoration, matching fact reuse and exclusions, and a
+saved single-polish correction without a provider call. Published APK 1.0.16
+and its alias still match the recorded SHA256.
+Actual 390×844 Chrome smoke: public sample import, region selection, floor/tile
+choice, Save finish version and reopen restore the same recipe and rendered
+preview. Evidence: `output/analysis-finishes-browser.log` and
+`output/analysis-finishes-reopened.png`. A disposable profile and simulated picker
+were used; the real user profile, API keys and native file chooser were untouched.
+
 Checklist Proceed follow-up, source `56814171d1`: at a valid low score such as
 65%, open Brief %, tick Proceed with the current brief and confirm the primary
 button changes from Refine brief to Proceed. Unticking restores Refine. Close

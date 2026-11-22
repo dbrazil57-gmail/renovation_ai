@@ -40,7 +40,7 @@ import 'design_recipe_widgets.dart';
 import 'feedback_widgets.dart';
 import 'feedback_storage.dart';
 import 'local_paint_screen.dart';
-import 'local_paint.dart' show paintRefinementPrompt;
+import 'local_paint.dart' show paintRefinementPrompt, LocalFinish;
 import 'brand_mark.dart';
 import 'room_delete_widgets.dart';
 import 'brief_readiness.dart';
@@ -1911,8 +1911,26 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   String _templatePrompt(RenovationRoom room) =>
       roomTemplatePrompt(room, draft, includeRoomContext: includeRoomContext);
 
-  String _prompt(RenovationRoom room) =>
-      reviewedRoomPrompt(_templatePrompt(room), draft);
+  String _prompt(RenovationRoom room) {
+    final sourceId = selectedId == null
+        ? selectedPhotoId
+        : widget.store
+              .designsFor(room.id)
+              .where((d) => d.id == selectedId)
+              .firstOrNull
+              ?.imageId;
+    return reviewedRoomPrompt(
+      _templatePrompt(room),
+      draft,
+      sourceImageId: sourceId,
+      supportingImageIds: [
+        if (includeRoomContext && room.photoIds.length > 1)
+          ...(restoredSupportingIds ?? room.photoIds).where(
+            (id) => id != sourceId,
+          ),
+      ],
+    );
+  }
 
   Uint8List? _activeImage(RenovationRoom room) {
     if (selectedId != null) {
@@ -2142,8 +2160,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
               image: result.bytes,
               title: recipe.surfaces.isEmpty
                   ? 'Local paint removed'
+                  : recipe.surfaces.any((s) => s.finish != LocalFinish.paint)
+                  ? 'Local finishes · ${recipe.surfaces.length} surfaces'
                   : 'Local paint · ${recipe.surfaces.length} ${recipe.surfaces.length == 1 ? 'wall' : 'walls'}',
-              prompt: 'Local paint preview. Saved wall selections and colour blending; no AI request. See saved paint layers for colours and selections.',
+              prompt: 'Local finish preview. Saved surface selections, colours and tile patterns; no AI request. See saved finish layers for details.',
               parentId: parent,
               sourceImageId: sourceId,
               paintRecipe: recipe,
@@ -2161,6 +2181,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
             ? correction
             : '$previous\n\n$correction';
         draft.setPrecise(true);
+        draft.setPrecisionConceptCount(1);
         draft.setUseAiPrompt(false);
         setState(() => focusSection = FocusSection.refine);
         final saved = await draft.save();
@@ -2168,8 +2189,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
           notice(
             context,
             saved
-                ? 'Paint preview saved. Review the correction, then Generate AI design when ready.'
-                : 'Paint preview saved. Correction draft could not save; keep this screen open and retry Save.',
+                ? 'Finish preview saved. Review the single final polish, then Generate AI design when ready.'
+                : 'Finish preview saved. Correction draft could not save; keep this screen open and retry Save.',
           );
         }
       }
@@ -2292,7 +2313,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   ),
             imageTools: [
               IconButton(
-                tooltip: 'Paint walls without AI',
+                tooltip: 'Colours & tiles without AI',
                 onPressed: aiPending || source == null
                     ? null
                     : () => _paintRoom(room),

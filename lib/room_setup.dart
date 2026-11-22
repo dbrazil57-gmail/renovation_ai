@@ -179,7 +179,14 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
         'The reviewed AI prompt is out of date. Analyse again or untick Use this AI prompt.',
       );
     }
-    final prompt = analysis ? template : reviewedRoomPrompt(template, draft);
+    final prompt = analysis
+        ? template
+        : reviewedRoomPrompt(
+            template,
+            draft,
+            sourceImageId: sourceId,
+            supportingImageIds: supporting.keys,
+          );
     if (prompt.length > 16000) {
       throw const AiFailure('Shorten the prompt before generating.');
     }
@@ -195,6 +202,23 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
       instructions: text,
       precise: draft.preciseEdit,
       title: draft.preciseEdit ? 'AI precision edit' : 'AI renovation concept',
+    );
+  }
+
+  String previewPrompt() {
+    final current = room;
+    final sourceId =
+        widget.store
+            .designsFor(current.id)
+            .where((d) => d.id == designId)
+            .firstOrNull
+            ?.imageId ??
+        current.primaryId;
+    return reviewedRoomPrompt(
+      roomTemplatePrompt(current, draft),
+      draft,
+      sourceImageId: sourceId,
+      supportingImageIds: current.photoIds.where((id) => id != sourceId),
     );
   }
 
@@ -441,14 +465,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                   if (step == 3) ...[
                     ExpansionTile(
                       title: const Text('Preview final prompt'),
-                      children: [
-                        SelectableText(
-                          reviewedRoomPrompt(
-                            roomTemplatePrompt(current, draft),
-                            draft,
-                          ),
-                        ),
-                      ],
+                      children: [SelectableText(previewPrompt())],
                     ),
                     AiEditCard(
                       store: widget.store,

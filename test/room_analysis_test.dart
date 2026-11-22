@@ -16,6 +16,7 @@ import 'package:renovision_ai/project_backup.dart';
 import 'package:renovision_ai/room_analysis.dart';
 import 'package:renovision_ai/room_analysis_widgets.dart';
 import 'package:renovision_ai/room_draft.dart';
+import 'package:renovision_ai/room_prompt.dart';
 import 'package:renovision_ai/screens.dart';
 import 'package:renovision_ai/store.dart';
 
@@ -293,7 +294,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(draft.analysis!.context, 'Room request: ');
       expect(
-        find.textContaining('Photos or preferences have changed'),
+        find.textContaining('Photo observations still match'),
         findsOneWidget,
       );
       expect(draft.useAiPrompt, false);
@@ -440,7 +441,100 @@ void main() {
     expect(analysis.matches('other', ['side'], 'Keep windows'), false);
     expect(analysis.matches('main', [], 'Keep windows'), false);
     expect(analysis.matches('main', ['side'], 'Remove windows'), false);
+    expect(analysis.matchesPhotos('main', ['side']), true);
   });
+
+  test('new designs reuse matching photo facts without adopting an unreviewed AI brief', () {
+    final draft = draftForTest();
+    addTearDown(draft.dispose);
+    draft.setPrecise(false);
+    draft.setAnalysis(
+      RoomAnalysis(
+        result: RoomAnalysisResult.fromMap(responseBody),
+        sourceImageId: room.originalId,
+        supportingImageIds: const ['side'],
+        context: 'old user choices',
+        created: DateTime.now(),
+      ),
+    );
+    draft.setUseAiPrompt(false);
+    String prompt({String? source, List<String> views = const ['side']}) =>
+        reviewedRoomPrompt(
+          'Keep the window. New palette requested.',
+          draft,
+          sourceImageId: source ?? room.originalId,
+          supportingImageIds: views,
+        );
+    expect(prompt(), contains(responseBody['observations']));
+    expect(prompt(), isNot(contains(responseBody['prompt'])));
+    expect(prompt(), contains('CURRENT USER REQUIREMENTS'));
+    draft.setStyle('japanese', true);
+    expect(prompt(), contains(responseBody['observations']));
+    expect(
+      prompt(source: 'a generated design'),
+      isNot(contains('PHOTO ANALYSIS')),
+    );
+    expect(prompt(views: []), isNot(contains('PHOTO ANALYSIS')));
+    expect(prompt(views: ['another angle']), isNot(contains('PHOTO ANALYSIS')));
+    draft.setPrecise(true);
+    expect(prompt(), isNot(contains('PHOTO ANALYSIS')));
+    expect(analyses, 0);
+    expect(edits, 0);
+  });
+
+  test(
+    'analysis asks for a visible inventory and scope-aware design initiative',
+    () {
+      for (final phrase in [
+        'floor and wall finishes',
+        'ceiling/bulkheads',
+        'appliances, main and task lighting',
+        'what is obscured',
+        'all supplied views',
+        'few or no comments',
+        'rather than copying the old decor',
+        'For Partial renovation',
+        'For precise corrections',
+        'genuine conflicts',
+      ]) {
+        expect(roomAnalysisInstructions, contains(phrase));
+      }
+    },
+  );
+
+  testWidgets(
+    'generation attaches matching observations by default without sending the optional AI-written brief',
+    (tester) async {
+      await store.updateRoom(
+        room.copyWith(
+          preciseEdit: false,
+          useAiPrompt: false,
+          analysis: RoomAnalysis(
+            result: RoomAnalysisResult.fromMap(responseBody),
+            sourceImageId: room.originalId,
+            supportingImageIds: const [],
+            context: 'an earlier palette',
+            created: DateTime.now(),
+          ),
+        ),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WorkspaceScreen(store: store, roomId: room.id),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Generate AI design'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Send to OpenAI'));
+      await tester.pumpAndSettle();
+      expect(submitted!['prompt'], contains(responseBody['observations']));
+      expect(submitted!['prompt'], isNot(contains(responseBody['prompt'])));
+      expect(analyses, 0);
+      expect(edits, 1);
+      expect(store.designsFor(room.id).single.prompt, submitted!['prompt']);
+    },
+  );
 
   testWidgets(
     'reviewed AI prompt is used by generation and stale preferences block sending',

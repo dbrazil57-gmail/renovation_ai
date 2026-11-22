@@ -543,7 +543,7 @@ void main() {
     final recording = AppRecording(tester, 'paint');
     await recording.mount(WorkspaceScreen(store: store, roomId: room.id));
     await recording.tap(
-      find.byTooltip('Paint walls without AI'),
+      find.byTooltip('Colours & tiles without AI'),
       'Open local paint. No AI connection or key is required.',
     );
     await recording.quiet();
@@ -593,18 +593,21 @@ void main() {
       'Return to the painted preview.',
     );
     await recording.tap(
-      find.byTooltip('Add wall'),
+      find.byTooltip('Add surface'),
       'Add a separate wall layer when you need another colour.',
     );
     await recording.tap(
-      find.byTooltip('Delete selected wall'),
+      find.byTooltip('Delete selected surface'),
       'Remove the selected layer without changing the others.',
     );
     await recording.tap(
       find.widgetWithText(FilledButton, 'Delete'),
       'Confirm. Deletion controls also work after reopening.',
     );
-    await recording.tap(find.text('2 Paint colour'), 'Return to colours for the retained wall.');
+    await recording.tap(
+      find.text('2 Finish'),
+      'Return to colours for the retained wall.',
+    );
     await recording.tap(
       find.text('Finish with AI'),
       'Optionally save this rough preview and prepare an AI correction.',

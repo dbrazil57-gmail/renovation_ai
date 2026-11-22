@@ -6,6 +6,23 @@ import 'package:image/image.dart' as img;
 
 enum PaintMarkKind { polygon, brush, erase, region }
 
+enum LocalSurfaceKind { wall, floor, splashback }
+
+enum LocalFinish { paint, squareTiles, rectangleTiles, brickTiles }
+
+const localFinishLabels = {
+  LocalFinish.paint: 'Paint colour',
+  LocalFinish.squareTiles: 'Square tiles',
+  LocalFinish.rectangleTiles: 'Large rectangular tiles',
+  LocalFinish.brickTiles: 'Subway / brick tiles',
+};
+
+const localSurfaceLabels = {
+  LocalSurfaceKind.wall: 'Wall',
+  LocalSurfaceKind.floor: 'Floor',
+  LocalSurfaceKind.splashback: 'Splashback',
+};
+
 /// Compact one-bit mask in normalized image coordinates; never image pixels.
 class PaintRegion {
   final int width, height;
@@ -143,28 +160,54 @@ class PaintSurface {
   final int rgb;
   final double coverage;
   final List<PaintMark> marks;
+  final LocalSurfaceKind kind;
+  final LocalFinish finish;
+  final double tileSize, tileAngle;
+  final int groutRgb;
   PaintSurface({
     required this.name,
     this.rgb = 0xD7C7AC,
     this.coverage = .95,
     Iterable<PaintMark> marks = const [],
+    this.kind = LocalSurfaceKind.wall,
+    this.finish = LocalFinish.paint,
+    this.tileSize = .16,
+    this.tileAngle = 0,
+    this.groutRgb = 0xDED8CE,
   }) : marks = List.unmodifiable(marks);
   PaintSurface copyWith({
     String? name,
     int? rgb,
     double? coverage,
     List<PaintMark>? marks,
+    LocalSurfaceKind? kind,
+    LocalFinish? finish,
+    double? tileSize,
+    double? tileAngle,
+    int? groutRgb,
   }) => PaintSurface(
     name: name ?? this.name,
     rgb: rgb ?? this.rgb,
     coverage: coverage ?? this.coverage,
     marks: marks ?? this.marks,
+    kind: kind ?? this.kind,
+    finish: finish ?? this.finish,
+    tileSize: tileSize ?? this.tileSize,
+    tileAngle: tileAngle ?? this.tileAngle,
+    groutRgb: groutRgb ?? this.groutRgb,
   );
   Map<String, dynamic> toMap() => {
     'name': name,
     'rgb': rgb,
     'coverage': coverage,
     'marks': marks.map((mark) => mark.toMap()).toList(),
+    if (kind != LocalSurfaceKind.wall) 'surfaceKind': kind.name,
+    if (finish != LocalFinish.paint) ...{
+      'finish': finish.name,
+      'tileSize': tileSize,
+      'tileAngle': tileAngle,
+      'groutRgb': groutRgb,
+    },
   };
 }
 
@@ -219,6 +262,30 @@ class LocalPaintRecipe {
         throw invalid;
       }
       final marks = <PaintMark>[];
+      final kind = LocalSurfaceKind.values
+          .where((v) => v.name == (item['surfaceKind'] ?? 'wall'))
+          .firstOrNull;
+      final finish = LocalFinish.values
+          .where((v) => v.name == (item['finish'] ?? 'paint'))
+          .firstOrNull;
+      final tileSize = item['tileSize'] ?? .16,
+          tileAngle = item['tileAngle'] ?? 0,
+          grout = item['groutRgb'] ?? 0xDED8CE;
+      if (kind == null ||
+          finish == null ||
+          tileSize is! num ||
+          !tileSize.isFinite ||
+          tileSize < .04 ||
+          tileSize > .5 ||
+          tileAngle is! num ||
+          !tileAngle.isFinite ||
+          tileAngle < 0 ||
+          tileAngle > 180 ||
+          grout is! int ||
+          grout < 0 ||
+          grout > 0xFFFFFF) {
+        throw invalid;
+      }
       for (final op in item['marks'] as List) {
         if (op is! Map) throw invalid;
         final kind = PaintMarkKind.values
@@ -268,6 +335,11 @@ class LocalPaintRecipe {
           rgb: item['rgb'],
           coverage: (item['coverage'] as num).toDouble(),
           marks: marks,
+          kind: kind,
+          finish: finish,
+          tileSize: tileSize.toDouble(),
+          tileAngle: tileAngle.toDouble(),
+          groutRgb: grout,
         ),
       );
     }
@@ -305,13 +377,18 @@ String paintRefinementPrompt(LocalPaintRecipe recipe) {
         final location = seed == null
             ? ''
             : ' near ${(seed.points.single.x * 100).round()}% across and ${(seed.points.single.y * 100).round()}% down the image';
-        return '${wall.name}$location: $hex';
+        final finish = wall.finish == LocalFinish.paint
+            ? 'paint $hex'
+            : '${localFinishLabels[wall.finish]}, tile colour $hex, grout #${wall.groutRgb.toRadixString(16).padLeft(6, '0').toUpperCase()}, preview size ${(wall.tileSize * 100).round()}%, angle ${wall.tileAngle.round()} degrees';
+        return '${wall.name} (${localSurfaceLabels[wall.kind]})$location: $finish';
       })
       .join('; ');
-  return 'The selected image is a rough local paint preview. Finish only the indicated wall paint as a photorealistic result, using these intended colours: $colours. '
-      'Clean uneven paint boundaries, halos and small missed patches on those same wall surfaces. Preserve natural light, shadows and wall texture. '
-      'Keep ceilings, trim, windows, doors, furniture, appliances, floors, artwork, the layout and camera viewpoint unchanged. '
-      'Do not redesign, add decoration or recolour other surfaces. Hex colours are approximate visual references, not exact paint matches.';
+  final tiles = targets.any((surface) => surface.finish != LocalFinish.paint);
+  return 'The selected image is a rough local ${tiles ? 'finish preview with paint/tile choices' : 'paint preview'}. Polish the selected finishes together in one photorealistic correction using these choices: $colours. '
+      'Clean uneven boundaries, halos and small missed patches on those same selected surfaces. Integrate natural material texture, light and shadows with the approved design. '
+      '${tiles ? 'Refine tile perspective, grout alignment and material realism within the selected floor/wall/splashback areas. The local pattern scale and angle are visual guidance, not measured installation dimensions. ' : ''}'
+      'Keep all unselected surfaces, ceilings, trim, windows, doors, furniture, appliances, artwork, layout and camera viewpoint unchanged. A floor may change only if explicitly listed among the selected targets above. '
+      'Do not redesign the approved concept, reintroduce old finishes, add decoration or recolour unrelated surfaces. Hex colours are approximate visual references, not exact paint or tile-product matches.';
 }
 
 class PaintPrepared {
@@ -381,9 +458,56 @@ PaintRenderResult renderLocalPaint(PaintRenderInput input) {
   // Expand indexed images before changing a colour; editing a palette entry
   // could otherwise recolour unselected pixels sharing that entry.
   final output = source.convert(numChannels: 4);
+  // Low-frequency light field prevents old floor patterns showing through a
+  // new tile preview. Paint keeps its existing fine-grained wall shading.
+  final tileLight =
+      input.recipe.surfaces.any((s) => s.finish != LocalFinish.paint)
+      ? img.gaussianBlur(
+          img.copyResize(
+            source,
+            width: source.width >= source.height
+                ? math.min(48, source.width)
+                : null,
+            height: source.height > source.width
+                ? math.min(48, source.height)
+                : null,
+          ),
+          radius: 2,
+        )
+      : null;
+  final lightLuminance = tileLight == null
+      ? null
+      : Float64List.fromList([
+          for (final p in tileLight) .2126 * p.r + .7152 * p.g + .0722 * p.b,
+        ]);
+  double luminanceAt(int x, int y, bool tiled) {
+    if (!tiled) {
+      final p = source.getPixel(x, y);
+      return .2126 * p.r + .7152 * p.g + .0722 * p.b;
+    }
+    final light = tileLight!;
+    final u = x * (light.width - 1) / math.max(1, source.width - 1);
+    final v = y * (light.height - 1) / math.max(1, source.height - 1);
+    final left = u.floor(), top = v.floor();
+    double at(int xx, int yy) => lightLuminance![yy * light.width + xx];
+
+    final right = math.min(left + 1, light.width - 1),
+        bottom = math.min(top + 1, light.height - 1);
+    final a = at(left, top) * (1 - (u - left)) + at(right, top) * (u - left);
+    final b =
+        at(left, bottom) * (1 - (u - left)) + at(right, bottom) * (u - left);
+    return a * (1 - (v - top)) + b * (v - top);
+  }
+
   var changed = 0;
   for (final surface in input.recipe.surfaces) {
     if (surface.coverage == 0 || surface.marks.isEmpty) continue;
+    final tiled = surface.finish != LocalFinish.paint;
+    final angle = surface.tileAngle * math.pi / 180;
+    final cosine = math.cos(angle), sine = math.sin(angle);
+    final tileWidth = surface.tileSize * math.min(source.width, source.height);
+    final tileHeight =
+        tileWidth * (surface.finish == LocalFinish.squareTiles ? 1 : .5);
     final mask = img.Image(
       width: source.width,
       height: source.height,
@@ -462,9 +586,8 @@ PaintRenderResult renderLocalPaint(PaintRenderInput input) {
     var luminance = 0.0, weight = 0.0;
     for (final pixel in mask) {
       if (pixel.r == 0) continue;
-      final p = source.getPixel(pixel.x, pixel.y);
       final alpha = pixel.r / 255;
-      luminance += (.2126 * p.r + .7152 * p.g + .0722 * p.b) * alpha;
+      luminance += luminanceAt(pixel.x, pixel.y, tiled) * alpha;
       weight += alpha;
     }
     if (weight == 0) continue;
@@ -474,9 +597,8 @@ PaintRenderResult renderLocalPaint(PaintRenderInput input) {
         blue = surface.rgb & 255;
     for (final pixel in mask) {
       if (pixel.r == 0) continue;
-      final p = source.getPixel(pixel.x, pixel.y),
-          target = output.getPixel(pixel.x, pixel.y);
-      final shade = ((.2126 * p.r + .7152 * p.g + .0722 * p.b) / mean).clamp(
+      final target = output.getPixel(pixel.x, pixel.y);
+      final shade = (luminanceAt(pixel.x, pixel.y, tiled) / mean).clamp(
         .25,
         1.6,
       );
@@ -485,9 +607,24 @@ PaintRenderResult renderLocalPaint(PaintRenderInput input) {
           (previous * (1 - alpha) + (colour * shade).clamp(0, 255) * alpha)
               .round()
               .clamp(0, 255);
-      final r = mix(target.r, red),
-          g = mix(target.g, green),
-          b = mix(target.b, blue);
+      var targetRgb = surface.rgb;
+      if (tiled) {
+        final dx = pixel.x - source.width / 2, dy = pixel.y - source.height / 2;
+        var u = (dx * cosine + dy * sine) / tileWidth;
+        final v = (-dx * sine + dy * cosine) / tileHeight;
+        if (surface.finish == LocalFinish.brickTiles && v.floor().isOdd) {
+          u += .5;
+        }
+        final fu = u - u.floor(), fv = v - v.floor();
+        final edge = math.min(
+          math.min(fu, 1 - fu) * tileWidth,
+          math.min(fv, 1 - fv) * tileHeight,
+        );
+        if (edge < tileWidth * .018) targetRgb = surface.groutRgb;
+      }
+      final r = mix(target.r, tiled ? (targetRgb >> 16) & 255 : red),
+          g = mix(target.g, tiled ? (targetRgb >> 8) & 255 : green),
+          b = mix(target.b, tiled ? targetRgb & 255 : blue);
       if (target.r != r || target.g != g || target.b != b) changed++;
       target
         ..r = r
