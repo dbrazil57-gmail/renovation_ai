@@ -28,6 +28,15 @@ Future<bool> _focusTarget(WidgetTester tester, Finder target) async {
       if (section == FocusSection.room) {
         await _openAnalysisDetails(tester, target);
       }
+      if (section == FocusSection.style && target.evaluate().isEmpty) {
+        final partial = find.byKey(const ValueKey('partial-renovation-items'));
+        if (partial.evaluate().isNotEmpty) {
+          await tester.ensureVisible(partial);
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('Choose individual changes'));
+          await tester.pumpAndSettle();
+        }
+      }
       if (target.evaluate().isEmpty && section == FocusSection.refine) {
         final editOptions = find.byKey(const ValueKey('focus-edit-options'));
         if (editOptions.evaluate().isNotEmpty) {

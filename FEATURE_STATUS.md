@@ -1,8 +1,38 @@
 # Renovision feature status
 
+## Follow-up implementation — 23 November 2026
+
+This is the current source position. The 22 November audit below is historical
+where superseded here. No new APK, real paid AI request, deployment or user-data
+reset was performed for this follow-up.
+
+Chrome source **`ac96247b07`**, localhost:7357. Full suite: **388 passed**; final
+archive visibility follow-up: **24 related tests passed**. Final analysis clean
+(17.7s); release web: 48.2s.
+Actual desktop/phone-sized tab navigation and inspected screenshots pass. Actual
+selected-update field, Autosave after reload and typed archive/restore pass in
+disposable Chrome profiles. Synthetic vault reload/separate removal passes; seven
+help captures and full MP4 decodes pass. No real provider or physical-phone test.
+
+| Request | Implemented behaviour | Remaining acceptance / limitation |
+| --- | --- | --- |
+| Remember keys (T09) | Separate encrypted IndexedDB/WebCrypto vault survives reload, scoped by browser profile/address. No login. Per-provider removal; no project export includes secrets. | Real reload/removal passed with synthetic fixtures; owner enters an existing key once after updating. Site-data clearing removes it; same-origin app code can use it. Android vault remains unchanged. |
+| Visible Autosave (T03/T11) | Compact switch under the title in project, room setup and workspace. Saved setting, save errors retained. | Confirm placement on the physical phone after a requested APK. Local autosave is distinct from a reusable external file link. |
+| Save/Open/import and project management (T10/T11) | Full portable project; optional snapshot; duplicate; typed archive/delete with backup suggestion; restore archived/deleted work; unique new names and numbered legacy labels. Import room copies adds all images/history with fresh IDs. | Original OneDrive incident cause remains unproven; system-picker destination save/reopen still required. Additive import does not reconcile same-room edits. Android durable linked URI overwriting remains open. |
+| Narrow refinement | Selected result opens Refine with Update this design and Apply focused update; original broad brief/Keep fields remain separate. Typing an update also switches the footer to focused correction. | Mocked confirmation/cancellation, parent/version and brief preservation pass. Real-image adherence is not guaranteed. |
+| Paint-only AI polish (T12) | Dedicated Polish paint / tiles with AI uses the rough guide and clean source view; excludes broad brief, old corrections, palette/analysis/research and unrelated angles. | Automatic colour selection can miss edges; add missed area or outline it. Actual owner-image boundary acceptance remains. |
+| Tile material/perspective (T12) | Bounded, metadata-stripped material import, editable colour/scale/grout and reviewed four-corner perspective; portable saved layers. | Approximate projection and lighting; no semantic segmentation, measured scale or verified product catalogue. |
+| Three different concepts (T07) | Kitchen schemes explicitly vary cabinetry/front detail, hood, focal materials and main light within palette/Keep constraints. Other rooms retain distinct design directions. | Real two/three-result appeal and distinctness need an owner-confirmed paid test. No automatic similarity critique or paid retry. |
+| Notice obstruction | Main workspace notices push content, replace old messages and expire after six seconds. Other snackbars explicitly expire, with close controls. Completed AI progress expires after ten seconds; failed-save recovery remains available. | Check real phone touch and enlarged text; active progress/save recovery must stay usable. |
+| Region (T16) | Saved AU/NZ/UK/US English terminology setting, prompt guidance and mapped room-item labels. | Regional wording, not translation of the entire interface. |
+| Image cost (T17) | Provider-returned image token usage stored with results; dated known-rate USD estimates, room totals, unpriced count and optional manually entered image budget. | Excludes analysis, research, failed requests, tax/FX and unknown pricing; not invoice, wallet or provider balance. Gemini usage is retained but unpriced. |
+| Current references (T18) | Optional direct-OpenAI sourced text research, separate confirmation, fixed HTTPS host, one search call, reviewed opt-in inclusion only in new concepts. Portable dated notes/links. | No automatic browsing during image generation. No deployed product catalogue; other providers use their image models without this research tool. |
+| Help (T14) | Updated step text and recordings of current app widgets using disposable sample storage and simulated AI/camera. Owner-authorised kitchen replay remains separate and offline. | Real Android launch footage and physical playback acceptance follow the release interface. |
+| External release (T15/T19) | Existing tester-service/client preparation and release guide retained. | Owner confirms no hosting/support address. Funding, support/report delivery, privacy hosting, production signing/accounts, store testing and iOS parity remain open. |
+
 ## Request audit — 22 November 2026
 
-This is the current audit of today's 11 committed batches and the requests in the
+This is the previous audit of 11 committed batches and the requests in the
 conversation. Older dated notes below record history; an old unchecked packaging
 item is not evidence that a feature is absent from the current app.
 

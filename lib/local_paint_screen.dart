@@ -3,12 +3,15 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'context_help.dart';
 import 'design_palettes.dart';
 import 'local_paint.dart';
 import 'room_features.dart';
 import 'wall_selection.dart';
+import 'app_notices.dart';
+import 'tile_projection.dart';
 
 enum _PaintTool { automatic, polygon, brush, erase, move }
 
@@ -51,6 +54,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
   bool compare = false, showSelection = false, allowClose = false;
   bool strokeLimitWarned = false;
   bool selectingWall = false;
+  bool addArea = false;
   double sensitivity = 28;
   String? error;
   Timer? previewTimer, draftTimer;
@@ -112,9 +116,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
 
   void tell(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message)));
+    showAppNotice(context, message);
   }
 
   void change(LocalPaintRecipe next, {bool remember = true}) {
@@ -231,6 +233,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
       changeWall(
         wall.copyWith(
           marks: [
+            if (addArea) ...wall.marks,
             PaintMark(PaintMarkKind.region, [seed], region: result.region),
           ],
         ),
@@ -489,6 +492,34 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
     }
     changeWall(wall.copyWith(rgb: int.parse(text, radix: 16)));
     setState(() => showSelection = false);
+  }
+
+  Future<void> chooseTileTexture() async {
+    if (busy) return;
+    final originalIndex = selected;
+    setState(() => busy = true);
+    try {
+      final file = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (file == null) return;
+      final bytes = await file.readAsBytes();
+      if (bytes.length > 18 * 1024 * 1024) {
+        throw const FormatException('Choose a sample under 18 MB.');
+      }
+      final prepared = await compute(prepareTileTexture, bytes);
+      if (!mounted || selected != originalIndex) return;
+      changeWall(
+        wall.copyWith(tileTexture: prepared.$1, rgb: prepared.$2, coverage: 1),
+      );
+      setState(() => showSelection = false);
+    } on FormatException catch (e) {
+      tell(e.message);
+    } catch (_) {
+      tell(
+        'The material sample could not be imported. Existing finishes are retained.',
+      );
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
   }
 
   @override
@@ -767,6 +798,15 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
           ],
         ),
       if (panel == 0 && tool == _PaintTool.automatic) ...[
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Add area to this surface'),
+          subtitle: const Text(
+            'Tap another missed patch with the same finish. AI polish can resolve difficult boundaries.',
+          ),
+          value: addArea,
+          onChanged: busy ? null : (v) => setState(() => addArea = v),
+        ),
         const Text(
           'Tap a surface and check its boundary. Patterned floors may need the outline tool.',
         ),
@@ -859,7 +899,47 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             title: const Text('Tile layout & grout'),
             children: [
               const Text(
-                'Approximate 2D layout, not a realistic material render. Finish with AI can refine material, scale and perspective; review its result.',
+                'Use a close-up material sample for real texture. A reviewed four-corner outline can fit the pattern to perspective; it is visual guidance, not measured tile placement. AI polish can finish difficult boundaries.',
+              ),
+              TextButton.icon(
+                onPressed: busy ? null : chooseTileTexture,
+                icon: const Icon(Icons.texture),
+                label: const Text('Choose material sample'),
+              ),
+              if (wall.tileTexture != null)
+                TextButton(
+                  onPressed: busy
+                      ? null
+                      : () => changeWall(wall.copyWith(clearTileTexture: true)),
+                  child: const Text('Remove material sample'),
+                ),
+              Builder(
+                builder: (context) {
+                  final corners = wall.marks
+                      .where(
+                        (m) =>
+                            m.kind == PaintMarkKind.polygon &&
+                            m.points.length == 4,
+                      )
+                      .lastOrNull;
+                  final valid =
+                      corners != null &&
+                      TileProjection.fromCorners(
+                            corners.points.map((p) => (p.x, p.y)).toList(),
+                          ) !=
+                          null;
+                  return SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Fit tiles to four-corner outline'),
+                    subtitle: const Text(
+                      'In Select, outline the surface clockwise from its top-left corner. Check the preview before saving.',
+                    ),
+                    value: wall.fitTilePlane,
+                    onChanged: !valid || busy
+                        ? null
+                        : (v) => changeWall(wall.copyWith(fitTilePlane: v)),
+                  );
+                },
               ),
               Text('Pattern size ${(wall.tileSize * 100).round()}%'),
               Slider(
@@ -957,7 +1037,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                     ? () => save(finishWithAi: true)
                     : null,
                 icon: const Icon(Icons.auto_awesome_outlined),
-                label: const Text('Finish with AI'),
+                label: const Text('Polish paint / tiles with AI'),
               ),
           ],
         ),

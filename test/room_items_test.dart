@@ -175,6 +175,8 @@ void main() {
         await tester.pumpAndSettle();
       }
 
+      await tester.tap(find.text('Choose individual changes'));
+      await tester.pumpAndSettle();
       await choose('All kitchen appliances', 'Replace / update');
       await tester.ensureVisible(find.text('Individual appliances (optional)'));
       await tester.tap(find.text('Individual appliances (optional)'));

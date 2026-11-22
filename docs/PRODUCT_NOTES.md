@@ -1,5 +1,41 @@
 # Product and research reference
 
+## Current decisions — 23 November
+
+Provider keys now persist without an app account: encrypted browser-local vault
+on web, secure device storage on Android. Browser origin/profile still matters;
+clearing site data removes browser keys. No credentials are exported with projects.
+The visible Autosave switch keeps device edits; a linked reusable browser file
+also updates while connected. Backups are optional fixed snapshots of the same
+project contents. Restore makes a copy; additive room import preserves separate
+rooms instead of reconciling same-room edits. Archive/delete remains recoverable.
+
+Whole-room concepts and focused selected-image updates are distinct operations.
+Paint polishing sends the approximate finish guide with its clean source view,
+excluding the original broad redesign. Stronger multiple-concept directions ask
+for different material/cabinet/fitting schemes within the chosen palette. Real
+provider comparison is still needed; no claim of ten-times-better output.
+
+Optional sourced research is now a separate confirmed direct-OpenAI text request.
+It does not send room photos or run automatically. Reviewed dated notes may inform
+new concepts; precision excludes them. The old ChatGPT kitchen transcript/tool
+history remains unavailable, so do not infer that it used web research.
+
+Image-only usage estimates now retain returned tokens and use dated known USD
+rates; unknown model/pricing remains unpriced. The manual image budget excludes
+analysis, research, failed requests and tax/FX, and is not provider credit.
+See [OpenAI pricing](https://developers.openai.com/api/docs/pricing) and
+[web-search tool documentation](https://developers.openai.com/api/docs/guides/tools-web-search).
+WebCrypto key storage follows browser structured-clone support, not a claim that
+same-origin app code cannot use it: [WebCrypto specification](https://www.w3.org/TR/webcrypto/).
+
+Imported tile textures and reviewed plane projection improve local previews.
+Automatic semantic wall detection, enforced edit masks, product measurements,
+tracked moving-room AR and a complete billing ledger remain future work.
+No hosting/support address exists yet. Hosted tester credits and actual feedback/
+report delivery need those services and an owner-approved budget; no deployment,
+account signup or spending was performed. Older dated notes below are historical.
+
 ## Saving and design-quality regroup — 22 November
 
 Use Save project for the working document. Backup exports the same contents as a

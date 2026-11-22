@@ -110,6 +110,9 @@ void main() {
     await reach(tester, control, up: up);
     if (tester.widget<SwitchListTile>(control).value) await tester.tap(control);
     await tester.pumpAndSettle();
+    await reach(tester, find.text('Choose individual changes'));
+    await tester.tap(find.text('Choose individual changes'));
+    await tester.pumpAndSettle();
   }
 
   test('combined style is deduplicated and selected changes explicitly replace the floor and remove the telephone', () {

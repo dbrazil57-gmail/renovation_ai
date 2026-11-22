@@ -104,13 +104,15 @@ class _DownloadImageButtonState extends State<DownloadImageButton> {
         mimeType: 'image/png',
       );
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(saveMessage(result))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(persist: false, content: Text(saveMessage(result))),
+        );
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+            persist: false,
             content: Text(
               error is BackupFailure
                   ? error.message
@@ -376,6 +378,7 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+            persist: false,
             content: Text(
               error is BackupFailure ? error.message : 'The backup could not be opened. Existing projects were not replaced.',
             ),

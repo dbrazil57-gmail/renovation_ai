@@ -14,6 +14,7 @@ import 'gemini_internet.dart';
 import 'ai_model_choices.dart';
 import 'tester_access.dart';
 import 'ai_photo_preparation.dart' show internetPhotos;
+import 'design_references.dart';
 export 'ai_model_choices.dart' show AiProvider;
 
 /// Supports a personal internet API key or the development relay. Provider keys
@@ -81,6 +82,22 @@ class AiService extends ChangeNotifier {
   bool get supportsAnalysis => connected && analysisModel != null;
   int maxInputImages = 1;
   bool get connected => isDirect ? _directKey != null : _url != null;
+  bool get supportsResearch =>
+      connected && isDirect && provider == AiProvider.openai;
+  Future<DesignReferences> researchReferences(String query) {
+    if (!supportsResearch || activity.active) {
+      throw const AiFailure(
+        'Connect OpenAI directly and finish any active request before researching.',
+      );
+    }
+    return researchDesignReferences(
+      clientFactory: clientFactory,
+      key: _directKey!,
+      model: analysisModel ?? 'gpt-6-luna',
+      query: query,
+    );
+  }
+
   String get relayUrl => _url ?? _preferredUrl;
 
   Future<void> restoreConnection(Map saved) async {

@@ -67,13 +67,14 @@ class _CreationExportControlsState extends State<CreationExportControls> {
       };
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(message)));
+        ..showSnackBar(SnackBar(persist: false, content: Text(message)));
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
             SnackBar(
+              persist: false,
               content: Text(
                 sharing
                     ? 'Sharing could not open. Tap Share again, or save the image and share it from your photos/files.'

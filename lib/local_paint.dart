@@ -4,6 +4,8 @@ import 'dart:typed_data';
 
 import 'package:image/image.dart' as img;
 
+import 'tile_projection.dart';
+
 enum PaintMarkKind { polygon, brush, erase, region }
 
 enum LocalSurfaceKind { wall, floor, splashback }
@@ -163,6 +165,8 @@ class PaintMark {
 }
 
 class PaintSurface {
+  final Uint8List? tileTexture;
+  final bool fitTilePlane;
   final String name;
   final int rgb;
   final double coverage;
@@ -181,7 +185,12 @@ class PaintSurface {
     this.tileSize = .16,
     this.tileAngle = 0,
     this.groutRgb = 0xDED8CE,
-  }) : marks = List.unmodifiable(marks);
+    Uint8List? tileTexture,
+    this.fitTilePlane = false,
+  }) : marks = List.unmodifiable(marks),
+       tileTexture = tileTexture == null
+           ? null
+           : Uint8List.fromList(tileTexture).asUnmodifiableView();
   PaintSurface copyWith({
     String? name,
     int? rgb,
@@ -192,6 +201,9 @@ class PaintSurface {
     double? tileSize,
     double? tileAngle,
     int? groutRgb,
+    Uint8List? tileTexture,
+    bool clearTileTexture = false,
+    bool? fitTilePlane,
   }) => PaintSurface(
     name: name ?? this.name,
     rgb: rgb ?? this.rgb,
@@ -202,12 +214,16 @@ class PaintSurface {
     tileSize: tileSize ?? this.tileSize,
     tileAngle: tileAngle ?? this.tileAngle,
     groutRgb: groutRgb ?? this.groutRgb,
+    tileTexture: clearTileTexture ? null : tileTexture ?? this.tileTexture,
+    fitTilePlane: fitTilePlane ?? this.fitTilePlane,
   );
   Map<String, dynamic> toMap() => {
     'name': name,
     'rgb': rgb,
     'coverage': coverage,
     'marks': marks.map((mark) => mark.toMap()).toList(),
+    if (tileTexture != null) 'tileTexture': base64Encode(tileTexture!),
+    if (fitTilePlane) 'fitTilePlane': true,
     if (kind != LocalSurfaceKind.wall) 'surfaceKind': kind.name,
     if (finish != LocalFinish.paint) ...{
       'finish': finish.name,
@@ -269,6 +285,21 @@ class LocalPaintRecipe {
         throw invalid;
       }
       final marks = <PaintMark>[];
+      Uint8List? texture;
+      if (item['tileTexture'] != null) {
+        if (item['tileTexture'] is! String ||
+            (item['tileTexture'] as String).length > 700000) {
+          throw invalid;
+        }
+        texture = base64Decode(item['tileTexture']);
+        final info = img.findDecoderForData(texture)?.startDecode(texture);
+        if (info == null || info.width > 512 || info.height > 512) {
+          throw invalid;
+        }
+      }
+      if (item['fitTilePlane'] != null && item['fitTilePlane'] is! bool) {
+        throw invalid;
+      }
       final kind = LocalSurfaceKind.values
           .where((v) => v.name == (item['surfaceKind'] ?? 'wall'))
           .firstOrNull;
@@ -347,6 +378,8 @@ class LocalPaintRecipe {
           tileSize: tileSize.toDouble(),
           tileAngle: tileAngle.toDouble(),
           groutRgb: grout,
+          tileTexture: texture,
+          fitTilePlane: item['fitTilePlane'] == true,
         ),
       );
     }
@@ -392,6 +425,7 @@ String paintRefinementPrompt(LocalPaintRecipe recipe) {
       .join('; ');
   final tiles = targets.any((surface) => surface.finish != LocalFinish.paint);
   return 'The selected image is a rough local ${tiles ? 'finish preview with paint/tile choices' : 'paint preview'}. Polish the selected finishes together in one photorealistic correction using these choices: $colours. '
+      '${targets.any((s) => s.finish != LocalFinish.paint && s.tileTexture != null) ? 'Retain the imported material sample character visible in the guide, integrating its texture naturally rather than substituting a generic flat fill. ' : ''}'
       'Clean uneven boundaries, halos and small missed patches on those same selected surfaces. Integrate natural material texture, light and shadows with the approved design. '
       '${tiles ? 'Refine tile perspective, grout alignment and material realism within the selected floor/wall/splashback areas. Use realistic wall/splashback tile proportions and fine joints rather than copying an oversized screen-space grid literally. The local pattern scale and angle are visual guidance, not measured installation dimensions. ' : ''}'
       'Keep all unselected surfaces, ceilings, trim, windows, doors, furniture, appliances, artwork, layout and camera viewpoint unchanged. A floor may change only if explicitly listed among the selected targets above. '
@@ -402,6 +436,39 @@ class PaintPrepared {
   final Uint8List preview;
   final int width, height;
   PaintPrepared(this.preview, this.width, this.height);
+}
+
+(Uint8List, int) prepareTileTexture(Uint8List bytes) {
+  final info = img.findDecoderForData(bytes)?.startDecode(bytes);
+  if (info == null || info.width * info.height > 24000000) {
+    throw const FormatException(
+      'Choose a material sample under 24 megapixels.',
+    );
+  }
+  var image = img.bakeOrientation(img.decodeImage(bytes)!);
+  if (image.width > 512 || image.height > 512) {
+    image = img.copyResize(
+      image,
+      width: image.width >= image.height ? 512 : null,
+      height: image.height > image.width ? 512 : null,
+    );
+  }
+  image.exif = img.ExifData();
+  image.iccProfile = null;
+  image.textData?.clear();
+  var r = 0.0, g = 0.0, b = 0.0;
+  for (final p in image) {
+    r += p.r;
+    g += p.g;
+    b += p.b;
+  }
+  final count = image.width * image.height;
+  return (
+    img.encodeJpg(image, quality: 85),
+    ((r / count).round() << 16) |
+        ((g / count).round() << 8) |
+        (b / count).round(),
+  );
 }
 
 PaintPrepared preparePaintImage(Uint8List bytes) {
@@ -510,6 +577,45 @@ PaintRenderResult renderLocalPaint(PaintRenderInput input) {
   for (final surface in input.recipe.surfaces) {
     if (surface.coverage == 0 || surface.marks.isEmpty) continue;
     final tiled = surface.finish != LocalFinish.paint;
+    final texture = surface.tileTexture == null
+        ? null
+        : img.decodeImage(surface.tileTexture!);
+    var tr = 1.0, tg = 1.0, tb = 1.0;
+    if (texture != null) {
+      var sr = 0.0, sg = 0.0, sb = 0.0;
+      for (final p in texture) {
+        sr += p.r;
+        sg += p.g;
+        sb += p.b;
+      }
+      final n = texture.width * texture.height;
+      tr = math.max(1.0, sr / n);
+      tg = math.max(1.0, sg / n);
+      tb = math.max(1.0, sb / n);
+    }
+    final outline = surface.marks
+        .where((m) => m.kind == PaintMarkKind.polygon && m.points.length == 4)
+        .lastOrNull;
+    final corners = outline?.points.map((p) => (p.x, p.y)).toList();
+    final plane = surface.fitTilePlane && corners != null
+        ? TileProjection.fromCorners(corners)
+        : null;
+    final planeWidth = plane == null
+        ? 0.0
+        : TileProjection.edge(
+            corners![0],
+            corners[1],
+            source.width.toDouble(),
+            source.height.toDouble(),
+          );
+    final planeHeight = plane == null
+        ? 0.0
+        : TileProjection.edge(
+            corners![0],
+            corners[3],
+            source.width.toDouble(),
+            source.height.toDouble(),
+          );
     final angle = surface.tileAngle * math.pi / 180;
     final cosine = math.cos(angle), sine = math.sin(angle);
     final tileWidth = surface.tileSize * math.min(source.width, source.height);
@@ -618,13 +724,37 @@ PaintRenderResult renderLocalPaint(PaintRenderInput input) {
               .clamp(0, 255);
       var targetRgb = surface.rgb;
       if (tiled) {
-        final dx = pixel.x - source.width / 2, dy = pixel.y - source.height / 2;
+        var dx = pixel.x - source.width / 2, dy = pixel.y - source.height / 2;
+        if (plane != null) {
+          final mapped = plane.map(
+            pixel.x / math.max(1, source.width - 1),
+            pixel.y / math.max(1, source.height - 1),
+          );
+          dx = mapped.$1 * planeWidth;
+          dy = mapped.$2 * planeHeight;
+        }
         var u = (dx * cosine + dy * sine) / tileWidth;
         final v = (-dx * sine + dy * cosine) / tileHeight;
         if (surface.finish == LocalFinish.brickTiles && v.floor().isOdd) {
           u += .5;
         }
         final fu = u - u.floor(), fv = v - v.floor();
+        if (texture != null) {
+          final sample = texture.getPixel(
+            (fu * (texture.width - 1)).round(),
+            (fv * (texture.height - 1)).round(),
+          );
+          final r = (((surface.rgb >> 16) & 255) * sample.r / tr).round().clamp(
+            0,
+            255,
+          );
+          final g = (((surface.rgb >> 8) & 255) * sample.g / tg).round().clamp(
+            0,
+            255,
+          );
+          final b = ((surface.rgb & 255) * sample.b / tb).round().clamp(0, 255);
+          targetRgb = (r << 16) | (g << 8) | b;
+        }
         final edge = math.min(
           math.min(fu, 1 - fu) * tileWidth,
           math.min(fv, 1 - fv) * tileHeight,

@@ -30,7 +30,7 @@ class RoomItemControls extends StatelessWidget {
       initialValue: ['', 'keep', 'replace'].contains(value) ? value : '',
       isExpanded: true,
       decoration: InputDecoration(
-        labelText: feature.label,
+        labelText: draft.store.wordingRegion.text(feature.label),
         border: const OutlineInputBorder(),
         helperText: value.isEmpty && inherited.isNotEmpty
             ? 'Follows all appliances: ${inherited == 'keep' ? 'Keep existing' : 'Replace'}'

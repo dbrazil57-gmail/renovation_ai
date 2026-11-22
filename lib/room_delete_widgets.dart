@@ -77,6 +77,7 @@ class DeleteRoomButton extends StatelessWidget {
     if (deleted != true || !messenger.mounted) return;
     messenger.showSnackBar(
       SnackBar(
+        persist: false,
         content: Text('${room.displayName} moved to Deleted rooms.'),
         action: SnackBarAction(
           label: 'Undo',
@@ -87,6 +88,7 @@ class DeleteRoomButton extends StatelessWidget {
               if (messenger.mounted) {
                 messenger.showSnackBar(
                   const SnackBar(
+                    persist: false,
                     content: Text(
                       'Room could not be restored. Retry in Deleted rooms.',
                     ),
@@ -134,6 +136,7 @@ class _DeletedRoomsScreenState extends State<DeletedRoomsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
+            persist: false,
             content: Text('Room could not be restored. Please retry.'),
           ),
         );

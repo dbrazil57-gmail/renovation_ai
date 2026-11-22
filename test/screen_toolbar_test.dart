@@ -46,7 +46,7 @@ class FailAutosaveRecords extends MemoryBox {
 
 void main() {
   for (final width in [390.0, 1000.0]) {
-    testWidgets('Autosave stays in the menu and persists at width $width', (
+    testWidgets('Autosave is a visible switch and persists at width $width', (
       tester,
     ) async {
       await tester.binding.setSurfaceSize(Size(width, 844));
@@ -67,40 +67,26 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Autosave'), findsNothing);
+      expect(find.text('Autosave'), findsOneWidget);
       expect(find.textContaining('Autosave on ·'), findsNothing);
-      await tester.tap(find.byTooltip('More tools'));
-      await tester.pumpAndSettle();
-      final autosave = find.byWidgetPredicate(
-        (widget) =>
-            widget is CheckedPopupMenuItem<ScreenAction> &&
-            widget.value == ScreenAction.autosave,
-      );
-      expect(
-        tester.widget<CheckedPopupMenuItem<ScreenAction>>(autosave).checked,
-        isTrue,
-      );
-      await tester.tap(find.text('Autosave'));
+      final autosave = find.byKey(const ValueKey('visible-autosave-switch'));
+      expect(tester.widget<Switch>(autosave).value, isTrue);
+      await tester.tap(autosave);
       await tester.pumpAndSettle();
       expect(store.autosaveEnabled, isFalse);
       expect(find.textContaining('Autosave off ·'), findsNothing);
       final reopened = RenovisionStore(records: records, photos: photos);
       expect(reopened.autosaveEnabled, isFalse);
       reopened.dispose();
-      await tester.tap(find.byTooltip('More tools'));
-      await tester.pumpAndSettle();
-      expect(
-        tester.widget<CheckedPopupMenuItem<ScreenAction>>(autosave).checked,
-        isFalse,
-      );
-      await tester.tap(find.text('Autosave'));
+      expect(tester.widget<Switch>(autosave).value, isFalse);
+      await tester.tap(autosave);
       await tester.pumpAndSettle();
       expect(store.autosaveEnabled, isTrue);
       expect(tester.takeException(), isNull);
     });
   }
 
-  testWidgets('failed Autosave menu change retains the old preference', (
+  testWidgets('failed Autosave switch change retains the old preference', (
     tester,
   ) async {
     final records = FailAutosaveRecords();
@@ -119,17 +105,10 @@ void main() {
     );
     await tester.pumpAndSettle();
     records.failAutosave = true;
-    await tester.tap(find.byTooltip('More tools'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Autosave'));
+    await tester.tap(find.byKey(const ValueKey('visible-autosave-switch')));
     await tester.pumpAndSettle();
     expect(store.autosaveEnabled, isTrue);
-    expect(
-      find.text(
-        'Could not change Autosave. Its previous setting is still active.',
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('Autosave setting could not be saved.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

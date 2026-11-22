@@ -8,6 +8,7 @@ import 'ai_activity.dart';
 import 'ai_types.dart';
 import 'ai_photo_preparation.dart';
 import 'room_analysis.dart';
+import 'ai_usage.dart';
 
 /// Fixed Google HTTPS endpoint; stateless Interactions API (2026-05-20).
 /// No automatic retries, URL keys, remote image downloads or provider fallback.
@@ -58,10 +59,7 @@ class GeminiInternet {
           base
               .resolve('models')
               .replace(
-                queryParameters: {
-                  'pageSize': '1000',
-                  'pageToken': ?token,
-                },
+                queryParameters: {'pageSize': '1000', 'pageToken': ?token},
               ),
           key,
         );
@@ -177,6 +175,9 @@ class GeminiInternet {
         model: model,
         quality: quality,
         requestId: data['id'] as String?,
+        usage: data['usage'] is Map
+            ? AiUsage.gemini(data['usage'] as Map)
+            : null,
       );
     } on AiFailure {
       rethrow;

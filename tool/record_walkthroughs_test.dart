@@ -24,6 +24,7 @@ import 'package:renovision_ai/editors.dart';
 
 import '../test/support/memory_box.dart';
 import '../test/project_documents_test.dart' show DocumentFiles;
+import '../test/support/focus_navigation.dart';
 
 class RecordedAi extends AiService {
   final Uint8List result;
@@ -230,11 +231,23 @@ class AppRecording {
   }
 
   Future<void> bring(Finder target) async {
+    if (find.byType(FocusWorkspace).evaluate().isNotEmpty) {
+      await ensureFocusVisible(tester, target);
+      await tester.pumpAndSettle();
+      return;
+    }
     if (target.evaluate().isEmpty) {
       await tester.scrollUntilVisible(
         target,
         180,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: find
+            .byWidgetPredicate(
+              (w) =>
+                  w is Scrollable &&
+                  w.axisDirection == AxisDirection.down &&
+                  w.restorationId != 'editable',
+            )
+            .first,
         maxScrolls: 30,
       );
     }
@@ -243,6 +256,7 @@ class AppRecording {
   }
 
   Future<void> tap(Finder target, String text) async {
+    stdout.writeln('Recording $id: $text');
     caption.value = text;
     await bring(target);
     pointer.value = tester.getCenter(target);
@@ -389,9 +403,10 @@ void main() {
       'Demonstration analysis uses a simulated response.',
     );
     await recording.tap(
-      find.text('Use this AI prompt for the next design'),
-      'Review the observations and prepared prompt.',
+      find.text('Room observations and design plan'),
+      'Review the observations and editable design plan. The current plan is enabled automatically.',
     );
+    await recording.frame(1200);
     await recording.tap(
       find.text('Choose redesign options'),
       'Choose design options. Each real AI request may be billed.',
@@ -411,6 +426,25 @@ void main() {
     expect(
       store.designsFor(store.roomsFor(project.id).single.id),
       hasLength(1),
+    );
+    await recording.tap(
+      find.text('Refine'),
+      'Select a design to reveal its own focused update field.',
+    );
+    await recording.text(
+      find.byKey(const ValueKey('selected-design-update')),
+      'Change only the tap to brushed brass',
+      'Describe just the update. The original renovation brief remains saved.',
+    );
+    FocusManager.instance.primaryFocus?.unfocus();
+    await recording.quiet();
+    await recording.tap(
+      find.text('Apply focused update'),
+      'Review this narrow correction before paying for a request.',
+    );
+    await recording.tap(
+      find.text('Cancel'),
+      'Cancel sends nothing. Confirming would save a new child version.',
     );
     await recording.finish();
     store.dispose();
@@ -559,6 +593,10 @@ void main() {
     await recording.quiet();
     await recording.frame(1400);
     await recording.tap(
+      find.text('2 Finish'),
+      'Choose a finish for the selected surface.',
+    );
+    await recording.tap(
       find.text('Custom colour'),
       'Choose a paint colour; the selected section repaints locally.',
     );
@@ -589,7 +627,7 @@ void main() {
       'Compare with the starting image.',
     );
     await recording.tap(
-      find.text('Show painted'),
+      find.text('Show finishes'),
       'Return to the painted preview.',
     );
     await recording.tap(
@@ -609,7 +647,7 @@ void main() {
       'Return to colours for the retained wall.',
     );
     await recording.tap(
-      find.text('Finish with AI'),
+      find.text('Polish paint / tiles with AI'),
       'Optionally save this rough preview and prepare an AI correction.',
     );
     recording.caption.value =
@@ -762,7 +800,7 @@ void main() {
       'Quick ideas changes the model or quality for the next request.',
     );
     await recording.tap(
-      find.text('Room design'),
+      find.text('Showcase concept'),
       'Choose a starting preset, then compare the same photo and brief.',
     );
     await recording.finish();

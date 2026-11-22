@@ -41,6 +41,7 @@ Future<bool> confirmDeleteDesign(
       messenger.hideCurrentSnackBar();
       messenger.showSnackBar(
         SnackBar(
+          persist: false,
           content: const Text('Design moved to Deleted designs.'),
           action: SnackBarAction(
             label: 'Undo',
@@ -50,6 +51,7 @@ Future<bool> confirmDeleteDesign(
               } catch (_) {
                 messenger.showSnackBar(
                   const SnackBar(
+                    persist: false,
                     content: Text(
                       'Could not restore the design. Try Restore in Deleted designs.',
                     ),
@@ -66,6 +68,7 @@ Future<bool> confirmDeleteDesign(
     if (context.mounted) {
       messenger.showSnackBar(
         SnackBar(
+          persist: false,
           content: Text(
             error is DesignChangeFailure
                 ? error.message
@@ -152,6 +155,7 @@ class DeletedDesignsCard extends StatelessWidget {
                     } catch (_) {
                       messenger.showSnackBar(
                         const SnackBar(
+                          persist: false,
                           content: Text(
                             'Could not restore the design. Try again.',
                           ),

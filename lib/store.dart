@@ -16,6 +16,7 @@ import 'room_features.dart';
 import 'project_documents.dart';
 import 'room_starters.dart';
 import 'app_appearance.dart';
+import 'wording_region.dart';
 
 /// Stage 1 local-only prototype storage. Photos are kept in a dedicated box.
 /// For production-scale image libraries, move large originals to app-private
@@ -30,6 +31,15 @@ class RenovisionStore extends ChangeNotifier {
   bool _restoringAi = false;
   Future<void> _aiSettingsQueue = Future.value();
   late final ValueNotifier<AppThemeChoice> appearance;
+  WordingRegion get wordingRegion =>
+      WordingRegion.values
+          .where((r) => r.name == records.get('settings:wording_region'))
+          .firstOrNull ??
+      WordingRegion.australia;
+  Future<void> setWordingRegion(WordingRegion region) async {
+    await records.put('settings:wording_region', region.name);
+    notifyListeners();
+  }
 
   Future<void> setAppTheme(AppThemeChoice choice) async {
     await records.put('settings:appearance', {'theme': choice.name});
@@ -123,7 +133,13 @@ class RenovisionStore extends ChangeNotifier {
   RenovationRoom? get resumeRoom {
     final saved = records.get('settings:resume');
     final previous = saved is Map ? roomById(saved['roomId'].toString()) : null;
-    if (previous != null && projectById(previous.projectId) != null) {
+    final previousProject = previous == null
+        ? null
+        : projectById(previous.projectId);
+    if (previous != null &&
+        previousProject != null &&
+        !previousProject.archived &&
+        !previousProject.deleted) {
       return previous;
     }
     final rooms = projects.expand((p) => roomsFor(p.id)).toList()
@@ -152,8 +168,11 @@ class RenovisionStore extends ChangeNotifier {
 
   bool _validHomeCoverImage(String roomId, String imageId) {
     final room = roomById(roomId);
+    final project = room == null ? null : projectById(room.projectId);
     return room != null &&
-        projectById(room.projectId) != null &&
+        project != null &&
+        !project.archived &&
+        !project.deleted &&
         imageFor(imageId) != null &&
         (room.photoIds.contains(imageId) ||
             designsFor(roomId).any((design) => design.imageId == imageId));
@@ -227,12 +246,80 @@ class RenovisionStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<RenovationProject> get projects =>
+  List<RenovationProject> get storedProjects =>
       records.keys
           .where((key) => key.toString().startsWith('project:'))
           .map((key) => RenovationProject.fromMap(records.get(key) as Map))
           .toList()
         ..sort((a, b) => b.created.compareTo(a.created));
+
+  List<RenovationProject> get projects =>
+      storedProjects.where((p) => !p.archived && !p.deleted).toList();
+  List<RenovationProject> get archivedProjects =>
+      storedProjects.where((p) => p.archived || p.deleted).toList();
+
+  String projectLabel(RenovationProject project) {
+    final matches =
+        storedProjects
+            .where(
+              (p) =>
+                  p.name.trim().toLowerCase() ==
+                  project.name.trim().toLowerCase(),
+            )
+            .toList()
+          ..sort((a, b) => a.id.compareTo(b.id));
+    if (matches.length < 2) return project.name;
+    return '${project.name} · ${matches.indexWhere((p) => p.id == project.id) + 1}';
+  }
+
+  String uniqueProjectName(String proposed, {String? excludingId}) {
+    final base = _validName(proposed);
+    final used = storedProjects
+        .where((p) => p.id != excludingId)
+        .map((p) => p.name.trim().toLowerCase())
+        .toSet();
+    if (!used.contains(base.toLowerCase())) return base;
+    for (var n = 2; ; n++) {
+      final suffix = ' ($n)';
+      final candidate =
+          '${base.substring(0, base.length.clamp(0, 80 - suffix.length))}$suffix';
+      if (!used.contains(candidate.toLowerCase())) return candidate;
+    }
+  }
+
+  Future<void> archiveProject(
+    String id, {
+    bool delete = false,
+    required String confirmation,
+  }) async {
+    if (ai.activity.active) {
+      throw StateError('Wait for the AI request to finish.');
+    }
+    final current = projectById(id);
+    if (current == null || confirmation.trim() != current.name) {
+      throw ArgumentError('Type the project name to confirm.');
+    }
+    await documents.flushAndDetach(
+      id,
+      beforeDetach: () => records.put('project:$id', {
+        ...current.toMap(),
+        'archived': !delete,
+        'deleted': delete,
+      }),
+    );
+    notifyListeners();
+  }
+
+  Future<void> restoreProject(String id) async {
+    final current = projectById(id);
+    if (current == null) throw StateError('Project unavailable.');
+    await records.put('project:$id', {
+      ...current.toMap(),
+      'archived': false,
+      'deleted': false,
+    });
+    notifyListeners();
+  }
 
   List<RenovationRoom> roomsFor(
     String projectId, {
@@ -253,13 +340,29 @@ class RenovisionStore extends ChangeNotifier {
           .map((key) => DesignVersion.fromMap(records.get(key) as Map))
           .toList()
         ..sort((a, b) => b.created.compareTo(a.created));
+  List<DesignVersion> get storedDesignsForUsage => _storedDesigns;
+  Future<void> setImageBudget(double? value) async {
+    if (value == null) {
+      await records.delete('settings:image_budget_usd');
+    } else {
+      if (!value.isFinite || value < 0) {
+        throw ArgumentError('Use a valid budget.');
+      }
+      await records.put('settings:image_budget_usd', value);
+    }
+    notifyListeners();
+  }
 
   List<DesignVersion> get allDesigns {
+    final hiddenProjects = archivedProjects.map((p) => p.id).toSet();
     final deletedRooms = <String>{
       for (final key in records.keys)
         if (key.toString().startsWith('room:') &&
             records.get(key) is Map &&
-            (records.get(key) as Map)['deleted'] == true)
+            ((records.get(key) as Map)['deleted'] == true ||
+                hiddenProjects.contains(
+                  (records.get(key) as Map)['projectId'],
+                )))
           key.toString().substring(5),
     };
     return _storedDesigns
@@ -295,6 +398,13 @@ class RenovisionStore extends ChangeNotifier {
     final trimmed = _validName(name);
     final current = records.get('project:$id');
     if (current is! Map) throw StateError('Project is unavailable.');
+    if (storedProjects.any(
+      (p) => p.id != id && p.name.toLowerCase() == trimmed.toLowerCase(),
+    )) {
+      throw ArgumentError(
+        'A project already has this name. Choose a different name.',
+      );
+    }
     await records.put('project:$id', {...current, 'name': trimmed});
     notifyListeners();
   }
@@ -455,6 +565,7 @@ class RenovisionStore extends ChangeNotifier {
   Future<RenovationProject> restoreBackup(
     ProjectBackup backup, {
     String? projectName,
+    String? targetProjectId,
   }) async {
     // Callers cannot bypass validation by constructing a ProjectBackup directly.
     final validated = ProjectBackup.decode(backup.encode());
@@ -467,16 +578,32 @@ class RenovisionStore extends ChangeNotifier {
     }
 
     final restoredBaseName = validated.project.name.replaceFirst(
-      RegExp(r'(?:\s+\(restored\))+\s*$', caseSensitive: false),
+      RegExp(r'(?:\s+\(restored\)(?:\s+\(\d+\))?)+\s*$', caseSensitive: false),
       '',
     );
-    final project = RenovationProject(
-      id: recordId('project'),
-      name: projectName == null
-          ? '$restoredBaseName (restored)'
-          : _validName(projectName),
-      created: validated.project.created,
-    );
+    final target = targetProjectId == null
+        ? null
+        : projectById(targetProjectId);
+    if (targetProjectId != null &&
+        (target == null ||
+            target.archived ||
+            target.deleted ||
+            ai.activity.active)) {
+      throw const BackupFailure(
+        'Open an active project and finish AI work before importing rooms.',
+      );
+    }
+    final project =
+        target ??
+        RenovationProject(
+          id: recordId('project'),
+          name: projectName == null
+              ? uniqueProjectName(
+                  '${restoredBaseName.substring(0, restoredBaseName.length.clamp(0, 69))} (restored)',
+                )
+              : uniqueProjectName(projectName),
+          created: validated.project.created,
+        );
     final roomIds = {
       for (final room in validated.rooms) room.id: recordId('room'),
     };
@@ -547,7 +674,9 @@ class RenovisionStore extends ChangeNotifier {
             : photoIds[design.sourceImageId],
       };
     }
-    stagedRecords['project:${project.id}'] = project.toMap();
+    if (target == null) {
+      stagedRecords['project:${project.id}'] = project.toMap();
+    }
     final writtenPhotos = <String>[];
     final writtenRecords = <String>[];
     try {
@@ -591,7 +720,7 @@ class RenovisionStore extends ChangeNotifier {
   Future<RenovationProject> createProject(String name) async {
     final project = RenovationProject(
       id: _newId(),
-      name: name.trim(),
+      name: uniqueProjectName(name),
       created: DateTime.now(),
     );
     await records.put('project:${project.id}', project.toMap());

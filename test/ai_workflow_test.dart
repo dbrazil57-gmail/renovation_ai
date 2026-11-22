@@ -122,9 +122,13 @@ void main() {
 
   Future<void> confirm(WidgetTester tester) async {
     await tester.pumpAndSettle();
-    await ensureFocusVisible(tester, find.text('Generate AI design'));
+    final workspace = find.byKey(const ValueKey('workspace-generate'));
+    final button = workspace.evaluate().isNotEmpty
+        ? workspace
+        : find.text('Generate AI design');
+    await ensureFocusVisible(tester, button);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Generate AI design'));
+    await tester.tap(button);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Send to OpenAI'));
     await tester.pumpAndSettle();
@@ -190,6 +194,73 @@ void main() {
         contains('coordinated whole-room renovation'),
       );
       expect(submitted!['prompt'], isNot(contains('PRECISION EDIT:')));
+    },
+  );
+
+  testWidgets(
+    'selected design update sends only the focused request and preserves broad brief and approval',
+    (tester) async {
+      final baseline = await store.createDesign(
+        roomId: room.id,
+        image: output,
+        title: 'Chosen design',
+        prompt: 'Historical brief',
+      );
+      await store.approveBaseline(room.id, designId: baseline.id);
+      await store.addRoomPhotos(room.id, [original]);
+      await store.updateRoom(
+        store
+            .roomById(room.id)!
+            .copyWith(
+              instructions: 'Replace every cabinet and the entire floor',
+              designStyleIds: ['classic'],
+            ),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WorkspaceScreen(
+            store: store,
+            roomId: room.id,
+            initialDesignId: baseline.id,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final update = find.byKey(const ValueKey('selected-design-update'));
+      await ensureFocusVisible(tester, update);
+      await tester.enterText(update, 'Change only the tap to brushed brass');
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      final apply = find.text('Apply focused update');
+      await Scrollable.ensureVisible(tester.element(apply), alignment: .5);
+      await tester.pumpAndSettle();
+      await tester.tap(apply);
+      await tester.pumpAndSettle();
+      expect(edits, 0);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      await ensureFocusVisible(tester, apply);
+      await tester.tap(apply);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Send to OpenAI'));
+      await tester.pumpAndSettle();
+      expect(edits, 1);
+      expect(
+        submitted!['prompt'],
+        contains('Change only the tap to brushed brass'),
+      );
+      expect(submitted!['prompt'], isNot(contains('Replace every cabinet')));
+      expect(submitted!['supportingImages'], anyOf(isNull, isEmpty));
+      expect(
+        store.roomById(room.id)!.instructions,
+        'Replace every cabinet and the entire floor',
+      );
+      expect(store.roomById(room.id)!.approvedDesignId, baseline.id);
+      expect(
+        store.designsFor(room.id).firstWhere((d) => d.aiModel != null).parentId,
+        baseline.id,
+      );
+      expect(tester.takeException(), isNull);
     },
   );
 
@@ -345,7 +416,7 @@ void main() {
       await tester.pumpAndSettle();
       await revealFocusControl(
         tester,
-        find.text('Generate AI design'),
+        find.byKey(const ValueKey('workspace-generate')),
         350,
         scrollable: find.byType(Scrollable).first,
       );
@@ -395,7 +466,7 @@ void main() {
       await tester.pumpAndSettle();
       await revealFocusControl(
         tester,
-        find.text('Generate AI design'),
+        find.byKey(const ValueKey('workspace-generate')),
         350,
         scrollable: find.byType(Scrollable).first,
       );

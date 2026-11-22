@@ -1,34 +1,86 @@
 # Renovision next steps
 
 Current task list after the full code/conversation/design audit, updated through
-22 November 2026 (Australia/Sydney). This supersedes older chronological lists.
+23 November 2026 (Australia/Sydney). This supersedes older chronological lists.
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
-## Today's audit and next acceptance pass — 22 November
+## Active follow-up and next acceptance pass — 23 November
 
-Use the **Request audit** at the top of FEATURE_STATUS.md for T01–T19 coverage,
-including partial and proposed features. Use **Today's acceptance pass** at the
+### Active follow-up checklist
+
+- [x] Remember provider keys across browser restarts; explicit remove option,
+  separate encrypted storage and no credentials in project files. No login needed.
+- [x] Put a compact visible Autosave switch beside normal save controls; remove
+  the hamburger-only toggle. Keep local work/file status distinct.
+- [x] Finalise Save/Open/Save as, optional backup snapshots and recoverable project
+  archive/delete; distinguish duplicate names without ugly automatic timestamps.
+  Archived/deleted projects are also excluded from Continue and selected home covers;
+  restoring them restores their rooms/history without copying or erasing photos.
+- [x] Keep the Whole room on/off choice visible and collapse detailed subcategories.
+- [x] Add a clear selected-design update field and focused-edit action; preserve
+  original broad instructions and keep/protection fields for their own purpose.
+- [x] Make local paint-to-AI polish a dedicated narrow edit, without inherited
+  whole-room changes or previous correction text; improve boundary correction.
+- [x] Plan materially different multiple designs within the chosen palette, with
+  explicit cabinet/fitting/material alternatives rather than restaging.
+- [x] Make temporary notices dismissible and nonblocking; prevent stale queues.
+- [x] Implement remaining local feature gaps: region wording selection, usage/cost
+  records, optional sourced-reference workflow and better local tile rendering.
+  These checkmarks record implementation and the verification below; real
+  provider/device acceptance remains separate. Browser vault restart/removal passed
+  with synthetic keys. Research currently uses direct OpenAI and an explicit paid
+  confirmation. Costs are image-only USD estimates for known rates, not a wallet.
+  Imported textures and reviewed four-corner tile mapping improve previews; they
+  do not provide automatic semantic wall recognition or measured geometry.
+- [x] Refresh all seven current app-widget recordings, including selected-image
+  update/cancel and narrow paint polish. Simulated camera/AI; no user store access.
+  MP4 codec/timestamps and full decodes verified before publishing bundled assets.
+- [x] Complete full regression (388 passing tests), plus 24 related checks after
+  the final archive/Continue visibility fix. Release web build passed (48.2s).
+  Final Chrome source: `ac96247b07`, same localhost:7357, no new APK.
+  Actual desktop and phone-sized Room/Style/Refine/Ideas navigation passed;
+  screenshots inspected. Actual browser selected-update, Autosave reload retention
+  and typed archive/restore passed in disposable profiles. Synthetic vault fixtures
+  passed reload and separate-provider removal. No paid provider request was made.
+- [x] Final source analysis clean (17.7s), documentation links validated, immutable
+  brief unchanged, private settings/project ignores checked; commit reviewed batch.
+- [ ] External release items: live tester hosting/funding, support delivery/privacy
+  hosting, store accounts/signing/testing and iOS build/device access still require
+  their actual services/access. Prepare code/docs without spending or deploying.
+  Owner confirms no hosting or support address yet. Do not deploy or invent one.
+
+Use **Follow-up implementation** at the top of FEATURE_STATUS.md for coverage,
+including partial and proposed features. Use **Follow-up acceptance** at the
 top of docs/TESTING_GUIDE.md for exact actions/expected results. These current
 sections take precedence over unchecked or source-only notes in older history.
 
 - [x] Reconcile today's 11 commit batches against the conversation and actual
   source/tests. Distinguish implemented code, visual acceptance and future work.
-- [x] Confirm latest Chrome source `68527c827a`; latest APK remains 1.0.17+18
-  (`d19f2fd3d2`). Last two commits need packaging only when explicitly requested.
+- [x] Chrome source is now `ac96247b07`; latest APK remains 1.0.17+18
+  (`d19f2fd3d2`). All post-APK changes need packaging only when explicitly requested.
 - [x] Recheck actual desktop and phone-sized Chrome Room/Style/Refine/Ideas navigation and inspect
   screenshots. Prior workspace automation stall did not reproduce in this pass.
 - [ ] **First:** accept real Save project as / Open using a new file in Renos,
   then verify autosave changes, restore-as-copy and old-project preservation.
 - [ ] Accept the new compact controls and all three modes in Chrome, then one
   owner-confirmed analysis/design and a narrow refinement on the actual kitchen.
-- [ ] Check actual splashback/wall preview edges and colour replacement; retain
-  local tiles' approximate-preview limitation until material/perspective work.
+- [ ] Check actual splashback/wall preview edges, imported material samples,
+  reviewed perspective and colour replacement; these remain visual previews.
 - [ ] When Chrome acceptance is satisfactory, request a new APK and repeat S21
   camera/Live, permissions, storage, vault/restart, save/share and performance tests.
-- [ ] Remaining plans, not completed fixes: region/language selector, AI usage/cost
-  ledger, sourced online references, realistic tile mapping, refreshed recordings,
-  funded tester service and public/iOS release gates. No merge is implemented.
+- [x] Regional English selector, returned image usage/dated estimates, optional
+  sourced OpenAI research, imported tile samples/reviewed plane mapping, additive
+  room import and current recordings are implemented in this follow-up.
+- [ ] Owner acceptance: remembered real key after reload; real OneDrive chooser
+  save/reopen; actual wall/tile edges and focused polish; materially different paid
+  concepts. Automated checks use synthetic secrets, mock AI and disposable files.
+- [ ] Future product depth: complete all-operation billing/provider balance,
+  same-room conflict reconciliation, automatic semantic surface selection/enforced
+  masks, durable Android external document links, tracked moving-camera AR and
+  full interface translations. These exceed this batch's local follow-up controls.
+- [ ] Funded tester service, delivered feedback/reports/privacy hosting, production
+  store identity/signing/account/testing and iOS parity remain release gates.
 
 ## Prompt enhancement after 1.0.17 — 22 November
 

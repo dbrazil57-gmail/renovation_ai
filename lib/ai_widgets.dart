@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter/foundation.dart' show listEquals;
+import 'package:flutter/foundation.dart' show listEquals, kIsWeb;
 
 import 'ai_service.dart';
 import 'models.dart';
@@ -278,10 +278,14 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
               if (widget.ai.isDirect)
                 HelpHeading(
                   title: widget.ai.keyRememberedOnDevice
-                      ? 'API key saved securely on this device'
-                      : 'Browser connection · until page reload',
+                      ? (kIsWeb
+                            ? 'API key remembered in this browser'
+                            : 'API key saved securely on this device')
+                      : 'API key kept for this session',
                   message: widget.ai.keyRememberedOnDevice
-                      ? 'The key is stored separately from project files. Saving or discarding a project does not remove it.'
+                      ? (kIsWeb
+                            ? 'Your key is encrypted in private storage for this browser profile and app address. No login is needed. Reloading retains it; clearing site data removes it. Trusted code in this app can use it. Remove this provider key below to forget it. Keys are excluded from project/backup files.'
+                            : 'The key is stored separately from project files. Saving or discarding a project does not remove it.')
                       : 'Switching Room, Style, Refine, Ideas or Settings keeps this connection. Reloading or closing this browser page clears the session key, so you must enter it again. Save project does not save an API key. A browser password-manager Save / Don\'t save choice is separate from RenoVision.',
                 ),
               Text(
@@ -995,6 +999,8 @@ class _AiEditCardState extends State<AiEditCard>
       final design = await widget.store.createDesign(
         recipe: captured.recipe?.withValues({
           'provider': result.provider,
+          if (result.usage != null) 'usage': result.usage!.toMap(),
+          'wordingRegion': widget.store.wordingRegion.name,
           'imageModel': result.model,
           if (result.quality != null) 'imageQuality': result.quality,
         }),

@@ -275,6 +275,20 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(40),
+              child: SizedBox(
+                height: 40,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Row(
+                    children: [
+                      AutosaveSwitch(store: widget.store, enabled: !busy),
+                    ],
+                  ),
+                ),
+              ),
+            ),
             actions: [
               ScreenToolbar(
                 tools: [
@@ -296,7 +310,6 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                       label: 'Room settings',
                       onPressed: busy ? null : openSettings,
                     ),
-                  autosaveMenuTool(context, widget.store, enabled: !busy),
                   ScreenTool(
                     ScreenAction.finishLater,
                     label: 'Finish later',

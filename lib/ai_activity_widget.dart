@@ -20,6 +20,7 @@ class AiActivityStrip extends StatefulWidget {
 
 class _AiActivityStripState extends State<AiActivityStrip> {
   Timer? ticker;
+  Timer? dismissTimer;
   @override
   void initState() {
     super.initState();
@@ -47,6 +48,17 @@ class _AiActivityStripState extends State<AiActivityStrip> {
       ticker?.cancel();
       ticker = null;
     }
+    if (!widget.activity.active &&
+        visible &&
+        {AiStage.completed, AiStage.failed}.contains(widget.activity.stage)) {
+      dismissTimer ??= Timer(const Duration(seconds: 10), () {
+        dismissTimer = null;
+        if (mounted && !widget.activity.active) widget.activity.dismiss();
+      });
+    } else {
+      dismissTimer?.cancel();
+      dismissTimer = null;
+    }
   }
 
   void changed() {
@@ -57,6 +69,7 @@ class _AiActivityStripState extends State<AiActivityStrip> {
   @override
   void dispose() {
     ticker?.cancel();
+    dismissTimer?.cancel();
     widget.activity.removeListener(changed);
     super.dispose();
   }

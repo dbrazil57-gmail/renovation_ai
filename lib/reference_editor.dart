@@ -325,6 +325,7 @@ class _FocusEditScreenState extends State<FocusEditScreen> {
     if ((!widget.sketch && crop == null) || (widget.sketch && marks.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          persist: false,
           content: Text(
             widget.sketch
                 ? 'Add a mark or note first.'
@@ -346,6 +347,7 @@ class _FocusEditScreenState extends State<FocusEditScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
+            persist: false,
             content: Text(
               'The reference could not be saved. Your original is unchanged; try again.',
             ),

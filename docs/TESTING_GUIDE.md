@@ -1,5 +1,51 @@
 # Testing and storage reference
 
+## Follow-up acceptance — 23 November
+
+Use the same normal Chrome profile at **http://localhost:7357/**. Keep all old
+projects. A fresh test is a separate project/file, not a storage reset. Source
+changes in this batch are not in published APK 1.0.17. Ask for a new APK after
+Chrome acceptance; then repeat camera/Live, vault, chooser/save/share and touch
+checks on the S21. Mocked tests cannot establish AI design quality.
+
+| Check | Actions and expected result |
+| --- | --- |
+| Remembered key | Enter privately in Settings > AI connection and models once after updating. Visit all four workspace tabs, reload, then close/reopen this same address/profile. Connection restores. Remove key explicitly and reload: it stays removed. Never put keys in screenshots or project files. |
+| Autosave and real file | Use the visible switch under the title. With it on, change an instruction, leave/reopen the room: it returns. Save project as a new file in Renos, verify nonzero Windows size, open the file and compare rooms/photos/designs/choices. Edit while that browser file is linked and reopen it to verify the update. A restart requires reconnecting the external file; local work still returns. Android chooser exports are not persistent linked-file autosave. |
+| Snapshot vs import | Export backup snapshot, edit the working project, restore the old snapshot: an independent older copy appears. In the active project's settings choose Import rooms from project: confirm to add remapped room copies, preserving existing rooms. It does not merge same-room edits. |
+| Project names/delete | Create two projects with the same proposed name: the second gets a numeric suffix. Use the project row's menu, optionally back up, type its exact name, then Archive or Delete. It disappears from the active list; restore it under Archived & deleted projects and verify full contents. |
+| Whole room | In Style, turn Whole room off/on before opening detailed choices. Expanded Keep exceptions and individual item choices remain editable where applicable. |
+| Focused update | Select a generated version. Refine shows Update this design. Request only a brass tap; choose Apply focused update and review. Cancel first: no request. Confirm only when ready to pay. Result is a child version; original renovation instructions and approved baseline remain unchanged. |
+| Paint polish | Start on an original photo, select a wall, change colour twice. Add area to this surface fills missed patches without replacing the earlier selection. Choose Polish paint / tiles with AI; review the narrow guide + clean-source request. It must not include whole-room replacement instructions or old correction text. Cancel sends nothing. |
+| Materials | Outline a splashback with four convex corners clockwise from top-left, import a cropped material sample, enable Fit tiles to four-corner outline, adjust scale/grout. Save/reopen and change colour. Unselected objects and original remain intact locally; judge perspective/edges as a preview. |
+| Distinct options | With a fixed palette/Keep layout, choose three new concepts. Inspect prompt directions before confirming three paid requests. Compare actual cabinetry/hood/material/main-light schemes, not plants alone; record model/quality/elapsed time. |
+| Notices and compact UI | Switch Room/Style/Refine/Ideas on desktop and phone width. Generate/Brief % and Autosave stay available. Informational notices dismiss or expire; a failed-save retry remains available. Check enlarged text and keyboard. |
+| Region, costs, research | Settings > Language & region changes terminology. AI usage & image budget shows priced/unpriced images; a manual USD budget is an incomplete estimate, not provider credit. Ideas > Current design references is optional OpenAI-only text research: review the query and separate cost confirmation; enable returned sourced notes only after reading. No photo is sent for that research. |
+| Help | Replay the refreshed recordings, check captions/controls, seek/full-screen, then return to the same project. Demos use simulated AI/camera and never change customer projects or spend credits. |
+
+OneDrive checks are acceptance of the existing project-file feature after its
+empty-file bug, not a new OneDrive integration. No OneDrive account/sync API is
+added. The original failure's cause is not established. Keep the original empty
+file and save the test to a new filename.
+
+Verified source `ac96247b07`: full suite 388 passing tests, followed by 24 related
+project/library/save tests after the final archive visibility fix; clean final
+analysis 17.7s; web build 48.2s.
+Actual desktop/phone-sized tab navigation and inspected screenshots pass. Actual
+selected-update field, Autosave browser reload and typed archive/restore pass;
+vault reload/separate deletion passes with synthetic keys. Seven offline help
+captures pass and all MP4s pass codec/timestamp/full-decode checks. Evidence:
+`output/followup-tests-accepted.log`, `followup-archive-final.log`,
+`followup-controls-verified-browser.log`, `followup-phone-final-browser.log`,
+`browser-vault-check.log` and `followup-help-encoding.log`. These do not count as
+real provider, native file-picker/OneDrive or S21 acceptance.
+
+A separate clean local file was created at
+`output/test-projects/RenoVision-followup-kitchen.renovision.json` (not committed):
+one authorised original, new IDs, Modern / Contemporary and Charcoal & walnut,
+no previous analysis/designs/credentials. Older test files remain untouched.
+Older dated evidence below applies to its stated build.
+
 ## Today's acceptance pass — 22 November
 
 This is the current manual test order for audit IDs T01–T19 in FEATURE_STATUS.md.

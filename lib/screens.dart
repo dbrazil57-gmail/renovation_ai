@@ -1,9 +1,16 @@
+import 'app_notices.dart';
+import 'wording_region.dart';
+import 'ai_usage_widgets.dart';
+import 'ai_usage.dart';
+import 'design_reference_widgets.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'editors.dart';
+import 'project_management_widgets.dart';
 import 'models.dart';
 import 'store.dart';
 import 'ai_widgets.dart';
@@ -216,7 +223,7 @@ Future<Uint8List?> pickRoomImage(
 }
 
 void notice(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  showAppNotice(context, message);
 }
 
 Future<String?> askText(
@@ -593,9 +600,9 @@ class ProjectsTab extends StatelessWidget {
             child: ListTile(
               dense: true,
               leading: const CircleAvatar(child: Icon(Icons.home_outlined)),
-              title: Text(project.name),
+              title: Text(store.projectLabel(project)),
               subtitle: Text('${store.roomsFor(project.id).length} rooms'),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: ProjectManagementButton(store: store, project: project),
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -605,6 +612,7 @@ class ProjectsTab extends StatelessWidget {
             ),
           ),
         ),
+        ArchivedProjects(store: store),
       ],
     ),
   );
@@ -647,9 +655,19 @@ class ProjectScreen extends StatelessWidget {
       title: ListenableBuilder(
         listenable: store,
         builder: (context, _) => Text(
-          store.projectById(project.id)?.name ?? project.name,
+          store.projectLabel(store.projectById(project.id) ?? project),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(40),
+        child: SizedBox(
+          height: 40,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Row(children: [AutosaveSwitch(store: store)]),
+          ),
         ),
       ),
       actions: [
@@ -1266,11 +1284,13 @@ class SettingsTab extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         AiConnectionSettingsCard(ai: store.ai),
+        ?roomSaving,
+        WordingRegionSettings(store: store),
+        AiUsageCard(store: store),
         HomeCoverSettingsCard(store: store),
         StoragePrivacyCard(store: store),
         FeedbackCard(drafts: LocalFeedbackDrafts(store.records)),
         AppAppearanceSettingsCard(store: store),
-        ?roomSaving,
         Text('Save and restore', style: Theme.of(context).textTheme.titleLarge),
         const Text(
           kIsWeb
@@ -1288,6 +1308,7 @@ class SettingsTab extends StatelessWidget {
         ),
         for (final project in store.projects) ...[
           Text(project.name, style: Theme.of(context).textTheme.titleMedium),
+          ImportProjectRoomsButton(store: store, target: project),
           ProjectFileControls(
             store: store,
             projectId: project.id,
@@ -1344,6 +1365,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   late String selectedPhotoId;
   List<String>? restoredSupportingIds;
   bool includeRoomContext = true;
+  bool polishingFinishes = false;
+  String? finishSourceId;
   FocusSection focusSection = FocusSection.room;
   int focusRevealRevision = 0;
 
@@ -1443,6 +1466,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                             : draft.conceptCount) >
                         1
                   ? 'Generate ${precise ? draft.precisionConceptCount : draft.conceptCount} ${precise ? 'variations' : 'design ideas'}'
+                  : polishingFinishes && precise
+                  ? 'Polish finishes with AI'
+                  : precise && selectedId != null
+                  ? 'Apply update to this design'
                   : 'Generate AI design',
             ),
           ),
@@ -1668,7 +1695,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   void _selectDesign(String? id) {
     setState(() {
       selectedId = id;
+      polishingFinishes = false;
+      finishSourceId = null;
       restoredSupportingIds = null;
+      if (id != null) focusSection = FocusSection.refine;
     });
     widget.onDesignSelected?.call(id);
   }
@@ -1864,6 +1894,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(status, style: Theme.of(context).textTheme.bodySmall),
+                if (design.recipe?.toMap()['usage'] case final Map usage)
+                  Text(
+                    AiUsage.fromMap(usage).label,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 Text(
                   '$source · $created',
                   style: Theme.of(context).textTheme.bodySmall,
@@ -1986,6 +2021,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       roomTemplatePrompt(room, draft, includeRoomContext: includeRoomContext);
 
   String _prompt(RenovationRoom room) {
+    if (precise && polishingFinishes) {
+      return '${_templatePrompt(room)}\nIMAGE ROLES: Image 1 is the rough local finish guide. Image 2, when attached, is the clean same-view source. Use it to recognise the intended surface boundaries and preserve objects/texture; apply only the listed finishes from image 1. Do not redesign or restore obsolete colours.';
+    }
     final sourceId = selectedId == null
         ? selectedPhotoId
         : widget.store
@@ -2044,7 +2082,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       throw const AiFailure('The selected image is unavailable.');
     }
     final supporting = {
-      if (includeRoomContext && room.photoIds.length > 1)
+      if (precise &&
+          polishingFinishes &&
+          finishSourceId != null &&
+          finishSourceId != sourceId)
+        finishSourceId!: widget.store.imageFor(finishSourceId!)!,
+      if (!precise && includeRoomContext && room.photoIds.length > 1)
         for (final id in (restoredSupportingIds ?? room.photoIds).where(
           (id) => id != sourceId,
         ))
@@ -2074,7 +2117,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
             ].where((s) => s.trim().isNotEmpty).join('\n')
           : '',
       precise: precise,
-      title: precise ? 'AI precision edit' : 'AI renovation concept',
+      title: precise
+          ? (polishingFinishes ? 'AI finish polish' : 'AI precision edit')
+          : 'AI renovation concept',
     );
   }
 
@@ -2244,22 +2289,26 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       _selectDesign(created!.id);
       if (finishWithAi) {
         final correction = paintRefinementPrompt(created!.paintRecipe!);
-        final previous = draft.correction.text.trim();
-        draft.correction.text = previous.isEmpty
-            ? correction
-            : '$previous\n\n$correction';
+        draft.correction.text = correction;
         draft.setPrecise(true);
         draft.setPrecisionConceptCount(1);
         draft.setUseAiPrompt(false);
-        setState(() => focusSection = FocusSection.refine);
+        setState(() {
+          polishingFinishes = true;
+          finishSourceId = sourceId;
+          focusSection = FocusSection.refine;
+        });
         final saved = await draft.save();
         if (mounted) {
           notice(
             context,
             saved
-                ? 'Finish preview saved. Review the single final polish, then Generate AI design when ready.'
+                ? 'Finish preview saved. Polish finishes with AI corrects only these surfaces; the whole-room brief is excluded.'
                 : 'Finish preview saved. Correction draft could not save; keep this screen open and retry Save.',
           );
+          if (saved && widget.store.ai.connected) {
+            await _generateFromWorkspace(briefReviewed: true);
+          }
         }
       }
     }
@@ -2322,6 +2371,20 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(40),
+              child: SizedBox(
+                height: 40,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  child: Row(
+                    children: [
+                      AutosaveSwitch(store: widget.store, enabled: !aiPending),
+                    ],
+                  ),
+                ),
+              ),
+            ),
             actions: [
               ScreenToolbar(
                 tools: [
@@ -2335,7 +2398,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                     label: 'Guided room setup',
                     onPressed: aiPending ? null : _openSetup,
                   ),
-                  autosaveMenuTool(context, widget.store, enabled: !aiPending),
                   ScreenTool(
                     ScreenAction.settings,
                     label: 'Room settings',
@@ -2648,6 +2710,62 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
               ],
               FocusSection.refine: [
                 DesignModeControls(draft: draft, enabled: !aiPending),
+                if (selectedId != null)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            polishingFinishes
+                                ? 'Polish selected finishes'
+                                : 'Update this design',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            key: const ValueKey('selected-design-update'),
+                            controller: draft.correction,
+                            onChanged: (_) {
+                              if (!precise) {
+                                draft.setPrecise(true);
+                                draft.setPrecisionConceptCount(1);
+                              }
+                            },
+                            minLines: 1,
+                            maxLines: 4,
+                            decoration: const InputDecoration(
+                              labelText: 'What would you like to improve?',
+                              hintText: 'For example: replace only the extractor with a slim contemporary hood.',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          FilledButton.tonalIcon(
+                            onPressed: aiPending
+                                ? null
+                                : () async {
+                                    draft.setPrecise(true);
+                                    draft.setPrecisionConceptCount(1);
+                                    await _generateFromWorkspace(
+                                      briefReviewed: true,
+                                    );
+                                  },
+                            icon: const Icon(Icons.tune),
+                            label: Text(
+                              polishingFinishes
+                                  ? 'Polish finishes with AI'
+                                  : 'Apply focused update',
+                            ),
+                          ),
+                          const Text(
+                            'Uses this selected image and your update only. The original room brief stays saved.',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 if (precise && looksLikeBroadRenovation(changes.text)) ...[
                   const SizedBox(height: 8),
                   const Text(
@@ -2659,21 +2777,22 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   ),
                 ],
                 const SizedBox(height: 12),
-                TextField(
-                  key: ValueKey('instructions-$precise'),
-                  controller: changes,
-                  minLines: 1,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: precise
-                        ? 'Specific correction'
-                        : 'What should change?',
-                    hintText: precise
-                        ? 'Remove only the cupboard handles; keep everything else.'
-                        : 'Leave blank for a fresh concept, or add your must-haves.',
+                if (!precise || selectedId == null)
+                  TextField(
+                    key: ValueKey('instructions-$precise'),
+                    controller: changes,
+                    minLines: 1,
+                    maxLines: 4,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: precise
+                          ? 'Specific correction'
+                          : 'What should change?',
+                      hintText: precise
+                          ? 'Remove only the cupboard handles; keep everything else.'
+                          : 'Leave blank for a fresh concept, or add your must-haves.',
+                    ),
                   ),
-                ),
                 const SizedBox(height: 12),
                 Text(
                   'AI generation (optional)',
@@ -2822,6 +2941,15 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 else
                   ...versions.map((design) => _historyCard(room, design)),
                 DeletedDesignsCard(store: widget.store, roomId: room.id),
+                AiUsageCard(store: widget.store, roomId: room.id),
+                DesignReferenceCard(
+                  store: widget.store,
+                  roomId: room.id,
+                  onPending: (pending) {
+                    setState(() => analysingRoom = pending);
+                    _updateExitGuard();
+                  },
+                ),
                 const SizedBox(height: 16),
               ],
             },

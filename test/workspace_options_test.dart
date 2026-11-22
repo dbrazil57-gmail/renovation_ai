@@ -130,6 +130,8 @@ void main() {
       );
       await tester.tap(find.byKey(const ValueKey('renovation-extent')));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Choose individual changes'));
+      await tester.pumpAndSettle();
       expect(
         tester.widget<DropdownButtonFormField<String>>(vanity).onChanged,
         isNotNull,

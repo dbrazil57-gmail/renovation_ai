@@ -1,6 +1,52 @@
 # RenoVision
 
-Current regroup, **22 November**: projects/rooms, multiple photos, AI analysis and
+Current follow-up, **23 November**: keys now survive browser reload in a separate
+encrypted browser vault, without an app login. Enter a key once after this update;
+it remains scoped to this browser profile and address. Clearing site data removes
+it. Android continues to use its secure device store. Project files exclude keys.
+
+Autosave is a visible switch below the title, not a menu-only action. Selected
+designs have **Update this design** and **Apply focused update**. Local finishes
+have **Polish paint / tiles with AI**, which sends only the finish correction and
+clean source view, rather than the original whole-room brief. Sending still needs
+confirmation. Originals, approved baselines and prior versions are preserved.
+
+Projects now offer confirmed, recoverable archive/delete, unique new names,
+distinguishable legacy duplicates, and additive **Import rooms from project**.
+Import adds separate room copies; it does not reconcile edits to an existing room.
+Temporary notices dismiss/expire. Whole room stays visible above collapsed detail.
+Multiple kitchen concepts receive different cabinetry, hood and material schemes
+within the chosen palette; actual visual distinctness needs paid-provider testing.
+
+Settings adds regional English wording and image usage/budget estimates. Optional
+sourced design research is a separate, explicitly confirmed OpenAI request.
+Tile previews can import a material sample and use a reviewed four-corner plane;
+they are not automatic wall recognition or measured installation plans.
+
+**Save/Open meanings:** Autosave keeps local room edits; photos and completed
+designs save when added. A connected reusable browser working file is also updated
+while linked. Save project writes the full project. Save as chooses another file.
+Backup snapshot is an optional fixed copy, with the same project contents.
+Open resumes the matching project with conflict choices; Restore copy adds a
+separate project. Android currently exports through its chooser; it does not
+continuously overwrite a persistently linked external document URI.
+
+No hosting or support destination exists yet. Hosted tester credits, delivered
+feedback/privacy hosting and store/iOS setup remain release prerequisites. This
+batch updates source/Chrome only; **published APK 1.0.17 is unchanged**.
+Use [the active checklist](CODEX_NEXT_STEPS.md) and
+[the follow-up acceptance pass](docs/TESTING_GUIDE.md#follow-up-acceptance--23-november).
+The older dated notes below record previous builds and superseded behaviour.
+
+Verified Chrome source **`ac96247b07`**, same localhost:7357: full suite **388 tests
+passed**, plus **24 related tests** after the final archive visibility correction;
+clean final analysis (17.7s), release web build 48.2s. Actual desktop/phone-sized tab navigation, selected-image
+update field, Autosave reload and typed archive/restore passed in isolated Chrome.
+Browser key reload/removal passed with synthetic secrets. Seven refreshed help
+recordings passed capture and full MP4 decode checks. Real AI quality, owner key/
+OneDrive chooser and S21 acceptance remain; no new APK or paid AI request.
+
+Previous regroup, **22 November**: projects/rooms, multiple photos, AI analysis and
 generation, styles/palettes, history, comparison, local finishes, camera/Live,
 project files and image export/share are implemented. Use the current checklist in
 [CODEX_NEXT_STEPS.md](CODEX_NEXT_STEPS.md) before the older dated notes below.
@@ -9,8 +55,8 @@ project files and image export/share are implemented. Use the current checklist 
 **Save project** writes every room, photo, design and choice to that file.
 **Export backup snapshot** writes a separate fixed copy of the same contents;
 **Duplicate project** creates another project inside the app. Restore adds a copy
-without overwriting or merging. API credentials are separate and excluded from
-project files. Browser keys last until page reload; app navigation retains them.
+without overwriting. Additive room import and persistent browser keys were added
+in the 23 November follow-up. API credentials remain excluded from project files.
 
 The latest OneDrive kitchen export was confirmed empty. New browser code verifies
 saved size and offers a download fallback; an actual destination save/reopen still
@@ -20,8 +66,9 @@ only: **published APK 1.0.17 is unchanged**.
 Recent source fixes include New/Partial/Precise modes, smaller palettes, editable
 Keep exceptions, clearer AI plans/manual handoff, useful empty Ideas, stronger
 fitting prompts, smaller splashback patterns and optional selection-edge extension.
-Local tiles remain a 2D preview. Real-provider image comparison, online reference
-research and provider cost/balance tracking remain unfinished.
+Local tiles remain previews. Real-provider image comparison and provider invoice/
+balance integration remain unfinished; the follow-up adds optional research,
+material perspective and image-only estimates.
 
 Verified current source `68527c827a`: **374 tests pass**, clean analysis (13.5s),
 release web build (46.9s). Browser bridge checks pass for a 16 MB complete read-back

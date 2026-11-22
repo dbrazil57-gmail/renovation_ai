@@ -121,6 +121,10 @@ class RoomDraft extends ChangeNotifier {
             paletteById(store.roomById(roomId)?.colourPaletteId ?? '') != null,
       );
   DesignRecipe captureRecipe() => DesignRecipe({
+    if (store.roomById(roomId)?.useDesignReferences == true)
+      'designReferenceNotes':
+          store.roomById(roomId)?.designReferences?.prompt ?? '',
+    'wordingRegion': store.wordingRegion.name,
     'instructions': changes.text,
     'correctionInstructions': correction.text,
     'protectedFeatures': protected.text,

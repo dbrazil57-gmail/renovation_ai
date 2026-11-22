@@ -11,6 +11,57 @@ import 'store.dart';
 import 'context_help.dart';
 import 'screen_toolbar.dart';
 
+class AutosaveSwitch extends StatelessWidget {
+  final RenovisionStore store;
+  final bool enabled;
+  const AutosaveSwitch({super.key, required this.store, this.enabled = true});
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: store,
+    builder: (context, _) => Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'Autosave',
+          style: TextStyle(
+            fontSize: 12,
+            color:
+                Theme.of(context).appBarTheme.foregroundColor ??
+                Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Switch.adaptive(
+          key: const ValueKey('visible-autosave-switch'),
+          activeTrackColor: const Color(0xFF2E7D32),
+          activeThumbColor: Colors.white,
+          inactiveTrackColor: const Color(0xFF757575),
+          inactiveThumbColor: Colors.white,
+          value: store.autosaveEnabled,
+          onChanged: !enabled
+              ? null
+              : (value) async {
+                  try {
+                    await store.setAutosaveEnabled(value);
+                  } catch (_) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          persist: false,
+                          content: Text('Autosave setting could not be saved.'),
+                          duration: Duration(seconds: 4),
+                          showCloseIcon: true,
+                        ),
+                      );
+                    }
+                  }
+                },
+        ),
+      ],
+    ),
+  );
+}
+
 ScreenTool autosaveMenuTool(
   BuildContext context,
   RenovisionStore store, {
@@ -29,6 +80,7 @@ ScreenTool autosaveMenuTool(
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
+                  persist: false,
                   content: Text(
                     'Could not change Autosave. Its previous setting is still active.',
                   ),
@@ -209,7 +261,7 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
             ),
             const HelpIcon(
               title: 'Autosave',
-              message: 'Autosave keeps room choices and instructions on this device, and updates a connected project file. Added photos and completed designs save separately. Leaving a room also saves pending edits. Use More tools to toggle Autosave; Room settings contains Save now and file options. AI keys are separate.',
+              message: 'Autosave keeps room choices and instructions on this device, and updates a connected project file. Added photos and completed designs save separately. Leaving a room also saves pending edits. Use the visible Autosave switch above the workspace; Room settings contains Save now and file options. AI keys are separate.',
             ),
             if (widget.aiPending)
               const Text(

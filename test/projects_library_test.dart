@@ -490,6 +490,12 @@ void main() {
         );
         expect(selected, option.id);
         expect(
+          find.byKey(const ValueKey('selected-design-update')),
+          findsOneWidget,
+        );
+        await tester.tap(find.byKey(const ValueKey('focus-section-ideas')));
+        await tester.pumpAndSettle();
+        expect(
           find.descendant(of: card, matching: find.text('Selected')),
           findsOneWidget,
         );

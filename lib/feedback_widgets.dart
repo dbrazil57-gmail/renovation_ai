@@ -141,7 +141,9 @@ class _FeedbackScreenState extends State<FeedbackScreen>
         });
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
-          ..showSnackBar(const SnackBar(content: Text(saveFailure)));
+          ..showSnackBar(
+            const SnackBar(persist: false, content: Text(saveFailure)),
+          );
       }
       return false;
     }

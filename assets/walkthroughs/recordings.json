@@ -5,11 +5,11 @@
     "design": {
       "id": "design",
       "file": "design.mp4",
-      "durationMs": 23400,
+      "durationMs": 31500,
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 1048596
+      "bytes": 1241393
     },
     "capture": {
       "id": "capture",
@@ -18,7 +18,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 303928
+      "bytes": 304238
     },
     "live": {
       "id": "live",
@@ -27,16 +27,16 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 646675
+      "bytes": 611626
     },
     "paint": {
       "id": "paint",
       "file": "paint.mp4",
-      "durationMs": 27100,
+      "durationMs": 28700,
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 977528
+      "bytes": 1022511
     },
     "library": {
       "id": "library",
@@ -45,7 +45,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 532884
+      "bytes": 531729
     },
     "models": {
       "id": "models",
@@ -54,7 +54,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 379111
+      "bytes": 375519
     },
     "saving": {
       "id": "saving",
@@ -63,7 +63,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 473651
+      "bytes": 471680
     }
   }
 }

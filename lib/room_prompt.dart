@@ -1,8 +1,9 @@
 import 'models.dart';
 import 'room_draft.dart';
+import 'room_features.dart';
 
 // Reserve headroom below the 16,000-character request limit for distinct options.
-const _roomContextBudget = 11000;
+const _roomContextBudget = 10000;
 
 String _photoFactsExcerpt(String observations, int budget) {
   if (observations.length <= budget) return observations;
@@ -10,7 +11,7 @@ String _photoFactsExcerpt(String observations, int budget) {
       '\n[Photo observations excerpt; full analysis remains saved in the room.]';
   final limit = budget - notice.length;
   if (limit <= 0) {
-    return '[Full observations remain saved; use the attached photo and current brief.]';
+    return '[Photo observations excerpt omitted for request size; full observations remain saved. Use the attached photo and current brief.]';
   }
   final cut = observations.substring(0, limit);
   final sentence = cut.lastIndexOf(RegExp(r'[.!?\n]'));
@@ -51,7 +52,19 @@ String roomTemplatePrompt(
   bool conciseDesignDirection = false,
 }) {
   final precise = draft.preciseEdit;
-  return buildRenovationPrompt(
+  if (precise) {
+    return 'Use the attached selected photograph as the source.\n'
+        'PRECISION EDIT: Apply only this focused update: ${draft.correction.text.trim()}.\n'
+        '${draft.protected.text.trim().isEmpty ? '' : 'MUST RETAIN: ${draft.protected.text.trim()}.\n'}'
+        '${buildRoomItemsPrompt(draft.effectiveRoomType, Map.fromEntries(draft.roomItemChoices.entries.where((e) => e.value == 'keep')), const [])}\n'
+        'Keep the same camera viewpoint, geometry, layout and all unrelated surfaces, furniture, fittings and lighting. '
+        'Do not reapply the original renovation brief, style, palette or room-wide suggestions. '
+        'A local colour preview identifies the intended finish and approximate area; correct its edges on that same surface without repainting adjacent objects. '
+        'Return one photorealistic corrected image, not a new room concept or written plan. This is visual inspiration, not a measured construction plan.';
+  }
+  final regionPrompt = '${draft.store.wordingRegion.prompt}\n';
+  return regionPrompt +
+      buildRenovationPrompt(
         roomName: room.name,
         instructions: precise ? draft.correction.text : draft.changes.text,
         protectedFeatures: draft.protected.text,
@@ -72,6 +85,9 @@ String roomTemplatePrompt(
         wholeRoomDirection: !precise && draft.fullRenovation,
         conciseDesignDirection: conciseDesignDirection,
       ) +
+      (room.useDesignReferences && room.designReferences != null
+          ? '\n${room.designReferences!.prompt}'
+          : '') +
       (!precise && !draft.fullRenovation
           ? '\nPARTIAL RENOVATION: Change only the requested items, selected surfaces and written instructions. Keep unselected finishes, fittings and furniture as they are; style and palette apply only within this scope. If nothing has been selected or requested, ask what should change before creating a renovation.'
           : '') +

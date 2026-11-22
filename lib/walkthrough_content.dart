@@ -148,7 +148,7 @@ const designWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Refine a selected design',
-      'Select the saved version you like. In history, Saved settings can load its recorded choices or start Refine this design. Choose Precise correction for a small change and describe only that change.',
+      'Select the saved version you like. Refine opens Update this design. Describe only the change in that field and choose Apply focused update. Review the confirmation before sending. Saved settings in history can also load a version’s recorded choices.',
       'Change only the benchtop to pale stone. Keep the chosen cabinetry, flooring and layout.',
       note: 'Precise prompts and markup guide the AI; they do not guarantee unchanged pixels outside the edit.',
     ),
@@ -205,7 +205,7 @@ const savingWalkthrough = AppWalkthrough(
   [
     WalkthroughStep(
       'Check local autosave',
-      'Open More tools in the design workspace to check Autosave. With it enabled, room choices and saved versions stay on this device.',
+      'Use the visible Autosave switch beneath the title in the workspace, setup or project. With it enabled, room choices stay on this device. Imported photos and completed designs are saved when added.',
       'Turn Autosave on before experimenting with the kitchen.',
       note: 'Browser storage belongs to the browser address and profile. A portable file helps you move work or recover it elsewhere.',
     ),
@@ -225,7 +225,7 @@ const savingWalkthrough = AppWalkthrough(
       'Keep backups private',
       'Settings offers optional password-protected project exports. Keep the password somewhere safe and check that you can open your backup.',
       'Use a protected file when sharing a project containing private room photos.',
-      note: 'Protected exports encrypt the portable file. App-local photo storage is not encrypted by this option. Chrome needs API key re-entry after reload; Android can retain its key securely.',
+      note: 'Protected exports encrypt the portable file. App-local photo storage is not encrypted by this option. Provider keys are stored separately: encrypted in this browser/profile/address, or in Android secure storage. Clearing browser site data removes its keys.',
     ),
   ],
 );
@@ -291,12 +291,12 @@ const paintWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Try tile layouts or remove a surface',
-      'Tile layout & grout adjusts pattern size, angle and grout. These are approximate 2D previews. Select a layer and Delete selected surface, or Delete all surfaces. Confirm the deletion. Undo history lasts only for the open editing session.',
+      'Tile layout & grout adjusts size, angle and grout. Choose material sample imports a texture. For perspective, outline four corners clockwise from top-left and enable Fit tiles to four-corner outline. Add area to this surface fills missed patches. Select a layer and Delete selected surface, or Delete all surfaces. Undo lasts only for the open editing session.',
       'Remove Wall 2 while keeping Wall 1. Original photos and saved versions stay unchanged.',
     ),
     WalkthroughStep(
       'Save a version',
-      'Back keeps the working draft. Save finish version adds a new image with editable surface layers. Finish with AI instead saves the preview and prepares one precise correction to polish its paint and tile choices together. Review and confirm generation separately.',
+      'Back keeps the working draft. Save finish version adds a new image with editable surface layers. Polish paint / tiles with AI saves the preview and prepares one focused correction using the guide and clean source view. Review and confirm separately. This does not send the original whole-room renovation brief.',
       'Reopen the saved version to try another colour. Local edits need no key; only confirmed AI polishing uses your paid connection. Original photos and the approved design remain saved.',
     ),
   ],

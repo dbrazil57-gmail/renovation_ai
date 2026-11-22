@@ -24,6 +24,17 @@ class ProjectDocuments extends ChangeNotifier {
   bool get pending =>
       _destinations.keys.any((id) => _revisions[id] != _saved[id]);
 
+  Future<void> flushAndDetach(
+    String id, {
+    Future<void> Function()? beforeDetach,
+  }) async {
+    if (hasPending(id)) await save(id);
+    await (_queues[id] ?? Future<void>.value());
+    await beforeDetach?.call();
+    _destinations.remove(id);
+    notifyListeners();
+  }
+
   Future<void> link(
     String id,
     SaveDestination destination, {

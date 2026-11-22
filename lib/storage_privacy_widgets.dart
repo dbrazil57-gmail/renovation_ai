@@ -59,6 +59,7 @@ class StoragePrivacyCard extends StatelessWidget {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
+                  persist: false,
                   content: Text('Storage location details copied.'),
                 ),
               );

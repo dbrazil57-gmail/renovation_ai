@@ -5,6 +5,7 @@ import 'renovation_scope.dart';
 import 'room_features.dart';
 import 'design_recipe.dart';
 import 'local_paint.dart';
+import 'design_references.dart';
 
 String _storedRoomType(Object? value) {
   final original = (value ?? '').toString();
@@ -24,17 +25,22 @@ class RenovationProject {
   final String id;
   final String name;
   final DateTime created;
+  final bool archived, deleted;
 
   RenovationProject({
     required this.id,
     required this.name,
     required this.created,
+    this.archived = false,
+    this.deleted = false,
   });
 
   Map<String, dynamic> toMap() => {
     'id': id,
     'name': name,
     'created': created.toIso8601String(),
+    if (archived) 'archived': true,
+    if (deleted) 'deleted': true,
   };
 
   factory RenovationProject.fromMap(Map<dynamic, dynamic> data) =>
@@ -42,6 +48,8 @@ class RenovationProject {
         id: data['id'].toString(),
         name: data['name'].toString(),
         created: DateTime.parse(data['created'].toString()),
+        archived: data['archived'] == true,
+        deleted: data['deleted'] == true,
       );
 }
 
@@ -78,6 +86,8 @@ class RenovationRoom {
   final bool automaticLiveName;
   final Map<String, String> roomItemChoices;
   final Map<String, LocalPaintRecipe> paintDrafts;
+  final DesignReferences? designReferences;
+  final bool useDesignReferences;
   List<String> get photoIds => [originalId, ...additionalPhotoIds];
   String get primaryId => primaryPhotoId ?? originalId;
   String get displayName {
@@ -146,9 +156,13 @@ class RenovationRoom {
     this.automaticLiveName = false,
     this.roomItemChoices = const {},
     this.paintDrafts = const {},
+    this.designReferences,
+    this.useDesignReferences = false,
   });
 
   RenovationRoom copyWith({
+    DesignReferences? designReferences,
+    bool? useDesignReferences,
     bool? deleted,
     String? instructions,
     String? correctionInstructions,
@@ -179,6 +193,8 @@ class RenovationRoom {
     Map<String, String>? roomItemChoices,
     Map<String, LocalPaintRecipe>? paintDrafts,
   }) => RenovationRoom(
+    designReferences: designReferences ?? this.designReferences,
+    useDesignReferences: useDesignReferences ?? this.useDesignReferences,
     deleted: deleted ?? this.deleted,
     id: id,
     projectId: projectId,
@@ -218,6 +234,8 @@ class RenovationRoom {
   );
 
   Map<String, dynamic> toMap() => {
+    if (designReferences != null) 'designReferences': designReferences!.toMap(),
+    if (useDesignReferences) 'useDesignReferences': true,
     'deleted': deleted,
     'id': id,
     'projectId': projectId,
@@ -256,6 +274,10 @@ class RenovationRoom {
   };
 
   factory RenovationRoom.fromMap(Map<dynamic, dynamic> data) => RenovationRoom(
+    designReferences: data['designReferences'] is Map
+        ? DesignReferences.fromMap(data['designReferences'] as Map)
+        : null,
+    useDesignReferences: data['useDesignReferences'] == true,
     deleted: data['deleted'] == true,
     paintDrafts: {
       for (final entry in (data['paintDrafts'] as Map? ?? const {}).entries)

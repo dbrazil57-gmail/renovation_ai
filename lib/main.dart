@@ -164,6 +164,7 @@ ThemeData buildRenovisionTheme({
     ),
     extensions: [colours],
     scaffoldBackgroundColor: colours.paper,
+    snackBarTheme: const SnackBarThemeData(showCloseIcon: true),
     cardTheme: CardThemeData(
       color: colours.panel,
       elevation: 0,

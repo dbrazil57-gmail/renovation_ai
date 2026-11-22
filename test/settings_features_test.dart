@@ -94,12 +94,14 @@ void main() {
       await tester.tap(find.byTooltip('Room settings'));
       await tester.pumpAndSettle();
       final appearance = find.byKey(const ValueKey('app-appearance-settings'));
-      await tester.ensureVisible(appearance);
-      await tester.tap(appearance);
+      await revealFocusControl(tester, appearance, 200);
+      await Scrollable.ensureVisible(tester.element(appearance), alignment: .5);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('App appearance'));
       await tester.pumpAndSettle();
       for (final choice in AppThemeChoice.values) {
         final target = find.byKey(ValueKey('app-theme-${choice.name}'));
-        await tester.ensureVisible(target);
+        await revealFocusControl(tester, target, 150);
         await tester.pumpAndSettle();
         await tester.tap(target);
         await tester.pumpAndSettle();

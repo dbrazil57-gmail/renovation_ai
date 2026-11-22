@@ -116,37 +116,51 @@ class RenovationScopeControls extends StatelessWidget {
                   ),
                 ],
               )
-            else ...[
-              RoomItemControls(draft: draft),
-              const SizedBox(height: 10),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final width = constraints.maxWidth >= 600
-                      ? (constraints.maxWidth - 12) / 2
-                      : constraints.maxWidth;
-                  return Wrap(
-                    spacing: 12,
-                    children: [
-                      for (final entry in renovationScope.entries.where(
-                        (e) =>
-                            scopeAppliesToRoom(e.key, draft.effectiveRoomType),
-                      ))
-                        SizedBox(
-                          width: width,
-                          child: CheckboxListTile(
-                            contentPadding: EdgeInsets.zero,
-                            controlAffinity: ListTileControlAffinity.leading,
-                            title: Text(entry.value.label),
-                            value: draft.scopeIds.contains(entry.key),
-                            onChanged: (value) =>
-                                draft.setScope(entry.key, value ?? false),
-                          ),
-                        ),
-                    ],
-                  );
-                },
+            else
+              ExpansionTile(
+                key: const ValueKey('partial-renovation-items'),
+                title: const Text('Choose individual changes'),
+                initiallyExpanded: false,
+                tilePadding: EdgeInsets.zero,
+                children: [
+                  RoomItemControls(draft: draft),
+                  const SizedBox(height: 10),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final width = constraints.maxWidth >= 600
+                          ? (constraints.maxWidth - 12) / 2
+                          : constraints.maxWidth;
+                      return Wrap(
+                        spacing: 12,
+                        children: [
+                          for (final entry in renovationScope.entries.where(
+                            (e) => scopeAppliesToRoom(
+                              e.key,
+                              draft.effectiveRoomType,
+                            ),
+                          ))
+                            SizedBox(
+                              width: width,
+                              child: CheckboxListTile(
+                                contentPadding: EdgeInsets.zero,
+                                controlAffinity:
+                                    ListTileControlAffinity.leading,
+                                title: Text(
+                                  draft.store.wordingRegion.text(
+                                    entry.value.label,
+                                  ),
+                                ),
+                                value: draft.scopeIds.contains(entry.key),
+                                onChanged: (value) =>
+                                    draft.setScope(entry.key, value ?? false),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
               ),
-            ],
             if (draft.fullRenovation)
               ExpansionTile(
                 key: const ValueKey('renovation-material-details'),

@@ -507,9 +507,9 @@ void main() {
       await drawWall(tester);
       await tester.tap(find.text('2 Finish'));
       await tester.pump();
-      await tester.ensureVisible(find.text('Finish with AI'));
+      await tester.ensureVisible(find.text('Polish paint / tiles with AI'));
       await tester.pump();
-      await tester.tap(find.text('Finish with AI'));
+      await tester.tap(find.text('Polish paint / tiles with AI'));
       await tester.pump();
       await waitFor(
         tester,
@@ -522,7 +522,10 @@ void main() {
       final current = store.roomById(room.id)!;
       expect(painted.paintRecipe, isNotNull);
       expect(painted.aiModel, isNull);
-      expect(current.correctionInstructions, startsWith('Keep the wall art.'));
+      expect(
+        current.correctionInstructions,
+        isNot(contains('Keep the wall art.')),
+      );
       expect(current.correctionInstructions, contains('#D7C7AC'));
       expect(
         current.correctionInstructions,
@@ -530,7 +533,10 @@ void main() {
       );
       expect(current.useAiPrompt, isFalse);
       expect(current.precisionConceptCount, 1);
-      expect(find.byKey(const ValueKey('instructions-true')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('selected-design-update')),
+        findsOneWidget,
+      );
       expect(store.imageFor(room.originalId), original);
       expect(requests, 0);
       expect(tester.takeException(), isNull);
@@ -599,7 +605,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Dark grout'));
       await settlePreview();
-      final finish = find.text('Finish with AI');
+      final finish = find.text('Polish paint / tiles with AI');
       await tester.scrollUntilVisible(
         finish,
         120,

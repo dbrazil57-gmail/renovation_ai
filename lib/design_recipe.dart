@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'room_analysis.dart';
+import 'ai_usage.dart';
 
 /// A detached, allow-listed snapshot. Connection settings/keys are never accepted.
 class DesignRecipe {
@@ -18,6 +19,8 @@ class DesignRecipe {
     'imageModel',
     'imageQuality',
     'conceptDirection',
+    'wordingRegion',
+    'designReferenceNotes',
   ];
   static const boolFields = [
     'preciseEdit',
@@ -91,6 +94,10 @@ class DesignRecipe {
       result['roomItemChoices'] = Map<String, String>.from(choices);
     }
     final analysis = value['analysis'];
+    if (value['usage'] != null) {
+      if (value['usage'] is! Map) throw const FormatException('Invalid usage');
+      result['usage'] = AiUsage.fromMap(value['usage'] as Map).toMap();
+    }
     if (analysis != null) {
       if (analysis is! Map) {
         throw const FormatException('Invalid saved analysis');

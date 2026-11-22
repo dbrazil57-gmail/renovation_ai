@@ -179,7 +179,7 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
     builder: (context, bounds) {
       final desktop = bounds.maxWidth >= 900 && bounds.maxHeight >= 420;
       final panel = controls(context);
-      final canvasHeight = bounds.maxHeight < 400
+      final canvasHeight = bounds.maxHeight < 520
           ? (bounds.maxHeight * .28).clamp(48.0, 105.0)
           : (bounds.maxHeight * .52).clamp(150.0, 440.0);
       return ColoredBox(
@@ -193,7 +193,7 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
                   ? bounds.maxWidth - (bounds.maxWidth * .4).clamp(350.0, 510.0)
                   : bounds.maxWidth,
               height: desktop ? bounds.maxHeight : canvasHeight,
-              child: canvas(compact: !desktop && bounds.maxHeight < 500),
+              child: canvas(compact: !desktop && canvasHeight < 180),
             ),
             Expanded(child: panel),
           ],

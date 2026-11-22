@@ -6,6 +6,20 @@ Accept the app on the owner's Samsung S21, then finish iPhone parity so friends
 can provide TestFlight feedback. Keep Chrome current; native desktop follows later.
 The original project brief and existing test installations remain intact.
 
+Follow-up **23 November**: source/Chrome now includes remembered browser keys,
+visible Autosave, selected-design updates, paint-only AI polish, recoverable
+project management/additive room import, regional wording, image-usage estimates,
+optional sourced OpenAI research and improved local material previews. These are
+not in the unchanged published 1.0.17 APK. Final owner S21 acceptance still needs
+a separately requested new package. Help recordings use real app widgets with
+simulated camera/AI; genuine Android launch footage remains a later step.
+
+Owner confirms **no hosting or support address yet**. Live tester funding/hosting,
+support and AI-output report delivery, privacy hosting, production identity/signing,
+store account/testing and iOS parity remain release gates. No deployment or spending
+has been activated. Browser tester invitations now use a separate encrypted local
+vault too; this does not create a hosted allowance or provider balance.
+
 ## Current position
 
 - Working Android/Chrome app: projects, room photos/camera, multiple views,
@@ -67,8 +81,9 @@ Implemented preparation:
 - Settings > AI connection and models > Tester credits: HTTPS address, private
   invitation, remaining analysis/design attempts, expiry, refresh and disconnect.
 - Android encrypts invitations in a separate Keystore-backed preference store;
-  secret stores are excluded from cloud/device-transfer backup. Chrome keeps the
-  invitation in memory. Project files contain neither invitations nor API keys.
+  secret stores are excluded from cloud/device-transfer backup. Chrome now retains
+  the invitation in its separate encrypted browser/profile/address vault. Project
+  files contain neither invitations nor API keys.
 - Each confirmed analysis consumes one analysis allowance; each generated image
   consumes one design allowance. Multiple concepts consume one per image.
 - The gateway authenticates invitations, pins model/low quality, limits input

@@ -11,6 +11,7 @@ export 'ai_photo_preparation.dart' show prepareInternetPhotos;
 import 'ai_activity.dart';
 import 'ai_types.dart';
 import 'room_analysis.dart';
+import 'ai_usage.dart';
 import 'ai_model_choices.dart';
 
 const directImageModels = preferredRoomImageModels;
@@ -49,7 +50,8 @@ class OpenAiInternet {
       final upstream = await (() async => http.Response.fromStream(
         await client.send(request),
       ))().timeout(const Duration(seconds: 20));
-      final data = response(upstream)['data'];
+      final payload = response(upstream);
+      final data = payload['data'];
       if (data is! List) throw const FormatException('Missing models');
       return data
           .whereType<Map>()
@@ -108,7 +110,8 @@ class OpenAiInternet {
         await client.send(request),
       ))().timeout(const Duration(seconds: 210));
       onProgress?.call(AiStage.reading);
-      final data = response(upstream)['data'];
+      final payload = response(upstream);
+      final data = payload['data'];
       final encoded = data is List && data.isNotEmpty && data.first is Map
           ? (data.first as Map)['b64_json']
           : null;
@@ -123,6 +126,9 @@ class OpenAiInternet {
         model: model,
         quality: quality,
         requestId: upstream.headers['x-request-id'],
+        usage: payload['usage'] is Map
+            ? AiUsage.openAi(payload['usage'] as Map, model)
+            : null,
       );
     } on AiFailure {
       rethrow;

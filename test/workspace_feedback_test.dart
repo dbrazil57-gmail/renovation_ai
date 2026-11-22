@@ -79,7 +79,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.textContaining('Browser connection'), findsOneWidget);
+      expect(
+        find.textContaining('API key kept for this session'),
+        findsOneWidget,
+      );
       expect(store.ai.connected, true);
       expect(checks, 1);
       final saved = store.ai.rememberedConnection!;
