@@ -1358,14 +1358,19 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   Future<void> _reviewBrief() async {
     final room = widget.store.roomById(widget.roomId);
     if (room == null) return;
-    final target = await reviewBrief(
-      context,
-      draft.briefReadiness(imageAvailable: _activeImage(room) != null),
+    final readiness = draft.briefReadiness(
+      imageAvailable: _activeImage(room) != null,
     );
-    if (mounted && target != null) _improveBrief(target);
+    final action = await reviewBrief(context, readiness);
+    if (!mounted) return;
+    if (action == BriefReviewAction.refine) {
+      _improveBrief(readiness.recommendedTarget);
+    } else if (action == BriefReviewAction.proceed) {
+      await _generateFromWorkspace(briefReviewed: true);
+    }
   }
 
-  Future<void> _generateFromWorkspace() async {
+  Future<void> _generateFromWorkspace({bool briefReviewed = false}) async {
     if (aiPending || widget.store.ai.activity.active) return;
     if (!widget.store.ai.connected) {
       await _openSettings();
@@ -1385,7 +1390,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       return;
     }
     final previousCount = widget.store.designsFor(widget.roomId).length;
-    await generation.generate();
+    await generation.generate(briefReviewed: briefReviewed);
     if (!mounted) return;
     if (generation.needsAttention) {
       setState(() => focusSection = FocusSection.refine);

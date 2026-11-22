@@ -61,53 +61,86 @@ class BriefReadinessGuidance extends StatelessWidget {
   );
 }
 
-Future<BriefTarget?> reviewBrief(
+enum BriefReviewAction { refine, proceed }
+
+Future<BriefReviewAction?> reviewBrief(
   BuildContext context,
   BriefReadiness readiness,
-) => showDialog<BriefTarget>(
-  context: context,
-  builder: (dialogContext) => AlertDialog(
-    title: Text('Brief ${readiness.percentage}% complete'),
-    content: SizedBox(
-      width: 440,
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(BriefReadiness.explanation),
-            const SizedBox(height: 8),
-            for (final check in readiness.checks)
-              ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(
-                  check.complete
-                      ? Icons.check_circle_outline
-                      : Icons.radio_button_unchecked,
+) {
+  var proceed = false;
+  return showDialog<BriefReviewAction>(
+    context: context,
+    builder: (dialogContext) => StatefulBuilder(
+      builder: (context, updateDialog) => AlertDialog(
+        title: Text('Brief ${readiness.percentage}% complete'),
+        content: SizedBox(
+          width: 440,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(BriefReadiness.explanation),
+                const SizedBox(height: 8),
+                for (final check in readiness.checks)
+                  ListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(
+                      check.complete
+                          ? Icons.check_circle_outline
+                          : Icons.radio_button_unchecked,
+                    ),
+                    title: Text(
+                      '${check.label} · ${check.points}/${check.possible}',
+                    ),
+                    subtitle: check.complete ? null : Text(check.suggestion),
+                  ),
+                const Text(
+                  'A narrow precise correction uses its own checklist; style and palette are not required. Reviewed reminders stop repeating at 75% or more for this room and mode. Paid-request confirmation still applies.',
                 ),
-                title: Text(
-                  '${check.label} · ${check.points}/${check.possible}',
-                ),
-                subtitle: check.complete ? null : Text(check.suggestion),
-              ),
-            const Text(
-              'A narrow precise correction uses its own checklist; style and palette are not required. Reviewed reminders stop repeating at 75% or more for this room and mode. Paid-request confirmation still applies.',
+              ],
             ),
-          ],
+          ),
         ),
+        actions: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CheckboxListTile(
+                key: const ValueKey('brief-proceed-checkbox'),
+                value: proceed,
+                onChanged: (value) =>
+                    updateDialog(() => proceed = value ?? false),
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                title: const Text('Proceed with the current brief'),
+              ),
+              Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 8,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text('Close'),
+                  ),
+                  FilledButton(
+                    key: const ValueKey('brief-review-primary'),
+                    onPressed: () => Navigator.pop(
+                      dialogContext,
+                      proceed
+                          ? BriefReviewAction.proceed
+                          : BriefReviewAction.refine,
+                    ),
+                    child: Text(proceed ? 'Proceed' : 'Refine brief'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     ),
-    actions: [
-      TextButton(
-        onPressed: () => Navigator.pop(dialogContext),
-        child: const Text('Close'),
-      ),
-      FilledButton(
-        onPressed: () =>
-            Navigator.pop(dialogContext, readiness.recommendedTarget),
-        child: const Text('Refine brief'),
-      ),
-    ],
-  ),
-);
+  );
+}

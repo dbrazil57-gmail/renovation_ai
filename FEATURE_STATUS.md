@@ -1,5 +1,11 @@
 # Renovision feature status
 
+**Checklist Proceed follow-up — source `56814171d1`:** a pinned checkbox changes
+Refine brief to Proceed at any coverage percentage. It opens the normal generation
+path (connection and required inputs still apply), suppressing duplicate guidance
+for that attempt while retaining paid confirmation. Close/cancel sends nothing;
+the checkbox resets on reopen. Published APK 1.0.16 remains unchanged.
+
 **Brief readiness, 22 November — source `65936b5efb`:** live local coverage appears
 beside Generate across all workspace tabs. The existing confirmation adds missing
 inputs and Refine brief; users can proceed with a valid basic concept. A confirmed
@@ -229,7 +235,7 @@ Unspecified (Live) until confirmed. Existing custom names/photos are preserved.
 | New in 1.0.14 | Local paint and editable layers, regional style choices, saved feedback drafts/copy and optional contact handoff |
 | New in 1.0.15 | Confirmed A icon, consistent launcher/startup/header/web branding; same app identity and storage |
 | New in 1.0.16 | Recorded help with corrected native video timing, typed room deletion/recovery, legacy/immediate-save Live names, tap-wall recolouring, persistent wall deletion and save-then-review AI finishing |
-| Source after 1.0.16 | `65936b5efb`: all completed workspace/navigation/lighting/terminology changes plus live brief coverage, Refine/proceed guidance and remembered 75%+ reminders; source improvements await a requested phone package |
+| Source after 1.0.16 | `56814171d1`: all completed workspace/navigation/lighting/terminology changes plus live brief coverage, checklist Proceed checkbox and remembered 75%+ reminders; source improvements await a requested phone package |
 | Last APK checks | **327 tests pass**, clean analysis, Android release build passes; matching 1.0.15 signing certificate, olive/cream icon, public asset hashes, restricted share provider, private-file exclusion and 64-bit ELF/ZIP 16KB alignment verified |
 | Earlier audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. The subsequent requested APK build made no paid AI call or data migration |
 | Real user evidence | User reports successful phone installation, direct AI analysis/generation, good generated designs, project auto-reload and useful comparison/camera overlay. This does not validate every newer source change |

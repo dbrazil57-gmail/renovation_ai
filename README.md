@@ -1,5 +1,11 @@
 # Renovision AI
 
+Brief review follow-up, source `56814171d1`: the checklist has a pinned **Proceed
+with the current brief** checkbox. Ticking it changes Refine brief to Proceed,
+including below 75%. Proceed uses the normal connection/required-input/send path
+and avoids repeating readiness guidance for that attempt. It does not send an
+image or save a review acknowledgement until the normal send is confirmed.
+
 Brief readiness follow-up, **22 November**, source `65936b5efb`: a live Brief %
 indicator is pinned above Generate on every workspace tab. The existing send
 confirmation includes missing-direction suggestions and Refine brief, with no
@@ -176,7 +182,7 @@ with Chrome rather than creating a disposable Flutter Chrome profile.
 The launcher resolves packages for the web target and avoids unnecessary desktop
 plugin symlinks without changing global Flutter settings. `-Release` runs the
 desktop browser app with production compilation; omit it for development debugging.
-The current desktop build is `65936b5efb`, including all completed source features
+The current desktop build is `56814171d1`, including all completed source features
 listed above. A packaged native Windows companion remains a separate future stage.
 Settings > App build and saved data shows the build/address/counts and offers
 Check local saving. That confirms a read/write, not survival of a later crash.

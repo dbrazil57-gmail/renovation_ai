@@ -1,5 +1,14 @@
 # Product and research reference
 
+Checklist follow-up, source `56814171d1`: the review dialog previously offered
+only Close and Refine, making low-score continuation hard to discover. A checkbox
+pinned above its actions now changes Refine brief into Proceed at any score.
+Proceed enters the normal generation path and supplies a one-attempt review flag
+so the same guidance is not duplicated in paid confirmation. It does not bypass
+connection/required-input/paid-consent checks. Checkbox state is dialog-local and
+resets on reopen; the separate 75%+ reminder preference is still written only after
+confirmed send. No project, prompt, score weighting or published APK changes.
+
 ## Brief completeness guidance — 22 November
 
 The requested percentage is implemented as Brief completeness, not an account

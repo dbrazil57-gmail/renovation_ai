@@ -555,7 +555,8 @@ class AiEditController {
   bool get needsAttention =>
       _owner?.pending != null ||
       (_owner?.received.isEmpty == true && _owner?.message != null);
-  Future<void> generate() async => _owner?._generate();
+  Future<void> generate({bool briefReviewed = false}) async =>
+      _owner?._generate(briefReviewed: briefReviewed);
 }
 
 class AiEditCard extends StatefulWidget {
@@ -648,7 +649,7 @@ class _AiEditCardState extends State<AiEditCard>
   String summary() =>
       '${plannedCount == 1 ? 'AI result saved as a new version. Compare it before approving a new baseline.' : 'Saved ${received.length} of $plannedCount concepts as separate versions. Choose a design below to use it.'}${received.length < plannedCount ? ' Remaining concepts were not requested. Generating again starts a new batch.' : ''}${duplicate ? ' An output is byte-for-byte identical to an existing image. It was retained for history; no automatic replacement was requested.' : ''}';
 
-  Future<void> _generate() async {
+  Future<void> _generate({bool briefReviewed = false}) async {
     if (!widget.enabled ||
         busy ||
         pending != null ||
@@ -733,13 +734,14 @@ class _AiEditCardState extends State<AiEditCard>
       imageAvailable: captured.image.isNotEmpty,
     );
     final showGuidance =
-        readiness?.needsReminder(
-          previouslyReviewed: widget.store.briefGuidanceReviewed(
-            captured.roomId,
-            precise: captured.precise,
-          ),
-        ) ??
-        false;
+        !briefReviewed &&
+        (readiness?.needsReminder(
+              previouslyReviewed: widget.store.briefGuidanceReviewed(
+                captured.roomId,
+                precise: captured.precise,
+              ),
+            ) ??
+            false);
     var improveBrief = false;
     setState(() {
       busy = true;
@@ -860,8 +862,9 @@ class _AiEditCardState extends State<AiEditCard>
       }
       if (widget.store.ai.activity.active) return;
       if (connectionRevision != widget.store.ai.connectionRevision) return;
-      if (showGuidance &&
-          readiness!.percentage >= BriefReadiness.reminderThreshold) {
+      if ((showGuidance || briefReviewed) &&
+          readiness != null &&
+          readiness.percentage >= BriefReadiness.reminderThreshold) {
         try {
           await widget.store.rememberBriefReview(
             captured.roomId,

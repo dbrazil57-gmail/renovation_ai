@@ -1,5 +1,18 @@
 # Testing and storage reference
 
+Checklist Proceed follow-up, source `56814171d1`: at a valid low score such as
+65%, open Brief %, tick Proceed with the current brief and confirm the primary
+button changes from Refine brief to Proceed. Unticking restores Refine. Close
+changes nothing; reopen starts unchecked. Proceed opens the normal send dialog
+without duplicate readiness guidance (or connection settings when not connected).
+No request is sent until Send is confirmed; cancelling leaves review preferences
+unchanged. Required photo/correction/partial-scope guards still apply. Tests use
+mock AI; the existing APK is preserved. Evidence: `output/brief-proceed-*.log`.
+All **343 tests pass**, analysis is clean (12.3s), Chrome release build passes
+(57.2s). Actual 390×844 browser checks cover the checked Proceed label, low-score
+continuation to connection setup, reopening/reset and Close. Screenshot:
+`output/brief-proceed-checked.png`; no normal-profile edits or paid requests.
+
 ## Brief readiness source acceptance — 22 November
 
 Source `65936b5efb`; evidence is in `output/brief-review-*.log`. Scoring is local

@@ -7,6 +7,16 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Brief completeness and Generate guidance — 22 November
 
+- [x] Follow-up `56814171d1`: add a pinned Proceed with the current brief checkbox
+  to the checklist, switching Refine brief to Proceed even below 75%. Carry that
+  review into the current send confirmation without repeating the same guidance.
+  Reset the checkbox on reopen; close/cancel do not send or acknowledge. Existing
+  required-input/connection/paid-send guards and the 75% persistence rule remain.
+- [x] Follow-up verification: **343 tests pass**, clean analysis (12.3s), Chrome
+  release build (57.2s), and actual 390×844 checkbox/Proceed/reset/Close interaction
+  at 65%. Mock tests verify the paid-send boundary; browser uses a public sample,
+  isolated profile and no key. Evidence: `output/brief-proceed-*.log`.
+
 - [x] Pin a live Brief % above Generate on Room / Style / Refine / Ideas, with a
   tap-to-review checklist. Keep this distinct from account/profile completion,
   camera scanning, measured photo quality or AI image-quality confidence.

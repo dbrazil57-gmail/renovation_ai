@@ -216,6 +216,59 @@ void main() {
     );
 
     testWidgets(
+      'checklist checkbox enables Proceed below 75 without sending until paid confirmation',
+      (tester) async {
+        await show(tester);
+        expectScore(65);
+        final indicator = find.byKey(
+          const ValueKey('brief-readiness-indicator'),
+        );
+        final checkbox = find.byKey(const ValueKey('brief-proceed-checkbox'));
+        await tester.tap(indicator);
+        await tester.pumpAndSettle();
+        expect(find.text('Refine brief'), findsOneWidget);
+        expect(find.text('Proceed'), findsNothing);
+        await tester.tap(checkbox);
+        await tester.pumpAndSettle();
+        expect(find.text('Proceed'), findsOneWidget);
+        expect(find.text('Refine brief'), findsNothing);
+        await tester.tap(checkbox);
+        await tester.pumpAndSettle();
+        expect(find.text('Refine brief'), findsOneWidget);
+        await tester.tap(find.text('Close'));
+        await tester.pumpAndSettle();
+        expect(imageRequests, 0);
+        await tester.tap(indicator);
+        await tester.pumpAndSettle();
+        expect(tester.widget<CheckboxListTile>(checkbox).value, false);
+        await tester.tap(checkbox);
+        await tester.tap(find.byKey(const ValueKey('brief-review-primary')));
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsOneWidget);
+        expect(find.text('Send to OpenAI'), findsOneWidget);
+        expect(
+          find.byKey(const ValueKey('brief-readiness-guidance')),
+          findsNothing,
+        );
+        expect(imageRequests, 0);
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
+        expect(store.briefGuidanceReviewed(room.id, precise: false), false);
+        await tester.tap(indicator);
+        await tester.pumpAndSettle();
+        await tester.tap(checkbox);
+        await tester.tap(find.byKey(const ValueKey('brief-review-primary')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Send to OpenAI'));
+        await tester.pumpAndSettle();
+        expect(imageRequests, 1);
+        expect(store.designsFor(room.id), hasLength(1));
+        expect(store.briefGuidanceReviewed(room.id, precise: false), false);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
       'a failed reminder preference does not duplicate or discard a confirmed image request',
       (tester) async {
         await store.updateRoom(
