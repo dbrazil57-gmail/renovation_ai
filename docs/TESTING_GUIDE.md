@@ -1,5 +1,17 @@
 # Testing and storage reference
 
+Lighting/terminology source `50196e8c85`, 22 November: selected lighting and
+full-room briefs must request visibly new main fittings rather than only strips.
+Keep/protected fixtures and accent-only precise corrections remain authoritative;
+analysis reports main fittings separately and does not guess unseen fixtures.
+Regional aliases must not turn a basin-only instruction into full vanity replacement
+or overwrite the user's wording. Evidence: `output/lighting-review-*.log`.
+Real AI image adherence has not been verified; tests exercise prompt scope only.
+No paid request or new APK. UI localization/region selection remains proposed.
+All **335 tests pass**, analysis is clean (12.7s), and Chrome release build passes
+(56.0s). Regression checks cover explicit/full-room lighting replacement, a narrow
+accent-only precise correction, protected main lights and unchanged user wording.
+
 Main-navigation follow-up, 22 November, source `75ffe41898`: verify Projects is
 first/default, then Explore and Library; Settings is available through the cog
 and Back returns to the selected main tab. Existing toolbar, feedback, workflow,

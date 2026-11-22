@@ -1,5 +1,15 @@
 # Renovision AI
 
+Lighting/terminology follow-up, **22 November**, source `50196e8c85`: Update
+lighting now explicitly requests replacing visible unprotected main fittings;
+adding strip/under-vanity lights alone is insufficient. Full-room briefs include
+the same direction. Ceiling geometry, Keep choices and task-light-only corrections
+remain protected. Analysis identifies main fittings separately from accent lights.
+Analysis/generation also clarify regional English terms and basin versus vanity
+scope. The interface remains English-only; a Language & Region selector and
+translated interfaces are proposed work, not implemented controls. Real generated
+image adherence still needs user/provider testing. No new APK or paid AI request.
+
 Main navigation follow-up, **22 November**, source `75ffe41898`: Projects is the
 first/default tab, followed by Explore and Library. Settings opens from the
 top-right cog as a separate page; Back returns to the same main tab. Its redundant
@@ -156,7 +166,7 @@ with Chrome rather than creating a disposable Flutter Chrome profile.
 The launcher resolves packages for the web target and avoids unnecessary desktop
 plugin symlinks without changing global Flutter settings. `-Release` runs the
 desktop browser app with production compilation; omit it for development debugging.
-The current desktop build is `75ffe41898`, including all completed source features
+The current desktop build is `50196e8c85`, including all completed source features
 listed above. A packaged native Windows companion remains a separate future stage.
 Settings > App build and saved data shows the build/address/counts and offers
 Check local saving. That confirms a read/write, not survival of a later crash.

@@ -1,5 +1,17 @@
 # Renovision feature status
 
+**Lighting and terminology, 22 November — source `50196e8c85`:** selected lighting
+updates and full-room briefs explicitly replace visible unprotected main fittings;
+supplementary strip/under-vanity lighting alone is insufficient. Keep/protected
+fittings and requests limited to accent lighting take priority; unseen fittings
+are not invented. Analysis separates main fittings/locations from accent lighting.
+Shared analysis/generation guidance explains regional English synonyms without
+equating the basin bowl with the whole vanity unit or rewriting user instructions.
+This is prompt clarification, not verified output compliance. UI remains English-only,
+without a locale selector or translated string bundles. Published APK 1.0.16 is unchanged.
+All **335 tests pass**, analysis is clean (12.7s), and Chrome release build passes
+(56.0s). These verify prompt scope, not generated-image adherence.
+
 **Main navigation follow-up, 22 November — source `75ffe41898`:** bottom tabs are
 Projects / Explore / Library, with Projects selected first. Settings uses the
 top-right cog and its own page; returning preserves the previously selected main

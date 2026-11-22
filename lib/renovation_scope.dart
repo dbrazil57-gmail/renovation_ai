@@ -1,5 +1,8 @@
 import 'room_features.dart';
 
+const lightingReplacementInstruction =
+    'Update visible light fittings by replacing the existing unprotected main ceiling and wall-mounted fittings with visibly new, room-appropriate designs. Keep their positions unless relocation is requested. Adding under-vanity, under-cabinet, strip or other accent lighting alone does not fulfil this request: the old main fitting must not remain unchanged. Preserve the ceiling shape, walls and openings; keeping the ceiling structure does not mean keeping an unprotected light fitting. Change only fittings visible in the supplied views; do not invent unseen fittings. Explicit Keep choices, protected fittings and any instruction limited to task or accent lighting only take priority.';
+
 const renovationScope = <String, ({String label, String instruction})>{
   'tidy_stage': (
     label: 'Tidy and stage / remove everyday clutter',
@@ -28,7 +31,7 @@ const renovationScope = <String, ({String label, String instruction})>{
   ),
   'lighting': (
     label: 'Update lighting',
-    instruction: 'Update visible light fittings without changing the ceiling shape or inventing new structural openings.',
+    instruction: lightingReplacementInstruction,
   ),
   'walls': (
     label: 'Refresh wall finishes',

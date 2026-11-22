@@ -1,3 +1,6 @@
+const regionalRenovationTerms =
+    'REGIONAL TERMINOLOGY: Interpret the user\'s words using the room context and photographs. Benchtop/worktop/countertop, taps/faucets, rangehood/extractor hood and light fitting/light fixture are regional equivalents. In a bathroom, basin/washbasin/bathroom sink means the bowl; vanity means the supporting cabinet/counter unit and may include the basin. A kitchen sink is not a bathroom vanity. Do not expand a basin-only request to the whole vanity or silently replace the user\'s instructions through word substitution. These definitions clarify meaning, not permission to change additional items.';
+
 const roomTypes = <String, String>{
   'kitchen': 'Kitchen',
   'bathroom': 'Bathroom',

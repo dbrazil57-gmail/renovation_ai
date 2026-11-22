@@ -1,5 +1,32 @@
 # Product and research reference
 
+## Lighting and regional language — 22 November
+
+The reported result added under-basin/vanity light but retained the old main light.
+The code's generic Update visible light fittings instruction left room for that
+interpretation; the exact cause of the unseen request/result cannot be established.
+Source `50196e8c85` now explicitly replaces visible unprotected main fittings in
+selected lighting/full-room requests. Accent lights alone do not satisfy it.
+Ceiling structure is distinct from its replaceable fitting; Keep/protection and
+task-only qualifiers win. Analysis identifies main fittings/locations separately
+from task/accent light and reports when the main fitting is outside the view.
+This is stronger prompting, not an enforced image mask or a passed real-provider test.
+
+The English UI mostly uses Australian terminology. Shared analysis/generation
+guidance now relates benchtop/worktop/countertop, taps/faucets, rangehood/extractor
+and fitting/fixture. Basin/washbasin/bathroom sink names the bowl; vanity is the
+cabinet/counter unit, which may include it. These are not interchangeable edit
+scopes. Photos and room context resolve meaning; no blind rewrite of user text.
+
+Recommend Language & Region with AU/NZ, UK and US English first, a device
+suggestion plus manual override, then reviewed non-English UI translations as a
+separate stage. Neither selector nor full translation is implemented. The regional
+style options (Japanese, Italian, etc.) are design influences, not interface languages.
+Flutter supports device locale, supported locales and localized app resources;
+changing AI wording alone does not translate custom UI strings. Primary reference:
+[Flutter internationalization](https://docs.flutter.dev/ui/internationalization).
+Keep historical prompts/settings intact and capture future wording choices in recipes.
+
 Main navigation, 22 November: align the visible order with startup by listing
 Projects first, Explore second and Library third. Settings is a separate cog-opened
 page rather than another main destination, so Back returns to the current tab.

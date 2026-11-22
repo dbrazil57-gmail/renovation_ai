@@ -479,6 +479,7 @@ String buildRenovationPrompt({
       : instructions.trim();
   return '''Use the attached photograph(s) of the real $roomName as the visual source. If no room image is attached, ask for it before generating a design.
 ROOM TYPE: ${roomTypes[type]}. Use the actual photographs to resolve visible details; the room type is a preference, not proof of what is present.
+$regionalRenovationTerms
 $treatment
 Requested design changes: ${requestedChanges.isEmpty ? (hasChanges
             ? 'Apply the selected changes listed below.'
@@ -489,6 +490,7 @@ $protections
 $layout
 ${!preciseEdit && wholeRoomDirection ? 'DESIGN INITIATIVE: A short or empty brief in New design mode is permission to propose a fresh, coordinated interior scheme, not to copy the existing decor. Choose a confident design direction from the selected style/palette, or choose complementary materials and colours when none are selected. Make at least three substantial, room-appropriate changes to unprotected surfaces, furnishings, fittings or lighting where available. A near-identical room with extra plants or a mild recolour is insufficient. Keep explicit narrow instructions, Keep choices and architectural/layout restrictions authoritative; never invent structural changes to create impact.' : ''}
 ${!preciseEdit && wholeRoomDirection ? 'WHOLE-ROOM DESIGN DIRECTION: Use the photographs to propose a coordinated renovation appropriate to this room. Consider flooring, wall finishes, cabinetry and work surfaces where present, suitable modern fittings/appliances, layered lighting, materials and restrained furniture/accessory styling. Remove everyday loose clutter such as freestanding bins and washing-up for the concept. Do not retain visibly dated finishes merely because they appear in the source photo. These are design suggestions to review, not measured construction advice. Explicit user instructions and KEEP choices override this direction. Preserve the agreed layout, useful storage, functional or uncertain equipment and the actual outside view. Ask before removing an uncertain fixed fitting; remove a wall telephone only when explicitly requested. Do not invent structural openings, hidden appliances or additional built-in elements.' : ''}
+${!preciseEdit && wholeRoomDirection && !renovationScopeIds.contains('lighting') ? 'MAIN LIGHTING: $lightingReplacementInstruction' : ''}
 $scope
 $itemPrompt
 ${style.isEmpty ? '' : styleDirection(designStyleIds, other: otherStyle)}

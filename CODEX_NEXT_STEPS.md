@@ -5,6 +5,28 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Lighting requests and international wording — 22 November
+
+- [x] Make selected/full-room lighting updates explicitly replace visible main
+  fittings, not just add accent strips. Keep ceiling structure, protected fittings,
+  existing positions and task/accent-only corrections; do not invent unseen lights.
+- [x] Ask analysis to identify visible main fittings/locations separately from
+  task/accent lighting. Clarify regional English aliases in analysis/generation,
+  including basin bowl versus vanity cabinet/counter scope, without blind substitution.
+- [x] Source `50196e8c85` passes **335 tests**, clean analysis (12.7s), and Chrome
+  release compilation (56.0s). Same localhost:7357 preview; no new APK or paid AI.
+- [ ] User-test real generation: old main fitting visibly replaced, protected fitting
+  retained, under-vanity-only correction stays narrow. No paid test has been run.
+- [ ] Proposed Language & Region setting: Australian/NZ English, UK English and
+  US English first, with device suggestion/manual override and AU fallback. Use
+  stable room/item IDs, regional UI labels and a captured wording profile in future
+  generation recipes; preserve existing instructions and history. This setting is
+  not implemented by the current shared terminology guidance.
+- [ ] Additional interface languages need localized app text, platform delegates,
+  dates/plurals/layout testing and reviewed translations. Do not describe an AI
+  glossary or English-style choices as a translated app. Native locale/phone
+  acceptance and a requested APK remain separate steps.
+
 ## Main navigation follow-up — 22 November
 
 - [x] Put Projects first and select it initially, followed by Explore and Library.
