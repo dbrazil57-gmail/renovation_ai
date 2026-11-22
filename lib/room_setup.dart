@@ -170,21 +170,17 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
       );
     }
     final template = roomTemplatePrompt(current, draft);
-    if (!analysis &&
-        draft.useAiPrompt &&
-        (draft.aiPrompt.text.trim().isEmpty ||
-            !(draft.analysis?.matches(sourceId, supporting.keys, template) ??
-                false))) {
-      throw const AiFailure(
-        'The reviewed AI prompt is out of date. Analyse again or untick Use this AI prompt.',
-      );
-    }
     final prompt = analysis
         ? template
         : reviewedRoomPrompt(
             template,
             draft,
             sourceImageId: sourceId,
+            proposalRequirements: roomTemplatePrompt(
+              current,
+              draft,
+              conciseDesignDirection: true,
+            ),
             supportingImageIds: supporting.keys,
           );
     if (prompt.length > 16000) {
@@ -218,6 +214,11 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
       roomTemplatePrompt(current, draft),
       draft,
       sourceImageId: sourceId,
+      proposalRequirements: roomTemplatePrompt(
+        current,
+        draft,
+        conciseDesignDirection: true,
+      ),
       supportingImageIds: current.photoIds.where((id) => id != sourceId),
     );
   }

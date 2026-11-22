@@ -325,9 +325,9 @@ class RoomDraft extends ChangeNotifier {
     _changed();
   }
 
-  void setAnalysis(RoomAnalysis value) {
+  void setAnalysis(RoomAnalysis value, {bool useProposal = false}) {
     analysis = value;
-    useAiPrompt = false;
+    useAiPrompt = useProposal && !preciseEdit;
     aiPrompt.text = value.result.prompt;
     _changed();
   }

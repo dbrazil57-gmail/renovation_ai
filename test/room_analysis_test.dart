@@ -11,6 +11,7 @@ import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
 import 'package:renovision_ai/ai_service.dart';
 import 'package:renovision_ai/ai_widgets.dart';
+import 'package:renovision_ai/design_concepts.dart';
 import 'package:renovision_ai/models.dart';
 import 'package:renovision_ai/project_backup.dart';
 import 'package:renovision_ai/room_analysis.dart';
@@ -208,13 +209,13 @@ void main() {
         store.roomById(room.id)!.analysis!.result.requestId,
         'analysis-id',
       );
-      expect(store.roomById(room.id)!.useAiPrompt, false);
+      expect(store.roomById(room.id)!.useAiPrompt, true);
       expect(store.designsFor(room.id), isEmpty);
       expect(store.roomById(room.id)!.approvedDesignId, isNull);
       expect(store.imageFor(room.originalId), orderedEquals(image));
       final field = find.widgetWithText(
         TextField,
-        'AI-prepared design prompt (editable)',
+        'AI design proposal (editable)',
       );
       await ensureFocusVisible(tester, field);
       await tester.enterText(
@@ -222,9 +223,12 @@ void main() {
         'Edited AI prompt: retain the wide window.',
       );
       await tester.pump(const Duration(milliseconds: 700));
-      final use = find.text('Use this AI prompt for the next design');
+      final use = find.text('Use AI design proposal');
       await ensureFocusVisible(tester, use);
       await tester.pumpAndSettle();
+      await tester.tap(use);
+      await tester.pump(const Duration(milliseconds: 700));
+      expect(store.roomById(room.id)!.useAiPrompt, false);
       await tester.tap(use);
       await tester.pump(const Duration(milliseconds: 700));
       expect(
@@ -502,6 +506,221 @@ void main() {
     },
   );
 
+  test('current proposal follows choices; stale or disabled proposals stay out without losing photo facts', () async {
+    final draft = draftForTest();
+    addTearDown(draft.dispose);
+    draft.changes.text = 'Handleless cupboards. Keep the existing window.';
+    final template = roomTemplatePrompt(room, draft);
+    final analysis = RoomAnalysis(
+      result: RoomAnalysisResult.fromMap(responseBody),
+      sourceImageId: room.originalId,
+      supportingImageIds: const [],
+      context: template,
+      created: DateTime.now(),
+    );
+    draft.setAnalysis(analysis, useProposal: true);
+    String prepared({String? source}) => reviewedRoomPrompt(
+      roomTemplatePrompt(store.roomById(room.id)!, draft),
+      draft,
+      sourceImageId: source ?? room.originalId,
+    );
+    expect(prepared(), contains(responseBody['prompt']));
+    expect(prepared(), contains('Handleless cupboards'));
+    expect(prepared(), contains('CURRENT USER REQUIREMENTS'));
+    final captured = draft.captureRecipe();
+    draft.setUseAiPrompt(false);
+    expect(prepared(), isNot(contains(responseBody['prompt'])));
+    expect(prepared(), contains(responseBody['observations']));
+    draft.setUseAiPrompt(true);
+    await store.setRoomPalette(room.id, 'charcoal_walnut');
+    final changed = prepared();
+    expect(changed, contains('Charcoal & walnut'));
+    expect(changed, contains(responseBody['observations']));
+    expect(changed, isNot(contains(responseBody['prompt'])));
+    expect(
+      prepared(source: 'a different image'),
+      isNot(contains('PHOTO ANALYSIS')),
+    );
+    expect(draft.aiPrompt.text, responseBody['prompt']);
+    expect(draft.analysis!.context, template);
+    expect(captured.toMap()['colourPaletteId'], '');
+    expect(captured.analysis!.context, template);
+    expect(store.imageFor(room.originalId), orderedEquals(image));
+    expect(analyses, 0);
+    expect(edits, 0);
+  });
+
+  test('detailed kitchen analysis and proposal fit three concepts without shortening user requirements or the saved analysis', () {
+    final draft = draftForTest();
+    addTearDown(draft.dispose);
+    draft.changes.text =
+        'Push-open doors.\nDESIGN SYNTHESIS: Keep the existing sink.';
+    draft.protected.text = 'All original openings and the oven';
+    draft.setItemChoice('kitchen_oven', 'keep');
+    draft.setStyle('modern', true);
+    final observations = List.filled(
+      50,
+      'A wide timber-trimmed window sits above the sink and beside a peninsula. ',
+    ).join();
+    final proposal = List.filled(
+      28,
+      'Use matte charcoal cabinetry, pale warm stone and warm large-format floor tiles; coordinate new main and task lighting. ',
+    ).join();
+    final template = roomTemplatePrompt(room, draft);
+    draft.setAnalysis(
+      RoomAnalysis(
+        result: RoomAnalysisResult(
+          observations: observations,
+          questions: const [],
+          prompt: proposal,
+          model: 'fixture',
+        ),
+        sourceImageId: room.originalId,
+        supportingImageIds: const [],
+        context: template,
+        created: DateTime.now(),
+      ),
+      useProposal: true,
+    );
+    final prepared = reviewedRoomPrompt(
+      template,
+      draft,
+      sourceImageId: room.originalId,
+      proposalRequirements: roomTemplatePrompt(
+        room,
+        draft,
+        conciseDesignDirection: true,
+      ),
+    );
+    final concepts = planDesignConcepts(
+      prompt: prepared,
+      precise: false,
+      count: 3,
+      styleIds: ['modern'],
+      compareStyles: false,
+    );
+    expect(concepts, hasLength(3));
+    for (final concept in concepts) {
+      expect(concept.prompt.length, lessThanOrEqualTo(16000));
+      expect(concept.prompt, contains(draft.changes.text));
+      expect(concept.prompt, contains(draft.protected.text));
+      expect(concept.prompt, contains('KEEP EXISTING Oven:'));
+      expect(concept.prompt, contains(proposal.trim()));
+      expect(concept.prompt, contains('Photo observations excerpt'));
+      expect(concept.prompt, contains('actual outside view'));
+    }
+    expect(draft.analysis!.result.observations, observations);
+    expect(draft.analysis!.result.prompt, proposal);
+    expect(draft.analysis!.context, template);
+    expect(analyses, 0);
+    expect(edits, 0);
+  });
+
+  test('precise correction never inherits a whole-room proposal even with an inconsistent saved flag', () {
+    final draft = draftForTest();
+    addTearDown(draft.dispose);
+    draft.setPrecise(true);
+    draft.correction.text = 'Replace only the tap with brushed brass.';
+    final template = roomTemplatePrompt(room, draft);
+    draft.setAnalysis(
+      RoomAnalysis(
+        result: RoomAnalysisResult.fromMap(responseBody),
+        sourceImageId: room.originalId,
+        supportingImageIds: const [],
+        context: template,
+        created: DateTime.now(),
+      ),
+      useProposal: true,
+    );
+    expect(draft.useAiPrompt, false);
+    draft.setUseAiPrompt(true);
+    final prompt = reviewedRoomPrompt(
+      template,
+      draft,
+      sourceImageId: room.originalId,
+    );
+    expect(prompt, template);
+    expect(prompt, contains('Replace only the tap'));
+    expect(prompt, isNot(contains(responseBody['prompt'])));
+    expect(prompt, isNot(contains('DESIGN SYNTHESIS')));
+  });
+
+  test('camera proposal uses its exact analysis brief and falls back to photo facts after changing choices', () {
+    final draft = draftForTest();
+    addTearDown(draft.dispose);
+    final template = roomTemplatePrompt(room, draft, includeRoomContext: false);
+    draft.setAnalysis(
+      RoomAnalysis(
+        result: RoomAnalysisResult.fromMap(responseBody),
+        sourceImageId: room.originalId,
+        supportingImageIds: const [],
+        context: liveRoomAnalysisPrompt(template),
+        created: DateTime.now(),
+      ),
+      useProposal: true,
+    );
+    String prepared() {
+      final current = roomTemplatePrompt(
+        room,
+        draft,
+        includeRoomContext: false,
+      );
+      return reviewedRoomPrompt(
+        current,
+        draft,
+        sourceImageId: room.originalId,
+        analysisContext: liveRoomAnalysisPrompt(current),
+      );
+    }
+
+    expect(prepared(), contains(responseBody['prompt']));
+    draft.setStyle('japanese', true);
+    expect(prepared(), contains('Japanese'));
+    expect(prepared(), contains(responseBody['observations']));
+    expect(prepared(), isNot(contains(responseBody['prompt'])));
+    expect(analyses, 0);
+  });
+
+  testWidgets(
+    'changed palette uses current choices and photo facts without reanalysis or an old proposal',
+    (tester) async {
+      final initialDraft = draftForTest();
+      final originalTemplate = roomTemplatePrompt(room, initialDraft);
+      initialDraft.dispose();
+      await store.updateRoom(
+        room.copyWith(
+          useAiPrompt: true,
+          aiPrompt: responseBody['prompt'] as String,
+          analysis: RoomAnalysis(
+            result: RoomAnalysisResult.fromMap(responseBody),
+            sourceImageId: room.originalId,
+            supportingImageIds: const [],
+            context: originalTemplate,
+            created: DateTime.now(),
+          ),
+        ),
+      );
+      await store.setRoomPalette(room.id, 'charcoal_walnut');
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WorkspaceScreen(store: store, roomId: room.id),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Generate AI design'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Send to OpenAI'));
+      await tester.pumpAndSettle();
+      expect(submitted!['prompt'], contains('Charcoal & walnut'));
+      expect(submitted!['prompt'], contains(responseBody['observations']));
+      expect(submitted!['prompt'], isNot(contains(responseBody['prompt'])));
+      expect(analyses, 0);
+      expect(edits, 1);
+      expect(store.designsFor(room.id).single.prompt, submitted!['prompt']);
+      expect(store.roomById(room.id)!.analysis!.context, originalTemplate);
+    },
+  );
+
   testWidgets(
     'generation attaches matching observations by default without sending the optional AI-written brief',
     (tester) async {
@@ -537,7 +756,7 @@ void main() {
   );
 
   testWidgets(
-    'reviewed AI prompt is used by generation and stale preferences block sending',
+    'analysis proposal is automatic; changing working photo excludes it without blocking generation',
     (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -558,11 +777,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send photos for analysis'));
       await tester.pumpAndSettle();
-      final use = find.text('Use this AI prompt for the next design');
-      await ensureFocusVisible(tester, use);
-      await tester.pumpAndSettle();
-      await tester.tap(use);
-      await tester.pump(const Duration(milliseconds: 700));
+      expect(store.roomById(room.id)!.useAiPrompt, true);
       final generation = find.text('AI generation (optional)');
       await revealFocusControl(
         tester,
@@ -588,13 +803,20 @@ void main() {
         contains('not automatically authorised for removal'),
       );
       expect(store.designsFor(room.id).single.prompt, submitted!['prompt']);
-      // Switch back to the original viewpoint, then change the user brief.
-      // Any selected new design already counts as a stale source.
+      // Generation selects the new image; the earlier proposal/photo facts
+      // must not be applied to that different working image.
       await ensureFocusVisible(tester, find.text('Generate AI design'));
       await tester.tap(find.text('Generate AI design'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('no longer matches'), findsOneWidget);
-      expect(edits, 1);
+      expect(find.text('Send this edit to OpenAI?'), findsOneWidget);
+      await tester.tap(find.text('Send to OpenAI'));
+      await tester.pumpAndSettle();
+      expect(submitted!['prompt'], isNot(contains(responseBody['prompt'])));
+      expect(
+        submitted!['prompt'],
+        isNot(contains(responseBody['observations'])),
+      );
+      expect(edits, 2);
       expect(analyses, 1);
       expect(tester.takeException(), isNull);
     },

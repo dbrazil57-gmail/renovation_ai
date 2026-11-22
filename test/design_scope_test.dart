@@ -356,7 +356,7 @@ void main() {
   );
 
   testWidgets(
-    'changing renovation scope marks a reviewed AI prompt stale before another generation',
+    'changing renovation scope excludes the earlier proposal without blocking a confirmed generation',
     (tester) async {
       await store.updateRoom(
         store.roomById(room.id)!.copyWith(fullRenovation: false),
@@ -367,17 +367,25 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send photos for analysis'));
       await tester.pumpAndSettle();
-      await reach(tester, find.text('Use this AI prompt for the next design'));
-      await tester.tap(find.text('Use this AI prompt for the next design'));
-      await tester.pump(const Duration(milliseconds: 700));
+      expect(store.roomById(room.id)!.useAiPrompt, true);
       await openAdvanced(tester);
       await reach(tester, find.text('Replace flooring'));
       await tester.tap(find.text('Replace flooring'));
       await reach(tester, find.text('Generate AI design'));
       await tester.tap(find.text('Generate AI design'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('no longer matches'), findsOneWidget);
-      expect(edits, 0);
+      expect(find.text('Send this edit to OpenAI?'), findsOneWidget);
+      await tester.tap(find.text('Send to OpenAI'));
+      await tester.pumpAndSettle();
+      expect(edits, 1);
+      expect(
+        store.designsFor(room.id).single.prompt,
+        contains('Replace the existing flooring'),
+      );
+      expect(
+        store.designsFor(room.id).single.prompt,
+        isNot(contains('AI DESIGN PROPOSAL')),
+      );
       expect(store.roomById(room.id)!.analysis, isNotNull);
     },
   );

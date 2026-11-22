@@ -1,5 +1,53 @@
 # Testing and storage reference
 
+## Prompt enhancement acceptance — after 1.0.17, 22 November
+
+In Chrome, keep the same localhost:7357 address and normal profile. Select an
+original room photo, New design and Full room; select style/palette/Keep choices
+before analysis for the most specific proposal. Explicitly confirm Analyse once.
+The new proposal is enabled automatically only for the exact current photos and
+choices. Expand Room observations and design proposal to review/edit or turn it
+off. Preview prepared prompt includes current requirements, matching observations
+and the enabled current proposal. Generate still requires separate confirmation.
+
+Change palette, style, scope, text or supporting views: an older proposal must
+not be sent. Matching photo facts remain available after preference changes;
+changed photos/views exclude those facts too. Generation can proceed without a
+new analysis. The earlier proposal remains saved for reference. Precise correction
+must not inherit a broad proposal even if an inconsistent saved flag is true.
+Repeat through first-room setup and Live preview; a Live palette update must reuse
+the photo analysis and omit the old proposal without leaving the camera viewer.
+Two/three ideas reinterpret suggestions within authorised scope and explicit Keep/
+material/palette requirements; they are separate confirmed paid requests.
+
+Existing historical prompts/recipes and approved images must remain unchanged.
+Detailed three-option briefs use concise generic guidance when a proposal is
+included; optional observations may be excerpted with an explicit marker. The
+full analysis stays saved. Written instructions, Keep choices and the edited
+proposal are not shortened. An excessively long written brief still triggers the
+normal request-size guard before any paid request.
+No automatic quality/model change or extra provider call is introduced. Do not
+mistake mocked request checks for better real images: compare the same original
+kitchen and brief at High quality with/without a proposal, with owner-confirmed
+requests. Existing APK 1.0.17 is unchanged and needs a requested rebuild for this.
+
+Source `71336f78f2`: **368 tests pass** (86s), including current/default proposal,
+opt-out/edit/save/portable restore, stale palette/scope/view fallback, precise
+isolation, guided setup, Live updates and detailed three-concept length coverage.
+Analysis is clean (15.5s); release web build passes (101.5s). Evidence:
+`output/prompt-enhancement-tests.log`, `prompt-enhancement-focused-tests.log`,
+`prompt-enhancement-analysis.log`, `prompt-enhancement-web.log`. All AI responses
+in request tests are synthetic; no real provider image-quality claim is made.
+
+Actual 390×844 Chrome at localhost:7357 confirms the final source stamp, kitchen
+sample stages/brief/compare, separate practice import and Room/New design controls.
+Disposable profile only; normal Chrome data is untouched. Evidence:
+`output/prompt-enhancement-browser.log`, `prompt-enhancement-*.png`. A longer
+driver attempt could not reveal the deeper prepared-preview control; its log is
+retained as `prompt-enhancement-browser-preview-attempt.log`. That interaction is
+covered by Flutter tests, not a completed browser end-to-end acceptance check.
+No real key, paid request or provider result was used in these checks.
+
 ## Requested APK 1.0.17 acceptance
 
 Install the new APK over the existing app; keep its data. Confirm build/version,

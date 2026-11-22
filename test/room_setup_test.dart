@@ -52,6 +52,11 @@ void main() {
         edits++;
         final body = jsonDecode(request.body) as Map;
         expect(body['prompt'], contains('PHOTO ANALYSIS'));
+        expect(body['prompt'], contains('AI DESIGN PROPOSAL'));
+        expect(
+          body['prompt'],
+          contains('Modernise this room within its existing layout.'),
+        );
         return http.Response(
           jsonEncode({
             'provider': 'OpenAI',
@@ -164,12 +169,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send photos for analysis'));
       await tester.pumpAndSettle();
-      await reach(tester, find.text('Room observations and AI prompt'));
-      await tester.tap(find.text('Room observations and AI prompt'));
-      await tester.pumpAndSettle();
-      await reach(tester, find.text('Use this AI prompt for the next design'));
-      await tester.tap(find.text('Use this AI prompt for the next design'));
-      await tester.pumpAndSettle();
+      expect(store.roomById(room.id)!.useAiPrompt, true);
       await tester.tap(find.text('Choose redesign options'));
       await tester.pumpAndSettle();
       await reach(tester, find.text('Generate AI design'));

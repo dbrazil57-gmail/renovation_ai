@@ -5,6 +5,28 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Prompt enhancement after 1.0.17 — 22 November
+
+- [x] Ask analysis for one decisive scheme with specific material/surface choices,
+  fittings, main/task lighting, staging and preserved features, rather than a
+  generic restatement of the inventory or approval request.
+- [x] Enable newly analysed current proposals for normal designs; keep editable
+  opt-out and current user choices authoritative. Reuse photo facts after choice
+  changes while excluding stale proposals, without requiring paid reanalysis.
+- [x] Share composition across setup/workspace/Live; keep precise correction
+  narrow and multiple ideas free to reinterpret unapproved suggestions.
+- [x] Keep detailed three-concept prompts within the request limit by shortening
+  repeated generic guidance and excerpting optional AI observations when needed;
+  retain complete written instructions, proposals and saved analyses. Verify
+  source `71336f78f2`: 368 tests, clean analysis and release web build pass.
+- [x] Refresh localhost:7357 and check actual 390×844 Chrome sample import and
+  Room/New design controls in a disposable profile. Prepared-preview request
+  content is verified by widget tests; deeper browser scroll automation is limited.
+- [ ] Compare the same original kitchen and brief at the selected model's High
+  quality, with/without the AI proposal, then refine the preferred result. Owner
+  confirms each paid action; exact browser-session model/settings remain unknown.
+- [ ] Include this follow-up in a new phone package only when requested.
+
 ## Requested test release 1.0.17 — 22 November
 
 - [x] Bundle the explicitly authorised kitchen before/after and historical saved

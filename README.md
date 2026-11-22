@@ -1,5 +1,30 @@
 # RenoVision
 
+Prompt enhancement after APK 1.0.17, **22 November**: room analysis now asks for a
+decisive, room-specific design proposal with coordinated materials, main/task
+lighting, fittings, restrained styling and explicit retained features. A newly
+analysed, current proposal is enabled automatically for normal designs and remains
+editable/optional. Changed photos or choices exclude the old proposal; matching
+photo observations still inform current choices without requiring another analysis.
+Precise correction never inherits the broader proposal. Setup, workspace and Live
+share this rule. Multiple ideas may reinterpret suggested materials/detailing
+within the user's scope rather than repeat the same AI proposal.
+
+This changes prompts and defaults, not the provider API workflow or saved history.
+No extra automatic AI call, model/quality change or new APK. The installed 1.0.17
+does not include this follow-up; the Chrome preview is current at localhost:7357.
+
+Verified source `71336f78f2`: **368 tests pass** (86s), clean analysis (15.5s),
+release web build (101.5s). Detailed three-option kitchen briefs fit by omitting
+repeated generic guidance and, when necessary, using a labelled excerpt of AI
+observations. Written requirements, edited proposals and full saved analyses stay
+intact. Existing prompt-length checks still reject overly long written briefs
+before a paid request. Logs are under `output/prompt-enhancement-*`.
+Actual 390×844 Chrome smoke passes for sample replay/practice import and Room /
+New design controls. Request composition and prepared-preview behaviour are
+verified in Flutter tests; browser automation did not complete the deeper preview
+scroll/reveal. No real provider request was made.
+
 Requested test release **1.0.17+18**: all recent shared-source changes, the
 owner-authorised kitchen offline replay/practice project, invitation-based trial
 access preparation, and visible branding cleanup. Help > Sample walkthroughs >
@@ -242,7 +267,7 @@ with Chrome rather than creating a disposable Flutter Chrome profile.
 The launcher resolves packages for the web target and avoids unnecessary desktop
 plugin symlinks without changing global Flutter settings. `-Release` runs the
 desktop browser app with production compilation; omit it for development debugging.
-The current desktop build is `d19f2fd3d2`, including all completed source features
+The current desktop build is `71336f78f2`, including all completed source features
 listed above. A packaged native Windows companion remains a separate future stage.
 Settings > App build and saved data shows the build/address/counts and offers
 Check local saving. That confirms a read/write, not survival of a later crash.

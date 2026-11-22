@@ -274,6 +274,11 @@ void main() {
       expect(ai.edits, 1);
       expect(ai.prompts.single, contains('Kitchen'));
       expect(ai.prompts.single, contains('Charcoal'));
+      expect(ai.prompts.single, contains('AI DESIGN PROPOSAL'));
+      expect(
+        ai.prompts.single,
+        contains('Renovate this camera view with the existing layout.'),
+      );
       expect(store.designsFor(room.id), hasLength(1));
       expect(find.byKey(const ValueKey('live-design-overlay')), findsOneWidget);
     },
@@ -414,6 +419,11 @@ void main() {
       expect(feed.captures, 1);
       expect(ai.prompts.last, contains('Charcoal & walnut'));
       expect(ai.prompts.last, contains('A kitchen with a wide window'));
+      expect(ai.prompts.last, isNot(contains('AI DESIGN PROPOSAL')));
+      expect(
+        ai.prompts.last,
+        isNot(contains('Renovate this camera view with the existing layout.')),
+      );
       expect(ai.inputs.every((bytes) => listEquals(bytes, feed.bytes)), isTrue);
       expect(store.designsFor(room.id), hasLength(2));
       expect(

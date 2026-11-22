@@ -1,5 +1,23 @@
 # Renovision feature status
 
+**Prompt enhancement after 1.0.17, 22 November:** analysis prepares a specific
+design proposal with material assignments, main/task lighting, fittings, staging
+and retained features. Newly returned current proposals are enabled for normal
+designs, editable and opt-out. The shared builder includes one only when source,
+supporting views and current choices match; otherwise it uses current choices
+and matching photo facts without blocking generation or paying to analyse again.
+Precise correction excludes both broad proposals and observation context. Live
+uses the same builder. Multiple ideas can reinterpret AI suggestions, with explicit
+user materials, palette/style, Keep and scope still authoritative. Existing saved
+prompts/recipes stay intact. This is source/Chrome work; the published 1.0.17 APK
+remains unchanged. Image-quality gains need a controlled real-provider comparison.
+
+Source `71336f78f2`: **368 tests pass**, clean analysis (15.5s), release web build
+(101.5s). Detailed three-concept briefs retain all written instructions and the
+complete proposal, shorten repeated generic guidance and excerpt optional photo
+facts only as needed; full saved analysis is unchanged. Very long written briefs
+still stop at the existing preflight limit. No paid provider call or new APK.
+
 **Requested 1.0.17 source batch:** Help now contains an offline kitchen sample
 replay with authorised actual images, a historical saved brief and a separate
 practice-project copy. The later idea board is explicitly another viewpoint and
@@ -297,6 +315,7 @@ Unspecified (Live) until confirmed. Existing custom names/photos are preserved.
 | New in 1.0.15 | Confirmed A icon, consistent launcher/startup/header/web branding; same app identity and storage |
 | New in 1.0.16 | Recorded help with corrected native video timing, typed room deletion/recovery, legacy/immediate-save Live names, tap-wall recolouring, persistent wall deletion and save-then-review AI finishing |
 | New in 1.0.17 | Pinned generation/readiness, compact options and navigation, fuller analysis/lighting direction, wall/floor/splashback tile previews and polish handoff, authorised kitchen replay/practice project, prepared tester invitations and display-label cleanup |
+| Source after 1.0.17 | `71336f78f2`: automatic current design proposal, stronger material/lighting brief, bounded optional photo context and shared stale-proposal fallback across setup/workspace/Live; 368 tests and web build pass; no new APK or provider-quality benchmark |
 | Last APK checks | **363 tests pass**, clean analysis, release web/Android builds and actual Chrome/API 37 emulator checks pass; matching 1.0.16 certificate, olive/cream icon, public assets, private-file exclusion and 64-bit ELF/ZIP 16KB alignment verified |
 | Earlier audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. The subsequent requested APK build made no paid AI call or data migration |
 | Real user evidence | User reports successful phone installation, direct AI analysis/generation, good generated designs, project auto-reload and useful comparison/camera overlay. This does not validate every newer source change |

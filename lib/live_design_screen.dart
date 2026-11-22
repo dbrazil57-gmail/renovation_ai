@@ -442,8 +442,9 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
         );
         return;
       }
-      final context =
-          'Identify the likely room type from this camera reference and describe visible features, uncertainty and useful renovation questions. This is one view, not a spatial scan.\n${roomTemplatePrompt(room!, draft!, includeRoomContext: false)}';
+      final context = liveRoomAnalysisPrompt(
+        roomTemplatePrompt(room!, draft!, includeRoomContext: false),
+      );
       widget.store.ai.activity.begin(
         roomId: roomId!,
         operation: 'Live room analysis',
@@ -466,6 +467,7 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
           context: context,
           created: DateTime.now().toUtc(),
         ),
+        useProposal: true,
       );
       widget.store.ai.activity.update(AiStage.saving);
       final saved = await draft!.save();
@@ -543,8 +545,18 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
       draft!,
       includeRoomContext: false,
     );
-    final prompt =
-        '$template\n\nPHOTO ANALYSIS (observations about this reference, not permission to change protected features):\n${draft!.analysis!.result.observations}\nThe photo and CURRENT user choices above take priority over uncertain observations. Return one photorealistic renovation from this exact camera viewpoint.';
+    final prompt = reviewedRoomPrompt(
+      template,
+      draft!,
+      sourceImageId: sourceId,
+      analysisContext: liveRoomAnalysisPrompt(template),
+      proposalRequirements: roomTemplatePrompt(
+        room!,
+        draft!,
+        includeRoomContext: false,
+        conciseDesignDirection: true,
+      ),
+    );
     if (prompt.length > 16000) {
       throw const AiFailure('Shorten the brief before generating.');
     }

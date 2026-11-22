@@ -176,15 +176,25 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
         },
       );
       if (!mounted) return;
-      widget.draft.setAnalysis(
-        RoomAnalysis(
-          result: result,
-          sourceImageId: request.sourceImageId,
-          supportingImageIds: request.supportingImages.keys.toList(),
-          context: request.prompt,
-          created: DateTime.now().toUtc(),
-        ),
+      final received = RoomAnalysis(
+        result: result,
+        sourceImageId: request.sourceImageId,
+        supportingImageIds: request.supportingImages.keys.toList(),
+        context: request.prompt,
+        created: DateTime.now().toUtc(),
       );
+      var proposalCurrent = false;
+      try {
+        final latest = widget.buildRequest();
+        proposalCurrent = received.matches(
+          latest.sourceImageId,
+          latest.supportingImages.keys,
+          latest.prompt,
+        );
+      } catch (_) {
+        // Retain the response, but do not adopt a proposal for a missing view.
+      }
+      widget.draft.setAnalysis(received, useProposal: proposalCurrent);
       widget.store.ai.activity.update(AiStage.saving);
       await WidgetsBinding.instance.endOfFrame;
       final saved = await widget.draft.save();
@@ -195,7 +205,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
         );
         setState(
           () => message = saved
-              ? 'Analysis saved. Review the observations and prompt before using it.'
+              ? 'Analysis and design proposal saved. Review your choices, then Generate to create an image.'
               : 'Analysis received but not saved. Keep this room open and use Retry saving analysis; this will not call AI again.',
         );
       }
@@ -253,10 +263,15 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                 Text(
                   analysis == null
                       ? 'Photos saved · not analysed yet. AI can identify visible features and help write your design prompt.'
+                      : widget.draft.preciseEdit
+                      ? 'Saved analysis is available. Precise correction uses your specific instruction and Keep choices.'
                       : matches
-                      ? 'Analysis available for the current photos and preferences.'
+                      ? widget.draft.useAiPrompt &&
+                                widget.draft.aiPrompt.text.trim().isNotEmpty
+                            ? 'AI design proposal ready · included in your next design.'
+                            : 'Photo observations ready · design proposal is off or empty.'
                       : currentPhotos
-                      ? 'Photo observations still match and can inform a new design. Your choices changed; the optional AI-written brief needs review before reuse.'
+                      ? 'Photo observations still match. Your next design uses your current choices; the earlier proposal is left out.'
                       : 'Photos have changed. Analyse the current view for fresh observations, or continue without this saved analysis.',
                 ),
                 if (!widget.store.ai.supportsAnalysis) ...[
@@ -385,7 +400,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                 if (analysis != null)
                   ExpansionTile(
                     initiallyExpanded: false,
-                    title: const Text('Room observations and AI prompt'),
+                    title: const Text('Room observations and design proposal'),
                     subtitle: Text(
                       '${analysis.result.provider} · ${analysis.result.model} · ${analysis.created.toLocal()}',
                     ),
@@ -405,7 +420,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                               for (final question in analysis.result.questions)
                                 Text('• $question'),
                               const Text(
-                                'Add your answers to the room instructions, then analyse again.',
+                                'Add answers to the room instructions. Analyse again only if you want a refreshed proposal.',
                               ),
                             ],
                             const SizedBox(height: 12),
@@ -415,18 +430,15 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                               maxLines: 10,
                               maxLength: 8000,
                               decoration: const InputDecoration(
-                                labelText:
-                                    'AI-prepared design prompt (editable)',
+                                labelText: 'AI design proposal (editable)',
                                 border: OutlineInputBorder(),
                               ),
                             ),
                             CheckboxListTile(
                               contentPadding: EdgeInsets.zero,
-                              title: const Text(
-                                'Use this AI prompt for the next design',
-                              ),
+                              title: const Text('Use AI design proposal'),
                               subtitle: const Text(
-                                'Review it first. Your current room requirements remain attached to every design request.',
+                                'Used while it matches your photos and choices. Your current requirements and Keep choices take priority. Generate asks before sending.',
                               ),
                               value: widget.draft.useAiPrompt,
                               onChanged:
@@ -441,9 +453,11 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                                       value ?? false,
                                     ),
                             ),
-                            if (widget.draft.useAiPrompt && !matches)
+                            if (widget.draft.useAiPrompt &&
+                                !matches &&
+                                !widget.draft.preciseEdit)
                               const Text(
-                                'This prompt is out of date. Analyse again or untick it to use the local prompt.',
+                                'Earlier proposal retained for reference. It will not be sent with changed photos or choices; you can generate without analysing again.',
                               ),
                             Text(widget.draft.status),
                           ],

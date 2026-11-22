@@ -1,5 +1,33 @@
 # Product and research reference
 
+## Design proposal enhancement — 22 November
+
+The preferred kitchen/idea board was created in a ChatGPT web conversation, not
+through RenoVision. Keep that provenance explicit; its precise model/settings
+and full multi-turn transcript are unavailable. Attractive framing, lighting,
+staging and broader scene changes contribute to its appeal as well as rendering.
+
+This batch improves the existing analysis-to-design workflow, without replacing
+it with a conversational API or adding automatic paid analysis/critique. Analysis
+now prepares one specific material/lighting/styling proposal within Full/Partial/
+Precise scope. New current proposals default on for normal designs. Changed input
+excludes a stale proposal and uses current choices plus matching photo observations;
+it does not block generation or require another analysis just to change palette.
+Precise corrections exclude broad proposals. Multiple concepts may reinterpret
+suggestions but cannot override explicit materials, Keep, palette/style or scope.
+
+Direct connections still use the existing image-edit API, with user-selected
+model/quality. High quality is a useful controlled comparison, not proof of a more
+creative scheme. Real output quality remains to be measured on the same original
+photo/brief. Earlier generated versions and recipes are not rewritten.
+
+Proposal composition avoids duplicating generic design guidance. It reserves
+room for concept directions and may use a labelled excerpt of optional photo
+observations while keeping the full saved analysis, written requirements and
+edited proposal intact. Existing request-length guards still apply to very long
+written briefs. This corrects the concrete case where a detailed kitchen proposal
+plus three alternatives exceeded the existing limit before sending.
+
 ## Sample replay and tester access — 22 November
 
 Owner explicitly authorised kitchen before/after images for inclusion in the app.

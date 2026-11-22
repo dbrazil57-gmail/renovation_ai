@@ -146,6 +146,11 @@ void main() {
         expect(plan.prompt, contains('Adding plants, ornaments, cushions'));
         expect(plan.prompt, contains('not images you have already seen'));
         expect(plan.prompt, contains('Only change elements authorised'));
+        expect(plan.prompt, contains('not a single approved design to repeat'));
+        expect(
+          plan.prompt,
+          contains('Explicit written materials, Keep choices'),
+        );
         expect(plan.prompt, contains('Keep layout and windows'));
         for (final other in plans) {
           expect(plan.prompt, contains(other.label));

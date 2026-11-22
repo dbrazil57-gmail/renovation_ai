@@ -1923,6 +1923,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       _templatePrompt(room),
       draft,
       sourceImageId: sourceId,
+      proposalRequirements: roomTemplatePrompt(
+        room,
+        draft,
+        includeRoomContext: includeRoomContext,
+        conciseDesignDirection: true,
+      ),
       supportingImageIds: [
         if (includeRoomContext && room.photoIds.length > 1)
           ...(restoredSupportingIds ?? room.photoIds).where(
@@ -1972,19 +1978,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
               widget.store.imageFor(id) ??
               (throw const AiFailure('A room context photo is unavailable.')),
     };
-    if (!forAnalysis &&
-        draft.useAiPrompt &&
-        (draft.aiPrompt.text.trim().isEmpty ||
-            !(draft.analysis?.matches(
-                  sourceId,
-                  supporting.keys,
-                  _templatePrompt(room),
-                ) ??
-                false))) {
-      throw const AiFailure(
-        'The AI prompt no longer matches this room and its preferences. Analyse again, or untick Use this AI prompt.',
-      );
-    }
     final prompt = forAnalysis ? _templatePrompt(room) : _prompt(room);
     if (prompt.length > 16000) {
       throw const AiFailure(
@@ -2673,10 +2666,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 ExpansionTile(
                   key: const ValueKey('prepared-prompt-preview'),
                   title: const Text('Preview prepared prompt'),
-                  subtitle: Text(
-                    draft.useAiPrompt
-                        ? 'Your reviewed AI prompt plus current room requirements.'
-                        : 'Prepared from your choices on this device; not AI-written.',
+                  subtitle: const Text(
+                    'Current choices, with matching photo observations and an enabled current AI proposal when available.',
                   ),
                   children: [
                     Padding(
