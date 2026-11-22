@@ -2,6 +2,14 @@
 
 ## Photo-first design and local finishes — 22 November
 
+Wall tile follow-up: generic Wall/Tile controls already supported the operation
+but obscured it. Compact room-aware shortcuts now apply wall, splashback or shower
+tile choices to the selected layer, preserving its colour and selection. Kitchen
+splashbacks start with subway/brick; bathroom walls use rectangular tiles, both
+editable through the existing pattern chooser. Separate layers retain independent
+floors and walls. Known room type wins; legacy room names supply a fallback.
+Powder rooms/toilets do not suggest a shower. No recipe migration is needed.
+
 Product direction: the initial photo analysis should do more of the design work,
 so refinement improves an already coherent concept rather than filling gaps in
 the original brief. Analysis now inventories visible surfaces, fittings, main/task

@@ -20,6 +20,16 @@ Source `b95048b5fc`: **350 tests pass**, clean analysis (11.4s), release web bui
 An actual 390×844 Chrome check saved and reopened a local tile preview with its
 surface/pattern intact, using a public sample in a disposable profile and no key.
 
+Wall tile shortcuts: **2 Finish** now exposes **Wall tiles**, kitchen **Splashback
+tiles**, and **Bathroom wall tiles / Shower wall tiles** where appropriate. Select
+the area first; each shortcut reuses it and your colour. Add a separate surface
+layer to retain independent wall and floor finishes. Patterns, grout and final
+AI polish use the same save system; these source changes await a requested APK.
+Shortcut source `74d73a34cf`: **354 tests pass**, clean analysis (10.0s), and release
+web build (48.1s). The desktop preview uses the same localhost:7357 address.
+An actual 390×844 Chrome kitchen check applies the splashback shortcut and
+restores the tile pattern after save/reopen; public sample, no key or AI request.
+
 Brief review follow-up, source `56814171d1`: the checklist has a pinned **Proceed
 with the current brief** checkbox. Ticking it changes Refine brief to Proceed,
 including below 75%. Proceed uses the normal connection/required-input/send path
@@ -202,7 +212,7 @@ with Chrome rather than creating a disposable Flutter Chrome profile.
 The launcher resolves packages for the web target and avoids unnecessary desktop
 plugin symlinks without changing global Flutter settings. `-Release` runs the
 desktop browser app with production compilation; omit it for development debugging.
-The current desktop build is `b95048b5fc`, including all completed source features
+The current desktop build is `74d73a34cf`, including all completed source features
 listed above. A packaged native Windows companion remains a separate future stage.
 Settings > App build and saved data shows the build/address/counts and offers
 Check local saving. That confirms a read/write, not survival of a later crash.

@@ -2149,6 +2149,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
         builder: (_) => LocalPaintScreen(
           source: source,
           before: active,
+          roomTypeId: resolveRoomType(current.roomTypeId, current.name),
           initial: current.paintDrafts[workingImageId] ?? selected?.paintRecipe,
           savedRecipe: selected?.paintRecipe,
           requestAiFinish: () => finishWithAi = true,

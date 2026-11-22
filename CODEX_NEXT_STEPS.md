@@ -7,6 +7,16 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Better first designs and local finishes — 22 November
 
+- [x] Make wall tiles discoverable with room-aware Finish shortcuts: Wall tiles,
+  kitchen Splashback tiles, Bathroom wall tiles and Shower wall tiles. Reuse
+  selected regions/colours and existing recipes; keep floor layers separate.
+  Omit shower shortcuts for powder rooms/toilets. No automatic paid requests.
+- [x] Wall tile shortcuts, source `74d73a34cf`: **354 tests pass**, clean analysis
+  (10.0s), release web build (48.1s), including retained regions/colours and
+  room-specific save/reopen. Published APK 1.0.16 remains unchanged.
+- [x] Actual 390×844 Chrome kitchen shortcut/save/reopen check: public kitchen
+  fixture, isolated profile and simulated project picker, no key. Evidence:
+  `output/wall-tiles-browser.log` and ignored screenshots.
 - [x] Request a richer visible room inventory and concrete scope-aware design
   initiative with few comments; retain the existing analysis response schema.
 - [x] Automatically add matching photo observations to New design requests in

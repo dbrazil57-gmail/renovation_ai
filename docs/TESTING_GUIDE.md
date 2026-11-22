@@ -2,6 +2,21 @@
 
 ## Photo-first designs and local tile previews — 22 November
 
+Wall tile shortcut check: in a Kitchen room, select a splashback region, open
+2 Finish and choose Splashback tiles. Check subway/brick tiles and the same colour/
+mask, then change pattern/colour. In Bathroom/Ensuite, try Bathroom wall tiles
+and Shower wall tiles on separate layers; save/reopen. Powder room/Separate toilet
+must omit Shower wall tiles. Keep floor layers and custom surface names intact.
+The local preview is approximate; optional Finish with AI is confirmed separately.
+Shortcut source `74d73a34cf`: **354 tests pass**, clean analysis (10.0s). Logs:
+`output/wall-tiles-tests.log` and `output/wall-tiles-analysis.log`. The shared editor
+also passes 320×568 and landscape layout checks at 1.6× text with bathroom controls.
+Release web build passes (48.1s), source `74d73a34cf`, at the same desktop origin.
+Actual 390×844 Chrome check applies Splashback tiles, saves and reopens with the
+surface and subway pattern restored. Evidence: `output/wall-tiles-browser.log`
+and `output/wall-tiles-reopened.png`. Public kitchen sample, isolated profile and
+simulated project picker; no provider call or real project/settings changes.
+
 At the unchanged desktop address, open a sample room and analyse its photos with
 normal confirmation. Leave Use this AI prompt off. Preview a New design request:
 matching PHOTO ANALYSIS observations should appear with current requirements.

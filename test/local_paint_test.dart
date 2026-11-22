@@ -583,6 +583,8 @@ void main() {
       await settlePreview();
       await tester.tap(find.text('2 Finish'));
       await tester.pumpAndSettle();
+      expect(find.text('Bathroom wall tiles'), findsOneWidget);
+      expect(find.text('Shower wall tiles'), findsOneWidget);
       await tester.tap(find.byType(DropdownButton<LocalFinish>));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Square tiles').last);
@@ -621,6 +623,112 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  for (final (type, shortcut, expectedKind, expectedFinish, expectedName) in [
+    (
+      'kitchen',
+      'Splashback tiles',
+      LocalSurfaceKind.splashback,
+      LocalFinish.brickTiles,
+      'Splashback 1',
+    ),
+    (
+      'bathroom',
+      'Shower wall tiles',
+      LocalSurfaceKind.wall,
+      LocalFinish.rectangleTiles,
+      'Shower wall 1',
+    ),
+    (
+      'ensuite',
+      'Bathroom wall tiles',
+      LocalSurfaceKind.wall,
+      LocalFinish.rectangleTiles,
+      'Bathroom wall 1',
+    ),
+    (
+      'powder_room',
+      'Bathroom wall tiles',
+      LocalSurfaceKind.wall,
+      LocalFinish.rectangleTiles,
+      'Bathroom wall 1',
+    ),
+  ]) {
+    testWidgets(
+      '$type wall tile shortcut keeps the same area and colour through save and reopen',
+      (tester) async {
+        LocalPaintRecipe? saved;
+        final initial = recipe().replaceSurface(
+          0,
+          recipe().surfaces.single.copyWith(name: 'Wall 1'),
+        );
+        Future<void> show(int key) async {
+          await tester.pumpWidget(
+            MaterialApp(
+              home: LocalPaintScreen(
+                key: ValueKey(key),
+                roomTypeId: type,
+                source: original,
+                before: original,
+                initial: saved ?? initial,
+                saveDraft: (value) async {
+                  saved = value;
+                },
+                saveVersion: (_, _) async {},
+              ),
+            ),
+          );
+          await tester.pump();
+          await waitFor(
+            tester,
+            () => find.text('2 Finish').evaluate().isNotEmpty,
+          );
+          await tester.pump(const Duration(milliseconds: 600));
+          await waitFor(
+            tester,
+            () => find.byType(LinearProgressIndicator).evaluate().isEmpty,
+          );
+          await tester.tap(find.text('2 Finish'));
+          await tester.pump();
+        }
+
+        await show(1);
+        if (type == 'powder_room') {
+          expect(find.text('Shower wall tiles'), findsNothing);
+        }
+        await tester.tap(find.text(shortcut));
+        await tester.pump(const Duration(milliseconds: 700));
+        await waitFor(
+          tester,
+          () => saved?.surfaces.single.finish == expectedFinish,
+        );
+        await waitFor(
+          tester,
+          () => find.byType(LinearProgressIndicator).evaluate().isEmpty,
+        );
+        final surface = saved!.surfaces.single;
+        expect(surface.kind, expectedKind);
+        expect(surface.name, expectedName);
+        expect(surface.rgb, 0x507040);
+        expect(surface.coverage, 1);
+        expect(surface.marks.single.toMap(), outline().toMap());
+        expect(paintRefinementPrompt(saved!), contains(expectedName));
+        final retained = saved!.toMap();
+        await show(2);
+        expect(find.text(expectedName), findsOneWidget);
+        expect(
+          tester
+              .widget<DropdownButton<LocalFinish>>(
+                find.byType(DropdownButton<LocalFinish>),
+              )
+              .value,
+          expectedFinish,
+        );
+        expect(saved!.toMap(), retained);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   testWidgets(
     'paint draft reopens and failed version save can retry without losing selections',
@@ -771,6 +879,7 @@ void main() {
             key: const ValueKey('paint-layout-review'),
             child: LocalPaintScreen(
               key: ValueKey(size),
+              roomTypeId: 'bathroom',
               source: const bool.fromEnvironment('PAINT_REVIEW')
                   ? File('assets/inspiration/charcoal-kitchen.png')
                         .readAsBytesSync()

@@ -7,6 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import 'context_help.dart';
 import 'design_palettes.dart';
 import 'local_paint.dart';
+import 'room_features.dart';
 import 'wall_selection.dart';
 
 enum _PaintTool { automatic, polygon, brush, erase, move }
@@ -15,6 +16,7 @@ class LocalPaintScreen extends StatefulWidget {
   final Uint8List source, before;
   final LocalPaintRecipe? initial;
   final LocalPaintRecipe? savedRecipe;
+  final String roomTypeId;
   final Future<void> Function(LocalPaintRecipe) saveDraft;
   final Future<void> Function(PaintRenderResult, LocalPaintRecipe) saveVersion;
   final VoidCallback? requestAiFinish;
@@ -24,6 +26,7 @@ class LocalPaintScreen extends StatefulWidget {
     required this.before,
     this.initial,
     this.savedRecipe,
+    this.roomTypeId = 'other',
     required this.saveDraft,
     required this.saveVersion,
     this.requestAiFinish,
@@ -151,6 +154,62 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         'This selection is full. Finish the stroke or use Undo before adding more.',
       );
     }
+  }
+
+  bool get defaultSurfaceName =>
+      RegExp(r'^(Wall|Floor|Splashback|Bathroom wall|Shower wall) \d+$')
+          .hasMatch(wall.name);
+
+  void applyWallTiles(LocalSurfaceKind kind, {bool shower = false}) {
+    final bathroom = roomFeatureProfile(widget.roomTypeId) == 'bathroom';
+    final name = shower
+        ? 'Shower wall'
+        : kind == LocalSurfaceKind.splashback
+        ? 'Splashback'
+        : bathroom
+        ? 'Bathroom wall'
+        : 'Wall';
+    changeWall(
+      wall.copyWith(
+        kind: kind,
+        finish: kind == LocalSurfaceKind.splashback
+            ? LocalFinish.brickTiles
+            : LocalFinish.rectangleTiles,
+        name: defaultSurfaceName ? '$name ${selected + 1}' : wall.name,
+        coverage: 1,
+      ),
+    );
+    setState(() => showSelection = false);
+  }
+
+  Widget wallTileShortcuts() {
+    final profile = roomFeatureProfile(widget.roomTypeId);
+    final bathroom = profile == 'bathroom';
+    return Wrap(
+      spacing: 6,
+      children: [
+        ActionChip(
+          avatar: const Icon(Icons.grid_view_outlined, size: 18),
+          label: Text(bathroom ? 'Bathroom wall tiles' : 'Wall tiles'),
+          tooltip:
+              'Apply tiles to the selected wall area. The selection is reused.',
+          onPressed: () => applyWallTiles(LocalSurfaceKind.wall),
+        ),
+        if (const ['kitchen', 'pantry', 'laundry'].contains(profile))
+          ActionChip(
+            label: const Text('Splashback tiles'),
+            tooltip: 'Try subway tiles on the selected splashback. Change pattern or colour below.',
+            onPressed: () => applyWallTiles(LocalSurfaceKind.splashback),
+          ),
+        if (const ['bathroom', 'ensuite'].contains(widget.roomTypeId))
+          ActionChip(
+            label: const Text('Shower wall tiles'),
+            tooltip: 'Select the shower wall area first. Fittings outside the selection stay unchanged in this local preview.',
+            onPressed: () =>
+                applyWallTiles(LocalSurfaceKind.wall, shower: true),
+          ),
+      ],
+    );
   }
 
   Future<void> selectWall(PaintPoint seed) async {
@@ -734,6 +793,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
           ],
         ),
       if (panel == 1) ...[
+        wallTileShortcuts(),
         DropdownButton<LocalSurfaceKind>(
           isExpanded: true,
           value: wall.kind,
@@ -747,12 +807,10 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
           ],
           onChanged: (kind) {
             if (kind == null) return;
-            final defaultName = RegExp(r'^(Wall|Floor|Splashback) \d+$')
-                .hasMatch(wall.name);
             changeWall(
               wall.copyWith(
                 kind: kind,
-                name: defaultName
+                name: defaultSurfaceName
                     ? '${localSurfaceLabels[kind]} ${selected + 1}'
                     : wall.name,
               ),
@@ -1012,7 +1070,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
           ),
           HelpIcon(
             title: 'Colours & tiles',
-            message: 'Select a wall, floor or splashback, check its highlighted boundary, then choose paint or a tile pattern. Changing colour or pattern reuses the same selection and makes no AI request. Selection uses connected colours and edges; similar surfaces can merge. Use sensitivity, outline or erase for difficult edges and patterned floors. Tile scale and rotation are approximate 2D visual guidance, not measured installation dimensions or a product catalogue. Delete one surface or all layers, even after reopening. Finish with AI saves all local finishes and prepares one correction for review; only confirmed generation uses your paid AI connection. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
+            message: 'Select a wall, floor or splashback and check its boundary. In Finish, use Wall tiles, kitchen Splashback tiles, or bathroom/Shower wall tiles shortcuts, then choose a pattern and colour. Add a separate surface layer to keep wall and floor choices independent. Changing colour or pattern reuses the same selection and makes no AI request. Selection uses connected colours and edges; similar surfaces can merge. Use sensitivity, outline or erase for difficult edges and patterned tiles. Tile scale and rotation are approximate 2D visual guidance, not measured installation dimensions or a product catalogue. Delete one surface or all layers, even after reopening. Finish with AI saves all local finishes and prepares one correction for review; only confirmed generation uses your paid AI connection. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
           ),
         ],
       ),

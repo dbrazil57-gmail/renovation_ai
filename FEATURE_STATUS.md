@@ -23,6 +23,17 @@ protected/plain copy restoration and zero-request final-polish preparation.
 Actual 390×844 Chrome save/reopen restores the floor/pattern selection. Public
 sample and isolated profile only; phone latency and real provider results remain.
 
+Wall tile follow-up: room-aware shortcuts now expose Wall tiles, kitchen/pantry/
+laundry Splashback tiles, bathroom wall tiles and bathroom/ensuite Shower wall
+tiles. Powder rooms/toilets omit the shower shortcut. The chosen mask and colour
+are reused; existing names are preserved except generated surface names. No new
+geometry detection, storage format or AI request is introduced.
+Source `74d73a34cf` passes **354 tests** and clean analysis (10.0s), including
+kitchen/bathroom/ensuite/powder-room shortcut save/reopen, retained regions/colours,
+zero-request polish handoff and enlarged-text phone/landscape layouts.
+The release web build passes (48.1s), at the same localhost:7357 origin. Published
+APK 1.0.16, its data, app icon and settings are unchanged.
+
 **Checklist Proceed follow-up — source `56814171d1`:** a pinned checkbox changes
 Refine brief to Proceed at any coverage percentage. It opens the normal generation
 path (connection and required inputs still apply), suppressing duplicate guidance

@@ -286,7 +286,7 @@ const paintWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Choose a colour',
-      'Open Finish. Choose Wall, Floor or Splashback, then Paint colour or a tile pattern. Use a swatch or custom colour. Changing colour or pattern reuses the same selected area.',
+      'Open Finish. Use Wall tiles, kitchen Splashback tiles, or bathroom/Shower wall tiles shortcuts. You can also choose Wall, Floor or Splashback and Paint colour or a tile pattern. Use a swatch or custom colour. Changing colour or pattern reuses the same selected area. Add a separate layer for another wall or the floor.',
       'Try soft sage, then compare before. No key or paid image generation is needed.',
     ),
     WalkthroughStep(
