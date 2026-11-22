@@ -1,5 +1,21 @@
 # Product and research reference
 
+## Android acceptance, then iPhone tester parity — 22 November
+
+Owner decision: Google Play/Android stays the primary launch target. Most friends
+use iPhones, so iPhone functional parity becomes the next platform milestone once
+the Android workflow is accepted on the S21. This brings meaningful friend feedback
+into the release plan before wider marketing; a native desktop app remains later.
+
+One Flutter codebase remains the product. Share photo analysis, prompt generation,
+design/refinement, local finishes, history and project schemas. Implement platform
+file/save/share/key and permission bridges separately, then verify the same user
+tasks on iPhone. Existing iOS scaffolding is not evidence of completed parity.
+TestFlight provides the proposed friends' beta route; public Apple release can be
+decided separately. iPhone findings improve Android/Chrome, but do not substitute
+for Google's Android closed test. No account, paid membership, invitation, backend,
+upload, signing change or new package was created by this planning update.
+
 ## Photo-first design and local finishes — 22 November
 
 Wall tile follow-up: generic Wall/Tile controls already supported the operation

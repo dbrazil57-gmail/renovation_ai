@@ -1,5 +1,13 @@
 # Renovision feature status
 
+**Release order confirmed, 22 November:** Android/S21 release acceptance first;
+iPhone functional parity and a friends' TestFlight beta are the next platform
+milestone. Google Play remains the primary public target. The shared Flutter code
+and Chrome preview continue together; native desktop packaging follows later.
+This is an agreed priority, not completed iOS support: file export/restore,
+save/share, persistent keys, remaining branding and iPhone testing are unfinished.
+The existing 354 automated passes do not establish phone or image-quality acceptance.
+
 **Photo-first design and local finish follow-up, 22 November:** analysis requests
 a fuller inventory of visible surfaces, fittings, lighting, clutter and spatial
 relationships, then a concrete scheme within Full/Partial/Precise scope. Matching

@@ -1,5 +1,34 @@
 # Testing and storage reference
 
+## Android acceptance, then iPhone parity — 22 November
+
+First accept the current v1 workflow on the owner's Samsung S21 after a requested
+package. Record actual device/OS/build and observed results; existing automated
+tests and Chrome checks do not establish physical-phone or AI image-quality parity.
+
+For Android acceptance and the subsequent iPhone beta, check the same tasks:
+
+- Create a project, capture/import several room views, analyse and produce a
+  useful first design with minimal typing. Paid requests require deliberate consent.
+- Choose/refine a version, recolour walls, try wall/floor/splashback tile previews,
+  compare, save and reopen after process restart. Retain sources and approvals.
+- Capture/overlay through Live, zoom/rotate, handle camera/photo permission choices,
+  leave/background/reopen and recover from network or save failures.
+- Keep rooms, settings and keys after restart; iPhone keys must use persistent
+  Keychain storage before claiming parity. Never include keys in portable projects.
+- Save/share an image and export/open plain and protected projects; verify copies
+  across Android/iPhone preserve photos, versions, choices and local-finish layers.
+- Exercise room/version deletion and recovery, permanent deletion when implemented,
+  feedback/report delivery, and denied permissions/offline/low-storage cases.
+
+Only after native file/save/share/key gaps and actual iPhone checks pass should
+friends receive an authorised TestFlight beta. Feed issues back into the shared
+code and recheck affected Android/Chrome workflows. Friends using only iPhones
+do not replace the Android testers needed for Google's applicable closed test.
+Track public Google Play and Apple release acceptance separately. Native desktop
+packaging can follow while Chrome remains current. This update records the plan;
+it creates no new APK/iOS build, invites, account or paid request.
+
 ## Photo-first designs and local tile previews — 22 November
 
 Wall tile shortcut check: in a Kitchen room, select a splashback region, open

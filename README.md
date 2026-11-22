@@ -1,5 +1,13 @@
 # Renovision AI
 
+Release priority confirmed **22 November**: first reach an accepted Android
+release candidate on the owner's Samsung S21, then bring iPhone to the same
+functional standard so friends can test through TestFlight. Feed their usability
+and design-quality findings back into the shared Flutter app. Google Play remains
+the primary launch target; its Android closed test is separate from iPhone beta
+feedback. Keep Chrome current; native desktop packaging follows later. iOS parity
+is planned, with file/save/share, persistent keys and real-device testing still open.
+
 Photo-first design and local finishes follow-up, **22 November**: analysis now
 asks for a fuller visible room inventory and a specific, coordinated scheme even
 with few comments. Matching photo observations automatically inform New design

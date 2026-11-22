@@ -5,6 +5,44 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Confirmed release order — 22 November
+
+The owner wants Android perfected on their S21 first, followed by iPhone at the
+same functional standard because most available friends/testers use Apple phones.
+Treat accepted release-candidate criteria as the milestone; focus work on the
+existing core workflow and release gaps. Google Play remains the primary launch.
+
+1. **Android acceptance:** package current source only when requested; test on
+   S21 and a second Android configuration. Prioritise useful first designs with
+   little prompting, reliable save/reopen, camera/Live, refinement, local finishes,
+   history, export/share and backups. Close privacy/reporting/release gaps below.
+2. **iPhone parity:** after Android acceptance, complete native file Save/Open/
+   restore, image save/share, Keychain, feedback/report delivery, display branding,
+   permissions and camera/lifecycle behaviour. Reuse the shared Flutter features
+   and portable project format; verify parity on an actual iPhone and retain
+   Android regression checks. macOS/Xcode and signing access remain prerequisites.
+3. **Friends' beta:** prepare TestFlight when Apple account/build/review setup is
+   authorised. Test the same workflows and collect genuine usability/design-quality
+   feedback; feed shared fixes into Android and Chrome too. No invitations,
+   membership payments, paid AI requests or uploads are authorised by this plan.
+4. **Google Play release:** proceed when its release gates and Android closed test
+   are satisfied. iPhone feedback informs the product but does not count toward
+   Google's Android testing requirement. An authorised Play closed test can run
+   alongside iPhone preparation. Apple public-store release is a separate decision.
+5. **Desktop later:** keep the existing Chrome workspace current; native Windows
+   packaging and cross-device sync are later milestones.
+
+- [ ] Record S21 release-candidate acceptance and remaining blocking defects.
+- [ ] Complete and verify the iOS parity checklist below.
+- [ ] Run a genuine friends' iPhone beta, then address shared findings.
+- [ ] Complete Google Play's applicable testing and production release gates.
+
+As checked on 22 November, new personal Play accounts need 12 continuously
+opted-in testers for 14 days before applying for production access. Apple external
+TestFlight testing needs a beta build approved for that testing route. References:
+[Google testing requirements](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en),
+[Apple TestFlight](https://developer.apple.com/testflight/).
+
 ## Better first designs and local finishes — 22 November
 
 - [x] Make wall tiles discoverable with room-aware Finish shortcuts: Wall tiles,
@@ -258,6 +296,10 @@ tracks manual evidence. No account, signing identity, key, backend, build or upl
 was created/changed by this review. No paid AI calls or customer-data edits occurred.
 
 ## Apple readiness — inspected 21 November
+
+Priority confirmed 22 November: this is the next platform milestone after Android
+acceptance, enabling friends' beta feedback. It does not require a second Flutter
+app or an immediate public App Store launch. The checklist remains incomplete.
 
 - [x] Confirm shared Flutter/iOS project, camera/photo purpose strings, iOS-capable
   camera/gallery/video plugins and shared room/design code exist. No iOS build or
