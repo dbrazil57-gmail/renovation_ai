@@ -1,5 +1,43 @@
 # Testing and storage reference
 
+## Brief readiness source acceptance — 22 November
+
+Source `65936b5efb`; evidence is in `output/brief-review-*.log`. Scoring is local
+input coverage and makes no photo-quality or generated-image-quality claim.
+All **342 tests pass**, analysis is clean (11.1s) and Chrome release build passes
+(61.9s). New regression cases exercise score changes, precise-mode requirements,
+refine/cancel, low-score proceed, threshold persistence and preference-write failure.
+Actual 390×844 Chrome interaction verifies the indicator in all four tabs, the
+checklist/refine route and a live 65%→75% edit. Evidence:
+`output/brief-review-browser.log`, `output/brief-65.png`, `brief-checklist.png`,
+`brief-75.png`. A bundled public-photo project and simulated picker were used in
+an isolated profile; no real project/AI key edits or browser-paid requests.
+Normal weights: photo 35, room type 10, goal/scope 25, style 15, palette 10, layout
+rule 5. Generic full-room intent earns 15/25 until it has an explicit goal/scope or
+both style and palette. Precise weights: image 55, instruction 40, retain-rest 5.
+No points require another photo, paid analysis or an API connection.
+
+On the next requested phone package, verify:
+
+1. Brief % stays visible on every tab and updates after edits, style/palette/scope
+   changes and mode switches. Tap it for criteria; Close changes nothing.
+2. Generate opens one send-confirmation dialog containing coverage guidance.
+   Refine brief closes it, selects the suggested controls and resets workspace
+   scrolling to the inputs. Wizard/Live return to their relevant controls.
+3. Basic valid direction (for example 65%) can proceed without paid analysis.
+   An actual photo and a correction/partial edit scope remain required where applicable.
+4. Cancel/refine does not send or acknowledge a review. After proceeding at 75%+,
+   the coverage reminder is hidden for that room/mode, including after restart.
+   Normal paid-request confirmation remains. A drop below 75% restores guidance.
+5. A narrow precise edit can reach 100% without styles, palette or room-type input.
+   A blank correction cannot be sent. Criteria do not evaluate semantic quality.
+6. A failed reminder-preference write must not discard a confirmed result or
+   automatically retry/duplicate generation. Other room/mode preferences are separate.
+
+Device preference keys use `settings:brief_review:<roomId>:<mode>` and are not
+included in portable projects; restored inputs recompute coverage. Existing photos,
+settings, project format and the 1.0.16 APK remain intact. No paid AI in verification.
+
 Lighting/terminology source `50196e8c85`, 22 November: selected lighting and
 full-room briefs must request visibly new main fittings rather than only strips.
 Keep/protected fixtures and accent-only precise corrections remain authoritative;

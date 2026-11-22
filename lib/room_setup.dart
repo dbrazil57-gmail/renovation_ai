@@ -19,6 +19,7 @@ import 'image_viewer.dart';
 import 'design_delete_widgets.dart';
 import 'screen_toolbar.dart';
 import 'room_save_widgets.dart';
+import 'brief_readiness.dart';
 
 class RoomSetupScreen extends StatefulWidget {
   final RenovisionStore store;
@@ -452,6 +453,8 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                     AiEditCard(
                       store: widget.store,
                       draft: draft,
+                      onImproveBrief: (target) =>
+                          move(target == BriefTarget.room ? 0 : 1),
                       buildRequest: request,
                       onPendingChanged: (value) {
                         if (mounted) setState(() => generating = value);

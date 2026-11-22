@@ -16,6 +16,7 @@ class FocusWorkspace extends StatefulWidget {
   final List<Widget> thumbnails;
   final Map<FocusSection, List<Widget>> sections;
   final Widget footer;
+  final int revealRevision;
   const FocusWorkspace({
     super.key,
     required this.selected,
@@ -25,6 +26,7 @@ class FocusWorkspace extends StatefulWidget {
     required this.thumbnails,
     required this.sections,
     required this.footer,
+    this.revealRevision = 0,
   });
 
   @override
@@ -38,12 +40,13 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
   @override
   void didUpdateWidget(FocusWorkspace oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.selected != widget.selected) {
+    final reveal = oldWidget.revealRevision != widget.revealRevision;
+    if (oldWidget.selected != widget.selected || reveal) {
       if (scroll.hasClients) offsets[oldWidget.selected] = scroll.offset;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && scroll.hasClients) {
           scroll.jumpTo(
-            (offsets[widget.selected] ?? 0).clamp(
+            (reveal ? 0.0 : offsets[widget.selected] ?? 0).clamp(
               0.0,
               scroll.position.maxScrollExtent,
             ),

@@ -1,5 +1,15 @@
 # Renovision AI
 
+Brief readiness follow-up, **22 November**, source `65936b5efb`: a live Brief %
+indicator is pinned above Generate on every workspace tab. The existing send
+confirmation includes missing-direction suggestions and Refine brief, with no
+extra preflight dialog. A valid basic brief can still proceed. After proceeding
+at 75% or more, that room/mode reminder stays hidden unless coverage drops below
+75%; the normal paid-request confirmation remains. Precise correction has its own
+short checklist. This is local input coverage, not an image-quality prediction;
+extra photos, paid analysis and a connected key do not add points. Device-only
+reminder preferences persist separately from project files. No new APK or paid AI.
+
 Lighting/terminology follow-up, **22 November**, source `50196e8c85`: Update
 lighting now explicitly requests replacing visible unprotected main fittings;
 adding strip/under-vanity lights alone is insufficient. Full-room briefs include
@@ -166,7 +176,7 @@ with Chrome rather than creating a disposable Flutter Chrome profile.
 The launcher resolves packages for the web target and avoids unnecessary desktop
 plugin symlinks without changing global Flutter settings. `-Release` runs the
 desktop browser app with production compilation; omit it for development debugging.
-The current desktop build is `50196e8c85`, including all completed source features
+The current desktop build is `65936b5efb`, including all completed source features
 listed above. A packaged native Windows companion remains a separate future stage.
 Settings > App build and saved data shows the build/address/counts and offers
 Check local saving. That confirms a read/write, not survival of a later crash.

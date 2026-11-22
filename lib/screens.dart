@@ -43,6 +43,8 @@ import 'local_paint_screen.dart';
 import 'local_paint.dart' show paintRefinementPrompt;
 import 'brand_mark.dart';
 import 'room_delete_widgets.dart';
+import 'brief_readiness.dart';
+import 'brief_readiness_widgets.dart';
 
 Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
     room.setupComplete
@@ -1342,6 +1344,26 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   List<String>? restoredSupportingIds;
   bool includeRoomContext = true;
   FocusSection focusSection = FocusSection.room;
+  int focusRevealRevision = 0;
+
+  void _improveBrief(BriefTarget target) => setState(() {
+    focusSection = switch (target) {
+      BriefTarget.room => FocusSection.room,
+      BriefTarget.style || BriefTarget.palette => FocusSection.style,
+      BriefTarget.refine => FocusSection.refine,
+    };
+    focusRevealRevision++;
+  });
+
+  Future<void> _reviewBrief() async {
+    final room = widget.store.roomById(widget.roomId);
+    if (room == null) return;
+    final target = await reviewBrief(
+      context,
+      draft.briefReadiness(imageAvailable: _activeImage(room) != null),
+    );
+    if (mounted && target != null) _improveBrief(target);
+  }
 
   Future<void> _generateFromWorkspace() async {
     if (aiPending || widget.store.ai.activity.active) return;
@@ -1378,6 +1400,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        BriefReadinessIndicator(
+          readiness: draft.briefReadiness(
+            imageAvailable:
+                _activeImage(widget.store.roomById(widget.roomId)!) != null,
+          ),
+          onReview: _reviewBrief,
+        ),
         if (draft.state != DraftSaveState.saved)
           Semantics(
             liveRegion: true,
@@ -2238,6 +2267,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
           ),
           body: FocusWorkspace(
             selected: focusSection,
+            revealRevision: focusRevealRevision,
             onSelected: (section) => setState(() => focusSection = section),
             imageBuilder: (height) => source == null
                 ? const Center(
@@ -2573,6 +2603,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   store: widget.store,
                   draft: draft,
                   controller: generation,
+                  onImproveBrief: _improveBrief,
                   showGenerateButton: false,
                   showSavedPreview: false,
                   beforeSend: draft.save,

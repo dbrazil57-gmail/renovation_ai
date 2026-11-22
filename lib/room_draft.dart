@@ -9,6 +9,8 @@ import 'design_styles.dart';
 import 'renovation_scope.dart';
 import 'room_features.dart';
 import 'design_recipe.dart';
+import 'brief_readiness.dart';
+import 'design_palettes.dart';
 
 enum DraftSaveState { saved, pending, saving, failed }
 
@@ -88,6 +90,20 @@ class RoomDraft extends ChangeNotifier {
   }
 
   bool get dirty => _revision != _savedRevision;
+  BriefReadiness briefReadiness({required bool imageAvailable}) =>
+      BriefReadiness.assess(
+        imageAvailable: imageAvailable,
+        precise: preciseEdit,
+        instruction: preciseEdit ? correction.text : changes.text,
+        fullRoom: fullRenovation,
+        selectedChanges: hasRequestedChanges,
+        roomTypeKnown: roomTypeId.isNotEmpty || effectiveRoomType != 'other',
+        styleDefined:
+            styleIds.any(designStyles.containsKey) ||
+            otherStyle.text.trim().isNotEmpty,
+        paletteDefined:
+            paletteById(store.roomById(roomId)?.colourPaletteId ?? '') != null,
+      );
   DesignRecipe captureRecipe() => DesignRecipe({
     'instructions': changes.text,
     'correctionInstructions': correction.text,

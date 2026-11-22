@@ -1,5 +1,18 @@
 # Renovision feature status
 
+**Brief readiness, 22 November — source `65936b5efb`:** live local coverage appears
+beside Generate across all workspace tabs. The existing confirmation adds missing
+inputs and Refine brief; users can proceed with a valid basic concept. A confirmed
+75%+ review is remembered per room and new-design/precise mode on this device;
+below 75% it reminds again. Cancel/Refine sends no request or review acknowledgement.
+Paid confirmation and required photo/correction/scope guards stay intact. Precise
+corrections do not require style/palette extras. Setup and Live share the guidance
+and return to their relevant controls. This is coverage, not output confidence;
+paid analysis, provider choice and extra photos earn no points. Source/desktop
+only; published APK 1.0.16 remains unchanged.
+All **342 tests pass**, analysis is clean (11.1s), and Chrome release compilation
+passes (61.9s). Mock requests verify the guidance/consent/save paths without paid AI.
+
 **Lighting and terminology, 22 November — source `50196e8c85`:** selected lighting
 updates and full-room briefs explicitly replace visible unprotected main fittings;
 supplementary strip/under-vanity lighting alone is insufficient. Keep/protected
@@ -216,7 +229,7 @@ Unspecified (Live) until confirmed. Existing custom names/photos are preserved.
 | New in 1.0.14 | Local paint and editable layers, regional style choices, saved feedback drafts/copy and optional contact handoff |
 | New in 1.0.15 | Confirmed A icon, consistent launcher/startup/header/web branding; same app identity and storage |
 | New in 1.0.16 | Recorded help with corrected native video timing, typed room deletion/recovery, legacy/immediate-save Live names, tap-wall recolouring, persistent wall deletion and save-then-review AI finishing |
-| Source after 1.0.16 | `c2d523f4c0`: pinned Generate, menu-only Autosave, compact palettes, ten-style pages, saved Full room / Partial scope, collapsed AI details, manual tools under Refine and results under Ideas; 332 passing tests |
+| Source after 1.0.16 | `65936b5efb`: all completed workspace/navigation/lighting/terminology changes plus live brief coverage, Refine/proceed guidance and remembered 75%+ reminders; source improvements await a requested phone package |
 | Last APK checks | **327 tests pass**, clean analysis, Android release build passes; matching 1.0.15 signing certificate, olive/cream icon, public asset hashes, restricted share provider, private-file exclusion and 64-bit ELF/ZIP 16KB alignment verified |
 | Earlier audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. The subsequent requested APK build made no paid AI call or data migration |
 | Real user evidence | User reports successful phone installation, direct AI analysis/generation, good generated designs, project auto-reload and useful comparison/camera overlay. This does not validate every newer source change |

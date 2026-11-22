@@ -15,6 +15,8 @@ import 'context_help.dart';
 import 'ai_model_choices.dart';
 import 'walkthrough_screen.dart';
 import 'design_recipe.dart';
+import 'brief_readiness.dart';
+import 'brief_readiness_widgets.dart';
 
 class AiConnectionSettingsCard extends StatelessWidget {
   final AiService ai;
@@ -570,6 +572,7 @@ class AiEditCard extends StatefulWidget {
   final RoomDraft? draft;
   final AiEditController? controller;
   final bool showGenerateButton;
+  final ValueChanged<BriefTarget>? onImproveBrief;
   const AiEditCard({
     super.key,
     required this.store,
@@ -585,6 +588,7 @@ class AiEditCard extends StatefulWidget {
     this.draft,
     this.controller,
     this.showGenerateButton = true,
+    this.onImproveBrief,
   });
   @override
   State<AiEditCard> createState() => _AiEditCardState();
@@ -725,6 +729,18 @@ class _AiEditCardState extends State<AiEditCard>
       );
       return;
     }
+    final readiness = widget.draft?.briefReadiness(
+      imageAvailable: captured.image.isNotEmpty,
+    );
+    final showGuidance =
+        readiness?.needsReminder(
+          previouslyReviewed: widget.store.briefGuidanceReviewed(
+            captured.roomId,
+            precise: captured.precise,
+          ),
+        ) ??
+        false;
+    var improveBrief = false;
     setState(() {
       busy = true;
       message = null;
@@ -778,6 +794,8 @@ class _AiEditCardState extends State<AiEditCard>
                     '$imageModel · ${imageQualityLabel(widget.store.ai.provider, imageQuality ?? 'not selected')} ${widget.store.ai.provider == AiProvider.gemini ? 'resolution' : 'quality'} · ${captured.supportingImages.length + 1} input views · ${requests.length == 1 ? 'one result' : '${requests.length} separate paid image requests'}',
                   ),
                   const SizedBox(height: 8),
+                  if (showGuidance)
+                    BriefReadinessGuidance(readiness: readiness!),
                   if (fixedBrief)
                     const Text(
                       'Fixed-brief model test: this sends the prepared prompt without added design directions. Check that the selected photos match your other tests.',
@@ -805,6 +823,14 @@ class _AiEditCardState extends State<AiEditCard>
             ),
           ),
           actions: [
+            if (showGuidance)
+              TextButton(
+                onPressed: () {
+                  improveBrief = true;
+                  Navigator.pop(dialogContext, false);
+                },
+                child: const Text('Refine brief'),
+              ),
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
               child: const Text('Cancel'),
@@ -816,7 +842,8 @@ class _AiEditCardState extends State<AiEditCard>
           ],
         ),
       );
-      if (confirmed != true || !mounted) return;
+      if (!mounted) return;
+      if (confirmed != true) return;
       if (connectionRevision != widget.store.ai.connectionRevision) {
         setState(
           () => message = 'The AI connection changed. Review and confirm the request again. No photos were sent.',
@@ -833,6 +860,23 @@ class _AiEditCardState extends State<AiEditCard>
       }
       if (widget.store.ai.activity.active) return;
       if (connectionRevision != widget.store.ai.connectionRevision) return;
+      if (showGuidance &&
+          readiness!.percentage >= BriefReadiness.reminderThreshold) {
+        try {
+          await widget.store.rememberBriefReview(
+            captured.roomId,
+            precise: captured.precise,
+          );
+        } catch (_) {
+          // A failed reminder preference must not discard the confirmed request.
+          // The reminder simply remains eligible next time; no AI retry is added.
+        }
+      }
+      if (!mounted ||
+          widget.store.ai.activity.active ||
+          connectionRevision != widget.store.ai.connectionRevision) {
+        return;
+      }
       widget.store.ai.activity.begin(
         roomId: captured.roomId,
         operation: 'Design',
@@ -908,6 +952,9 @@ class _AiEditCardState extends State<AiEditCard>
           generating = false;
         });
         widget.onPendingChanged?.call(pending != null);
+        if (improveBrief) {
+          widget.onImproveBrief?.call(readiness!.recommendedTarget);
+        }
       }
     }
   }

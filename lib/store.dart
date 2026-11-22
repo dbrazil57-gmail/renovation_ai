@@ -103,6 +103,23 @@ class RenovisionStore extends ChangeNotifier {
 
   String _newId() => '${DateTime.now().microsecondsSinceEpoch}_${_sequence++}';
 
+  String _briefReviewKey(String roomId, bool precise) =>
+      'settings:brief_review:$roomId:${precise ? 'precise' : 'design'}';
+
+  bool briefGuidanceReviewed(String roomId, {required bool precise}) {
+    final saved = records.get(_briefReviewKey(roomId, precise));
+    return saved is Map && saved['reviewed'] == true;
+  }
+
+  Future<void> rememberBriefReview(
+    String roomId, {
+    required bool precise,
+  }) async {
+    if (roomById(roomId) == null) return;
+    await records.put(_briefReviewKey(roomId, precise), {'reviewed': true});
+    // Device guidance preference, not a project edit or generation recipe.
+  }
+
   RenovationRoom? get resumeRoom {
     final saved = records.get('settings:resume');
     final previous = saved is Map ? roomById(saved['roomId'].toString()) : null;

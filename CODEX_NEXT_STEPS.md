@@ -5,6 +5,35 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Brief completeness and Generate guidance — 22 November
+
+- [x] Pin a live Brief % above Generate on Room / Style / Refine / Ideas, with a
+  tap-to-review checklist. Keep this distinct from account/profile completion,
+  camera scanning, measured photo quality or AI image-quality confidence.
+- [x] Score normal designs from photo, room type, goal/scope, style, palette and
+  included layout rule. A generic full-room concept is valid but has less direction;
+  style plus palette can complete it without mandatory prose. Do not award points
+  for extra photos, paid analysis, a provider connection or more output images.
+- [x] Use a short photo/instruction/retain-rest checklist for precise correction.
+  Keep actual required-input and paid-request guards; optional direction is advisory.
+- [x] Fold suggestions into existing send confirmation. Refine brief returns to
+  relevant controls and scrolls the workspace to them; Setup/Live route to their
+  relevant step/panel. Cancel/refine sends no AI request or review acknowledgement.
+- [x] Remember proceeding at >=75% per room and edit mode on this device. Suppress
+  the coverage reminder, not paid consent. Show it again below 75%; always keep
+  the footer checklist accessible. Reminder preference is not a project edit/export.
+- [x] Treat a failed reminder-preference write as best-effort: no duplicate AI
+  request, no discarded result, and the reminder remains eligible next time.
+- [x] Source `65936b5efb`: **342 tests pass**, clean analysis (11.1s), Chrome
+  release build (61.9s). Tests include live score edits, low-coverage proceed,
+  refine/cancel without requests, 75% acknowledgement/reload/mode isolation,
+  falling below threshold, blank-precision guard and preference-write failure.
+- [x] Actual 390×844 Chrome check: the indicator stays visible in all four tabs,
+  its checklist/refine action opens the right inputs, and typing a goal updates
+  65% to 75%. Public sample, simulated picker and isolated profile only; screenshots
+  and `output/brief-review-browser.log` remain ignored. Same localhost:7357 origin.
+- [ ] Accept on S21 after the next requested APK; preserve published 1.0.16.
+
 ## Lighting requests and international wording — 22 November
 
 - [x] Make selected/full-room lighting updates explicitly replace visible main

@@ -1,5 +1,29 @@
 # Product and research reference
 
+## Brief completeness guidance — 22 November
+
+The requested percentage is implemented as Brief completeness, not an account
+profile, physical scan percentage or quality forecast. A short checklist scores
+supplied design direction locally. It counts photo presence, room type, goal/scope,
+style, palette and the included layout rule. It does not assess photo content or
+reward extra photos, provider setup, paid analysis or output count. Full-room
+defaults allow an initial concept; adding a style/palette or goal adds direction.
+Precision has a separate photo/instruction/retain-rest checklist, without irrelevant
+whole-room requirements. Required-input protections still apply.
+
+Source `65936b5efb` pins the percentage above Generate in all workspace tabs and
+offers its detailed checklist on tap. Guidance is folded into the existing paid
+send-confirmation, avoiding a second modal. Refine brief returns to inputs without
+sending; a valid basic brief can proceed. After the user proceeds at >=75%, the
+coverage reminder is remembered per room and mode on this device. It returns
+below 75%, while paid consent remains and the checklist is always accessible.
+Cancelling/refining does not acknowledge; storage failure leaves the reminder
+eligible without discarding/duplicating a confirmed request. These preferences
+are separate device metadata, not project mutations, recipe quality scores or
+portable-file changes. Setup and Live also use the shared guidance/refine path.
+Physical S21 acceptance awaits a requested package; no paid provider test or APK
+was produced for this source batch.
+
 ## Lighting and regional language — 22 November
 
 The reported result added under-basin/vanity light but retained the old main light.

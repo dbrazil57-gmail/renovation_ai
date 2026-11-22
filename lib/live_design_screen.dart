@@ -19,6 +19,7 @@ import 'room_features.dart';
 import 'room_prompt.dart';
 import 'room_start_widgets.dart';
 import 'store.dart';
+import 'brief_readiness.dart';
 
 /// One camera reference, one consented analysis, then separately confirmed
 /// preview requests. The camera stays in this route; no video is uploaded.
@@ -895,6 +896,13 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
                 ? 'Generate preview'
                 : 'Update preview',
             beforeSend: _saveChoices,
+            onImproveBrief: (target) => setState(
+              () => panel = switch (target) {
+                BriefTarget.room || BriefTarget.style => 0,
+                BriefTarget.palette => 1,
+                BriefTarget.refine => 2,
+              },
+            ),
             buildRequest: _request,
             onPendingChanged: (value) {
               if (mounted) {
