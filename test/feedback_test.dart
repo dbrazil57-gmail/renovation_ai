@@ -278,7 +278,7 @@ void main() {
     await fill(tester);
     await tester.tap(find.byTooltip('Back'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Settings').last);
+    await tester.tap(find.byTooltip('Settings'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Feedback and ideas'));
     await tester.tap(find.text('Feedback and ideas'));

@@ -1,5 +1,11 @@
 # Product and research reference
 
+Main navigation, 22 November: align the visible order with startup by listing
+Projects first, Explore second and Library third. Settings is a separate cog-opened
+page rather than another main destination, so Back returns to the current tab.
+The prior Explore-first order and duplicate Settings destination are superseded
+in source `75ffe41898`; no project-store or APK identity changes are involved.
+
 ## Workspace refinement from phone feedback — 22 November
 
 The four tabs now have a clearer purpose: Room supplies source photos/analysis;

@@ -293,22 +293,16 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int selected = 0;
-  @override
-  void initState() {
-    super.initState();
-    selected = 1;
-  }
 
   @override
   Widget build(BuildContext context) {
     final tabs = [
+      ProjectsTab(store: widget.store),
       ExploreTab(
         store: widget.store,
-        openProjects: () => setState(() => selected = 1),
+        openProjects: () => setState(() => selected = 0),
       ),
-      ProjectsTab(store: widget.store),
       LibraryTab(store: widget.store),
-      SettingsTab(store: widget.store),
     ];
     return Scaffold(
       appBar: AppBar(
@@ -339,25 +333,21 @@ class _AppShellState extends State<AppShell> {
             ),
           ScreenToolbar(
             tools: [
-              if (selected != 3)
-                ScreenTool(
-                  ScreenAction.settings,
-                  label: 'Settings',
-                  onPressed: () => setState(() => selected = 3),
+              ScreenTool(
+                ScreenAction.settings,
+                label: 'Settings',
+                onPressed: () => Navigator.push<void>(
+                  context,
+                  MaterialPageRoute(builder: (_) => settingsPage(widget.store)),
                 ),
+              ),
               ScreenTool.help(
                 context,
-                title: [
-                  'Explore ideas',
-                  'Projects',
-                  'Library',
-                  'Settings',
-                ][selected],
+                title: ['Projects', 'Explore ideas', 'Library'][selected],
                 message: [
-                  'Browse sample designs or import your own room photos to start. Saved design ideas can be reviewed and compared in their room workspace.',
                   'Create or open a project, then add rooms and photos. Project files include saved designs and choices; AI credentials stay on this device.',
+                  'Browse sample designs or import your own room photos to start. Saved design ideas can be reviewed and compared in their room workspace.',
                   'Favourite designs appear here. Tap a design to open its room, or its thumbnail to view full screen.',
-                  'Manage local saving, project files and your AI connection. Settings save on this device; project files do not contain your API key.',
                 ][selected],
               ),
             ],
@@ -371,21 +361,20 @@ class _AppShellState extends State<AppShell> {
         onDestinationSelected: (i) => setState(() => selected = i),
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.auto_awesome_outlined),
-            selectedIcon: Icon(Icons.auto_awesome),
-            label: 'Explore',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.folder_outlined),
             selectedIcon: Icon(Icons.folder),
             label: 'Projects',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.auto_awesome_outlined),
+            selectedIcon: Icon(Icons.auto_awesome),
+            label: 'Explore',
           ),
           NavigationDestination(
             icon: Icon(Icons.favorite_border),
             selectedIcon: Icon(Icons.favorite),
             label: 'Library',
           ),
-          NavigationDestination(icon: Icon(Icons.tune), label: 'Settings'),
         ],
       ),
     );

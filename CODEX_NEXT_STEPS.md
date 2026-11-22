@@ -5,6 +5,18 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Main navigation follow-up — 22 November
+
+- [x] Put Projects first and select it initially, followed by Explore and Library.
+- [x] Remove the redundant Settings bottom tab; the top-right cog opens Settings.
+  Back returns to the previously selected tab. Update help ordering and Explore's
+  project shortcut without changing saved projects or AI settings.
+- [x] Adapt existing navigation/settings/feedback and responsive checks. Source
+  `75ffe41898`; evidence is in `output/navigation-review-*.log`. No new APK or AI call.
+- [x] Pass **332 tests**, clean analysis (11.2s), Chrome release build (56.5s)
+  and an actual 390×844 browser check of tab order, initial Projects and cog/Back
+  from all three tabs in an isolated profile. Same desktop address: localhost:7357.
+
 ## Workspace testing feedback — 22 November, source after APK 1.0.16
 
 - [x] Confirm room analysis sends the working image plus included context photos;

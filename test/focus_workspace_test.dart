@@ -264,13 +264,23 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        for (final tab in ['Explore', 'Library', 'Settings', 'Projects']) {
+        for (final tab in ['Projects', 'Explore', 'Library']) {
           final target = find.text(tab);
           expect(tester.getRect(target).height, greaterThan(0));
           await tester.tap(target);
           await tester.pumpAndSettle();
           expect(tester.takeException(), isNull);
         }
+        await tester.tap(find.byTooltip('Settings'));
+        await tester.pumpAndSettle();
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        expect(
+          tester
+              .widget<NavigationBar>(find.byType(NavigationBar))
+              .selectedIndex,
+          2,
+        );
         expect(store.designsFor(room.id).single.favourite, isTrue);
         expect(store.roomsFor(project.id), hasLength(1));
       },

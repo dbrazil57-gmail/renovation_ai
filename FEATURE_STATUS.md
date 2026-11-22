@@ -1,5 +1,11 @@
 # Renovision feature status
 
+**Main navigation follow-up, 22 November — source `75ffe41898`:** bottom tabs are
+Projects / Explore / Library, with Projects selected first. Settings uses the
+top-right cog and its own page; returning preserves the previously selected main
+tab. Contextual help and Explore's project shortcut follow the new order.
+Published APK 1.0.16 remains unchanged; these changes are in source/desktop.
+
 **Workspace follow-up, 22 November — source `c2d523f4c0` after APK 1.0.16:**
 Generate stays pinned in all four tabs using one mounted, confirmed generation
 session. Autosave is in More tools; pending/failed save states remain visible.

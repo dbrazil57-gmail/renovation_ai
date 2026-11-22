@@ -265,10 +265,30 @@ void main() {
       addTearDown(store.dispose);
       await tester.pumpWidget(RenovisionApp(store: store));
       await tester.pumpAndSettle();
+      final navigation = tester.widget<NavigationBar>(
+        find.byType(NavigationBar),
+      );
+      expect(navigation.selectedIndex, 0);
+      expect(
+        navigation.destinations.cast<NavigationDestination>().map(
+          (d) => d.label,
+        ),
+        ['Projects', 'Explore', 'Library'],
+      );
+      expect(find.byType(ProjectsTab), findsOneWidget);
+      await tester.tap(find.text('Library'));
+      await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Settings'));
       await tester.pumpAndSettle();
       expect(find.text('Settings and privacy'), findsOneWidget);
       expect(find.byTooltip('Settings'), findsNothing);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.byType(LibraryTab), findsOneWidget);
+      expect(
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        2,
+      );
       expect(tester.takeException(), isNull);
     },
   );

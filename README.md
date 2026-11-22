@@ -1,5 +1,10 @@
 # Renovision AI
 
+Main navigation follow-up, **22 November**, source `75ffe41898`: Projects is the
+first/default tab, followed by Explore and Library. Settings opens from the
+top-right cog as a separate page; Back returns to the same main tab. Its redundant
+bottom destination is removed. This is source/desktop work after APK 1.0.16.
+
 Workspace follow-up, **22 November 2026**, source `c2d523f4c0` after APK 1.0.16:
 Generate is pinned across Room / Style / Refine / Ideas. Autosave stays in More
 tools; only pending/failed save status uses the footer. Palettes are smaller with
@@ -151,7 +156,7 @@ with Chrome rather than creating a disposable Flutter Chrome profile.
 The launcher resolves packages for the web target and avoids unnecessary desktop
 plugin symlinks without changing global Flutter settings. `-Release` runs the
 desktop browser app with production compilation; omit it for development debugging.
-The current desktop build is `c2d523f4c0`, including all completed source features
+The current desktop build is `75ffe41898`, including all completed source features
 listed above. A packaged native Windows companion remains a separate future stage.
 Settings > App build and saved data shows the build/address/counts and offers
 Check local saving. That confirms a read/write, not survival of a later crash.

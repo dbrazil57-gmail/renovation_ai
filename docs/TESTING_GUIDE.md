@@ -1,5 +1,14 @@
 # Testing and storage reference
 
+Main-navigation follow-up, 22 November, source `75ffe41898`: verify Projects is
+first/default, then Explore and Library; Settings is available through the cog
+and Back returns to the selected main tab. Existing toolbar, feedback, workflow,
+help and enlarged-text tests cover these paths. Evidence is under
+`output/navigation-review-*.log`; the published 1.0.16 APK is unchanged.
+All **332 tests pass**, analysis is clean (11.2s), release web build passes (56.5s).
+An isolated 390×844 browser check confirms visible order, initial Projects, and
+cog/Back restoring each of Projects, Explore and Library. No real project edits.
+
 ## Workspace source acceptance — 22 November, after APK 1.0.16
 
 Source `c2d523f4c0` passes **332 tests**. Evidence:
