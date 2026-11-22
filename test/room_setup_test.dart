@@ -164,6 +164,9 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send photos for analysis'));
       await tester.pumpAndSettle();
+      await reach(tester, find.text('Room observations and AI prompt'));
+      await tester.tap(find.text('Room observations and AI prompt'));
+      await tester.pumpAndSettle();
       await reach(tester, find.text('Use this AI prompt for the next design'));
       await tester.tap(find.text('Use this AI prompt for the next design'));
       await tester.pumpAndSettle();

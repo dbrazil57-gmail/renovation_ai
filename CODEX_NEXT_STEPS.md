@@ -1,9 +1,38 @@
 # Renovision next steps
 
 Current task list after the full code/conversation/design audit, updated through
-21 November 2026 (Australia/Sydney). This supersedes older chronological lists.
+22 November 2026 (Australia/Sydney). This supersedes older chronological lists.
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
+
+## Workspace testing feedback — 22 November, source after APK 1.0.16
+
+- [x] Confirm room analysis sends the working image plus included context photos;
+  the confirmation lists the exact inputs. Uploaded rooms support six photos.
+- [x] Compact palette tiles/swatches and use two columns in the full chooser.
+- [x] Show ten curated common styles first, then pages of at most ten; keep
+  cross-page selections and a visible selected-style summary, including regional styles.
+- [x] Keep Autosave in More tools and replace its permanent footer with Generate
+  on every tab. Retain pending/save-failure status, one mounted generation session,
+  explicit paid confirmation, cancellation, result-save retry and exit guards.
+- [x] Add saved Full room (all) / Partial scope, independent of precise correction.
+  Full room includes normal surfaces/fittings updates, with disabled included-item
+  controls and protected/Keep exceptions; Partial exposes individual choices.
+  Preserve partial choices when switching modes and through backup/recipe reuse.
+- [x] Keep existing layout/walls on by default; full-room renovation does not imply
+  moving architecture. Fix item-choice writes for related room types such as Ensuite.
+- [x] Collapse observations/AI prompt details initially; move manual copy/import
+  under Refine. Ideas reviews/compares/selects results; a completed batch opens it.
+- [x] Pass **332 tests** for source `c2d523f4c0`, including scope/backup/recipe and
+  pinned-generation confirmation/cancel checks at phone width. No paid AI requests,
+  customer-project edits or APK rebuild in this source follow-up.
+- [x] Clean analysis (9.9s), Chrome release compilation (57.6s), and actual
+  390×844 browser checks: public sample import, all four tabs, pinned Generate,
+  style pagination and Partial selection. Picker is simulated; normal profile is
+  untouched. Preview remains http://localhost:7357; screenshots/logs stay ignored.
+- [ ] Package for S21 only when requested; keep published APK 1.0.16 unchanged.
+- [ ] Refresh the affected video clips after this workspace layout is accepted;
+  existing recordings still show the prior control locations. Underlying flows remain.
 
 ## Requested test APK — 21 November, 1.0.16+17
 

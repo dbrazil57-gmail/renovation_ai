@@ -32,6 +32,7 @@ class RoomDraft extends ChangeNotifier {
   Set<String> styleIds;
   bool preciseEdit;
   bool keepLayout;
+  bool fullRenovation;
   int conceptCount;
   int precisionConceptCount;
   bool compareStyles;
@@ -64,7 +65,8 @@ class RoomDraft extends ChangeNotifier {
       precisionConceptCount = room.precisionConceptCount,
       compareStyles = room.compareStyles,
       preciseEdit = room.preciseEdit,
-      keepLayout = room.keepLayout {
+      keepLayout = room.keepLayout,
+      fullRenovation = room.fullRenovation {
     _lastText = _text;
     _autosave = store.autosaveEnabled;
     store.addListener(_savingPreferenceChanged);
@@ -95,6 +97,7 @@ class RoomDraft extends ChangeNotifier {
     'designStyleIds': styleIds.toList(),
     'preciseEdit': preciseEdit,
     'keepLayout': keepLayout,
+    'fullRenovation': fullRenovation,
     'conceptCount': conceptCount,
     'precisionConceptCount': precisionConceptCount,
     'compareStyles': compareStyles,
@@ -140,6 +143,7 @@ class RoomDraft extends ChangeNotifier {
     );
     preciseEdit = refine || saved['preciseEdit'] == true;
     keepLayout = saved['keepLayout'] != false;
+    fullRenovation = saved['fullRenovation'] != false;
     conceptCount = saved['conceptCount'] as int? ?? 1;
     precisionConceptCount = saved['precisionConceptCount'] as int? ?? 1;
     compareStyles = saved['compareStyles'] != false;
@@ -190,6 +194,26 @@ class RoomDraft extends ChangeNotifier {
   String get effectiveRoomType =>
       resolveRoomType(roomTypeId, store.roomById(roomId)?.name ?? '');
 
+  Map<String, String> get effectiveRoomItemChoices => fullRenovation
+      ? {
+          for (final id in roomFeaturesFor(effectiveRoomType).keys)
+            id:
+                effectiveItemChoice(id, roomItemChoices, scopeIds.toList()) ==
+                    'keep'
+                ? 'keep'
+                : 'replace',
+        }
+      : roomItemChoices;
+
+  List<String> get effectiveScopeIds => {
+    ...scopeIds,
+    if (fullRenovation)
+      ...renovationScope.keys.where(
+        (id) =>
+            id != 'dated_fixtures' && scopeAppliesToRoom(id, effectiveRoomType),
+      ),
+  }.toList();
+
   void setRoomType(String value) {
     if (value.isNotEmpty && !roomTypes.containsKey(value)) return;
     roomTypeId = value;
@@ -198,7 +222,7 @@ class RoomDraft extends ChangeNotifier {
 
   void setItemChoice(String id, String value) {
     if (!['', 'keep', 'replace'].contains(value) ||
-        !(roomFeatures[effectiveRoomType]?.containsKey(id) ?? false)) {
+        !roomFeaturesFor(effectiveRoomType).containsKey(id)) {
       return;
     }
     roomItemChoices = {...roomItemChoices};
@@ -260,6 +284,13 @@ class RoomDraft extends ChangeNotifier {
     _changed();
   }
 
+  void setFullRenovation(bool value) {
+    if (fullRenovation == value) return;
+    fullRenovation = value;
+    useAiPrompt = false;
+    _changed();
+  }
+
   void setConceptCount(int value) {
     if (value < 1 || value > 3 || value == conceptCount) return;
     conceptCount = value;
@@ -314,6 +345,7 @@ class RoomDraft extends ChangeNotifier {
     final styles = styleIds.toList();
     final precise = preciseEdit;
     final layout = keepLayout;
+    final fullSnapshot = fullRenovation;
     final countSnapshot = conceptCount;
     final precisionCountSnapshot = precisionConceptCount;
     final compareSnapshot = compareStyles;
@@ -338,6 +370,7 @@ class RoomDraft extends ChangeNotifier {
           otherStyle: customStyle,
           preciseEdit: precise,
           keepLayout: layout,
+          fullRenovation: fullSnapshot,
           conceptCount: countSnapshot,
           precisionConceptCount: precisionCountSnapshot,
           compareStyles: compareSnapshot,

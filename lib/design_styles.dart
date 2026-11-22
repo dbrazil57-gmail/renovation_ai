@@ -1,3 +1,17 @@
+// Curated common starting points; not a measured popularity ranking.
+const commonStyleIds = [
+  'modern',
+  'classic',
+  'minimalist',
+  'scandinavian',
+  'coastal',
+  'hamptons',
+  'industrial',
+  'rustic',
+  'japandi',
+  'mid_century',
+];
+
 const designStyles = <String, String>{
   'modern': 'Modern / Contemporary',
   'classic': 'Classic',

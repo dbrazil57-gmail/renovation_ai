@@ -102,7 +102,7 @@ void main() {
   }
 
   Future<void> openAdvanced(WidgetTester tester, {bool up = false}) async {
-    final control = find.text('Advanced Keep / Replace controls');
+    final control = find.text('Partial');
     await reach(tester, control, up: up);
     await tester.tap(control);
     await tester.pumpAndSettle();
@@ -358,6 +358,9 @@ void main() {
   testWidgets(
     'changing renovation scope marks a reviewed AI prompt stale before another generation',
     (tester) async {
+      await store.updateRoom(
+        store.roomById(room.id)!.copyWith(fullRenovation: false),
+      );
       await showRoom(tester);
       await reach(tester, find.text('Analyse room photos'));
       await tester.tap(find.text('Analyse room photos'));

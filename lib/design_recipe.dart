@@ -22,6 +22,7 @@ class DesignRecipe {
   static const boolFields = [
     'preciseEdit',
     'keepLayout',
+    'fullRenovation',
     'compareStyles',
     'useAiPrompt',
     'fixedBrief',

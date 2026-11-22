@@ -1,5 +1,21 @@
 # Renovision feature status
 
+**Workspace follow-up, 22 November — source `c2d523f4c0` after APK 1.0.16:**
+Generate stays pinned in all four tabs using one mounted, confirmed generation
+session. Autosave is in More tools; pending/failed save states remain visible.
+Compact palettes and ten-at-a-time style pages reduce scrolling without dropping
+selections. Full room / Partial scope is saved in rooms, backups and generation
+recipes. Full room supplies ordinary surface/fitting updates; saved Keep choices
+and protections win, and its included-item controls are disabled. Partial requests
+only selected/written changes; precise correction is independent. Fixed layout is
+still the default. Analysis/prompt details start closed. Manual copy/import is
+under Refine; completed batches open Ideas for review. **332 tests pass**. The
+published APK remains 1.0.16, with its original checksum; this follow-up needs a
+future requested package for phone acceptance. No paid generation or data reset.
+Clean analysis (9.9s), Chrome release build (57.6s) and actual 390×844 browser
+tab/pinned-action/pagination/Partial checks pass using only a public sample and
+isolated profile. Desktop preview is current at http://localhost:7357.
+
 **Requested APK, 21 November — 1.0.16+17:** all completed source features below
 are now packaged, including recorded help, room deletion/recovery, tap-wall paint
 and AI finishing handoff. **327 tests pass**, analysis is clean and Android release
@@ -182,6 +198,7 @@ Unspecified (Live) until confirmed. Existing custom names/photos are preserved.
 | New in 1.0.14 | Local paint and editable layers, regional style choices, saved feedback drafts/copy and optional contact handoff |
 | New in 1.0.15 | Confirmed A icon, consistent launcher/startup/header/web branding; same app identity and storage |
 | New in 1.0.16 | Recorded help with corrected native video timing, typed room deletion/recovery, legacy/immediate-save Live names, tap-wall recolouring, persistent wall deletion and save-then-review AI finishing |
+| Source after 1.0.16 | `c2d523f4c0`: pinned Generate, menu-only Autosave, compact palettes, ten-style pages, saved Full room / Partial scope, collapsed AI details, manual tools under Refine and results under Ideas; 332 passing tests |
 | Last APK checks | **327 tests pass**, clean analysis, Android release build passes; matching 1.0.15 signing certificate, olive/cream icon, public asset hashes, restricted share provider, private-file exclusion and 64-bit ELF/ZIP 16KB alignment verified |
 | Earlier audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. The subsequent requested APK build made no paid AI call or data migration |
 | Real user evidence | User reports successful phone installation, direct AI analysis/generation, good generated designs, project auto-reload and useful comparison/camera overlay. This does not validate every newer source change |

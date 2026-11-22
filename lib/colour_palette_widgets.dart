@@ -20,7 +20,7 @@ class PaletteSwatches extends StatelessWidget {
           child: Tooltip(
             message: '${colour.surface}: ${colour.name} ${colour.hex}',
             child: Container(
-              height: 32,
+              height: 18,
               decoration: BoxDecoration(
                 color: Color(0xFF000000 | colour.rgb),
                 border: Border.all(color: Colors.black12),
@@ -73,7 +73,7 @@ class ColourPalettePicker extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           onTap: () => onSelected(id),
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -90,13 +90,15 @@ class ColourPalettePicker extends StatelessWidget {
                     ),
                     Icon(
                       selected ? Icons.check_circle : Icons.circle_outlined,
-                      size: 20,
+                      size: 16,
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 6),
                 if (palette != null)
                   PaletteSwatches(palette: palette)
+                else if (horizontal)
+                  const SizedBox(height: 18)
                 else
                   Text(
                     'Leave colour choices open.',
@@ -116,7 +118,7 @@ class ColourPalettePicker extends StatelessWidget {
     builder: (context, bounds) {
       if (horizontal) {
         return SizedBox(
-          height: 150,
+          height: 68 + MediaQuery.textScalerOf(context).scale(24) * 2,
           child: Scrollbar(
             controller: scrollController,
             thumbVisibility: scrollController != null,
@@ -129,7 +131,7 @@ class ColourPalettePicker extends StatelessWidget {
               itemBuilder: (context, index) {
                 final palette = index == 0 ? null : designPalettes[index - 1];
                 return SizedBox(
-                  width: 185,
+                  width: 150,
                   child: _choice(
                     context,
                     id: palette?.id ?? '',
@@ -142,12 +144,12 @@ class ColourPalettePicker extends StatelessWidget {
           ),
         );
       }
-      final width = bounds.maxWidth >= 520
-          ? (bounds.maxWidth - 12) / 2
+      final width = bounds.maxWidth >= 230
+          ? (bounds.maxWidth - 8) / 2
           : bounds.maxWidth;
       return Wrap(
-        spacing: 12,
-        runSpacing: 12,
+        spacing: 8,
+        runSpacing: 8,
         children: [
           SizedBox(
             width: width,

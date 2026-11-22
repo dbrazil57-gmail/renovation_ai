@@ -64,6 +64,7 @@ class RenovationRoom {
   final String otherStyle;
   final bool preciseEdit;
   final bool keepLayout;
+  final bool fullRenovation;
   final int conceptCount;
   final int precisionConceptCount;
   final bool compareStyles;
@@ -131,6 +132,7 @@ class RenovationRoom {
     this.otherStyle = '',
     this.preciseEdit = false,
     this.keepLayout = true,
+    this.fullRenovation = true,
     this.conceptCount = 1,
     this.precisionConceptCount = 1,
     this.compareStyles = true,
@@ -162,6 +164,7 @@ class RenovationRoom {
     String? otherStyle,
     bool? preciseEdit,
     bool? keepLayout,
+    bool? fullRenovation,
     int? conceptCount,
     int? precisionConceptCount,
     bool? compareStyles,
@@ -188,6 +191,7 @@ class RenovationRoom {
     otherStyle: otherStyle ?? this.otherStyle,
     preciseEdit: preciseEdit ?? this.preciseEdit,
     keepLayout: keepLayout ?? this.keepLayout,
+    fullRenovation: fullRenovation ?? this.fullRenovation,
     conceptCount: conceptCount ?? this.conceptCount,
     precisionConceptCount: precisionConceptCount ?? this.precisionConceptCount,
     compareStyles: compareStyles ?? this.compareStyles,
@@ -226,6 +230,7 @@ class RenovationRoom {
     'otherStyle': otherStyle,
     'preciseEdit': preciseEdit,
     'keepLayout': keepLayout,
+    'fullRenovation': fullRenovation,
     'conceptCount': conceptCount,
     'precisionConceptCount': precisionConceptCount,
     'compareStyles': compareStyles,
@@ -278,6 +283,7 @@ class RenovationRoom {
         ? data['preciseEdit'] as bool
         : true,
     keepLayout: data['keepLayout'] is bool ? data['keepLayout'] as bool : true,
+    fullRenovation: data['fullRenovation'] != false,
     conceptCount: data['conceptCount'] is int
         ? (data['conceptCount'] as int).clamp(1, 3)
         : 1,

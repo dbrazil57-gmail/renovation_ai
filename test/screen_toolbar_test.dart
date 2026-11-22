@@ -68,7 +68,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('Autosave'), findsNothing);
-      expect(find.textContaining('Autosave on ·'), findsOneWidget);
+      expect(find.textContaining('Autosave on ·'), findsNothing);
       await tester.tap(find.byTooltip('More tools'));
       await tester.pumpAndSettle();
       final autosave = find.byWidgetPredicate(
@@ -83,7 +83,7 @@ void main() {
       await tester.tap(find.text('Autosave'));
       await tester.pumpAndSettle();
       expect(store.autosaveEnabled, isFalse);
-      expect(find.textContaining('Autosave off ·'), findsOneWidget);
+      expect(find.textContaining('Autosave off ·'), findsNothing);
       final reopened = RenovisionStore(records: records, photos: photos);
       expect(reopened.autosaveEnabled, isFalse);
       reopened.dispose();

@@ -1,5 +1,35 @@
 # Product and research reference
 
+## Workspace refinement from phone feedback — 22 November
+
+The four tabs now have a clearer purpose: Room supplies source photos/analysis;
+Style sets palette, influences and renovation extent; Refine holds the written
+brief, output count and optional precise correction; Ideas reviews/selects saved
+results. Generate is pinned across all tabs, so no final tab is compulsory.
+Its controller calls the existing mounted session rather than creating parallel
+request widgets. Paid confirmation, snapshot capture, save-before-send, per-result
+saving, save retry and exit guards remain. Results open Ideas after the batch;
+the Refine session retains stop-after-current and unsaved-result recovery.
+
+Full room (all) is separate from precise correction and layout preservation. It
+includes normal visible finishes/fittings updates without repeated ticking;
+saved Keep/protected requirements override defaults. Included item selectors are
+read-only until Partial is chosen; prior partial choices are retained. Partial
+restricts the brief to selected/written changes and rejects an empty request before
+generation. Layout stays fixed by default: a complete finish renovation is not
+permission for structural work. Old records retain the prior broad-design default,
+with no rewritten photos or erased settings; extent is saved in backup/recipes.
+
+Palette tiles/swatches are smaller; the full chooser uses two columns. Style pages
+contain at most ten choices, starting with curated common directions, not a claim
+of measured market popularity. Selected styles remain summarized across pages;
+Japanese/Italian/etc. remain available. AI observations and prepared prompt panels
+start closed, preserving the separate saved Use AI prompt flag. Manual handoff is
+an optional Refine disclosure; Autosave is in More tools and only pending/error
+save feedback remains in the footer. Source `c2d523f4c0` passes **332 tests**;
+published APK 1.0.16 is unchanged. Existing clips need a later control-location
+refresh after layout acceptance. No paid app AI or real project changes.
+
 ## Requested private APK — 21 November, 1.0.16+17
 
 The latest shared source `aba3ee136c` is now packaged with all completed room,

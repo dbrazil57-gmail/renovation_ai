@@ -15,7 +15,7 @@ class FocusWorkspace extends StatefulWidget {
   final List<Widget> imageTools;
   final List<Widget> thumbnails;
   final Map<FocusSection, List<Widget>> sections;
-  final Widget saveStatus;
+  final Widget footer;
   const FocusWorkspace({
     super.key,
     required this.selected,
@@ -24,7 +24,7 @@ class FocusWorkspace extends StatefulWidget {
     required this.imageTools,
     required this.thumbnails,
     required this.sections,
-    required this.saveStatus,
+    required this.footer,
   });
 
   @override
@@ -165,7 +165,7 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: widget.saveStatus,
+          child: widget.footer,
         ),
       ],
     ),

@@ -5,18 +5,19 @@ import 'room_features.dart';
 
 class RoomItemControls extends StatelessWidget {
   final RoomDraft draft;
-  const RoomItemControls({super.key, required this.draft});
+  final bool enabled;
+  const RoomItemControls({super.key, required this.draft, this.enabled = true});
 
   Widget _choice(String id, RoomFeature feature) {
     final value = itemChoice(
       id,
-      draft.roomItemChoices,
+      enabled ? draft.roomItemChoices : draft.effectiveRoomItemChoices,
       draft.scopeIds.toList(),
     );
     final inherited = isIndividualAppliance(id)
         ? itemChoice(
             '${id.split('_').first}_appliances',
-            draft.roomItemChoices,
+            enabled ? draft.roomItemChoices : draft.effectiveRoomItemChoices,
             draft.scopeIds.toList(),
           )
         : '';
@@ -36,7 +37,9 @@ class RoomItemControls extends StatelessWidget {
         DropdownMenuItem(value: 'keep', child: Text('Keep existing')),
         DropdownMenuItem(value: 'replace', child: Text('Replace / update')),
       ],
-      onChanged: (value) => draft.setItemChoice(id, value ?? ''),
+      onChanged: enabled
+          ? (value) => draft.setItemChoice(id, value ?? '')
+          : null,
     );
   }
 

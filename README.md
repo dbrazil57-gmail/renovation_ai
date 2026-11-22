@@ -1,5 +1,18 @@
 # Renovision AI
 
+Workspace follow-up, **22 November 2026**, source `c2d523f4c0` after APK 1.0.16:
+Generate is pinned across Room / Style / Refine / Ideas. Autosave stays in More
+tools; only pending/failed save status uses the footer. Palettes are smaller with
+a two-column full chooser; styles show ten curated common choices, then paged
+alternatives, retaining cross-page selections. Style now has **Full room (all)** /
+**Partial** scope. Full room includes normal finishes/fittings updates, while
+protected items and explicit Keep choices still win; its included-item controls
+are read-only. Partial exposes individual changes. Layout preservation stays on
+by default, separately from renovation extent. Precise correction remains a
+focused edit of the working image. Prompt/analysis details start closed; manual
+copy/import is under Refine, while Ideas reviews generated versions. **332 tests
+pass**; no paid AI, customer-data changes or new APK in this follow-up.
+
 Launch review, **21 November 2026**: suitable for controlled beta preparation;
 Google Play production still needs the focused
 [launch gates](CODEX_NEXT_STEPS.md#public-launch-review--21-november-2026).
@@ -138,7 +151,7 @@ with Chrome rather than creating a disposable Flutter Chrome profile.
 The launcher resolves packages for the web target and avoids unnecessary desktop
 plugin symlinks without changing global Flutter settings. `-Release` runs the
 desktop browser app with production compilation; omit it for development debugging.
-The current desktop build is `aba3ee136c`, including all completed source features
+The current desktop build is `c2d523f4c0`, including all completed source features
 listed above. A packaged native Windows companion remains a separate future stage.
 Settings > App build and saved data shows the build/address/counts and offers
 Check local saving. That confirms a read/write, not survival of a later crash.

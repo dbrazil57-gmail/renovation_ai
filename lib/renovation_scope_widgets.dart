@@ -4,106 +4,162 @@ import 'renovation_scope.dart';
 import 'room_draft.dart';
 import 'room_features.dart';
 import 'room_item_widgets.dart';
+import 'context_help.dart';
 
 class RenovationScopeControls extends StatelessWidget {
   final RoomDraft draft;
   const RenovationScopeControls({super.key, required this.draft});
 
+  Widget _details() => Column(
+    children: [
+      if ((draft.fullRenovation || draft.scopeIds.contains('flooring')) &&
+          scopeAppliesToRoom('flooring', draft.effectiveRoomType)) ...[
+        const SizedBox(height: 8),
+        TextField(
+          controller: draft.flooringNotes,
+          minLines: 1,
+          maxLines: 3,
+          maxLength: 500,
+          decoration: const InputDecoration(
+            labelText: 'New flooring / finish (optional)',
+            hintText: 'For example: large-format warm greige tiles',
+            border: OutlineInputBorder(),
+          ),
+        ),
+      ],
+      const SizedBox(height: 12),
+      TextField(
+        controller: draft.removeItems,
+        minLines: 1,
+        maxLines: 3,
+        maxLength: 500,
+        decoration: const InputDecoration(
+          labelText: 'Other items to remove (optional)',
+          hintText: 'For example: wall telephone, old blind, freestanding bin',
+          border: OutlineInputBorder(),
+        ),
+      ),
+    ],
+  );
+
   @override
-  Widget build(BuildContext context) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Include in this renovation',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            'Choose what to keep or replace, then tick other changes. Protected features take priority.',
-          ),
-          const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            key: ValueKey('room-type-${draft.roomTypeId}'),
-            initialValue: roomTypes.containsKey(draft.roomTypeId)
-                ? draft.roomTypeId
-                : '',
-            isExpanded: true,
-            decoration: const InputDecoration(
-              labelText: 'Room type',
-              border: OutlineInputBorder(),
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: draft,
+    builder: (context, _) => Card(
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const HelpHeading(
+              title: 'Renovation scope',
+              message: 'Full room includes coordinated finishes, flooring, lighting and visible room fittings. Saved Keep choices and protected features still win. Partial changes only your selected items and written requests. Precise correction in Refine is for one focused change to an existing design.',
             ),
-            items: [
-              DropdownMenuItem(
-                value: '',
-                child: Text(
-                  'From room name (${roomTypes[resolveRoomType('', draft.store.roomById(draft.roomId)?.name ?? '')]})',
-                ),
-              ),
-              for (final entry in roomTypes.entries)
-                DropdownMenuItem(value: entry.key, child: Text(entry.value)),
-            ],
-            onChanged: (value) => draft.setRoomType(value ?? ''),
-          ),
-          RoomItemControls(draft: draft),
-          const SizedBox(height: 10),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final width = constraints.maxWidth >= 600
-                  ? (constraints.maxWidth - 12) / 2
-                  : constraints.maxWidth;
-              return Wrap(
-                spacing: 12,
-                children: [
-                  for (final entry in renovationScope.entries.where(
-                    (e) => scopeAppliesToRoom(e.key, draft.effectiveRoomType),
-                  ))
-                    SizedBox(
-                      width: width,
-                      child: CheckboxListTile(
-                        contentPadding: EdgeInsets.zero,
-                        controlAffinity: ListTileControlAffinity.leading,
-                        title: Text(entry.value.label),
-                        value: draft.scopeIds.contains(entry.key),
-                        onChanged: (value) =>
-                            draft.setScope(entry.key, value ?? false),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-          if (draft.scopeIds.contains('flooring') &&
-              scopeAppliesToRoom('flooring', draft.effectiveRoomType)) ...[
             const SizedBox(height: 8),
-            TextField(
-              controller: draft.flooringNotes,
-              minLines: 1,
-              maxLines: 3,
-              maxLength: 500,
+            SegmentedButton<bool>(
+              key: const ValueKey('renovation-extent'),
+              segments: const [
+                ButtonSegment(value: true, label: Text('Full room (all)')),
+                ButtonSegment(value: false, label: Text('Partial')),
+              ],
+              selected: {draft.fullRenovation},
+              onSelectionChanged: (values) =>
+                  draft.setFullRenovation(values.first),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              draft.fullRenovation
+                  ? 'Usual renovation updates are included. Protected items and saved Keep choices stay.'
+                  : 'Choose what to change. Everything else stays.',
+            ),
+            const SizedBox(height: 10),
+            DropdownButtonFormField<String>(
+              key: ValueKey('room-type-${draft.roomTypeId}'),
+              initialValue: roomTypes.containsKey(draft.roomTypeId)
+                  ? draft.roomTypeId
+                  : '',
+              isExpanded: true,
               decoration: const InputDecoration(
-                labelText: 'New flooring / finish (optional)',
-                hintText: 'For example: large-format warm greige tiles',
+                labelText: 'Room type',
                 border: OutlineInputBorder(),
               ),
+              items: [
+                DropdownMenuItem(
+                  value: '',
+                  child: Text(
+                    'From room name (${roomTypes[resolveRoomType('', draft.store.roomById(draft.roomId)?.name ?? '')]})',
+                  ),
+                ),
+                for (final entry in roomTypes.entries)
+                  DropdownMenuItem(value: entry.key, child: Text(entry.value)),
+              ],
+              onChanged: (value) => draft.setRoomType(value ?? ''),
             ),
+            if (draft.fullRenovation)
+              ExpansionTile(
+                key: const ValueKey('full-renovation-items'),
+                title: const Text('Included items & saved exceptions'),
+                tilePadding: EdgeInsets.zero,
+                children: [
+                  RoomItemControls(draft: draft, enabled: false),
+                  Text(
+                    [
+                      for (final entry in renovationScope.entries.where(
+                        (e) =>
+                            e.key != 'dated_fixtures' &&
+                            scopeAppliesToRoom(e.key, draft.effectiveRoomType),
+                      ))
+                        entry.value.label,
+                    ].join(' · '),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Choose Partial to adjust individual items. Fixed equipment is removed only when explicitly requested.',
+                  ),
+                ],
+              )
+            else ...[
+              RoomItemControls(draft: draft),
+              const SizedBox(height: 10),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final width = constraints.maxWidth >= 600
+                      ? (constraints.maxWidth - 12) / 2
+                      : constraints.maxWidth;
+                  return Wrap(
+                    spacing: 12,
+                    children: [
+                      for (final entry in renovationScope.entries.where(
+                        (e) =>
+                            scopeAppliesToRoom(e.key, draft.effectiveRoomType),
+                      ))
+                        SizedBox(
+                          width: width,
+                          child: CheckboxListTile(
+                            contentPadding: EdgeInsets.zero,
+                            controlAffinity: ListTileControlAffinity.leading,
+                            title: Text(entry.value.label),
+                            value: draft.scopeIds.contains(entry.key),
+                            onChanged: (value) =>
+                                draft.setScope(entry.key, value ?? false),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ],
+            if (draft.fullRenovation)
+              ExpansionTile(
+                key: const ValueKey('renovation-material-details'),
+                tilePadding: EdgeInsets.zero,
+                title: const Text('Materials & removals (optional)'),
+                children: [_details()],
+              )
+            else
+              _details(),
           ],
-          const SizedBox(height: 12),
-          TextField(
-            controller: draft.removeItems,
-            minLines: 1,
-            maxLines: 3,
-            maxLength: 500,
-            decoration: const InputDecoration(
-              labelText: 'Other items to remove (optional)',
-              hintText:
-                  'For example: wall telephone, old blind, freestanding bin',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ],
+        ),
       ),
     ),
   );

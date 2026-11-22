@@ -369,7 +369,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                 ],
                 if (analysis != null)
                   ExpansionTile(
-                    initiallyExpanded: true,
+                    initiallyExpanded: false,
                     title: const Text('Room observations and AI prompt'),
                     subtitle: Text(
                       '${analysis.result.provider} · ${analysis.result.model} · ${analysis.created.toLocal()}',

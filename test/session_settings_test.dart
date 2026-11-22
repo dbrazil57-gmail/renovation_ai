@@ -51,7 +51,7 @@ void main() {
   );
 
   testWidgets(
-    'room has compact save status; Settings holds saving, restore and AI controls without losing drafts',
+    'room pins generation; Settings holds saving, restore and AI controls without losing drafts',
     (tester) async {
       final store = RenovisionStore(records: MemoryBox(), photos: MemoryBox());
       addTearDown(store.dispose);
@@ -68,7 +68,8 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.textContaining('Autosave off ·'), findsOneWidget);
+      expect(find.textContaining('Autosave off ·'), findsNothing);
+      expect(find.byKey(const ValueKey('workspace-generate')), findsOneWidget);
       expect(find.text('Save now'), findsNothing);
       expect(find.text('Save as…'), findsNothing);
       final changes = find.widgetWithText(TextField, 'What should change?');

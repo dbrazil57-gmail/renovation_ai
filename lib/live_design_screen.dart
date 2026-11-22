@@ -94,6 +94,7 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
     draft?.changes.text,
     draft?.protected.text,
     draft?.keepLayout,
+    draft?.fullRenovation,
     (draft?.scopeIds.toList() ?? <String>[])..sort(),
     draft?.roomItemChoices,
   ]);

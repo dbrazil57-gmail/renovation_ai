@@ -148,6 +148,7 @@ void main() {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       final draft = RoomDraft(store, room);
+      draft.setFullRenovation(false);
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

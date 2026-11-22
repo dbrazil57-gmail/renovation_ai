@@ -1,5 +1,50 @@
 # Testing and storage reference
 
+## Workspace source acceptance — 22 November, after APK 1.0.16
+
+Source `c2d523f4c0` passes **332 tests**. Evidence:
+`output/workspace-review-final-tests.log`, `workspace-review-final-analysis.log`,
+`workspace-review-web-build.log`. Existing APK 1.0.16/older checksums are retained;
+the source changes are not yet in a new phone package. No paid provider request
+or normal customer-store/profile edits were made.
+
+Analysis is clean (9.9s); Chrome release compilation passes (57.6s). Actual
+390×844 browser interaction passes all four tabs, a pinned Generate action,
+style pagination and the Full room / Partial switch. A bundled public-photo
+project was opened through a simulated picker in a disposable Chrome profile;
+this is not native file-picker or S21 acceptance. Evidence:
+`output/workspace-review-browser.log`, `output/workspace-*.png`. The desktop
+preview serves the new source at the unchanged http://localhost:7357 origin.
+
+Verify on the next requested phone package:
+
+1. Generate stays reachable while scrolling or switching all four tabs. Cancelling
+   the same confirmation sends nothing; 1/2/3 choices still control separate requests.
+   Save failures keep the result recoverable in Refine; exiting remains guarded.
+   Autosave is in More tools and pending/failed local saving remains visible.
+2. Style starts with ten common choices; page through every remaining style and
+   choose one on another page, then return. All choices remain selected and saved.
+   Full palette chooser uses smaller two-column tiles; quick choices remain sideways.
+   Check 320px, short keyboard viewports and large text without clipped labels.
+3. Full room includes room-appropriate fittings and ordinary surfaces by default.
+   Open Included items to see disabled choices and saved Keep exceptions. Switch
+   to Partial to edit them and select scope; switch back without losing choices.
+   Reopen and restore a portable copy/reuse a saved recipe: extent/choices stay.
+   Old records without the new boolean retain the prior broad-design default.
+4. Partial must not include broad whole-room initiative; unselected items remain.
+   A blank partial/precise request is redirected to its inputs before confirmation.
+   Keep layout/walls remains separate and on by default. Explicit Keep/protected
+   items override full-room changes; uncertain fixed equipment is not auto-removed.
+5. AI observations/prompts initially remain closed. Open them to review/use an AI
+   prompt; its saved on/off preference still applies. Manual copy/import is under
+   Refine. Ideas contains result review/history, not a required pre-generation step.
+6. In Room, include other views and check the input thumbnails/count in analysis
+   confirmation. Working photo defines the requested viewpoint; the others provide
+   spatial context, not measured reconstruction. No continuous camera video is sent.
+
+Existing help MP4s remain playable but depict earlier control locations. Refresh
+the affected clips after layout acceptance; do not claim current-layout video parity.
+
 ## Requested APK acceptance — 1.0.16+17, 21 November
 
 Latest package: `output/mobile-test/renovision-test-1.0.16.apk`, alias

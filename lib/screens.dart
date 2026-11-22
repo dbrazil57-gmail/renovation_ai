@@ -1336,6 +1336,7 @@ class WorkspaceScreen extends StatefulWidget {
 class _WorkspaceScreenState extends State<WorkspaceScreen>
     with WidgetsBindingObserver {
   late final RoomDraft draft;
+  final generation = AiEditController();
   bool analysingRoom = false;
   bool editingRoom = false;
   bool get aiPending => analysingRoom || editingRoom;
@@ -1352,6 +1353,78 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   List<String>? restoredSupportingIds;
   bool includeRoomContext = true;
   FocusSection focusSection = FocusSection.room;
+
+  Future<void> _generateFromWorkspace() async {
+    if (aiPending || widget.store.ai.activity.active) return;
+    if (!widget.store.ai.connected) {
+      await _openSettings();
+      return;
+    }
+    if ((precise && draft.correction.text.trim().isEmpty) ||
+        (!precise && !draft.fullRenovation && !draft.hasRequestedChanges)) {
+      setState(
+        () => focusSection = precise ? FocusSection.refine : FocusSection.style,
+      );
+      notice(
+        context,
+        precise
+            ? 'Describe the specific correction in Refine before generating.'
+            : 'Select the items to update, or describe your partial renovation in Refine.',
+      );
+      return;
+    }
+    final previousCount = widget.store.designsFor(widget.roomId).length;
+    await generation.generate();
+    if (!mounted) return;
+    if (generation.needsAttention) {
+      setState(() => focusSection = FocusSection.refine);
+    } else if (widget.store.designsFor(widget.roomId).length > previousCount) {
+      setState(() => focusSection = FocusSection.ideas);
+    }
+  }
+
+  Widget _generationFooter() => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 6),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (draft.state != DraftSaveState.saved)
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              draft.status,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        if (editingRoom && !widget.store.ai.activity.active)
+          TextButton(
+            onPressed: () => setState(() => focusSection = FocusSection.refine),
+            child: const Text('Review pending result'),
+          )
+        else
+          FilledButton.icon(
+            key: const ValueKey('workspace-generate'),
+            onPressed: aiPending || widget.store.ai.activity.active
+                ? null
+                : _generateFromWorkspace,
+            icon: const Icon(Icons.auto_awesome),
+            label: Text(
+              aiPending || widget.store.ai.activity.active
+                  ? 'AI working…'
+                  : !widget.store.ai.connected
+                  ? 'Connect AI to generate'
+                  : (precise
+                            ? draft.precisionConceptCount
+                            : draft.conceptCount) >
+                        1
+                  ? 'Generate ${precise ? draft.precisionConceptCount : draft.conceptCount} ${precise ? 'variations' : 'design ideas'}'
+                  : 'Generate AI design',
+            ),
+          ),
+      ],
+    ),
+  );
 
   RoomSaveControls _savingControls({
     bool compact = false,
@@ -2279,7 +2352,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   }),
                 ),
             ],
-            saveStatus: _savingControls(compact: true),
+            footer: _generationFooter(),
             sections: {
               FocusSection.room: [
                 Card(
@@ -2457,15 +2530,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 if (!precise) ...[
                   const SizedBox(height: 12),
                   DesignStyleControls(draft: draft),
-                  ExpansionTile(
-                    key: const ValueKey('advanced-room-controls'),
-                    title: const Text('Advanced Keep / Replace controls'),
-                    subtitle: const Text(
-                      'Optional saved overrides for the whole-room design.',
-                    ),
-                    maintainState: true,
-                    children: [RenovationScopeControls(draft: draft)],
-                  ),
+                  RenovationScopeControls(draft: draft),
                 ],
               ],
               FocusSection.refine: [
@@ -2518,6 +2583,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   compact: true,
                   store: widget.store,
                   draft: draft,
+                  controller: generation,
+                  showGenerateButton: false,
+                  showSavedPreview: false,
+                  beforeSend: draft.save,
                   onPendingChanged: (pending) {
                     if (mounted) setState(() => editingRoom = pending);
                     _updateExitGuard();
@@ -2570,32 +2639,42 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   ],
                 ),
                 const SizedBox(height: 12),
-              ],
-              FocusSection.ideas: [
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  crossAxisAlignment: WrapCrossAlignment.center,
+                ExpansionTile(
+                  key: const ValueKey('manual-ai-tools'),
+                  title: const Text('Use another AI app (optional)'),
                   children: [
-                    FilledButton.icon(
-                      onPressed: () => _copyPrompt(room),
-                      icon: const Icon(Icons.copy),
-                      label: const Text('Copy AI prompt'),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        FilledButton.icon(
+                          onPressed: () => _copyPrompt(room),
+                          icon: const Icon(Icons.copy),
+                          label: const Text('Copy AI prompt'),
+                        ),
+                        const HelpIcon(
+                          title: 'Manual AI handoff',
+                          message: 'Copy the prepared prompt into another AI app that supports image editing. Attach the working photo and selected supporting views yourself, then import its result. Copying does not connect a provider or make an API request.',
+                        ),
+                      ],
                     ),
-                    const HelpIcon(
-                      title: 'Manual AI handoff',
-                      message: 'Copy the prepared prompt into another AI app that supports image editing. Attach the working photo and selected supporting views yourself, then import its result. Copying does not connect a provider or make an API request.',
+                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
+                    FilledButton.tonalIcon(
+                      onPressed: () => _importResult(room),
+                      icon: const Icon(Icons.add_photo_alternate_outlined),
+                      label: const Text('Import generated AI result'),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                const SizedBox(height: 12),
-                FilledButton.tonalIcon(
-                  onPressed: () => _importResult(room),
-                  icon: const Icon(Icons.add_photo_alternate_outlined),
-                  label: const Text('Import generated AI result'),
-                ),
                 const SizedBox(height: 14),
+              ],
+              FocusSection.ideas: [
+                const Text(
+                  'Review results here. Choose a design to refine, compare or save as your favourite.',
+                ),
+                const SizedBox(height: 8),
                 const HelpHeading(
                   title: 'Version history',
                   message: 'Passed ideas stay in history. Use the review menu to return them to Explore or delete an unwanted design. Deleted designs below lets you restore it. Favourites and baseline approval are separate choices. Deleting a design keeps a recoverable copy and its source history.',

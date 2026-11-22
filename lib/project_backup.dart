@@ -184,6 +184,7 @@ class ProjectBackup {
         for (final field in [
           'preciseEdit',
           'keepLayout',
+          'fullRenovation',
           'useAiPrompt',
           'setupComplete',
           'compareStyles',

@@ -45,6 +45,10 @@ Future<bool?> showDesignRecipe(BuildContext context, DesignVersion design) {
               Text(
                 'Keep layout: ${saved['keepLayout'] != false ? 'Yes' : 'No'}',
               ),
+              if (saved['preciseEdit'] != true)
+                Text(
+                  'Renovation: ${saved['fullRenovation'] != false ? 'Full room' : 'Partial'}',
+                ),
               if (saved['imageModel'] is String)
                 Text(
                   'Model: ${imageModelLabel(saved['imageModel'] as String)}',

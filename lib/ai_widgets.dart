@@ -546,6 +546,16 @@ class AiEditRequest {
   );
 }
 
+/// One mounted generation session can be triggered from a pinned workspace action.
+/// The same confirmation, request capture and result-save guards remain in charge.
+class AiEditController {
+  _AiEditCardState? _owner;
+  bool get needsAttention =>
+      _owner?.pending != null ||
+      (_owner?.received.isEmpty == true && _owner?.message != null);
+  Future<void> generate() async => _owner?._generate();
+}
+
 class AiEditCard extends StatefulWidget {
   final RenovisionStore store;
   final AiEditRequest Function() buildRequest;
@@ -558,6 +568,8 @@ class AiEditCard extends StatefulWidget {
   final Future<bool> Function()? beforeSend;
   final String? buttonLabel;
   final RoomDraft? draft;
+  final AiEditController? controller;
+  final bool showGenerateButton;
   const AiEditCard({
     super.key,
     required this.store,
@@ -571,6 +583,8 @@ class AiEditCard extends StatefulWidget {
     this.beforeSend,
     this.buttonLabel,
     this.draft,
+    this.controller,
+    this.showGenerateButton = true,
   });
   @override
   State<AiEditCard> createState() => _AiEditCardState();
@@ -578,6 +592,27 @@ class AiEditCard extends StatefulWidget {
 
 class _AiEditCardState extends State<AiEditCard>
     with AutomaticKeepAliveClientMixin<AiEditCard> {
+  @override
+  void initState() {
+    super.initState();
+    widget.controller?._owner = this;
+  }
+
+  @override
+  void didUpdateWidget(AiEditCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?._owner = null;
+      widget.controller?._owner = this;
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller?._owner == this) widget.controller?._owner = null;
+    super.dispose();
+  }
+
   @override
   bool get wantKeepAlive => true;
   bool busy = false;
@@ -1071,7 +1106,8 @@ class _AiEditCardState extends State<AiEditCard>
                   ),
                   child: const Text('Set up AI connection'),
                 ),
-              if (pending == null &&
+              if (widget.showGenerateButton &&
+                  pending == null &&
                   (!widget.compact || widget.store.ai.connected))
                 FilledButton.icon(
                   onPressed:

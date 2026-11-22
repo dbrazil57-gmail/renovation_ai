@@ -59,7 +59,7 @@ void main() {
                     onTap: () {},
                   ),
                 ],
-                saveStatus: const Text('Saved locally'),
+                footer: const Text('Saved locally'),
                 sections: {
                   FocusSection.room: [const Text('Room controls')],
                   FocusSection.style: [const RememberedControl()],

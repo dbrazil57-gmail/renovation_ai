@@ -4,9 +4,22 @@ import 'design_styles.dart';
 import 'room_draft.dart';
 import 'context_help.dart';
 
-class DesignStyleControls extends StatelessWidget {
+class DesignStyleControls extends StatefulWidget {
   final RoomDraft draft;
   const DesignStyleControls({super.key, required this.draft});
+  @override
+  State<DesignStyleControls> createState() => _DesignStyleControlsState();
+}
+
+class _DesignStyleControlsState extends State<DesignStyleControls> {
+  int page = 0;
+  RoomDraft get draft => widget.draft;
+  final orderedIds = [
+    ...commonStyleIds,
+    ...designStyles.keys.where((id) => !commonStyleIds.contains(id)),
+  ];
+  int get pageCount => (orderedIds.length / 10).ceil();
+
   @override
   Widget build(BuildContext context) => Card(
     child: Padding(
@@ -19,51 +32,58 @@ class DesignStyleControls extends StatelessWidget {
             message: 'Choose one style or blend several influences in one design. Style choices apply to your next generation, not an existing image. Use Other for your own direction. For separate style concepts, choose Multiple design ideas and Compare styles separately in AI generation.',
           ),
           const SizedBox(height: 6),
-          const Text('Multiple ticks blend in one design.'),
+          Text(
+            page == 0
+                ? 'Common choices · select one or blend styles.'
+                : 'More styles · selections stay saved across pages.',
+          ),
+          if (draft.styleIds.isNotEmpty)
+            Text(
+              'Selected: ${draft.styleIds.map((id) => designStyles[id] ?? id).join(' + ')}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           const SizedBox(height: 10),
           Wrap(
             spacing: 8,
             runSpacing: 6,
             children: [
-              for (final entry in designStyles.entries)
-                if (!regionalStyleIds.contains(entry.key))
-                  FilterChip(
-                    label: Text(entry.value),
-                    selected: draft.styleIds.contains(entry.key),
-                    showCheckmark: true,
-                    onSelected: (value) => draft.setStyle(entry.key, value),
-                  ),
+              for (final id in orderedIds.skip(page * 10).take(10))
+                FilterChip(
+                  label: Text(designStyles[id]!),
+                  selected: draft.styleIds.contains(id),
+                  showCheckmark: true,
+                  onSelected: (value) => draft.setStyle(id, value),
+                ),
             ],
           ),
-          ExpansionTile(
-            tilePadding: EdgeInsets.zero,
-            title: const Text('Regional influences'),
-            subtitle: Text(
-              draft.styleIds
-                  .where(regionalStyleIds.contains)
-                  .map((id) => designStyles[id]!)
-                  .join(' + '),
-            ),
-            initiallyExpanded: draft.styleIds.any(regionalStyleIds.contains),
+          Row(
             children: [
-              const Text(
-                'Combine with a style, for example Contemporary + Japanese. These are design influences; add specific details in Other.',
+              IconButton(
+                tooltip: 'Previous styles',
+                onPressed: page == 0 ? null : () => setState(() => page--),
+                icon: const Icon(Icons.chevron_left),
               ),
-              Wrap(
-                spacing: 8,
-                runSpacing: 6,
-                children: [
-                  for (final id in regionalStyleIds)
-                    FilterChip(
-                      label: Text(designStyles[id]!),
-                      selected: draft.styleIds.contains(id),
-                      onSelected: (value) => draft.setStyle(id, value),
-                    ),
-                ],
+              Expanded(
+                child: Text(
+                  '${page + 1} / $pageCount',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              TextButton.icon(
+                key: const ValueKey('more-design-styles'),
+                onPressed: () => setState(() => page = (page + 1) % pageCount),
+                icon: Icon(
+                  page + 1 == pageCount
+                      ? Icons.first_page
+                      : Icons.chevron_right,
+                ),
+                label: Text(
+                  page + 1 == pageCount ? 'Common styles' : 'More styles',
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 6),
           if (draft.styleIds.contains('modern') &&
               draft.styleIds.contains('classic'))
             const Text('Modern + Classic creates a transitional blend.'),
