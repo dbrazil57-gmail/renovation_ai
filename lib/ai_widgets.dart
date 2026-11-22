@@ -17,6 +17,7 @@ import 'walkthrough_screen.dart';
 import 'design_recipe.dart';
 import 'brief_readiness.dart';
 import 'brief_readiness_widgets.dart';
+import 'tester_access_widgets.dart';
 
 class AiConnectionSettingsCard extends StatelessWidget {
   final AiService ai;
@@ -36,7 +37,10 @@ class AiConnectionSettingsCard extends StatelessWidget {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
-        children: [AiConnectionCard(ai: ai)],
+        children: [
+          TesterAccessCard(ai: ai),
+          AiConnectionCard(ai: ai),
+        ],
       ),
     ),
   );
@@ -105,16 +109,22 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
   }
 
   Future<void> _disconnect() async {
+    final removingTestInvitation = widget.ai.isTester;
     setState(() {
       busy = true;
       message = null;
     });
     try {
-      await widget.ai.removeProviderKey(selectedProvider);
+      if (widget.ai.isTester) {
+        await widget.ai.disconnect();
+      } else {
+        await widget.ai.removeProviderKey(selectedProvider);
+      }
       if (mounted) {
         setState(
-          () => message =
-              '${selectedProvider.label} key removed. Projects and other provider keys are unchanged.',
+          () => message = removingTestInvitation
+              ? 'Test invitation removed. Personal API keys and projects are unchanged.'
+              : '${selectedProvider.label} key removed. Projects and other provider keys are unchanged.',
         );
       }
     } on AiFailure catch (error) {
@@ -240,7 +250,9 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
               ],
             ),
             Text(
-              direct
+              widget.ai.isTester
+                  ? 'Owner-funded HTTPS test access is active. You can use your personal API key instead by disconnecting the invitation.'
+                  : direct
                   ? 'Photos and prompts go directly to ${selectedProvider.label} over HTTPS after confirmation. Use a separate ${selectedProvider.label} developer API key; no laptop is needed.'
                   : 'Development option: start the relay on your PC and enter its connection code here. The OpenAI key is entered in the relay terminal. Your phone needs that PC connection in this mode.',
             ),
@@ -254,7 +266,9 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
             if (widget.ai.connected &&
                 widget.ai.provider == selectedProvider) ...[
               Text(
-                widget.ai.isDirect
+                widget.ai.isTester
+                    ? 'Connection: owner-funded HTTPS test access'
+                    : widget.ai.isDirect
                     ? 'Connection: internet API · ${widget.ai.provider.host}'
                     : 'Connection: laptop relay · development',
               ),
@@ -803,7 +817,7 @@ class _AiEditCardState extends State<AiEditCard>
                       'Fixed-brief model test: this sends the prepared prompt without added design directions. Check that the selected photos match your other tests.',
                     ),
                   Text(
-                    'The working image, any supporting views shown above, and prompt will leave this device and be sent to $providerLabel. API charges apply and additional inputs can increase cost. Each metadata-free working copy is limited to 2048 pixels on its longest side. Your originals and approved baseline remain unchanged. Precise preservation and a consistent 3D reconstruction are not guaranteed.',
+                    'The working image, any supporting views shown above, and prompt will leave this device and be sent to $providerLabel. ${widget.store.ai.isTester ? 'This uses one owner-funded test design allowance per image. ${widget.store.ai.testerAllowance?.summary ?? ''}. The test service forwards these inputs to OpenAI.' : 'API charges apply and additional inputs can increase cost.'} Each metadata-free working copy is limited to 2048 pixels on its longest side. Your originals and approved baseline remain unchanged. Precise preservation and a consistent 3D reconstruction are not guaranteed.',
                   ),
                   const SizedBox(height: 12),
                   if (requests.length > 1)
@@ -1047,7 +1061,7 @@ class _AiEditCardState extends State<AiEditCard>
             children: [
               if (!widget.compact)
                 const HelpHeading(
-                  title: 'Generate inside Renovision',
+                  title: 'Generate inside RenoVision',
                   message: 'The image selected in Working from is sent as the reference. Select an original room photo for fresh alternatives, or a saved design for variations on it. AI variation is requested, not guaranteed.\n\nMultiple design ideas makes 2 or 3 separate paid image requests from the same starting image. Compare styles separately uses one selected style per image; an extra concept blends them. With comparison off, every concept blends the selected influences. Each result saves before the next request; you can stop after the current image.',
                 ),
               if (!widget.compact) const SizedBox(height: 8),

@@ -1,5 +1,29 @@
 # Product and research reference
 
+## Sample replay and tester access — 22 November
+
+Owner explicitly authorised kitchen before/after images for inclusion in the app.
+Use the historical saved-project pair and recorded brief, plus the supplied later
+idea board; the board uses another viewpoint and its unavailable original chat
+must not be replaced by an invented exact transcript. Bundle sanitised copies and
+label the replay as offline. A separate practice project supports genuine tool,
+save/reopen and export testing without an AI account, leaving customer work intact.
+
+Owner proposes approximately $1 per tester. Prepare limited invitation access,
+keeping the provider key on a server and attempts/expiry under server control.
+Currency, hosting, funding and measured per-model cost remain decisions before
+activation. The implemented small gateway counts request attempts; it is not a
+dollar balance, subscription system, deployed backend or production credit store.
+Timeouts are not automatically retried/refunded. Invite secrets stay separate from
+projects and personal provider keys; Android stores them in a separate vault.
+
+Custom website/domain is optional initially; an app-specific hosted privacy page
+and operational public support contact are needed. A free support mailbox/alias
+can keep a forwarding destination private. Encrypting an address with a key inside
+the app cannot make that address private, and cannot conceal the public Play
+contact. The detailed plan and current official sources are in
+[the requested release guide](GOOGLE_PLAY_RELEASE.md).
+
 ## Android acceptance, then iPhone tester parity — 22 November
 
 Owner decision: Google Play/Android stays the primary launch target. Most friends

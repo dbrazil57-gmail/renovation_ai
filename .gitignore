@@ -105,3 +105,8 @@ service-account*.json
 *.key
 *.p12
 *.pfx
+
+# Trial invitations and usage ledgers stay private.
+*.tester-ledger.json
+*invitations.local.json
+*tester-ledger.local.json

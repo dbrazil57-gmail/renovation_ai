@@ -2,4 +2,5 @@
 <full-backup-content>
     <exclude domain="sharedpref" path="renovision_secrets.xml" />
     <exclude domain="sharedpref" path="renovision_gemini_secrets.xml" />
+    <exclude domain="sharedpref" path="renovision_tester_secrets.xml" />
 </full-backup-content>

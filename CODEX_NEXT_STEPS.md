@@ -5,6 +5,28 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Requested test release 1.0.17 — 22 November
+
+- [x] Bundle the explicitly authorised kitchen before/after and historical saved
+  prompt, plus a later different-view idea board with its follow-up labelled as
+  illustrative. Strip original metadata; keep customer originals unchanged.
+- [x] Add Help offline replay with stages/playback, saved brief, zoom/compare and
+  a separate reusable practice project. Viewing/replay sends no provider request.
+- [x] Prepare HTTPS tester access with separate encrypted invitations, server-side
+  attempt quotas/expiry, fixed model, durable reservations and duplicate prevention.
+  BYO keys remain separate. No funded service is deployed or activated.
+- [x] Clean remaining visible RenoVision labels without changing package/storage/
+  signing identity. iOS/native desktop runtime verification remains separate.
+- [x] Add the explicitly requested seventh active document:
+  [Google Play release guide](docs/GOOGLE_PLAY_RELEASE.md).
+- [x] Verify/package 1.0.17+18 from `d19f2fd3d2`: 363 tests, clean analysis,
+  web/Android release builds, actual Chrome and read-only Android emulator sample,
+  practice/restart and settings checks. Keep published older APKs unchanged.
+  Refresh the same localhost:7357 desktop preview; no paid AI or deployment.
+- [ ] Confirm approximate $1/tester currency, hosting, funded model and measured
+  quota/cost before activating trial access. Current quotas are not dollar credits.
+- [ ] Complete physical S21 acceptance and the public release gates in the guide.
+
 ## Confirmed release order — 22 November
 
 The owner wants Android perfected on their S21 first, followed by iPhone at the

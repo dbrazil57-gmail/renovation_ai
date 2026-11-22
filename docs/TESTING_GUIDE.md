@@ -1,5 +1,55 @@
 # Testing and storage reference
 
+## Requested APK 1.0.17 acceptance
+
+Install the new APK over the existing app; keep its data. Confirm build/version,
+projects, original photos, design history, API key and room preferences survive.
+Open Help > Sample walkthroughs > Try the kitchen sample flow, step/play through
+the original, saved brief, actual result and later board. View the saved brief,
+zoom/compare the matching pair, then Try a separate practice project. Confirm
+existing work remains unchanged, the practice project reopens, and repeated use
+reuses that copy. Test local paint/tiles, version selection and save/share without
+an AI key. The board is a different-view exploration, not a precision overlay.
+
+In Settings > AI connection and models, inspect Tester credits. No invitation
+is supplied by the APK. Only an explicitly activated HTTPS service and individual
+invitation enable live owner-funded requests. Test allowance expiry/exhaustion,
+refresh, disconnect and restore separately from personal provider keys. Multiple
+ideas consume one design allowance per image; interrupted attempts may consume
+allowance. Offline sample replay never consumes one.
+
+Public-store, support-email/privacy and tester-service setup are consolidated in
+[the Google Play release guide](GOOGLE_PLAY_RELEASE.md). New private-test evidence
+is recorded below. Earlier dated source-only notes describe their original checks;
+all completed shared changes are now included in 1.0.17.
+
+Verified package **1.0.17+18**, source `d19f2fd3d2`:
+`output/mobile-test/renovision-test-1.0.17.apk`, alias `renovision-test.apk`.
+84,941,239 bytes; SHA256
+`9E4AE423009A1F6040203ACAD591A91B857381D6468D154FEDFD9D1DBC39E0E6`.
+Same package/certificate as 1.0.16; published 1.0.10–1.0.16 remain unchanged.
+**363 tests pass** (81s), clean analysis (16.9s), release web (48.1s) and Android
+(70.3s) builds pass. Public asset hashes, private-file exclusion, optional camera,
+permissions and 64-bit ELF/ZIP 16KB alignment pass. This is development signing,
+not a production Play bundle. Logs: `output/release17-tests.log`,
+`release17-analysis.log`, `release17-web.log` and
+`output/mobile-test/build-1.0.17.log`, `verification-1.0.17.log`.
+
+Actual 390×844 Chrome at unchanged localhost:7357: Help sample original/brief/result/
+board, compare, separate practice import, local finishes, reload and tester-access
+settings pass. Disposable browser profile only; normal profile/data unchanged.
+Evidence: `output/release17-browser.log`, `release17-*.png`.
+Android API 37 read-only emulator: final APK update, original/brief/result/board,
+compare, practice import, force-stop/restart and invitation settings pass. Existing
+projects survived the update. Evidence: `output/mobile-test/smoke-1.0.17.log`,
+`rv17-*.png`. This emulator uses 4KB pages; real 16KB runtime and physical S21
+acceptance remain open. No provider key or real paid AI request was used.
+
+Mocked tester/gateway tests cover durable quota reservations, duplicate rejection,
+expiry/revocation, endpoint/redirect restrictions, stripped upload metadata and
+personal provider-key/model/quality retention across trial restart. The HTTPS
+service is not deployed or funded; no invitations were generated or sent.
+
 ## Android acceptance, then iPhone parity — 22 November
 
 First accept the current v1 workflow on the owner's Samsung S21 after a requested
@@ -555,7 +605,7 @@ Earlier comparison-stage verification: 36 focused tests and all 283 tests pass; 
 clean; release web build passed (83.3 seconds). No live Gemini test, customer-key
 use, physical phone acceptance or new APK in this batch.
 
-Latest test APK: **1.0.16+17**, source `aba3ee136c`:
+Previous test APK (superseded by 1.0.17 above): **1.0.16+17**, source `aba3ee136c`:
 `output/mobile-test/renovision-test-1.0.16.apk`, alias `renovision-test.apk`.
 SHA256: `F70B4277E1259501EB76D09EB2316E9364B9913E83FC6576A87411840F1245FF`.
 Size: 83,668,388 bytes. Its application ID/signature match 1.0.15 for an in-place

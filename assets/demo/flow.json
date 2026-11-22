@@ -1,0 +1,9 @@
+{
+  "id": "kitchen-flow-v1",
+  "permission": "Owner explicitly authorised kitchen before/after images for inclusion in the app on 22 November 2026.",
+  "historicalPrompt": "You are working from a photograph of a real Kitchen.\nEXPLORATION: Show a realistic renovation idea while retaining the room identity and camera perspective.\nRequested design changes: Need to update and modernise.\nMUST RETAIN: Nothing. all to change. Also preserve all unrelated room features.\nKeep the original photograph's viewpoint, room proportions, and unselected regions consistent. Do not add extra windows, doors, walls, alcoves or furniture unless asked. Do not silently remove items outside the target area. If a sketch, crop or marked-up reference is attached, use it as guidance for the intended change, not as permission to redesign the surrounding room.\nProduce one photorealistic renovation concept. This is visual inspiration only, not a measured structural or construction plan.",
+  "model": "Unknown; manually imported historical result. No in-app API request is claimed.",
+  "ideaPrompt": "Example follow-up brief: explore charcoal and walnut cabinetry, pale stone benchtops, warm layered lighting, dining seating and tile or timber floor alternatives. Preserve the intended room identity; any layout change needs review.",
+  "ideaPromptStatus": "Illustrative follow-up reconstructed from the conversation; the original multi-turn transcript is unavailable.",
+  "notes": "Later idea board uses a different viewpoint and illustrative plan. It is not a same-view precision comparison, a measured plan or verified construction guidance. Original image metadata removed for the bundled copies."
+}

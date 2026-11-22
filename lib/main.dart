@@ -9,6 +9,7 @@ import 'store.dart';
 import 'app_appearance.dart';
 import 'feedback_widgets.dart';
 import 'feedback_storage.dart';
+import 'app_store_scope.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -123,15 +124,28 @@ class RenovisionApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FeedbackScope(
-      drafts: LocalFeedbackDrafts(store.records),
-      child: ValueListenableBuilder<AppThemeChoice>(
-        valueListenable: store.appearance,
-        builder: (context, choice, _) => MaterialApp(
-          title: 'RenoVision',
-          debugShowCheckedModeBanner: false,
-          theme: buildRenovisionTheme(choice: choice),
-          home: AppShell(store: store),
+    return AppStoreScope(
+      store: store,
+      openRoom: (context, roomId, designId) => Navigator.push(
+        context,
+        MaterialPageRoute<void>(
+          builder: (_) => WorkspaceScreen(
+            store: store,
+            roomId: roomId,
+            initialDesignId: designId,
+          ),
+        ),
+      ),
+      child: FeedbackScope(
+        drafts: LocalFeedbackDrafts(store.records),
+        child: ValueListenableBuilder<AppThemeChoice>(
+          valueListenable: store.appearance,
+          builder: (context, choice, _) => MaterialApp(
+            title: 'RenoVision',
+            debugShowCheckedModeBanner: false,
+            theme: buildRenovisionTheme(choice: choice),
+            home: AppShell(store: store),
+          ),
         ),
       ),
     );

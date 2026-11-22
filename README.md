@@ -1,4 +1,26 @@
-# Renovision AI
+# RenoVision
+
+Requested test release **1.0.17+18**: all recent shared-source changes, the
+owner-authorised kitchen offline replay/practice project, invitation-based trial
+access preparation, and visible branding cleanup. Help > Sample walkthroughs >
+Try the kitchen sample flow needs no AI key. The separate practice copy lets
+testers use real tools and saves without spending AI credits.
+
+See [Google Play release guide](docs/GOOGLE_PLAY_RELEASE.md) for launch gates,
+website/email choices, testing tasks, pricing and the optional test service.
+About $1/tester is a proposed budget; currency/hosting/funding remain pending.
+The service enforces request quotas, not a dollar balance, and is not deployed.
+
+Verified **1.0.17+18**, source `d19f2fd3d2`: **363 tests pass**, clean analysis
+(16.9s), release web build (48.1s) and Android build (70.3s). Actual 390×844 Chrome
+and Android API 37 emulator checks pass for sample stages, saved brief, comparison,
+practice import/reopen and tester settings, without a key or provider request.
+The APK is `output/mobile-test/renovision-test-1.0.17.apk`, 84,941,239 bytes;
+SHA256 `9E4AE423009A1F6040203ACAD591A91B857381D6468D154FEDFD9D1DBC39E0E6`.
+Install over the existing app; do not uninstall or clear data. Its package and
+certificate match 1.0.16. All published older APKs remain intact. Physical S21
+acceptance and actual 16KB-runtime testing remain open. Earlier dated source-only
+notes below are historical; their completed shared changes are now in 1.0.17.
 
 Release priority confirmed **22 November**: first reach an accepted Android
 release candidate on the owner's Samsung S21, then bring iPhone to the same
@@ -220,7 +242,7 @@ with Chrome rather than creating a disposable Flutter Chrome profile.
 The launcher resolves packages for the web target and avoids unnecessary desktop
 plugin symlinks without changing global Flutter settings. `-Release` runs the
 desktop browser app with production compilation; omit it for development debugging.
-The current desktop build is `74d73a34cf`, including all completed source features
+The current desktop build is `d19f2fd3d2`, including all completed source features
 listed above. A packaged native Windows companion remains a separate future stage.
 Settings > App build and saved data shows the build/address/counts and offers
 Check local saving. That confirms a read/write, not survival of a later crash.

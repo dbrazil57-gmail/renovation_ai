@@ -12,6 +12,8 @@ import 'secret_store.dart';
 import 'openai_internet.dart';
 import 'gemini_internet.dart';
 import 'ai_model_choices.dart';
+import 'tester_access.dart';
+import 'ai_photo_preparation.dart' show internetPhotos;
 export 'ai_model_choices.dart' show AiProvider;
 
 /// Supports a personal internet API key or the development relay. Provider keys
@@ -21,6 +23,9 @@ class AiService extends ChangeNotifier {
   final http.Client Function() clientFactory;
   final SecretStore keyStore;
   final SecretStore geminiKeyStore;
+  final SecretStore testerKeyStore;
+  bool isTester = false;
+  TesterAllowance? testerAllowance;
   AiProvider provider = AiProvider.openai;
 
   /// Deliberate testing aid; resets off on restart and is not exported.
@@ -34,7 +39,8 @@ class AiService extends ChangeNotifier {
   }
 
   int connectionRevision = 0;
-  String get providerLabel => provider.label;
+  String get providerLabel =>
+      isTester ? 'RenoVision test credits' : provider.label;
   final Map<String, Map<String, dynamic>> _providerSettings = {};
   SecretStore storeFor(AiProvider choice) =>
       choice == AiProvider.openai ? keyStore : geminiKeyStore;
@@ -44,6 +50,8 @@ class AiService extends ChangeNotifier {
   bool get keyRememberedOnDevice => storeFor(provider).persistent;
   Map<String, dynamic>? get rememberedConnection => !connected
       ? null
+      : isTester
+      ? {'mode': 'tester', 'url': _url, 'providerSettings': _providerSettings}
       : isDirect
       ? {
           'mode': 'direct',
@@ -84,6 +92,19 @@ class AiService extends ChangeNotifier {
           _providerSettings[choice.name] = _safeSettings(entry, choice);
         }
       }
+    }
+    if (saved['mode'] == 'tester') {
+      try {
+        final token = await testerKeyStore.read();
+        if (token == null) {
+          throw const AiFailure('Re-enter your test invitation in Settings.');
+        }
+        await connectTester(url: saved['url'] as String, invitation: token);
+      } catch (_) {
+        connectionNotice = 'Test access could not reconnect. Your saved projects and personal provider keys remain available.';
+        notifyListeners();
+      }
+      return;
     }
     if (saved['mode'] == 'direct') {
       provider = AiProvider.fromId(saved['provider']);
@@ -163,9 +184,11 @@ class AiService extends ChangeNotifier {
     http.Client Function()? clientFactory,
     SecretStore? keyStore,
     SecretStore? geminiKeyStore,
+    SecretStore? testerKeyStore,
   }) : clientFactory = clientFactory ?? http.Client.new,
        keyStore = keyStore ?? createSecretStore(),
-       geminiKeyStore = geminiKeyStore ?? createSecretStore(provider: 'gemini');
+       geminiKeyStore = geminiKeyStore ?? createSecretStore(provider: 'gemini'),
+       testerKeyStore = testerKeyStore ?? createSecretStore(provider: 'tester');
 
   Map<String, dynamic> _safeSettings(Map value, AiProvider choice) => {
     if (choice.imageModels.contains(value['model'])) 'model': value['model'],
@@ -260,6 +283,8 @@ class AiService extends ChangeNotifier {
     isDirect = true;
     _url = null;
     _pairingCode = null;
+    isTester = false;
+    testerAllowance = null;
     imageModels = images;
     imageQualities = const ['low', 'medium', 'high'];
     model = images.contains(previousModel)
@@ -346,6 +371,8 @@ class AiService extends ChangeNotifier {
       _url = uri.toString();
       provider = AiProvider.openai;
       isDirect = false;
+      isTester = false;
+      testerAllowance = null;
       _directKey = null;
       _preferredUrl = _url!;
       connectionNotice = null;
@@ -382,6 +409,22 @@ class AiService extends ChangeNotifier {
   }
 
   Future<void> disconnect() async {
+    if (isTester) {
+      if (activity.active) {
+        throw const AiFailure('Wait for the current AI request to finish.');
+      }
+      await testerKeyStore.delete();
+      isTester = false;
+      testerAllowance = null;
+      _url = _pairingCode = null;
+      model = quality = analysisModel = null;
+      imageModels = imageQualities = const [];
+      maxInputImages = 1;
+      connectionRevision++;
+      connectionNotice = 'Test invitation removed. Personal provider keys and projects are unchanged.';
+      notifyListeners();
+      return;
+    }
     await removeProviderKey(provider);
   }
 
@@ -396,7 +439,7 @@ class AiService extends ChangeNotifier {
         'The device could not remove the stored key. Try Remove key again in Settings.',
       );
     }
-    if (choice != provider) {
+    if (choice != provider || isTester) {
       notifyListeners();
       return;
     }
@@ -447,6 +490,7 @@ class AiService extends ChangeNotifier {
     if (!connected) {
       throw const AiFailure('Connect AI in Settings first.');
     }
+    _checkTesterAllowance(false);
     final chosenModel = imageModel ?? model!;
     final chosenQuality = imageQuality ?? quality!;
     if (!imageModels.contains(chosenModel) ||
@@ -494,24 +538,27 @@ class AiService extends ChangeNotifier {
     final client = clientFactory();
     try {
       onProgress?.call(AiStage.preparing);
+      final sources = isTester
+          ? await internetPhotos([image, ...supportingImages])
+          : [image, ...supportingImages];
       final body = jsonEncode({
-        'image': base64Encode(image),
-        'supportingImages': supportingImages.map(base64Encode).toList(),
+        if (isTester) 'requestId': testerRequestId(),
+        'image': base64Encode(sources.first),
+        'supportingImages': sources.skip(1).map(base64Encode).toList(),
         'prompt': prompt,
         'confirmed': true,
         'model': chosenModel,
         'quality': chosenQuality,
       });
       onProgress?.call(AiStage.waiting);
-      final response = await client
-          .post(
-            uri,
-            headers: {
-              'Authorization': 'Bearer $code',
-              'Content-Type': 'application/json',
-            },
-            body: body,
-          )
+      final send = http.Request('POST', uri)
+        ..followRedirects = false
+        ..headers.addAll({
+          'Authorization': 'Bearer $code',
+          'Content-Type': 'application/json',
+        })
+        ..body = body;
+      final response = await http.Response.fromStream(await client.send(send))
           .timeout(const Duration(seconds: 210));
       onProgress?.call(AiStage.reading);
       final data = _readResponse(response);
@@ -534,10 +581,18 @@ class AiService extends ChangeNotifier {
     } on AiFailure {
       rethrow;
     } on TimeoutException {
+      if (isTester) {
+        testerAllowance = null;
+        notifyListeners();
+      }
       throw const AiFailure(
         'The request timed out. It may still have been charged. Check provider usage before trying again; no automatic retry was made.',
       );
     } catch (_) {
+      if (isTester) {
+        testerAllowance = null;
+        notifyListeners();
+      }
       throw const AiFailure(
         'The connection was interrupted or the result could not be read. A charge may have occurred; check provider usage before trying again.',
       );
@@ -557,6 +612,7 @@ class AiService extends ChangeNotifier {
         'Connect an AI service with photo analysis in Settings first.',
       );
     }
+    _checkTesterAllowance(true);
     final inputs = [image, ...supportingImages];
     if (inputs.length > maxInputImages ||
         inputs.any((b) => b.isEmpty || b.length > 18 * 1024 * 1024) ||
@@ -588,22 +644,23 @@ class AiService extends ChangeNotifier {
     final client = clientFactory();
     try {
       onProgress?.call(AiStage.preparing);
+      final sources = isTester ? await internetPhotos(inputs) : inputs;
       final body = jsonEncode({
-        'image': base64Encode(image),
-        'supportingImages': supportingImages.map(base64Encode).toList(),
+        if (isTester) 'requestId': testerRequestId(),
+        'image': base64Encode(sources.first),
+        'supportingImages': sources.skip(1).map(base64Encode).toList(),
         'prompt': context,
         'confirmed': true,
       });
       onProgress?.call(AiStage.waiting);
-      final response = await client
-          .post(
-            Uri.parse(_url!).resolve('/analyse'),
-            headers: {
-              'Authorization': 'Bearer $_pairingCode',
-              'Content-Type': 'application/json',
-            },
-            body: body,
-          )
+      final send = http.Request('POST', Uri.parse(_url!).resolve('/analyse'))
+        ..followRedirects = false
+        ..headers.addAll({
+          'Authorization': 'Bearer $_pairingCode',
+          'Content-Type': 'application/json',
+        })
+        ..body = body;
+      final response = await http.Response.fromStream(await client.send(send))
           .timeout(const Duration(seconds: 110));
       onProgress?.call(AiStage.reading);
       final data = _readResponse(response);
@@ -618,6 +675,10 @@ class AiService extends ChangeNotifier {
     } on AiFailure {
       rethrow;
     } catch (_) {
+      if (isTester) {
+        testerAllowance = null;
+        notifyListeners();
+      }
       throw const AiFailure(
         'Room analysis was interrupted or could not be read. A charge may have occurred; check usage before retrying.',
       );
@@ -627,6 +688,24 @@ class AiService extends ChangeNotifier {
   }
 
   Map<String, dynamic> _readResponse(http.Response response) {
+    if (isTester) {
+      try {
+        final payload = jsonDecode(response.body);
+        if (payload is Map && payload['credits'] != null) {
+          testerAllowance = TesterAllowance.fromMap(payload['credits']);
+          notifyListeners();
+        }
+      } catch (_) {
+        /* Retain the last known balance; never infer a refund. */
+      }
+      if (response.statusCode == 401 ||
+          response.statusCode == 403 ||
+          response.statusCode == 402) {
+        throw const AiFailure(
+          'Test invitation expired, revoked or out of credits. Refresh access in Settings or use your own API key.',
+        );
+      }
+    }
     if (response.statusCode != 200) {
       final message = switch (response.statusCode) {
         401 => 'Connection code rejected. Reconnect in Settings using the relay code.',
@@ -644,4 +723,99 @@ class AiService extends ChangeNotifier {
     }
     return decoded;
   }
+
+  void _checkTesterAllowance(bool analysis) {
+    if (!isTester) return;
+    final credits = testerAllowance;
+    if (credits == null ||
+        credits.expires.isBefore(DateTime.now()) ||
+        (analysis ? credits.analyses : credits.designs) < 1) {
+      throw const AiFailure(
+        'No test credits available for this request. Refresh access in Settings.',
+      );
+    }
+  }
+
+  Future<void> connectTester({
+    required String url,
+    required String invitation,
+  }) async {
+    if (activity.active) {
+      throw const AiFailure('Wait for the current AI request to finish.');
+    }
+    final base = testerServiceUri(url), token = invitation.trim();
+    if (token.length < 24 ||
+        token.length > 512 ||
+        RegExp(r'\s').hasMatch(token)) {
+      throw const AiFailure(
+        'Enter the private invitation supplied by the app owner.',
+      );
+    }
+    final client = clientFactory();
+    try {
+      final request = http.Request('GET', base.resolve('/health'))
+        ..followRedirects = false
+        ..headers['Authorization'] = 'Bearer $token';
+      final response = await http.Response.fromStream(
+        await client.send(request),
+      ).timeout(const Duration(seconds: 10));
+      if (response.statusCode != 200) {
+        throw const AiFailure(
+          'Test invitation unavailable, expired or revoked.',
+        );
+      }
+      final data = jsonDecode(response.body);
+      if (data is! Map ||
+          data['service'] != 'renovision.tester.v1' ||
+          data['provider'] != 'OpenAI' ||
+          !AiProvider.openai.imageModels.contains(data['model']) ||
+          !const ['low', 'medium', 'high'].contains(data['quality']) ||
+          data['analysisModel'] is! String) {
+        throw const AiFailure(
+          'This is not a supported RenoVision test service.',
+        );
+      }
+      final balance = TesterAllowance.fromMap(data['credits']);
+      if (activity.active) {
+        throw const AiFailure(
+          'Wait for the running AI request; the connection has not changed.',
+        );
+      }
+      await testerKeyStore.write(token);
+      if (activity.active) {
+        throw const AiFailure(
+          'Invitation saved; reconnect after the running AI request finishes.',
+        );
+      }
+      _rememberProvider();
+      provider = AiProvider.openai;
+      isDirect = false;
+      isTester = true;
+      _directKey = null;
+      _url = base.toString();
+      _pairingCode = token;
+      model = data['model'];
+      quality = data['quality'];
+      analysisModel = data['analysisModel'];
+      imageModels = [model!];
+      imageQualities = [quality!];
+      maxInputImages = 7;
+      testerAllowance = balance;
+      connectionRevision++;
+      connectionNotice =
+          'Owner-funded test access. ${balance.summary}. Each confirmed analysis/design uses one allowance; multiple ideas use one per image.';
+      notifyListeners();
+    } on AiFailure {
+      rethrow;
+    } catch (_) {
+      throw const AiFailure(
+        'Test service unavailable. Check the HTTPS address and invitation. No AI request was made.',
+      );
+    } finally {
+      client.close();
+    }
+  }
+
+  Future<void> refreshTesterAllowance() =>
+      connectTester(url: _url!, invitation: _pairingCode!);
 }

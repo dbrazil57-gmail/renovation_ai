@@ -94,7 +94,7 @@ Future<Uint8List> _unlock((Uint8List, String) input) async {
       bytes.length > ProjectBackup.maxFileBytes ||
       bytes.length < 32) {
     throw const BackupFailure(
-      'Choose a supported protected Renovision backup.',
+      'Choose a supported protected RenoVision backup.',
     );
   }
   late final Map<String, dynamic> header;

@@ -17,6 +17,7 @@ class MainActivity : FlutterActivity() {
         FeedbackBridge(this).register(flutterEngine.dartExecutor.binaryMessenger)
         val vault = KeyVault(applicationContext)
         val geminiVault = KeyVault(applicationContext, "gemini")
+        val testerVault = KeyVault(applicationContext, "tester")
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "renovision/secrets")
             .setMethodCallHandler { call, result ->
                 try {
@@ -33,6 +34,12 @@ class MainActivity : FlutterActivity() {
                             result.success(null)
                         }
                         "deleteGeminiKey" -> { geminiVault.delete(); result.success(null) }
+                        "readTesterKey" -> result.success(testerVault.read())
+                        "writeTesterKey" -> {
+                            testerVault.write(call.argument<String>("key") ?: error("Missing invitation"))
+                            result.success(null)
+                        }
+                        "deleteTesterKey" -> { testerVault.delete(); result.success(null) }
                         else -> result.notImplemented()
                     }
                 } catch (_: Exception) {

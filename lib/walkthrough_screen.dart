@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import 'walkthrough_content.dart';
 import 'walkthrough_video.dart';
+import 'sample_flow.dart';
 
 Future<void> showAppWalkthroughs(BuildContext context) => Navigator.push<void>(
   context,
@@ -41,6 +42,11 @@ class AppWalkthroughsScreen extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              Card(child:ListTile(leading:const Icon(Icons.auto_awesome_motion_outlined),
+                title:const Text('Try the kitchen sample flow'),
+                subtitle:const Text('Real before/after, saved brief and later ideas · offline replay'),
+                trailing:const Icon(Icons.play_circle_outline),
+                onTap:()=>Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>const SampleFlowScreen())))),
               ClipRRect(
                 borderRadius: BorderRadius.circular(14),
                 child: Image.asset(

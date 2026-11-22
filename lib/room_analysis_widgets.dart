@@ -109,7 +109,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'These photos and your room preferences will be sent to $providerLabel. API charges apply. The AI will describe the room, flag uncertainties and draft a prompt. It will not generate a design image in this step. Originals stay saved in the app.',
+                    'These photos and your room preferences will be sent to $providerLabel. ${widget.store.ai.isTester ? 'This uses one owner-funded analysis allowance; the test service forwards the inputs to OpenAI.' : 'API charges apply.'} The AI will describe the room, flag uncertainties and draft a prompt. It will not generate a design image in this step. Originals stay saved in the app.',
                   ),
                   const SizedBox(height: 8),
                   const Text(
