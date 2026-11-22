@@ -1,5 +1,33 @@
 # Product and research reference
 
+## Saving and design-quality regroup — 22 November
+
+Use Save project for the working document. Backup exports the same contents as a
+fixed snapshot and remains optional; duplicate creates a separate in-app branch.
+Restore imports a separate copy. No merge is implemented. Browser credentials
+remain memory-only across app navigation and are cleared on page reload; Android
+vault credentials and all provider settings stay outside project exports.
+
+The actual latest exported kitchen image updates surfaces/flooring, declutters,
+removes the telephone and coordinates appliances, but retains a dated extractor
+silhouette and a fairly uniform beige material treatment. The filename indicates
+Sunburst 2.6 Medium; a weaker model is not established as the cause. A controlled
+same-photo/brief/model comparison is needed, including High quality and the richer
+current design plan. APK/browser differences may include build, choices or source
+image; platform alone has not been shown to change provider quality.
+
+The latest owner project file was empty despite reported success. A recovered
+older Office/Kitchen project is preserved separately and is not the latest test.
+Fresh testing must create a separate project without deleting any previous work.
+The full ChatGPT web kitchen transcript was not found locally; supplied excerpts
+do not establish which tools that conversation used.
+
+Online research is a possible separate source of dated style/product references;
+current generation does not search automatically or verify appliances against a
+live catalogue. Cost per request/room could be estimated from returned usage and
+dated model rates. The app does not currently track provider balance or dollars
+remaining. These remain future work, not hidden background behaviour.
+
 ## Design proposal enhancement — 22 November
 
 The preferred kitchen/idea board was created in a ChatGPT web conversation, not

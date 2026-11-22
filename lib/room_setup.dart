@@ -14,6 +14,7 @@ import 'room_analysis_widgets.dart';
 import 'room_draft.dart';
 import 'room_photos.dart';
 import 'room_prompt.dart';
+import 'design_mode_widgets.dart';
 import 'store.dart';
 import 'image_viewer.dart';
 import 'design_delete_widgets.dart';
@@ -374,22 +375,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                         title: '${current.displayName} · original',
                         height: 220,
                       ),
-                    SegmentedButton<bool>(
-                      segments: const [
-                        ButtonSegment(
-                          value: false,
-                          label: Text('Whole-room renovation'),
-                        ),
-                        ButtonSegment(
-                          value: true,
-                          label: Text('Precise correction'),
-                        ),
-                      ],
-                      selected: {draft.preciseEdit},
-                      onSelectionChanged: busy
-                          ? null
-                          : (values) => draft.setPrecise(values.first),
-                    ),
+                    DesignModeControls(draft: draft, enabled: !busy),
                     const SizedBox(height: 12),
                     TextField(
                       key: ValueKey('setup-goal-${draft.preciseEdit}'),

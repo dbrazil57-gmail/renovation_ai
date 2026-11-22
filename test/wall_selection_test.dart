@@ -1,4 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+
+import 'dart:typed_data';
+
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
@@ -7,6 +10,25 @@ import 'package:renovision_ai/local_paint_screen.dart';
 import 'package:renovision_ai/wall_selection.dart';
 
 void main() {
+  test('extending a selection grows one pixel, clips edges and preserves its source', () {
+    final region = PaintRegion(
+      width: 5,
+      height: 5,
+      bits: Uint8List.fromList([1, 0, 0, 0]),
+    );
+    final extended = extendWallSelectionEdge(region);
+    for (var y = 0; y < 5; y++) {
+      for (var x = 0; x < 5; x++) {
+        expect(extended.contains(x, y), x <= 1 && y <= 1);
+        expect(region.contains(x, y), x == 0 && y == 0);
+      }
+    }
+    expect(extended.sensitivity, region.sensitivity);
+    expect(
+      PaintRegion.fromMap(extended.toMap()).bits,
+      orderedEquals(extended.bits),
+    );
+  });
   final image = img.Image(width: 100, height: 70, numChannels: 4);
   for (final p in image) {
     final tone = p.x == 49 || p.x == 50 ? 30 : 180;
@@ -240,6 +262,23 @@ void main() {
       await ready(tester, () => saved?.surfaces.length == 1);
       expect(saved!.surfaces.single.marks.single.kind, PaintMarkKind.region);
       final selection = saved!.surfaces.single.marks.single.region!.bits;
+      await Scrollable.ensureVisible(
+        tester.element(find.text('Extend selection edge')),
+        alignment: .5,
+      );
+      await quiet(tester);
+      await tester.tap(find.text('Extend selection edge'));
+      await quiet(tester);
+      expect(
+        saved!.surfaces.single.marks.single.region!.bits,
+        isNot(orderedEquals(selection)),
+      );
+      await tester.tap(find.byTooltip('Undo paint'));
+      await quiet(tester);
+      expect(
+        saved!.surfaces.single.marks.single.region!.bits,
+        orderedEquals(selection),
+      );
       Future<void> colour(String hex) async {
         await quiet(tester);
         await tester.ensureVisible(find.text('Custom colour'));

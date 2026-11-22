@@ -110,3 +110,5 @@ service-account*.json
 *.tester-ledger.json
 *invitations.local.json
 *tester-ledger.local.json
+RenoVision-browser-recovery.json
+*.renovision-recovery.json

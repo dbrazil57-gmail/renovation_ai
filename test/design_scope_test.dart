@@ -80,7 +80,11 @@ void main() {
   Future<void> showRoom(WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: WorkspaceScreen(store: store, roomId: room.id),
+        home: WorkspaceScreen(
+          store: store,
+          roomId: room.id,
+          startInPrecision: store.roomById(room.id)!.preciseEdit,
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -102,9 +106,9 @@ void main() {
   }
 
   Future<void> openAdvanced(WidgetTester tester, {bool up = false}) async {
-    final control = find.text('Partial');
+    final control = find.byKey(const ValueKey('renovation-extent'));
     await reach(tester, control, up: up);
-    await tester.tap(control);
+    if (tester.widget<SwitchListTile>(control).value) await tester.tap(control);
     await tester.pumpAndSettle();
   }
 

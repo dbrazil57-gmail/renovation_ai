@@ -56,15 +56,13 @@ class RenovationScopeControls extends StatelessWidget {
               message: 'Full room includes coordinated finishes, flooring, lighting and visible room fittings. Saved Keep choices and protected features still win. Partial changes only your selected items and written requests. Precise correction in Refine is for one focused change to an existing design.',
             ),
             const SizedBox(height: 8),
-            SegmentedButton<bool>(
+            SwitchListTile(
               key: const ValueKey('renovation-extent'),
-              segments: const [
-                ButtonSegment(value: true, label: Text('Full room (all)')),
-                ButtonSegment(value: false, label: Text('Partial')),
-              ],
-              selected: {draft.fullRenovation},
-              onSelectionChanged: (values) =>
-                  draft.setFullRenovation(values.first),
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Whole room · include all usual updates'),
+              subtitle: const Text('Turn off to choose individual changes.'),
+              value: draft.fullRenovation,
+              onChanged: draft.setFullRenovation,
             ),
             const SizedBox(height: 8),
             Text(
@@ -101,7 +99,7 @@ class RenovationScopeControls extends StatelessWidget {
                 title: const Text('Included items & saved exceptions'),
                 tilePadding: EdgeInsets.zero,
                 children: [
-                  RoomItemControls(draft: draft, enabled: false),
+                  RoomItemControls(draft: draft),
                   Text(
                     [
                       for (final entry in renovationScope.entries.where(
@@ -114,7 +112,7 @@ class RenovationScopeControls extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Choose Partial to adjust individual items. Fixed equipment is removed only when explicitly requested.',
+                    'Keep existing makes an exception to the whole-room design. Turn off Whole room to select individual surfaces and updates.',
                   ),
                 ],
               )

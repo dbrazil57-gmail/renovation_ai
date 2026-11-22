@@ -1,5 +1,61 @@
 # Testing and storage reference
 
+## Fresh kitchen acceptance — current batch, 22 November
+
+Keep **http://localhost:7357/** and your normal browser profile. Do not clear
+storage or delete older projects. After this build is ready:
+
+1. **Open project**:
+   `output/test-projects/RenoVision-fresh-kitchen.renovision.json`. This separate
+   project has the authorised original, Modern/Contemporary and Charcoal & walnut;
+   no old analysis/designs/credentials.
+2. **Save project as** to a new name in Renos. Confirm nonzero size; close/reopen
+   that file and check the photo/choices before paid AI. Preserve the empty export.
+3. Connect privately in Settings. Switching all four workspace tabs and reopening
+   Settings must retain the connection. Browser reload clears its session key by
+   design; Android stores credentials separately in its vault.
+4. Check New design, whole room and compact palettes. Turn whole room off for
+   individual changes; Keep exceptions remain editable when it is on. Other
+   photos provide angles/context; the working photo controls the output viewpoint.
+5. Confirm one analysis. Observations describe the photo; the editable plan combines
+   facts with current choices/instructions. Apply this plan when generating controls
+   inclusion in the generation prompt; it does not mean an image already exists.
+6. Preview, then explicitly confirm a generation. For quality comparison keep the
+   same photo/brief/model. Showcase concept explicitly chooses High and may cost
+   more. Record visual changes, not just request success.
+7. Save/reopen and check the new version, analysis and choices. Try local splashback
+   scale and wall edge extension/Undo. Tiles remain approximate; AI polish is
+   optional and separately confirmed.
+
+**Autosave** keeps local room choices/instructions and updates a connected reusable
+project file. Imports and completed designs persist when added, even with Autosave
+off. Leaving a room saves pending edits; closing a browser during pending work is
+not equivalent. Reopen browser file connections after restart. **Backup snapshot**
+contains the same project at that moment and does not follow later edits.
+**Duplicate project** creates another in-app project. **Restore** adds a copy;
+it never merges or overwrites. **Open** resumes identical data or offers conflict
+choices. Project files exclude AI credentials and local connection settings.
+
+Browser file verification: compile `tool/verify_browser_file_save.dart` to JS and
+serve over localhost in an isolated Chrome profile. It exercises production code
+with real origin-private handles: 16 MB write/close/every-byte read-back, then a
+no-op stream leaving zero bytes that must fail. It does not establish OneDrive
+behaviour. The initial Flutter browser harness stalled loading CanvasKit and is
+not counted as passed; native tests do not replace the browser filesystem check.
+
+Source `68527c827a`: **374 tests pass** (80s), clean analysis (13.5s), release web
+build (46.9s). Evidence: `output/current-batch-tests-final.log`,
+`current-batch-analysis-clean.log`, `current-batch-web.log`,
+`browser-file-checks.log` and `current-batch-browser.log`. The actual app Open/Save
+path writes the complete kitchen fixture to a real origin-private file, through
+a simulated picker in a disposable Chrome profile, then retains the project after
+app reload. Deeper workspace automation stalled after entering Refine; native
+tests cover those controls, with manual Chrome acceptance still required. Its
+attempt is retained in `output/current-batch-browser-workspace-attempt.log`.
+No owner key/provider call,
+normal-profile modification or new APK is involved. This is not yet acceptance
+of the owner's OneDrive/system file picker.
+
 ## Prompt enhancement acceptance — after 1.0.17, 22 November
 
 In Chrome, keep the same localhost:7357 address and normal profile. Select an

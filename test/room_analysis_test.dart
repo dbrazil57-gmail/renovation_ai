@@ -215,7 +215,7 @@ void main() {
       expect(store.imageFor(room.originalId), orderedEquals(image));
       final field = find.widgetWithText(
         TextField,
-        'AI design proposal (editable)',
+        'Suggested design plan (editable)',
       );
       await ensureFocusVisible(tester, field);
       await tester.enterText(
@@ -223,7 +223,7 @@ void main() {
         'Edited AI prompt: retain the wide window.',
       );
       await tester.pump(const Duration(milliseconds: 700));
-      final use = find.text('Use AI design proposal');
+      final use = find.text('Apply this plan when generating');
       await ensureFocusVisible(tester, use);
       await tester.pumpAndSettle();
       await tester.tap(use);

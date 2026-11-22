@@ -50,7 +50,7 @@ List<DesignConcept> planDesignConcepts({
   const directions = [
     (
       'Clean & architectural',
-      'Create a restrained architectural scheme: broad uninterrupted planes, low visual texture, crisp integrated detailing and a calm light material balance. Give authorised cabinetry or main furnishings and surfaces a coherent minimal treatment within the selected style. Use integrated or linear lighting where lighting changes are allowed.',
+      'Create a complete designer architectural scheme: confident main materials, refined crafted detailing, considered joinery or furnishings and integrated lighting where permitted. Give the authorised surfaces and fittings a coordinated new design, with a strong focal treatment and quieter supporting finishes. Refine a minimalist style through proportions and details; a simple recolour with old-looking fittings is insufficient.',
     ),
     (
       'Warm & tactile',

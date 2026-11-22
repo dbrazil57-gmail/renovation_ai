@@ -10,6 +10,13 @@ enum LocalSurfaceKind { wall, floor, splashback }
 
 enum LocalFinish { paint, squareTiles, rectangleTiles, brickTiles }
 
+double suggestedTileSize(LocalSurfaceKind kind, LocalFinish finish) =>
+    kind == LocalSurfaceKind.splashback
+    ? .045
+    : kind == LocalSurfaceKind.wall
+    ? (finish == LocalFinish.brickTiles ? .055 : .085)
+    : .16;
+
 const localFinishLabels = {
   LocalFinish.paint: 'Paint colour',
   LocalFinish.squareTiles: 'Square tiles',
@@ -275,7 +282,7 @@ class LocalPaintRecipe {
           finish == null ||
           tileSize is! num ||
           !tileSize.isFinite ||
-          tileSize < .04 ||
+          tileSize < .015 ||
           tileSize > .5 ||
           tileAngle is! num ||
           !tileAngle.isFinite ||
@@ -386,7 +393,7 @@ String paintRefinementPrompt(LocalPaintRecipe recipe) {
   final tiles = targets.any((surface) => surface.finish != LocalFinish.paint);
   return 'The selected image is a rough local ${tiles ? 'finish preview with paint/tile choices' : 'paint preview'}. Polish the selected finishes together in one photorealistic correction using these choices: $colours. '
       'Clean uneven boundaries, halos and small missed patches on those same selected surfaces. Integrate natural material texture, light and shadows with the approved design. '
-      '${tiles ? 'Refine tile perspective, grout alignment and material realism within the selected floor/wall/splashback areas. The local pattern scale and angle are visual guidance, not measured installation dimensions. ' : ''}'
+      '${tiles ? 'Refine tile perspective, grout alignment and material realism within the selected floor/wall/splashback areas. Use realistic wall/splashback tile proportions and fine joints rather than copying an oversized screen-space grid literally. The local pattern scale and angle are visual guidance, not measured installation dimensions. ' : ''}'
       'Keep all unselected surfaces, ceilings, trim, windows, doors, furniture, appliances, artwork, layout and camera viewpoint unchanged. A floor may change only if explicitly listed among the selected targets above. '
       'Do not redesign the approved concept, reintroduce old finishes, add decoration or recolour unrelated surfaces. Hex colours are approximate visual references, not exact paint or tile-product matches.';
 }
@@ -508,6 +515,8 @@ PaintRenderResult renderLocalPaint(PaintRenderInput input) {
     final tileWidth = surface.tileSize * math.min(source.width, source.height);
     final tileHeight =
         tileWidth * (surface.finish == LocalFinish.squareTiles ? 1 : .5);
+    final groutHalfWidth = (math.min(source.width, source.height) * .0006)
+        .clamp(.35, 1.5);
     final mask = img.Image(
       width: source.width,
       height: source.height,
@@ -620,7 +629,7 @@ PaintRenderResult renderLocalPaint(PaintRenderInput input) {
           math.min(fu, 1 - fu) * tileWidth,
           math.min(fv, 1 - fv) * tileHeight,
         );
-        if (edge < tileWidth * .018) targetRgb = surface.groutRgb;
+        if (edge < groutHalfWidth) targetRgb = surface.groutRgb;
       }
       final r = mix(target.r, tiled ? (targetRgb >> 16) & 255 : red),
           g = mix(target.g, tiled ? (targetRgb >> 8) & 255 : green),

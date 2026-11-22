@@ -18,6 +18,33 @@ class WallSelectionResult {
   WallSelectionResult(this.region, this.pixels);
 }
 
+/// Explicit one-pixel expansion of a reviewed mask. The original is immutable;
+/// the editor records this as an undoable draft change, not a source-image edit.
+PaintRegion extendWallSelectionEdge(PaintRegion region) {
+  final bits = Uint8List.fromList(region.bits);
+  for (var y = 0; y < region.height; y++) {
+    for (var x = 0; x < region.width; x++) {
+      if (!region.contains(x, y)) continue;
+      for (var dy = -1; dy <= 1; dy++) {
+        for (var dx = -1; dx <= 1; dx++) {
+          final xx = x + dx, yy = y + dy;
+          if (xx < 0 || yy < 0 || xx >= region.width || yy >= region.height) {
+            continue;
+          }
+          final index = yy * region.width + xx;
+          bits[index >> 3] |= 1 << (index & 7);
+        }
+      }
+    }
+  }
+  return PaintRegion(
+    width: region.width,
+    height: region.height,
+    bits: bits,
+    sensitivity: region.sensitivity,
+  );
+}
+
 /// Connected colour/edge selection, not semantic wall recognition. The user
 /// checks the visible boundary; similar adjacent surfaces can need adjustment.
 WallSelectionResult selectWallRegion(WallSelectionInput input) {

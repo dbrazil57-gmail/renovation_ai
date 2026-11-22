@@ -72,9 +72,9 @@ void main() {
         'Replace appliances and floor',
       );
       draft.changes.text = 'Include latest unsaved update';
-      await tester.tap(find.byTooltip('Save as options'));
+      await tester.tap(find.byTooltip('Copy and export options'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('New project copy…'));
+      await tester.tap(find.text('Duplicate project…'));
       await tester.pumpAndSettle();
       expect(copy!.name, 'Kitchen alternative');
       expect(copy!.id, isNot(room.projectId));

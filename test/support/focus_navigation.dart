@@ -6,10 +6,10 @@ Future<void> _openAnalysisDetails(WidgetTester tester, Finder target) async {
   if (target.evaluate().isNotEmpty) return;
   final details = find.widgetWithText(
     ExpansionTile,
-    'Room observations and design proposal',
+    'Room observations and design plan',
   );
   if (details.evaluate().isNotEmpty) {
-    final heading = find.text('Room observations and design proposal');
+    final heading = find.text('Room observations and design plan');
     await tester.ensureVisible(heading);
     await tester.pumpAndSettle();
     await tester.tap(heading);

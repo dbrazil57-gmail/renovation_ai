@@ -216,13 +216,13 @@ class _ProjectBackupCardState extends State<ProjectBackupCard> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Keep a copy of this project',
+                  'Backup snapshot (optional)',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
               const HelpIcon(
                 title: 'Project backup',
-                message: 'Includes original photos, every saved version, instructions, favourites and approved baselines. Keep the backup private; it contains your photos and their original metadata.',
+                message: 'Save project maintains your working project file. A backup snapshot contains the same rooms, photos, designs and choices at this moment, but future edits do not update it. Restore adds a separate project; it does not overwrite or merge. AI keys are excluded. Keep the file private; original photo metadata is included.',
               ),
             ],
           ),
@@ -232,7 +232,7 @@ class _ProjectBackupCardState extends State<ProjectBackupCard> {
                 ? null
                 : () => _backup(),
             icon: const Icon(Icons.download),
-            label: Text(busy ? 'Preparing backup…' : 'Back up project'),
+            label: Text(busy ? 'Preparing backup…' : 'Export backup snapshot'),
           ),
           OutlinedButton.icon(
             onPressed: busy || !widget.store.files.supported
@@ -419,6 +419,37 @@ class ProjectFileControls extends StatefulWidget {
 class _ProjectFileControlsState extends State<ProjectFileControls> {
   bool busy = false;
   String? error;
+  Future<void> downloadCopy() async {
+    if (busy) return;
+    setState(() {
+      busy = true;
+      error = null;
+    });
+    try {
+      if (widget.beforeSave != null && !await widget.beforeSave!()) {
+        throw const BackupFailure(
+          'Room changes could not be saved. Retry local saving first.',
+        );
+      }
+      final project = widget.store.projectById(widget.projectId)!;
+      final bytes = widget.store.backupFor(widget.projectId).encode();
+      final result = await widget.store.files.save(
+        bytes,
+        name: '${exportName(project.name)}.renovision.json',
+        mimeType: 'application/json',
+      );
+      if (mounted) setState(() => error = saveMessage(result));
+    } catch (failure) {
+      if (mounted) {
+        setState(
+          () => error = failure is BackupFailure ? failure.message : 'A separate project copy could not be saved. Local work is retained.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
   Future<void> save({bool saveAs = false}) async {
     setState(() {
       busy = true;
@@ -500,6 +531,12 @@ class _ProjectFileControlsState extends State<ProjectFileControls> {
                     ),
               ),
             ),
+            if (kIsWeb && error != null)
+              TextButton.icon(
+                onPressed: busy ? null : downloadCopy,
+                icon: const Icon(Icons.download_outlined),
+                label: const Text('Download project copy'),
+              ),
           ],
         ),
       ),

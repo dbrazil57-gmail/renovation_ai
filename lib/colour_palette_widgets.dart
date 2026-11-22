@@ -11,7 +11,8 @@ import 'store.dart';
 
 class PaletteSwatches extends StatelessWidget {
   final DesignPalette palette;
-  const PaletteSwatches({super.key, required this.palette});
+  final double height;
+  const PaletteSwatches({super.key, required this.palette, this.height = 18});
   @override
   Widget build(BuildContext context) => Row(
     children: [
@@ -20,7 +21,7 @@ class PaletteSwatches extends StatelessWidget {
           child: Tooltip(
             message: '${colour.surface}: ${colour.name} ${colour.hex}',
             child: Container(
-              height: 18,
+              height: height,
               decoration: BoxDecoration(
                 color: Color(0xFF000000 | colour.rgb),
                 border: Border.all(color: Colors.black12),
@@ -73,7 +74,7 @@ class ColourPalettePicker extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           onTap: () => onSelected(id),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(6),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -83,9 +84,9 @@ class ColourPalettePicker extends StatelessWidget {
                     Expanded(
                       child: Text(
                         title,
-                        maxLines: horizontal ? 2 : null,
-                        overflow: horizontal ? TextOverflow.ellipsis : null,
-                        style: Theme.of(context).textTheme.titleSmall,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
                     Icon(
@@ -94,11 +95,11 @@ class ColourPalettePicker extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 if (palette != null)
-                  PaletteSwatches(palette: palette)
+                  PaletteSwatches(palette: palette, height: 12)
                 else if (horizontal)
-                  const SizedBox(height: 18)
+                  const SizedBox(height: 12)
                 else
                   Text(
                     'Leave colour choices open.',
@@ -118,7 +119,7 @@ class ColourPalettePicker extends StatelessWidget {
     builder: (context, bounds) {
       if (horizontal) {
         return SizedBox(
-          height: 68 + MediaQuery.textScalerOf(context).scale(24) * 2,
+          height: 50 + MediaQuery.textScalerOf(context).scale(14) * 2,
           child: Scrollbar(
             controller: scrollController,
             thumbVisibility: scrollController != null,
@@ -131,7 +132,7 @@ class ColourPalettePicker extends StatelessWidget {
               itemBuilder: (context, index) {
                 final palette = index == 0 ? null : designPalettes[index - 1];
                 return SizedBox(
-                  width: 150,
+                  width: 124,
                   child: _choice(
                     context,
                     id: palette?.id ?? '',
@@ -144,9 +145,8 @@ class ColourPalettePicker extends StatelessWidget {
           ),
         );
       }
-      final width = bounds.maxWidth >= 230
-          ? (bounds.maxWidth - 8) / 2
-          : bounds.maxWidth;
+      final columns = (bounds.maxWidth / 130).floor().clamp(1, 4);
+      final width = (bounds.maxWidth - 8 * (columns - 1)) / columns;
       return Wrap(
         spacing: 8,
         runSpacing: 8,

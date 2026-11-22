@@ -142,7 +142,11 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
-          home: WorkspaceScreen(store: store, roomId: room.id),
+          home: WorkspaceScreen(
+            store: store,
+            roomId: room.id,
+            startInPrecision: true,
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -331,7 +335,11 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
-          home: WorkspaceScreen(store: store, roomId: room.id),
+          home: WorkspaceScreen(
+            store: store,
+            roomId: room.id,
+            startInPrecision: true,
+          ),
         ),
       );
       await tester.pumpAndSettle();

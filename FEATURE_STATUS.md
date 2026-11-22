@@ -1,5 +1,26 @@
 # Renovision feature status
 
+## Current position — 22 November
+
+| Area | Current position |
+| --- | --- |
+| Core app | Projects/rooms, multiple photos, analysis, in-app generation, manual import, styles/palettes, history, approval, compare, crop/sketch, local finishes, camera/Live and image export/share are implemented. |
+| Current batch | New/Partial/Precise, smaller palettes, editable whole-room Keep exceptions, clearer analysis/plan/manual handoff, first-design inspiration and stronger fitting prompts. Verification recorded below. |
+| Saving | Local storage and project files exist. Latest owner OneDrive export was empty. Added size verification and download fallback; real destination acceptance remains open. |
+| Save meanings | Autosave: local edits plus connected working file; Save project: working file; backup: fixed snapshot; duplicate: separate in-app project; restore: separate copy. No merge. Keys are excluded. |
+| Paint/tiles | Persistent selections/layers, recolour, delete/undo and optional AI polish. New edge extension and smaller tile/grout defaults. Perspective remains approximate. |
+| AI quality | Photo facts and the optional current plan feed generation. Richer prompting is implemented; paid comparison is still required. No online search or current product catalogue. |
+| Platforms | One shared Flutter app. Chrome is the development preview; published APK stays 1.0.17. S21 acceptance, iPhone parity and native desktop packaging remain separate. |
+| Launch | No public release. Tester hosting/funding, privacy/report delivery and store testing/account gates remain open. |
+
+Current source `68527c827a`: **374 tests pass**, clean analysis (13.5s), release web
+build (46.9s). Production browser bridge: real 16 MB write/every-byte read-back and
+false-success empty-file rejection pass. Actual app Open/Save writes a complete
+372 KB kitchen fixture and retains it after app reload in an isolated profile.
+Deeper workspace browser automation stalled; native tests cover its controls.
+Real OneDrive-provider acceptance
+and a controlled paid design comparison are still outstanding.
+
 **Prompt enhancement after 1.0.17, 22 November:** analysis prepares a specific
 design proposal with material assignments, main/task lighting, fittings, staging
 and retained features. Newly returned current proposals are enabled for normal

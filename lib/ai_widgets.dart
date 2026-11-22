@@ -275,6 +275,15 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
               Text(
                 'Connected to ${widget.ai.providerLabel} · ${widget.ai.model} · ${imageQualityLabel(widget.ai.provider, widget.ai.quality!)}',
               ),
+              if (widget.ai.isDirect)
+                HelpHeading(
+                  title: widget.ai.keyRememberedOnDevice
+                      ? 'API key saved securely on this device'
+                      : 'Browser connection · until page reload',
+                  message: widget.ai.keyRememberedOnDevice
+                      ? 'The key is stored separately from project files. Saving or discarding a project does not remove it.'
+                      : 'Switching Room, Style, Refine, Ideas or Settings keeps this connection. Reloading or closing this browser page clears the session key, so you must enter it again. Save project does not save an API key. A browser password-manager Save / Don\'t save choice is separate from RenoVision.',
+                ),
               Text(
                 widget.ai.supportsAnalysis
                     ? 'Room photo analysis: ${widget.ai.analysisModel}'
@@ -287,7 +296,7 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                   runSpacing: 4,
                   children: [
                     for (final preset in [
-                      ('Room design', false, 'medium'),
+                      ('Showcase concept', false, 'high'),
                       ('Quick ideas', true, 'low'),
                       ('Final detail', false, 'high'),
                     ])

@@ -163,11 +163,11 @@ const roomFeatures = <String, Map<String, RoomFeature>>{
     'kitchen_appliances': (label: 'All kitchen appliances', replacement: ''),
     'kitchen_oven': (
       label: 'Oven',
-      replacement: 'Replace the existing oven with a visibly new modern built-in oven in the same position.',
+      replacement: 'Replace the existing oven with a visibly upgraded contemporary built-in oven in the same position: refined flush fronts, current integrated controls and detailing coordinated with the selected style.',
     ),
     'kitchen_microwave': (
       label: 'Microwave',
-      replacement: 'Replace the existing microwave with a visibly new modern equivalent in the same position.',
+      replacement: 'Replace the existing microwave with a contemporary built-in model, refined fronts and discreet current controls coordinated with the oven, in the same position.',
     ),
     'kitchen_cooktop': (
       label: 'Cooktop',
@@ -175,7 +175,7 @@ const roomFeatures = <String, Map<String, RoomFeature>>{
     ),
     'kitchen_extractor': (
       label: 'Extractor / rangehood',
-      replacement: 'Replace the extractor/rangehood itself with a visibly new modern unit. Keep its position and change surrounding cupboards only if requested.',
+      replacement: 'Replace the extractor/rangehood with a distinctly contemporary design: a refined concealed/slim unit or well-proportioned feature hood that suits the authorised cabinetry. Keep its position and change surrounding cupboards only if requested; the old bulky or dated hood silhouette should not be copied as the new design.',
     ),
     'kitchen_fridge': (
       label: 'Fridge',

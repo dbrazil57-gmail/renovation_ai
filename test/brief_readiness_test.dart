@@ -13,6 +13,7 @@ import 'package:renovision_ai/screens.dart';
 import 'package:renovision_ai/store.dart';
 
 import 'support/memory_box.dart';
+import 'support/focus_navigation.dart';
 
 class BriefRecords extends MemoryBox {
   bool failReview = false;
@@ -205,6 +206,7 @@ void main() {
         expectScore(75);
         expect(imageRequests, 0);
         expect(store.briefGuidanceReviewed(room.id, precise: false), false);
+        await ensureFocusVisible(tester, find.text('Precise correction'));
         await tester.tap(find.text('Precise correction'));
         await tester.pumpAndSettle();
         expectScore(60);

@@ -11,13 +11,17 @@ class RoomItemControls extends StatelessWidget {
   Widget _choice(String id, RoomFeature feature) {
     final value = itemChoice(
       id,
-      enabled ? draft.roomItemChoices : draft.effectiveRoomItemChoices,
+      draft.fullRenovation
+          ? draft.effectiveRoomItemChoices
+          : draft.roomItemChoices,
       draft.scopeIds.toList(),
     );
     final inherited = isIndividualAppliance(id)
         ? itemChoice(
             '${id.split('_').first}_appliances',
-            enabled ? draft.roomItemChoices : draft.effectiveRoomItemChoices,
+            draft.fullRenovation
+                ? draft.effectiveRoomItemChoices
+                : draft.roomItemChoices,
             draft.scopeIds.toList(),
           )
         : '';
@@ -32,10 +36,18 @@ class RoomItemControls extends StatelessWidget {
             ? 'Follows all appliances: ${inherited == 'keep' ? 'Keep existing' : 'Replace'}'
             : null,
       ),
-      items: const [
-        DropdownMenuItem(value: '', child: Text('No preference')),
-        DropdownMenuItem(value: 'keep', child: Text('Keep existing')),
-        DropdownMenuItem(value: 'replace', child: Text('Replace / update')),
+      items: [
+        DropdownMenuItem(
+          value: '',
+          child: Text(
+            draft.fullRenovation ? 'Use whole-room default' : 'No preference',
+          ),
+        ),
+        const DropdownMenuItem(value: 'keep', child: Text('Keep existing')),
+        const DropdownMenuItem(
+          value: 'replace',
+          child: Text('Replace / update'),
+        ),
       ],
       onChanged: enabled
           ? (value) => draft.setItemChoice(id, value ?? '')
@@ -74,8 +86,10 @@ class RoomItemControls extends StatelessWidget {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 6),
-        const Text(
-          'Keep existing preserves that item. Replace / update requests a new appearance. No preference follows an appliance group choice, if set. Only visible items are changed.',
+        Text(
+          draft.fullRenovation
+              ? 'Visible items are included. Choose Keep existing for anything you want to retain.'
+              : 'Keep existing preserves an item; Replace / update changes it. No preference follows the appliance group, if set.',
         ),
         const SizedBox(height: 14),
         if (group.isNotEmpty) ...[

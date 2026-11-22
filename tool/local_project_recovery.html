@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RenoVision local project recovery</title>
+<style>
+body{font:16px/1.5 system-ui,sans-serif;max-width:680px;margin:8vh auto;padding:20px;color:#252821;background:#f6f5ef}
+main{background:white;border-radius:18px;padding:24px}h1{font-size:24px}button{font:inherit;background:#676c3c;color:white;border:0;border-radius:24px;padding:12px 20px;cursor:pointer}button:disabled{opacity:.5}#status{white-space:pre-wrap}
+</style>
+<main>
+<h1>Recover the projects saved in this browser</h1>
+<p>Keep the original RenoVision tab open. This page reads saved projects and photos from this same browser and address, then downloads a private recovery copy.</p>
+<p>It does not change saved data, use AI, read API settings or contact an external service. The recovery file is for restoring your data with assistance; it is not a normal Open project file.</p>
+<button id="download">Download recovery copy</button>
+<p id="status" role="status">Ready. Use the same browser and profile as the app.</p>
+</main>
+<script>
+'use strict';
+const button=document.getElementById('download'), status=document.getElementById('status');
+const localReceiver=window.RENOVISION_RECOVERY_RECEIVER;
+if(localReceiver){button.textContent='Save recovery copy to this PC';status.textContent='Ready. A private copy will be written directly to the local project workspace, bypassing the browser file picker.';}
+function pack(value){
+  if(value instanceof ArrayBuffer||ArrayBuffer.isView(value)){
+    const bytes=value instanceof ArrayBuffer?new Uint8Array(value):new Uint8Array(value.buffer,value.byteOffset,value.byteLength);
+    let binary='';for(let i=0;i<bytes.length;i+=16384)binary+=String.fromCharCode(...bytes.subarray(i,i+16384));
+    return {kind:'bytes',data:btoa(binary)};
+  }
+  return {kind:'plain',data:value};
+}
+async function readBox(name, include){
+  const names=new Set((await indexedDB.databases()).map(item=>item.name));
+  if(!names.has(name))throw new Error('No RenoVision data found at this address/profile. Keep the app open and check that this page uses the same address.');
+  return new Promise((resolve,reject)=>{
+    const opening=indexedDB.open(name);
+    opening.onupgradeneeded=()=>{opening.transaction.abort();reject(new Error('The saved database is unavailable.'));};
+    opening.onerror=()=>reject(new Error('The saved database could not be read.'));
+    opening.onsuccess=()=>{
+      const db=opening.result;
+      if(!db.objectStoreNames.contains('box')){db.close();reject(new Error('The saved database format is unavailable.'));return;}
+      const tx=db.transaction('box','readonly'), box=tx.objectStore('box'), result={};
+      const keys=box.getAllKeys();
+      keys.onsuccess=()=>{
+        for(const key of keys.result){
+          if(typeof key!=='string'||!include(key))continue;
+          const get=box.get(key);get.onsuccess=()=>{result[key]=pack(get.result);};
+        }
+      };
+      tx.oncomplete=()=>{db.close();resolve(result);};
+      tx.onerror=()=>{db.close();reject(new Error('The saved data could not be read. Nothing was changed.'));};
+      tx.onabort=()=>{db.close();reject(new Error('Reading stopped. Nothing was changed.'));};
+    };
+  });
+}
+button.onclick=async()=>{
+  button.disabled=true;status.textContent='Reading saved project records…';
+  try{
+    const records=await readBox('renovision_records_v1',key=>/^(project:|room:|design:)/.test(key));
+    const projects=Object.keys(records).filter(key=>key.startsWith('project:')).length;
+    if(!projects)throw new Error('No saved projects were found in this profile. Keep the original app tab open.');
+    status.textContent='Reading saved photos…';
+    await new Promise(resolve=>setTimeout(resolve,30));
+    const photos=await readBox('renovision_photo_bytes_v1',()=>true);
+    const data={format:'renovision.browser-recovery',version:1,origin:location.origin,created:new Date().toISOString(),records,photos};
+    if(localReceiver){
+      status.textContent='Saving the private recovery copy to this PC…';
+      const response=await fetch(localReceiver,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+      if(!response.ok)throw new Error('The local recovery copy could not be written. Keep the original app tab open.');
+      const receipt=await response.json();
+      status.textContent='Recovery copy saved on this PC: '+receipt.projects+' project(s), '+receipt.images+' stored image(s). '+receipt.location+'. Keep the original app tab open while this copy is checked.';
+      return;
+    }
+    const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+    const url=URL.createObjectURL(blob), link=document.createElement('a');
+    link.href=url;link.download='RenoVision-browser-recovery.json';document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+    status.textContent='Recovery download requested: '+projects+' project(s), '+Object.keys(photos).length+' stored image(s), '+Math.round(blob.size/1024/1024*10)/10+' MB. Check your Downloads/save location. Keep it private and keep the original app tab open.';
+  }catch(error){status.textContent=error instanceof Error?error.message:'Recovery could not finish. Keep the original app tab open.';}
+  finally{button.disabled=false;}
+};
+if(localReceiver&&new URLSearchParams(location.search).get('recover')==='1')button.click();
+</script>
+</html>

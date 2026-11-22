@@ -247,7 +247,7 @@ void main() {
         ),
       ),
     );
-    await tester.tap(find.text('Back up project'));
+    await tester.tap(find.text('Export backup snapshot'));
     await tester.pumpAndSettle();
     expect(files.name, 'Claylands.renovision.json');
     expect(ProjectBackup.decode(files.saved!).designs, hasLength(2));

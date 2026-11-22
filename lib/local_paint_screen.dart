@@ -175,6 +175,12 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         finish: kind == LocalSurfaceKind.splashback
             ? LocalFinish.brickTiles
             : LocalFinish.rectangleTiles,
+        tileSize: suggestedTileSize(
+          kind,
+          kind == LocalSurfaceKind.splashback
+              ? LocalFinish.brickTiles
+              : LocalFinish.rectangleTiles,
+        ),
         name: defaultSurfaceName ? '$name ${selected + 1}' : wall.name,
         coverage: 1,
       ),
@@ -810,6 +816,9 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             changeWall(
               wall.copyWith(
                 kind: kind,
+                tileSize: wall.finish != LocalFinish.paint && kind != wall.kind
+                    ? suggestedTileSize(kind, wall.finish)
+                    : wall.tileSize,
                 name: defaultSurfaceName
                     ? '${localSurfaceLabels[kind]} ${selected + 1}'
                     : wall.name,
@@ -833,9 +842,15 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
               changeWall(
                 wall.copyWith(
                   finish: finish,
+                  tileSize:
+                      wall.finish == LocalFinish.paint &&
+                          finish != LocalFinish.paint
+                      ? suggestedTileSize(wall.kind, finish)
+                      : wall.tileSize,
                   coverage: finish == LocalFinish.paint ? wall.coverage : 1,
                 ),
               );
+              setState(() => showSelection = false);
             }
           },
         ),
@@ -844,11 +859,11 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             title: const Text('Tile layout & grout'),
             children: [
               const Text(
-                'Approximate 2D preview. Final AI polish can refine perspective.',
+                'Approximate 2D layout, not a realistic material render. Finish with AI can refine material, scale and perspective; review its result.',
               ),
               Text('Pattern size ${(wall.tileSize * 100).round()}%'),
               Slider(
-                min: .04,
+                min: .015,
                 max: .5,
                 value: wall.tileSize,
                 onChanged: (v) => changeWall(wall.copyWith(tileSize: v)),
@@ -945,6 +960,31 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                 label: const Text('Finish with AI'),
               ),
           ],
+        ),
+      if (panel == 1 && wall.marks.any((m) => m.region != null))
+        TextButton.icon(
+          onPressed: busy || selectingWall
+              ? null
+              : () {
+                  changeWall(
+                    wall.copyWith(
+                      marks: [
+                        for (final mark in wall.marks)
+                          mark.region == null
+                              ? mark
+                              : PaintMark(
+                                  mark.kind,
+                                  mark.points,
+                                  width: mark.width,
+                                  region: extendWallSelectionEdge(mark.region!),
+                                ),
+                      ],
+                    ),
+                  );
+                  setState(() => showSelection = true);
+                },
+          icon: const Icon(Icons.open_in_full),
+          label: const Text('Extend selection edge'),
         ),
       if (panel == 1 && wall.marks.any((m) => m.region != null))
         TextButton.icon(

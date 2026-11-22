@@ -1,5 +1,36 @@
 # RenoVision
 
+Current regroup, **22 November**: projects/rooms, multiple photos, AI analysis and
+generation, styles/palettes, history, comparison, local finishes, camera/Live,
+project files and image export/share are implemented. Use the current checklist in
+[CODEX_NEXT_STEPS.md](CODEX_NEXT_STEPS.md) before the older dated notes below.
+
+**Autosave** keeps local work and updates a connected writable working file.
+**Save project** writes every room, photo, design and choice to that file.
+**Export backup snapshot** writes a separate fixed copy of the same contents;
+**Duplicate project** creates another project inside the app. Restore adds a copy
+without overwriting or merging. API credentials are separate and excluded from
+project files. Browser keys last until page reload; app navigation retains them.
+
+The latest OneDrive kitchen export was confirmed empty. New browser code verifies
+saved size and offers a download fallback; an actual destination save/reopen still
+needs acceptance. Existing data and APKs are preserved. This batch refreshes Chrome
+only: **published APK 1.0.17 is unchanged**.
+
+Recent source fixes include New/Partial/Precise modes, smaller palettes, editable
+Keep exceptions, clearer AI plans/manual handoff, useful empty Ideas, stronger
+fitting prompts, smaller splashback patterns and optional selection-edge extension.
+Local tiles remain a 2D preview. Real-provider image comparison, online reference
+research and provider cost/balance tracking remain unfinished.
+
+Verified current source `68527c827a`: **374 tests pass**, clean analysis (13.5s),
+release web build (46.9s). Browser bridge checks pass for a 16 MB complete read-back
+and rejecting a zero-byte false success; the actual app Open/Save path writes a
+nonempty complete kitchen fixture and retains it after reload in an isolated
+profile. Deeper workspace browser automation stalled; its controls are covered
+by native tests and still need manual Chrome acceptance. OneDrive acceptance
+and paid quality comparison remain. Use the fresh-test steps in the testing guide.
+
 Prompt enhancement after APK 1.0.17, **22 November**: room analysis now asks for a
 decisive, room-specific design proposal with coordinated materials, main/task
 lighting, fittings, restrained styling and explicit retained features. A newly

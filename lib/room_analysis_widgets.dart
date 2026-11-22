@@ -6,6 +6,7 @@ import 'room_analysis.dart';
 import 'room_draft.dart';
 import 'store.dart';
 import 'ai_activity.dart';
+import 'context_help.dart';
 
 class RoomAnalysisCard extends StatefulWidget {
   final RenovisionStore store;
@@ -255,9 +256,9 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Understand this room',
-                  style: Theme.of(context).textTheme.titleLarge,
+                const HelpHeading(
+                  title: 'Understand this room',
+                  message: 'Analysis describes what is visible now. The design plan suggests what it could become using these photos, your style, palette, scope and Keep choices. Questions help refine the plan; no image is generated until you confirm Generate.',
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -268,8 +269,8 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                       : matches
                       ? widget.draft.useAiPrompt &&
                                 widget.draft.aiPrompt.text.trim().isNotEmpty
-                            ? 'AI design proposal ready · included in your next design.'
-                            : 'Photo observations ready · design proposal is off or empty.'
+                            ? 'Design plan ready · applied when you generate.'
+                            : 'Photo observations ready · design plan is off or empty.'
                       : currentPhotos
                       ? 'Photo observations still match. Your next design uses your current choices; the earlier proposal is left out.'
                       : 'Photos have changed. Analyse the current view for fresh observations, or continue without this saved analysis.',
@@ -400,7 +401,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                 if (analysis != null)
                   ExpansionTile(
                     initiallyExpanded: false,
-                    title: const Text('Room observations and design proposal'),
+                    title: const Text('Room observations and design plan'),
                     subtitle: Text(
                       '${analysis.result.provider} · ${analysis.result.model} · ${analysis.created.toLocal()}',
                     ),
@@ -414,13 +415,13 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                             if (analysis.result.questions.isNotEmpty) ...[
                               const SizedBox(height: 12),
                               Text(
-                                'Details to confirm',
+                                'Details to refine',
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                               for (final question in analysis.result.questions)
                                 Text('• $question'),
                               const Text(
-                                'Add answers to the room instructions. Analyse again only if you want a refreshed proposal.',
+                                'Add useful answers under What should change. They inform the next design; analyse again only to refresh this saved plan.',
                               ),
                             ],
                             const SizedBox(height: 12),
@@ -430,15 +431,17 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                               maxLines: 10,
                               maxLength: 8000,
                               decoration: const InputDecoration(
-                                labelText: 'AI design proposal (editable)',
+                                labelText: 'Suggested design plan (editable)',
                                 border: OutlineInputBorder(),
                               ),
                             ),
                             CheckboxListTile(
                               contentPadding: EdgeInsets.zero,
-                              title: const Text('Use AI design proposal'),
+                              title: const Text(
+                                'Apply this plan when generating',
+                              ),
                               subtitle: const Text(
-                                'Used while it matches your photos and choices. Your current requirements and Keep choices take priority. Generate asks before sending.',
+                                'Adds the plan above to your photos and current choices. Turn off to use your choices and photo observations only.',
                               ),
                               value: widget.draft.useAiPrompt,
                               onChanged:

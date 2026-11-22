@@ -37,6 +37,12 @@ class _BrowserFileDestination
     try {
       await stream.write(bytes.toJS).toDart;
       await stream.close().toDart;
+      final saved = await handle.getFile().toDart;
+      if (saved.size != bytes.length) {
+        throw const BackupFailure(
+          'The browser could not verify the saved file size. Local work is retained. Try Save project as, or Download project copy.',
+        );
+      }
       return FileSaveResult.saved;
     } catch (_) {
       try {

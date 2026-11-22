@@ -101,7 +101,7 @@ void main() {
   });
 
   testWidgets(
-    'full room shows disabled fitting choices; Partial restores editable saved exceptions',
+    'full room permits Keep exceptions and its switch opens individual changes',
     (tester) async {
       final draft = RoomDraft(store, room);
       draft.setItemChoice('bathroom_vanity', 'keep');
@@ -123,10 +123,12 @@ void main() {
       );
       expect(
         tester.widget<DropdownButtonFormField<String>>(vanity).onChanged,
-        isNull,
+        isNotNull,
       );
-      await tester.ensureVisible(find.text('Partial'));
-      await tester.tap(find.text('Partial'));
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('renovation-extent')),
+      );
+      await tester.tap(find.byKey(const ValueKey('renovation-extent')));
       await tester.pumpAndSettle();
       expect(
         tester.widget<DropdownButtonFormField<String>>(vanity).onChanged,

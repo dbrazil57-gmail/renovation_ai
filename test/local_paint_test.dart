@@ -592,7 +592,11 @@ void main() {
       await tester.ensureVisible(find.text('Tile layout & grout'));
       await tester.tap(find.text('Tile layout & grout'));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Dark grout'));
+      await Scrollable.ensureVisible(
+        tester.element(find.text('Dark grout')),
+        alignment: .5,
+      );
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Dark grout'));
       await settlePreview();
       final finish = find.text('Finish with AI');
@@ -711,6 +715,7 @@ void main() {
         expect(surface.name, expectedName);
         expect(surface.rgb, 0x507040);
         expect(surface.coverage, 1);
+        expect(surface.tileSize, type == 'kitchen' ? .045 : .085);
         expect(surface.marks.single.toMap(), outline().toMap());
         expect(paintRefinementPrompt(saved!), contains(expectedName));
         final retained = saved!.toMap();

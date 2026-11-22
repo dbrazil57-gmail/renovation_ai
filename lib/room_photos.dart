@@ -251,7 +251,10 @@ class _RoomPhotosCardState extends State<RoomPhotosCard> {
               widget.onContextChanged != null)
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Use other views as AI context'),
+              title: const Text('Include other room photos'),
+              subtitle: const Text(
+                'Also send other angles of this room. The selected photo sets the design viewpoint.',
+              ),
               value: widget.includeContext,
               onChanged: widget.onContextChanged,
             ),

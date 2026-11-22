@@ -7,6 +7,47 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Prompt enhancement after 1.0.17 — 22 November
 
+### Current test regroup — 22 November
+
+- [x] Source changes: explicit New / Partial / Precise modes, easier whole-room
+  switch and Keep exceptions, smaller palettes, clearer analysis/design-plan and
+  manual handoff wording, useful first-design inspiration in Ideas.
+- [x] Source changes: stronger coordinated concepts and contemporary fittings;
+  explain browser keys last until page reload (navigation retains them).
+- [x] Confirmed the latest kitchen export in Renos is zero bytes despite a success
+  message. Preserve it and all existing projects; root cause is not yet established.
+- [x] Add browser file-size verification and a separate download fallback; clarify
+  working-file Save, snapshot backup, duplicate-in-app and restore-as-copy.
+- [x] Verify actual browser large-file writes and rejection of a false-success
+  empty write. Do not count native widget checks as browser filesystem proof.
+- [x] Verify smaller splashback patterns, finer grout and optional one-pixel
+  selection-edge extension. Local tiles remain approximate 2D previews.
+- [x] Run the complete regression suite, analysis and release web build; refresh
+  the same localhost:7357 only after these pass. Current APK stays 1.0.17.
+- [x] Provide a separate clean kitchen test project; do not reset or delete old
+  data. Owner then checks a real destination save/reopen and one paid design.
+- [ ] Optional future work: dated web design/product references and usage-based
+  per-image/per-room cost estimates. Neither research nor balance tracking is
+  currently part of image generation.
+
+Autosave keeps local room edits and updates a connected working file; photos and
+completed designs persist when added. Save project includes every room, photo,
+design and choice, excluding credentials. A backup exports the same contents as a
+fixed snapshot. Restore adds a separate project; Open checks identity/conflicts.
+There is no project merge feature. A fresh test means a new separate project.
+
+Verified current source `68527c827a`: **374 tests pass** (80s), clean analysis
+(13.5s), release web build (46.9s), same localhost:7357. Actual Chrome bridge
+checks pass for a 16 MB write and every-byte read-back, and rejection of a no-op
+write leaving an empty file. The production-app Open/Save path writes a valid
+372 KB kitchen project in a disposable profile and retains it across app reload.
+Deeper workspace browser automation stalled; native tests cover those controls.
+Real OneDrive save/reopen and
+paid image-quality comparison remain owner acceptance tasks; no new APK or paid
+provider request was made. See the fresh-test steps in the testing guide.
+
+### Previous verified milestone
+
 - [x] Ask analysis for one decisive scheme with specific material/surface choices,
   fittings, main/task lighting, staging and preserved features, rather than a
   generic restatement of the inventory or approval request.

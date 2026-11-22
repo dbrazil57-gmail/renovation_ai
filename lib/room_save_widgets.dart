@@ -140,7 +140,7 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
     try {
       final name = await widget.askName(
         action == 'copy'
-            ? 'Save project copy as'
+            ? 'Name duplicate project'
             : action == 'image'
             ? 'Save image as'
             : 'Save project backup as',
@@ -209,7 +209,7 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
             ),
             const HelpIcon(
               title: 'Autosave',
-              message: 'Use More tools at the top right to turn Autosave on or off. Pending edits still save when leaving a room. Save now and project-file options are in Room settings.',
+              message: 'Autosave keeps room choices and instructions on this device, and updates a connected project file. Added photos and completed designs save separately. Leaving a room also saves pending edits. Use More tools to toggle Autosave; Room settings contains Save now and file options. AI keys are separate.',
             ),
             if (widget.aiPending)
               const Text(
@@ -231,7 +231,7 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
                     Expanded(child: Text('Autosave')),
                     HelpIcon(
                       title: 'Autosave',
-                      message: 'Autosave writes edits to this device after a short pause. Leaving a room also saves pending edits, even when Autosave is off. Save project creates a portable project file; opening a file reconnects its save destination. A running AI request or received result must finish saving before leaving.',
+                      message: 'Autosave writes room choices and instructions to this device after a short pause, and updates a connected project file. Added photos and completed designs save separately, even with Autosave off. Leaving a room saves pending edits too. Save project creates your portable working file; Open project reconnects it after a browser restart. AI keys are stored separately and excluded from project files.',
                     ),
                   ],
                 ),
@@ -271,11 +271,11 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
                     PopupMenuButton<String>(
                       enabled: !busy && !widget.aiPending,
                       onSelected: _saveAs,
-                      tooltip: 'Save as options',
+                      tooltip: 'Copy and export options',
                       itemBuilder: (_) => [
                         const PopupMenuItem(
                           value: 'copy',
-                          child: Text('New project copy…'),
+                          child: Text('Duplicate project…'),
                         ),
                         PopupMenuItem(
                           value: 'image',
@@ -290,7 +290,7 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
                       ],
                       child: const Padding(
                         padding: EdgeInsets.all(12),
-                        child: Text('Save as…'),
+                        child: Text('Copy & export…'),
                       ),
                     ),
                   ],

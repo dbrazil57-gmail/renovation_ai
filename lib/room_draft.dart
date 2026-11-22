@@ -14,6 +14,8 @@ import 'design_palettes.dart';
 
 enum DraftSaveState { saved, pending, saving, failed }
 
+enum RoomDesignMode { newDesign, partial, precise }
+
 /// Debounced local autosave. Snapshots are captured before queueing and writes
 /// are serialised so an older edit cannot finish after and replace a newer edit.
 class RoomDraft extends ChangeNotifier {
@@ -47,6 +49,20 @@ class RoomDraft extends ChangeNotifier {
   late String _lastText;
   late bool _autosave;
   bool get autosaveEnabled => _autosave;
+
+  RoomDesignMode get designMode => preciseEdit
+      ? RoomDesignMode.precise
+      : fullRenovation
+      ? RoomDesignMode.newDesign
+      : RoomDesignMode.partial;
+
+  void setDesignMode(RoomDesignMode mode) {
+    if (mode == designMode) return;
+    preciseEdit = mode == RoomDesignMode.precise;
+    if (!preciseEdit) fullRenovation = mode == RoomDesignMode.newDesign;
+    useAiPrompt = false;
+    _changed();
+  }
 
   RoomDraft(this.store, RenovationRoom room)
     : roomId = room.id,

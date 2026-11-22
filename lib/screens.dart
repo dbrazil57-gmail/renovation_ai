@@ -45,6 +45,7 @@ import 'brand_mark.dart';
 import 'room_delete_widgets.dart';
 import 'brief_readiness.dart';
 import 'brief_readiness_widgets.dart';
+import 'design_mode_widgets.dart';
 
 Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
     room.setupComplete
@@ -1588,8 +1589,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     selectedId = cameraPhoto
         ? null
         : widget.initialDesignId ?? room.approvedDesignId;
-    if (cameraPhoto) draft.setPrecise(false);
-    if (widget.startInPrecision && selectedId != null) draft.setPrecise(true);
+    // A normal room open starts a design, not a remembered correction. Explicit
+    // Refine actions still enter precision; saved correction text/recipes stay.
+    draft.setPrecise(false);
+    if (widget.startInPrecision) draft.setPrecise(true);
     focusSection = selectedId == null ? FocusSection.room : FocusSection.refine;
     selectedPhotoId = cameraPhoto ? widget.initialPhotoId! : room.primaryId;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -1668,6 +1671,77 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       restoredSupportingIds = null;
     });
     widget.onDesignSelected?.call(id);
+  }
+
+  Future<void> _chooseRoomInspiration() async {
+    if (aiPending) return;
+    RoomStarter? selected;
+    late final MaterialPageRoute<void> picker;
+    picker = MaterialPageRoute<void>(
+      builder: (pickerContext) => Scaffold(
+        appBar: AppBar(title: const Text('Design inspiration')),
+        body: PageFrame(
+          children: [
+            const Text(
+              'Choose a look for this room. Examples set style and palette; your own photos remain the design source.',
+            ),
+            InspirationGallery(
+              onUse: (starter) {
+                selected = starter;
+                Navigator.of(pickerContext)
+                    .popUntil((route) => route == picker);
+                Navigator.of(pickerContext).pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    await Navigator.push<void>(context, picker);
+    if (!mounted || selected == null) return;
+    final starter = selected!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Apply this look to the room?'),
+        content: Text(
+          '${starter.title}\n\nReplaces the selected style and palette. Your photos, written instructions, scope and Keep choices stay saved.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Apply style and palette'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted || !await _save()) return;
+    try {
+      final current = widget.store.roomById(widget.roomId)!;
+      await widget.store.updateRoom(
+        current.copyWith(
+          colourPaletteId: starter.paletteId,
+          designStyleIds: [starter.styleId],
+        ),
+      );
+      for (final id in draft.styleIds.toList()) {
+        draft.setStyle(id, false);
+      }
+      if (starter.styleId.isNotEmpty) draft.setStyle(starter.styleId, true);
+      await draft.save();
+      if (mounted) setState(() => focusSection = FocusSection.style);
+    } catch (_) {
+      if (mounted) {
+        notice(
+          context,
+          'This look could not be saved. Your room photos and designs are unchanged.',
+        );
+      }
+    }
   }
 
   Future<void> _savedSettings(DesignVersion design) async {
@@ -2573,20 +2647,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 ],
               ],
               FocusSection.refine: [
-                SegmentedButton<bool>(
-                  key: const ValueKey('design-edit-mode'),
-                  segments: const [
-                    ButtonSegment(value: false, label: Text('New design')),
-                    ButtonSegment(
-                      value: true,
-                      label: Text('Precise correction'),
-                    ),
-                  ],
-                  selected: {precise},
-                  onSelectionChanged: aiPending
-                      ? null
-                      : (values) => draft.setPrecise(values.first),
-                ),
+                DesignModeControls(draft: draft, enabled: !aiPending),
                 if (precise && looksLikeBroadRenovation(changes.text)) ...[
                   const SizedBox(height: 8),
                   const Text(
@@ -2679,7 +2740,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 const SizedBox(height: 12),
                 ExpansionTile(
                   key: const ValueKey('manual-ai-tools'),
-                  title: const Text('Use another AI app (optional)'),
+                  title: const Text('Manual AI handoff (copy / import)'),
                   children: [
                     Wrap(
                       spacing: 8,
@@ -2720,8 +2781,43 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 const SizedBox(height: 6),
                 const SizedBox(height: 10),
                 if (versions.isEmpty)
-                  const Text(
-                    'No design versions yet — the original photograph is safe.',
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Find a direction for your first design',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 6),
+                          const Text(
+                            'Browse a look, then apply its style and palette to this room.',
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 6,
+                            children: [
+                              FilledButton.tonalIcon(
+                                onPressed: aiPending
+                                    ? null
+                                    : _chooseRoomInspiration,
+                                icon: const Icon(Icons.collections_outlined),
+                                label: const Text('Browse design inspiration'),
+                              ),
+                              TextButton(
+                                onPressed: () => setState(
+                                  () => focusSection = FocusSection.refine,
+                                ),
+                                child: const Text('Review my design brief'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   )
                 else
                   ...versions.map((design) => _historyCard(room, design)),
