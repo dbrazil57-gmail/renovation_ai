@@ -541,7 +541,7 @@ void main() {
         find.byKey(const ValueKey('polish-finishes-action')).hitTestable(),
         findsOneWidget,
       );
-      await tester.tap(find.text('Polish with AI'));
+      await tester.tap(find.text('Review and send AI polish'));
       await tester.pump();
       await waitFor(
         tester,
@@ -678,7 +678,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Dark grout'));
       await settlePreview();
-      final finish = find.text('Polish with AI');
+      final finish = find.text('Review and send AI polish');
       await tester.scrollUntilVisible(
         finish,
         120,

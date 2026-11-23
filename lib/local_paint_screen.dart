@@ -1354,7 +1354,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             ),
             HelpIcon(
               title: 'Colours & tiles',
-              message: 'Select a wall, floor or splashback and check its boundary. In Finish, use Wall tiles, kitchen Splashback tiles, or bathroom/Shower wall tiles shortcuts, then choose a pattern and colour. Add a separate surface layer to keep wall and floor choices independent. Changing colour or pattern reuses the same selection and makes no AI request. Selection uses connected colours and edges; similar surfaces can merge. Use sensitivity, outline or erase for difficult edges and patterned tiles. For patterned splashbacks, Outline full splashback covers the reviewed four-corner area including grout gaps. Grow selected area expands in a chosen direction; Finish opacity changes strength, not area. Tile scale and rotation are approximate visual guidance, not measured installation dimensions or a product catalogue. Delete one surface or all layers, even after reopening. Polish with AI saves all local finishes and prepares one correction for review; only confirmed generation uses your paid AI connection. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
+              message: 'Select a wall, floor or splashback and check its boundary. In Finish, use Wall tiles, kitchen Splashback tiles, or bathroom/Shower wall tiles shortcuts, then choose a pattern and colour. Add a separate surface layer to keep wall and floor choices independent. Changing colour or pattern reuses the same selection and makes no AI request. Selection uses connected colours and edges; similar surfaces can merge. Use sensitivity, outline or erase for difficult edges and patterned tiles. For patterned splashbacks, Outline full splashback covers the reviewed four-corner area including grout gaps. Grow selected area expands in a chosen direction; Finish opacity changes strength, not area. Tile scale and rotation are approximate visual guidance, not measured installation dimensions or a product catalogue. Delete one surface or all layers, even after reopening. Review and send AI polish saves all local finishes and opens Refine for review. Polish with AI then opens the sending confirmation; only confirmed generation uses your paid AI connection. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
             ),
           ],
         ),
@@ -1392,7 +1392,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                             ? null
                             : () => save(finishWithAi: true),
                         icon: const Icon(Icons.auto_awesome_outlined),
-                        label: const Text('Polish with AI'),
+                        label: const Text('Review and send AI polish'),
                       ),
                     ),
                   ),

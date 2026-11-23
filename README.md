@@ -1,21 +1,22 @@
 # RenoVision
 
-Latest refresh/review update: source **`58f3b34f01`** remembers the main tab,
+Latest refresh/review update: source **`e0ef2fa1ee`** remembers the main tab,
 project, workspace tab/mode and selected image, Settings and workspace editing
 tools. Refresh rebuilds Back navigation and does not replay AI sends. Navigation
-preferences stay on this device and out of project files. The bottom **Polish
-with AI** action first prepares Refine; **Review & send AI polish** shows the exact
+preferences stay on this device and out of project files. The bottom **Review
+and send AI polish** action first prepares Refine; **Polish with AI** shows the exact
 prompt before confirmation. **Review & generate change** creates a new AI version
 from your next specific request; it does not approve or overwrite your design.
-Verified: **401 tests pass**, clean analysis, release web build and refreshed help
+Label follow-up: **33 paint/AI workflow tests pass**, clean analysis and updated
+paint help. Prior navigation regression: **401 tests pass**, release web build and refreshed help
 clips. Actual desktop/phone-size Chrome refresh, Settings Back and finish-review
 checks pass. Same localhost:7357; published APK stays 1.0.17+18.
 
 Latest finish-polish correction, **23 November**: the owner confirms the tiled
 pictures were saved **Local finishes** previews. An AI attempt failed and left the
 preview selected; this is not a completed AI polish result.
-**Polish with AI** is now pinned in the finish editor; reopened local versions
-also offer **Polish saved finishes with AI** in Refine. Confirmation sends the
+**Review and send AI polish** is pinned in the finish editor; reopened local versions
+also offer **Review and send AI polish** in Refine. Confirmation sends the
 clean same-view design first and rough finish guide second, with physical
 splashback boundaries and protected window/tap/cupboards. Only confirmed generation
 saves **AI finish polish**. Independent grout adds White/Black and custom colour.
@@ -63,7 +64,7 @@ it. Android continues to use its secure device store. Project files exclude keys
 
 Autosave is a visible switch below the title, not a menu-only action. Selected
 designs have **Update this design** and **Apply focused update**. Local finishes
-have **Polish with AI**, which sends only the finish correction, clean design and
+have **Review and send AI polish**, which prepares only the finish correction, clean design and
 rough guide, rather than the original whole-room brief. Sending still needs
 confirmation. Originals, approved baselines and prior versions are preserved.
 

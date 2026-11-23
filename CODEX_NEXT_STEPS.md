@@ -14,14 +14,18 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
   plus workspace full-screen viewer/comparison/crop/markup pages. Navigation is a
   local device preference, excluded from project files. Invalid/deleted/archived
   destinations fall back safely. Dialogs and pending AI sends are never replayed.
-- [x] Keep AI polish at the bottom (owner's explicit choice). Prepare its finish
-  instructions in Refine first; no automatic sending confirmation. Review & send
-  AI polish opens a second review with exact prompt displayed before Send.
+- [x] Correct the two button labels in the owner's requested order: first
+  Review and send AI polish at the bottom; second Polish with AI in Refine.
+  The first prepares instructions; the second opens review/confirmation before Send.
+- [x] Label follow-up: 33 existing paint/AI workflow tests pass, clean analysis
+  (37s) and refreshed paint help capture/full MP4 decode pass. Source `e0ef2fa1ee`;
+  web build (49.7s) and actual desktop/phone button-order checks pass. Phone
+  screenshot inspected. No paid AI call or APK. Earlier navigation regression below.
 - [x] Rename selected-image Apply update to Review & generate change; explain that
   it creates another AI version and does not approve/overwrite the selected design.
 - [x] Four refresh regression workflows and mocked pending-confirmation reload
   pass; refresh does not create extra image versions or make AI requests. Help
-  captures/MP4s refreshed. Latest source: `58f3b34f01`, same localhost:7357.
+  captures/MP4s refreshed. Latest source: `e0ef2fa1ee`, same localhost:7357.
 - [x] Refresh/review verification: 401 full-suite tests pass (97s), clean analysis
   (49s), web build (104.9s), seven help captures and full MP4 decodes pass. Actual
   isolated desktop and phone Chrome refresh/Settings Back/Finish restoration and
@@ -157,7 +161,7 @@ sections take precedence over unchecked or source-only notes in older history.
 
 - [x] Reconcile today's 11 commit batches against the conversation and actual
   source/tests. Distinguish implemented code, visual acceptance and future work.
-- [x] Chrome source is now `58f3b34f01`; latest APK remains 1.0.17+18
+- [x] Chrome source is now `e0ef2fa1ee`; latest APK remains 1.0.17+18
   (`d19f2fd3d2`). All post-APK changes need packaging only when explicitly requested.
 - [x] Recheck actual desktop and phone-sized Chrome Room/Style/Refine/Ideas navigation and inspect
   screenshots. Prior workspace automation stall did not reproduce in this pass.

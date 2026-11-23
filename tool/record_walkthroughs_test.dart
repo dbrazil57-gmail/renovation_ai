@@ -647,7 +647,7 @@ void main() {
       'Return to colours for the retained wall.',
     );
     await recording.tap(
-      find.text('Polish with AI'),
+      find.text('Review and send AI polish'),
       'Optionally save this rough preview and prepare an AI correction.',
     );
     recording.caption.value =

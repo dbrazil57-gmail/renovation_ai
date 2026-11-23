@@ -518,7 +518,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsNothing);
       expect(edits, 0);
-      final review = find.text('Review & send AI polish').first;
+      final review = find.text('Polish with AI').first;
       await ensureFocusVisible(tester, review);
       await tester.tap(review);
       await tester.pumpAndSettle();

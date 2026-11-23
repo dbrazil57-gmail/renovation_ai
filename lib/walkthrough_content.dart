@@ -296,7 +296,7 @@ const paintWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Save a version',
-        'Back keeps the working draft. Save finish version adds a new image with editable surface layers. The bottom Polish with AI action saves the preview and opens Refine so you can read or edit the instructions first. Review & send AI polish then shows the exact prompt and both image roles: clean design first, rough guide second. Confirm sending separately. Reopened local versions also offer Polish saved finishes with AI. This does not send the original whole-room renovation brief.',
+        'Back keeps the working draft. Save finish version adds a new image with editable surface layers. The bottom Review and send AI polish action saves the preview and opens Refine so you can read or edit the instructions first. Polish with AI then shows the exact prompt and both image roles: clean design first, rough guide second. Confirm sending separately. Reopened local versions also offer Review and send AI polish. This does not send the original whole-room renovation brief.',
       'Reopen the saved version to try another colour. Local edits need no key; only confirmed AI polishing uses your paid connection. Original photos and the approved design remain saved.',
     ),
   ],

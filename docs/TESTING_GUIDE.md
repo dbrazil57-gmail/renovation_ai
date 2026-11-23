@@ -2,7 +2,7 @@
 
 ## Follow-up acceptance — 23 November
 
-Latest refresh/review source: **`58f3b34f01`**. Load this update once, reopen your
+Latest refresh/review source: **`e0ef2fa1ee`**. Load this update once, reopen your
 room, then test subsequent refreshes:
 
 1. Select a different saved image and Style or Ideas; refresh. The same room,
@@ -13,8 +13,8 @@ room, then test subsequent refreshes:
    return. Workspace full-screen viewer, comparison, crop and markup should also
    reopen on the same image. Saved layers persist; unsaved crop/sketch gestures,
    zoom position and transient camera frames are not reconstructed from navigation.
-4. Keep Polish with AI at the bottom. Tap it: Refine opens with the prepared
-   instructions and no paid request. Read/edit, then Review & send AI polish.
+4. First choose Review and send AI polish at the bottom: Refine opens with the
+   prepared instructions and no paid request. Read/edit, then choose Polish with AI.
    The confirmation shows exact instructions at the top, clean design first and
    rough guide second. Cancel sends nothing; Send is the only paid action.
 5. Refresh with a sending confirmation open: return to the workspace without
@@ -24,7 +24,9 @@ room, then test subsequent refreshes:
 Four fixture page/tool reload workflows plus mocked confirmation-reload checks
 pass. Invalid/archived targets fall back without clearing data. These preferences
 contain IDs/view choices only and are excluded from project exports. No APK update.
-Final evidence: 401 full-suite tests pass (97s), clean analysis (49s), web build
+Label follow-up: 33 paint/AI workflow tests pass, clean analysis (37s) and updated
+paint-help capture/full MP4 decode. Earlier navigation evidence: 401 full-suite
+tests pass (97s), clean analysis (49s), web build
 (104.9s), seven help captures/full decodes. Actual isolated Chrome desktop and
 390×844 refresh/Settings Back/Finish/prepare-before-send checks pass; screenshots
 inspected. Logs: `output/screen-session-final-tests.log`,
@@ -41,7 +43,7 @@ Owner confirms the supplied tile pictures are **Local finishes** versions; an AI
 attempt failed, leaving that preview selected. This does not establish that no AI
 was attempted. For the
 next real polish test, select that version and use Refine > **Polish saved finishes
-with AI** (or the pinned **Polish with AI** action inside Colours & tiles). Review
+with AI** (or the pinned **Review and send AI polish** action inside Colours & tiles). Review
 the confirmation: **Clean design · image 1**, **Rough finish guide · image 2**.
 Cancel first to check no new AI version. Confirm only when ready for a paid request.
 The completed result must be a separate **AI finish polish** version. Compare its

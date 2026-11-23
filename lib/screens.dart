@@ -1519,7 +1519,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                             1
                   ? 'Generate ${precise ? draft.precisionConceptCount : draft.conceptCount} ${precise ? 'variations' : 'design ideas'}'
                   : polishingFinishes && precise
-                  ? 'Review & send AI polish'
+                  ? 'Polish with AI'
                   : precise && selectedId != null
                   ? 'Review & generate change'
                   : 'Generate AI design',
@@ -2895,13 +2895,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                               icon: const Icon(Icons.tune),
                               label: Text(
                                 polishingFinishes
-                                    ? 'Review & send AI polish'
+                                    ? 'Polish with AI'
                                     : 'Review & generate change',
                               ),
                             ),
                             Text(
                               polishingFinishes
-                                  ? 'Review these finish instructions, then choose Review & send. AI starts only after the sending confirmation.'
+                                  ? 'Review these finish instructions, then choose Polish with AI. AI starts only after the sending confirmation.'
                                   : 'Creates another AI version using this image and your requested change. Your current design stays saved.',
                             ),
                             if (finishPreview != null && !polishingFinishes)
@@ -2912,7 +2912,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                                     : () => _polishFinishes(finishPreview!),
                                 icon: const Icon(Icons.auto_awesome_outlined),
                                 label: const Text(
-                                  'Polish saved finishes with AI',
+                                  'Review and send AI polish',
                                 ),
                               ),
                           ],
