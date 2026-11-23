@@ -86,11 +86,11 @@ void main() {
       expect(find.text('AI connection and models'), findsOneWidget);
       await revealFocusControl(
         tester,
-        find.text('Restore project backup'),
+        find.text('Restore a separate copy…'),
         200,
         scrollable: find.byType(Scrollable).last,
       );
-      expect(find.text('Restore project backup'), findsOneWidget);
+      expect(find.text('Restore a separate copy…'), findsOneWidget);
       await revealFocusControl(
         tester,
         find.text('Save now'),

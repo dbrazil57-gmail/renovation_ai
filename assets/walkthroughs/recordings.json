@@ -9,7 +9,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 1241393
+      "bytes": 1264343
     },
     "capture": {
       "id": "capture",
@@ -18,7 +18,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 304238
+      "bytes": 308533
     },
     "live": {
       "id": "live",
@@ -27,7 +27,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 611626
+      "bytes": 627969
     },
     "paint": {
       "id": "paint",
@@ -36,7 +36,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 1022511
+      "bytes": 1040284
     },
     "library": {
       "id": "library",
@@ -45,7 +45,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 531729
+      "bytes": 535779
     },
     "models": {
       "id": "models",
@@ -54,7 +54,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 375519
+      "bytes": 375612
     },
     "saving": {
       "id": "saving",

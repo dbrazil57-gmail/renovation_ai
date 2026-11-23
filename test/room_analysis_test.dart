@@ -805,6 +805,9 @@ void main() {
       expect(store.designsFor(room.id).single.prompt, submitted!['prompt']);
       // Generation selects the new image; the earlier proposal/photo facts
       // must not be applied to that different working image.
+      await ensureFocusVisible(tester, find.text('New design'));
+      await tester.tap(find.text('New design'));
+      await tester.pumpAndSettle();
       await ensureFocusVisible(tester, find.text('Generate AI design'));
       await tester.tap(find.text('Generate AI design'));
       await tester.pumpAndSettle();

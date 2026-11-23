@@ -1,5 +1,34 @@
 # Product and research reference
 
+## Saving, scope and reusable project looks — current correction pass
+
+Save and plaintext backup held the same project contents, so their separate normal
+actions were confusing. Keep Save project and Save project as; the latter can make
+an extra snapshot using another filename. Keep password export only in Advanced,
+with accurate scope: it encrypts that exported file, not local data, existing plain
+copies or a device. Opening older plain/protected files remains compatible.
+
+Selecting a generated/saved result means refine that image by default. Show one
+update field, exclude the original broader brief and clear the completed correction
+on its newly saved result. Its historical prompt/recipe remains. Full/Partial are
+explicit wider-renovation choices; Partial can resemble Full if all items or a
+whole-room written request are included. Precision is prompt-guided, not an enforced
+pixel mask; compare the actual output for unintended changes.
+
+Project memory is reuse, not model training. The app already reuses matching room
+observations across changed design choices. The new optional room-look picker copies
+saved style/palette, preferring approved recipes; it never substitutes another room's
+facts, photos, dimensions or instructions. New rooms retain independent analysis.
+
+Splashback grout/edges can fragment colour-based tap selection. A reviewed full
+four-corner outline covers the chosen plane including gaps. Add separate surfaces
+for return walls. Directional/all-side growth is explicit and undoable; opacity
+changes finish strength. Persistent expansion/scroll state prevents slider resets.
+
+Real file round trips passed in Windows and new OneDrive Renos test folders using
+generated fixture photos. Cloud sync and physical system-picker behaviour remain
+separate platform acceptance; existing user files were not modified or deleted.
+
 ## Current decisions — 23 November
 
 Provider keys now persist without an app account: encrypted browser-local vault

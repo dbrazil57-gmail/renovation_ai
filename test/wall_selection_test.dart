@@ -262,6 +262,9 @@ void main() {
       await ready(tester, () => saved?.surfaces.length == 1);
       expect(saved!.surfaces.single.marks.single.kind, PaintMarkKind.region);
       final selection = saved!.surfaces.single.marks.single.region!.bits;
+      await tester.ensureVisible(find.text('Grow selected area'));
+      await tester.tap(find.text('Grow selected area'));
+      await quiet(tester);
       await Scrollable.ensureVisible(
         tester.element(find.text('Extend selection edge')),
         alignment: .5,
@@ -281,6 +284,18 @@ void main() {
       );
       Future<void> colour(String hex) async {
         await quiet(tester);
+        if (find.text('Custom colour').evaluate().isEmpty) {
+          await tester.scrollUntilVisible(
+            find.text('Custom colour'),
+            -150,
+            scrollable: find
+                .byWidgetPredicate(
+                  (w) =>
+                      w is Scrollable && w.axisDirection == AxisDirection.down,
+                )
+                .first,
+          );
+        }
         await tester.ensureVisible(find.text('Custom colour'));
         await tester.pump();
         await tester.tap(find.text('Custom colour'));

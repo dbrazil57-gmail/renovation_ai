@@ -9,6 +9,33 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ### Active follow-up checklist
 
+- [x] Simplify normal file saving to Save project and Save project as. Remove
+  duplicate plaintext backup-snapshot actions; keep encrypted export collapsed
+  under Advanced with explicit exported-copy-only protection.
+- [x] Selected designs default to Precision with only Update this design. Hide
+  the original whole-room brief until New design/Partial is explicitly chosen;
+  clear a completed update on its new result, preserving the version recipe.
+- [x] Explain Full/Partial/Precision in place and summarise Partial's selected items.
+- [x] Reuse another room's saved style/palette in the same project, preferring
+  approved design choices. This is local reuse, not model training; room photos,
+  facts, geometry, Keep choices and instructions are not copied.
+- [x] Separate tile opacity from area, add directional/all-side boundary growth,
+  four-corner full-splashback fill/perspective and persistent slider/scroll state.
+- [x] Owner confirms API-key saving works. Do not request that same acceptance again.
+- [x] Agent-run real Windows and OneDrive Renos folder tests pass: Save, autosave,
+  Save as without changing the earlier file, reopen, restore-as-copy, write failure
+  recovery, encrypted copy, wrong-password rejection and unchanged readable source.
+  Generated fixture photos only; new uniquely named test folders, no existing file
+  edits/deletes. These test disk round trips, not OneDrive cloud sync or phone UI.
+- [x] Full suite: 394 tests pass (86s), clean analysis and seven refreshed help
+  captures/full MP4 decodes. After fixing the editor progress-slot height, all
+  28 related paint/refinement tests pass too. Actual Chrome single-field refinement,
+  project look reuse, complete Save as and explicit encrypted-export scope pass.
+- [x] Final preview source `2643765277`, same localhost:7357. Clean final analysis
+  (27.2s), web build (63.3s), actual desktop and phone-sized refinement/look reuse/
+  Save as/encrypted-export checks pass; screenshots inspected. Documentation links
+  and private-file ignores checked; commit reviewed batch. No APK or paid AI call.
+
 - [x] Replace the project row's ellipsis with a visible delete icon. Opens the
   existing typed confirmation, optional backup and recoverable archive/delete.
   Five project-management tests and clean analysis (25.2s) passed; web rebuilt
@@ -58,13 +85,15 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ### Remaining work in priority order
 
-1. Accept actual Windows/OneDrive Save as, autosave, Open after restart, backup,
-   room import and delete/recovery using a new separate test file.
-2. Accept remembered real provider keys and one real photo analysis/design;
+1. Windows/OneDrive disk save round trips are now automated and passed; the owner
+   confirms key retention. Continue platform chooser/restart acceptance on S21
+   after the next requested APK; do not repeat these as untested code gaps.
+2. Accept one real photo analysis/design;
    compare three materially different concepts, a focused selected-design update
    and paint/tile-only polish. Check actual boundaries and unrelated details.
-3. Accept the compact controls, regional wording, approximate cost display,
-   optional research and refreshed help. Those controls are implemented.
+3. Review the selected-image-only update screen, reusable project looks, four-corner
+   splashback fill, directional growth and persistent sliders on real room images.
+   Regional wording, approximate costs, optional research and help are implemented.
 4. When requested, package all post-1.0.17 changes into a new APK. Then check S21
    update/data continuity, restart, camera/gallery/Live overlay, zoom/crop/markup,
    finishes, Save/Open/share, Help and interrupted/offline/error recovery.
@@ -83,12 +112,13 @@ sections take precedence over unchecked or source-only notes in older history.
 
 - [x] Reconcile today's 11 commit batches against the conversation and actual
   source/tests. Distinguish implemented code, visual acceptance and future work.
-- [x] Chrome source is now `c9a6649c1e`; latest APK remains 1.0.17+18
+- [x] Chrome source is now `2643765277`; latest APK remains 1.0.17+18
   (`d19f2fd3d2`). All post-APK changes need packaging only when explicitly requested.
 - [x] Recheck actual desktop and phone-sized Chrome Room/Style/Refine/Ideas navigation and inspect
   screenshots. Prior workspace automation stall did not reproduce in this pass.
-- [ ] **First:** accept real Save project as / Open using a new file in Renos,
-  then verify autosave changes, restore-as-copy and old-project preservation.
+- [x] Agent tested real Save/Save as/autosave/Open/restore using new generated
+  fixture files in Renos, preserving all old files. Actual browser Save as also
+  retained both rooms, the reused palette and separate room instructions.
 - [ ] Accept the new compact controls and all three modes in Chrome, then one
   owner-confirmed analysis/design and a narrow refinement on the actual kitchen.
 - [ ] Check actual splashback/wall preview edges, imported material samples,
@@ -98,9 +128,10 @@ sections take precedence over unchecked or source-only notes in older history.
 - [x] Regional English selector, returned image usage/dated estimates, optional
   sourced OpenAI research, imported tile samples/reviewed plane mapping, additive
   room import and current recordings are implemented in this follow-up.
-- [ ] Owner acceptance: remembered real key after reload; real OneDrive chooser
-  save/reopen; actual wall/tile edges and focused polish; materially different paid
-  concepts. Automated checks use synthetic secrets, mock AI and disposable files.
+- [ ] Owner image-quality acceptance: actual wall/tile edges and focused AI polish;
+  materially different paid concepts. Real key retention is owner-confirmed, and
+  disk/browser save round trips are agent-verified. Phone chooser/restart acceptance
+  follows a requested APK; no cloud-sync claim is made from disk checks.
 - [ ] Future product depth: complete all-operation billing/provider balance,
   same-room conflict reconciliation, automatic semantic surface selection/enforced
   masks, durable Android external document links, tracked moving-camera AR and

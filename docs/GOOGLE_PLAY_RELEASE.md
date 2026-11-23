@@ -22,6 +22,11 @@ vault too; this does not create a hosted allowance or provider balance.
 
 ## Current position
 
+- Latest shared-source corrections simplify normal saving to Save/Save as; move
+  exported-copy-only password protection into Advanced; default selected results
+  to focused updates; add optional project look reuse and better tile-area controls.
+  Actual OneDrive-folder disk round trips passed with generated fixtures. Physical
+  chooser/cloud-sync acceptance remains distinct. No new APK was requested here.
 - Working Android/Chrome app: projects, room photos/camera, multiple views,
   analysis, style/palette/scope, concepts, refinement, history/comparison, local
   paint/tile previews, save/share, portable/protected project files and Help.

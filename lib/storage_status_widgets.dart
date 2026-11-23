@@ -85,7 +85,7 @@ class _StorageStatusCardState extends State<StorageStatusCard> {
               ),
             const SizedBox(height: 8),
             const Text(
-              'Images created in another AI app enter this project only after Import generated AI result. In-app generations save as versions. Use Back up project for a separate portable copy.',
+              'Images created in another AI app enter this project only after Import generated AI result. In-app generations save as versions. Use Save project as for another portable copy.',
             ),
           ],
         ),

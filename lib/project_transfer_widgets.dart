@@ -151,12 +151,10 @@ class ProjectBackupCard extends StatefulWidget {
 class _ProjectBackupCardState extends State<ProjectBackupCard> {
   bool busy = false;
   String? message;
-  Future<void> _backup({bool protected = false}) async {
+  Future<void> _exportEncrypted() async {
     if (busy) return;
-    final password = protected
-        ? await askBackupPassword(context, creating: true)
-        : null;
-    if (!mounted || (protected && password == null)) return;
+    final password = await askBackupPassword(context, creating: true);
+    if (!mounted || password == null) return;
     setState(() {
       busy = true;
       message = null;
@@ -164,28 +162,23 @@ class _ProjectBackupCardState extends State<ProjectBackupCard> {
     try {
       final destination = await chooseSaveDestination(
         widget.store.files,
-        name:
-            '${exportName(widget.project.name)}${protected ? '.renovision' : '.renovision.json'}',
-        mimeType: protected ? 'application/octet-stream' : 'application/json',
+        name: '${exportName(widget.project.name)}.renovision',
+        mimeType: 'application/octet-stream',
       );
       if (destination == null || !mounted) return;
       if (widget.beforeSave != null && !await widget.beforeSave!()) {
         if (mounted) {
           setState(
             () => message =
-                'Save pending room changes successfully before backing up.',
+                'Save pending room changes successfully before exporting.',
           );
         }
         return;
       }
       if (!mounted) return;
-      setState(
-        () => message = protected
-            ? 'Encrypting backup…'
-            : 'Preparing project copy…',
-      );
+      setState(() => message = 'Encrypting exported copy…');
       var bytes = widget.store.backupFor(widget.project.id).encode();
-      if (protected) bytes = await protectBackup(bytes, password!);
+      bytes = await protectBackup(bytes, password);
       if (!mounted) return;
       final result = await destination.write(bytes);
       if (mounted) setState(() => message = saveMessage(result));
@@ -194,7 +187,7 @@ class _ProjectBackupCardState extends State<ProjectBackupCard> {
         setState(
           () => message = error is BackupFailure
               ? error.message
-              : 'Backup could not be saved. Your project is unchanged.',
+              : 'Encrypted copy could not be saved. Your project is unchanged.',
         );
       }
     } finally {
@@ -204,53 +197,35 @@ class _ProjectBackupCardState extends State<ProjectBackupCard> {
 
   @override
   Widget build(BuildContext context) => Card(
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.save_alt,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Backup snapshot (optional)',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-              const HelpIcon(
-                title: 'Project backup',
-                message: 'Save project maintains your working project file. A backup snapshot contains the same rooms, photos, designs and choices at this moment, but future edits do not update it. Restore adds a separate project; it does not overwrite or merge. AI keys are excluded. Keep the file private; original photo metadata is included.',
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          FilledButton.tonalIcon(
-            onPressed: busy || !widget.store.files.supported
-                ? null
-                : () => _backup(),
-            icon: const Icon(Icons.download),
-            label: Text(busy ? 'Preparing backup…' : 'Export backup snapshot'),
-          ),
-          OutlinedButton.icon(
-            onPressed: busy || !widget.store.files.supported
-                ? null
-                : () => _backup(protected: true),
-            icon: const Icon(Icons.lock_outline),
-            label: const Text('Password-protected backup'),
-          ),
-          if (busy) const LinearProgressIndicator(),
-          if (message != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Text(message!),
+    child: ExpansionTile(
+      title: const Text('Advanced: encrypted export'),
+      leading: const Icon(Icons.lock_outline),
+      childrenPadding: const EdgeInsets.all(12),
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Optional password protection for an exported copy, for example when sharing or storing it elsewhere. It does not encrypt the project on this device or any existing plain project files. Save project as makes a normal extra copy of the same project data.',
             ),
-        ],
-      ),
+            OutlinedButton.icon(
+              onPressed: busy || !widget.store.files.supported
+                  ? null
+                  : _exportEncrypted,
+              icon: const Icon(Icons.lock_outline),
+              label: Text(
+                busy ? 'Encrypting…' : 'Export password-protected copy',
+              ),
+            ),
+            if (busy) const LinearProgressIndicator(),
+            if (message != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(message!),
+              ),
+          ],
+        ),
+      ],
     ),
   );
 }
@@ -345,7 +320,7 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
                 ? 'A separate restored project will be added. Existing projects will not be replaced.'
                 : existing != null
                 ? 'Resume the existing project on this device. No duplicate project will be created.'
-                : 'Open this project with its saved rooms, photos and versions.'}${protected ? '\n\nThe protected file stays unchanged. Make another password-protected backup to update it.' : ''}',
+                : 'Open this project with its saved rooms, photos and versions.'}${protected ? '\n\nThe protected file stays unchanged. Advanced encrypted export makes an updated protected copy; normal Save project writes a readable project file.' : ''}',
           ),
           actions: [
             TextButton(
@@ -400,7 +375,7 @@ class _RestoreProjectButtonState extends State<RestoreProjectButton> {
           : widget.label ??
                 (widget.openDocument
                     ? 'Open project…'
-                    : 'Restore project backup'),
+                    : 'Restore a separate copy…'),
     ),
   );
 }

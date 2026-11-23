@@ -10,6 +10,20 @@ class RenovationScopeControls extends StatelessWidget {
   final RoomDraft draft;
   const RenovationScopeControls({super.key, required this.draft});
 
+  String get partialSummary {
+    final names = {
+      for (final id in draft.scopeIds)
+        if (renovationScope.containsKey(id) &&
+            scopeAppliesToRoom(id, draft.effectiveRoomType))
+          renovationScope[id]!.label,
+      for (final item in roomFeaturesFor(draft.effectiveRoomType).entries)
+        if (draft.roomItemChoices[item.key] == 'replace') item.value.label,
+    }.toList();
+    return names.isEmpty
+        ? 'No individual items selected. Choose what to update, or describe a specific change.'
+        : 'Selected: ${names.take(3).join(', ')}${names.length > 3 ? ' + ${names.length - 3} more' : ''}. Other items stay.';
+  }
+
   Widget _details() => Column(
     children: [
       if ((draft.fullRenovation || draft.scopeIds.contains('flooring')) &&
@@ -68,7 +82,7 @@ class RenovationScopeControls extends StatelessWidget {
             Text(
               draft.fullRenovation
                   ? 'Usual renovation updates are included. Protected items and saved Keep choices stay.'
-                  : 'Choose what to change. Everything else stays.',
+                  : partialSummary,
             ),
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(

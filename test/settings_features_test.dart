@@ -184,7 +184,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.textContaining('app-level encryption'), findsOneWidget);
       expect(
-        find.textContaining('.renovision backups encrypt'),
+        find.textContaining('protects only the exported .renovision file'),
         findsOneWidget,
       );
       expect(

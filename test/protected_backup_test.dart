@@ -187,12 +187,12 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.text('Restore project backup'));
+      await tester.tap(find.text('Restore a separate copy…'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
       expect(store.projects, isEmpty);
-      await tester.tap(find.text('Restore project backup'));
+      await tester.tap(find.text('Restore a separate copy…'));
       await tester.pumpAndSettle();
       await tester.enterText(
         find.byKey(const ValueKey('backup-password')),
@@ -236,7 +236,9 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.text('Password-protected backup'));
+      await tester.tap(find.text('Advanced: encrypted export'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Export password-protected copy'));
       await tester.pumpAndSettle();
       await tester.enterText(
         find.byKey(const ValueKey('backup-password')),

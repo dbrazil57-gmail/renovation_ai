@@ -1,11 +1,35 @@
 # Renovision feature status
 
+## Saving, selected-image updates and splashback corrections — 23 November
+
+This section supersedes the earlier duplicate-backup and selected-image defaults.
+
+Full regression: **394 tests pass** (86s), clean analysis, seven refreshed offline
+help recordings and full MP4 decode verification. Final progress-slot stability
+follow-up: **28 related paint/refinement tests pass**. Actual Chrome single-field
+refinement, project-look reuse, complete Save as and encrypted-export explanation
+pass in disposable profiles. Actual OneDrive-folder tests pass; existing user files
+are unchanged. Final Chrome source **`2643765277`**, same localhost:7357; clean
+final analysis 27.2s, web build 63.3s. Desktop and phone-sized checks pass, with
+inspected screenshots. Published APK stays 1.0.17+18.
+
+| Area | Current behaviour and verification |
+| --- | --- |
+| Normal saving | Save project maintains the working file; Save project as chooses another file/copy. Removed duplicate plaintext backup snapshot actions. Restore as a separate copy retains its independent-project meaning. |
+| Encrypted export | Collapsed Advanced export encrypts only its exported copy; local records/photos and existing plain files remain readable. No claim of whole-project/device encryption. Restore of older protected/plain files remains supported. |
+| Agent save acceptance | Two real filesystem tests pass in the actual OneDrive Renos folder, in new uniquely named fixture folders, plus workspace disk tests: complete bytes/photos/choices, autosave, Save as independence, failed-write recovery, reopen/restore, encryption/wrong-password rejection and preserved readable source. No existing file changes. Not evidence of cloud sync/native system chooser behaviour. |
+| Credentials | Owner confirms API-key retention works. Browser/device vault implementation unchanged in this pass. |
+| Selected result | Defaults to Precision, shows only the next-update field and excludes the broad brief/style/analysis. Completed correction text clears on its new result; historical recipe is retained. Full/Partial remain explicit choices. |
+| Modes | Visible scope explanations. Full permits coordinated usual updates; Partial uses selected items/written scope; Precision is one focused update. Partial shows a compact selected-items summary. Selecting all items can make its scope similar to Full. |
+| Project memory | Optional reuse of another room's style/palette, preferring approved saved recipe choices. Tested with zero AI calls and no transfer of room facts/instructions/Keep/geometry. Same-room matching observations already remain reusable; new rooms still need their own photos/analysis. No model training. |
+| Tile area | Four-corner full-splashback outline replaces a fragmented selection and fits perspective; directional/all-side mask growth and Undo; opacity label states strength rather than area. Stable expansion keys and scroll controllers keep controls open during changes. Separate surface layers for different wall planes; local preview is still approximate. |
+
 ## Follow-up implementation — 23 November 2026
 
 Project list follow-up: the ellipsis is replaced with a visible delete icon.
 It opens the existing typed-name confirmation, backup and recoverable delete/archive
 choices. Five project-management tests and static analysis passed for this change.
-Current Chrome source: `c9a6649c1e`, same localhost:7357; web rebuilt (63.6s).
+Previous small-follow-up Chrome source: `c9a6649c1e`; web rebuilt (63.6s).
 The published APK remains unchanged at 1.0.17+18.
 Isolated Chrome bin/confirmation/cancel check passed; list screenshot inspected.
 

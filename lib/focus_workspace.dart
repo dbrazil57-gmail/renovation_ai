@@ -179,9 +179,20 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
     builder: (context, bounds) {
       final desktop = bounds.maxWidth >= 900 && bounds.maxHeight >= 420;
       final panel = controls(context);
-      final canvasHeight = bounds.maxHeight < 520
+      final preferredCanvasHeight = bounds.maxHeight < 520
           ? (bounds.maxHeight * .28).clamp(48.0, 105.0)
           : (bounds.maxHeight * .52).clamp(150.0, 440.0);
+      final minimumImage = bounds.maxHeight.clamp(0.0, 48.0);
+      final minimumControls =
+          200 + MediaQuery.textScalerOf(context).scale(14) * 6;
+      final maximumCanvas = (bounds.maxHeight - minimumControls).clamp(
+        minimumImage,
+        bounds.maxHeight,
+      );
+      final canvasHeight = preferredCanvasHeight.clamp(
+        minimumImage,
+        maximumCanvas,
+      );
       return ColoredBox(
         color: AppAppearance.of(context).canvas,
         child: Flex(

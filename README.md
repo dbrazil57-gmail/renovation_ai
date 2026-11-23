@@ -1,6 +1,30 @@
 # RenoVision
 
-Latest small follow-up: the Projects list now uses a visible delete icon, with
+Latest saving/refinement corrections, **23 November**:
+
+- Normal project-file actions are Save project and Save project as. The duplicate
+  plain backup button is removed. Advanced encrypted export protects its exported
+  copy only; it does not encrypt local data or existing plain files.
+- Selecting a saved/generated image defaults to Precision and shows only Update
+  this design. Full/Partial are explicit wider renovations; their original brief
+  stays saved and is not reapplied to a focused update.
+- Use another room's look reuses saved style/palette, preferring an approved result,
+  without an AI call, model training or copying geometry/photo observations.
+- Tile controls distinguish opacity from area. Grow left/right/up/down/all sides;
+  Outline full splashback fills its four-corner area across grout gaps. Tile settings
+  remain open through slider changes. Different wall planes need separate surfaces.
+- Owner confirms key saving. Real disk save/autosave/Save as/reopen/restore/failure
+  and encrypted-copy checks passed in isolated Windows and OneDrive Renos folders.
+  Existing files are preserved; cloud sync and native phone choosers are separate.
+
+Verified Chrome source **`2643765277`**, same localhost:7357: **394 full-suite tests
+passed**, followed by **28 targeted paint/refinement checks** for the stable progress
+slot. Final analysis clean (27.2s); web build 63.3s. Actual desktop/phone-sized
+single-field refinement, project look reuse, complete Save as and advanced-export
+explanation pass, with inspected screenshots. Seven refreshed help recordings and
+full MP4 decodes pass. No paid AI request, new APK, data reset or old file deletion.
+
+Previous small follow-up: the Projects list now uses a visible delete icon, with
 typed confirmation, backup and recoverable archive/delete unchanged. Chrome
 source `c9a6649c1e`: five project tests, clean analysis and web build passed.
 Published APK stays 1.0.17+18. The remaining order is actual save/AI acceptance,

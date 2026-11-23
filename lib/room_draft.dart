@@ -327,6 +327,16 @@ class RoomDraft extends ChangeNotifier {
     _changed();
   }
 
+  void applySavedLook({
+    required Iterable<String> styles,
+    required String other,
+  }) {
+    styleIds = canonicalStyleIds(styles.toList()).toSet();
+    otherStyle.text = other;
+    useAiPrompt = false;
+    _changed();
+  }
+
   void setConceptCount(int value) {
     if (value < 1 || value > 3 || value == conceptCount) return;
     conceptCount = value;

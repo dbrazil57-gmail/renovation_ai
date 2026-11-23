@@ -301,6 +301,9 @@ void main() {
         expect(store.briefGuidanceReviewed(room.id, precise: false), false);
         await tester.tap(find.byKey(const ValueKey('focus-section-refine')));
         await tester.pumpAndSettle();
+        await ensureFocusVisible(tester, find.text('New design'));
+        await tester.tap(find.text('New design'));
+        await tester.pumpAndSettle();
         final input = find.widgetWithText(TextField, 'What should change?');
         await tester.ensureVisible(input);
         await tester.enterText(input, 'Replace the main ceiling light');
@@ -315,6 +318,11 @@ void main() {
         await tester.pumpAndSettle();
         expect(imageRequests, 2);
         expect(store.briefGuidanceReviewed(room.id, precise: false), true);
+        await tester.tap(find.byKey(const ValueKey('focus-section-refine')));
+        await tester.pumpAndSettle();
+        await ensureFocusVisible(tester, find.text('New design'));
+        await tester.tap(find.text('New design'));
+        await tester.pumpAndSettle();
         await generate(tester);
         expect(find.byType(AlertDialog), findsOneWidget);
         expect(

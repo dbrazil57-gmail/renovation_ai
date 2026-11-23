@@ -45,6 +45,8 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
   Uint8List? rendered, beforePreview;
   final undo = <LocalPaintRecipe>[], redo = <LocalPaintRecipe>[];
   final zoom = TransformationController();
+  final compactControls = ScrollController(),
+      finishControls = ScrollController();
   List<PaintPoint> live = [];
   int selected = 0, panel = 0, revision = 0, savedRevision = 0, serial = 0;
   int? polygonIndex;
@@ -55,6 +57,9 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
   bool strokeLimitWarned = false;
   bool selectingWall = false;
   bool addArea = false;
+  bool fourCornerOutline = false;
+  List<PaintPoint> outlineCorners = [];
+  int edgePixels = 4;
   double sensitivity = 28;
   String? error;
   Timer? previewTimer, draftTimer;
@@ -414,14 +419,87 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
     polygonIndex = null;
     live = [];
     change(next, remember: false);
+    fourCornerOutline = false;
+    outlineCorners = [];
   }
 
   PaintPoint point(Offset position, Size size) => PaintPoint(
     (position.dx / size.width).clamp(0, 1),
     (position.dy / size.height).clamp(0, 1),
   );
+  void startTileOutline() {
+    setState(() {
+      panel = 0;
+      tool = _PaintTool.polygon;
+      fourCornerOutline = true;
+      outlineCorners = [];
+      polygonIndex = null;
+      compare = false;
+      showSelection = false;
+    });
+  }
+
+  void extendEdge({
+    bool all = false,
+    bool left = false,
+    bool right = false,
+    bool up = false,
+    bool down = false,
+  }) {
+    changeWall(
+      wall.copyWith(
+        marks: [
+          for (final mark in wall.marks)
+            mark.region == null
+                ? mark
+                : PaintMark(
+                    mark.kind,
+                    mark.points,
+                    width: mark.width,
+                    region: extendWallSelectionEdge(
+                      mark.region!,
+                      left: all || left ? edgePixels : 0,
+                      right: all || right ? edgePixels : 0,
+                      top: all || up ? edgePixels : 0,
+                      bottom: all || down ? edgePixels : 0,
+                    ),
+                  ),
+        ],
+      ),
+    );
+    setState(() => showSelection = false);
+  }
+
   void addCorner(PaintPoint point) {
     if (busy) return;
+    if (fourCornerOutline) {
+      final next = [...outlineCorners, point];
+      if (next.length < 4) {
+        setState(() => outlineCorners = next);
+        return;
+      }
+      if (TileProjection.fromCorners(next.map((p) => (p.x, p.y)).toList()) ==
+          null) {
+        tell(
+          'Choose four corners in order around the surface. The outline must not cross itself.',
+        );
+        setState(() => outlineCorners = []);
+        return;
+      }
+      changeWall(
+        wall.copyWith(
+          marks: [PaintMark(PaintMarkKind.polygon, next)],
+          fitTilePlane: true,
+        ),
+      );
+      setState(() {
+        fourCornerOutline = false;
+        outlineCorners = [];
+        panel = 1;
+        showSelection = false;
+      });
+      return;
+    }
     final marks = [...wall.marks];
     if (polygonIndex == null &&
         marks.isNotEmpty &&
@@ -535,6 +613,8 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
     previewTimer?.cancel();
     draftTimer?.cancel();
     zoom.dispose();
+    compactControls.dispose();
+    finishControls.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -632,7 +712,9 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                                   live: live,
                                   erasing: tool == _PaintTool.erase,
                                   width: brushWidth,
-                                  polygon: polygonIndex == null
+                                  polygon: fourCornerOutline
+                                      ? outlineCorners
+                                      : polygonIndex == null
                                       ? null
                                       : wall.marks
                                             .elementAtOrNull(polygonIndex!)
@@ -670,6 +752,8 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                       selected: selected == i,
                       onSelected: (_) => setState(() {
                         selected = i;
+                        fourCornerOutline = false;
+                        outlineCorners = [];
                         polygonIndex = null;
                         live = [];
                         sensitivity =
@@ -692,6 +776,8 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                 : () {
                     polygonIndex = null;
                     var number = recipe!.surfaces.length + 1;
+                    fourCornerOutline = false;
+                    outlineCorners = [];
                     while (recipe!.surfaces.any(
                       (wall) => wall.name == 'Wall $number',
                     )) {
@@ -770,6 +856,8 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                   tool = entry.key;
                   polygonIndex = null;
                   live = [];
+                  fourCornerOutline = false;
+                  outlineCorners = [];
                 }),
                 icon: Icon(entry.value.$1),
               ),
@@ -785,14 +873,26 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Tap around a surface, then finish.'),
+            Text(
+              fourCornerOutline
+                  ? 'Tap the four corners clockwise from top-left (${outlineCorners.length}/4). This fills across tile and grout gaps.'
+                  : 'Tap around a surface, then finish.',
+            ),
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: polygonIndex == null
+                onPressed: fourCornerOutline
+                    ? () => setState(() {
+                        fourCornerOutline = false;
+                        outlineCorners = [];
+                        panel = 1;
+                      })
+                    : polygonIndex == null
                     ? null
                     : () => setState(() => polygonIndex = null),
-                child: const Text('Finish outline'),
+                child: Text(
+                  fourCornerOutline ? 'Cancel outline' : 'Finish outline',
+                ),
               ),
             ),
           ],
@@ -896,6 +996,8 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         ),
         if (wall.finish != LocalFinish.paint)
           ExpansionTile(
+            key: PageStorageKey('tile-layout-$selected'),
+            maintainState: true,
             title: const Text('Tile layout & grout'),
             children: [
               const Text(
@@ -943,6 +1045,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
               ),
               Text('Pattern size ${(wall.tileSize * 100).round()}%'),
               Slider(
+                key: const ValueKey('tile-size-slider'),
                 min: .015,
                 max: .5,
                 value: wall.tileSize,
@@ -950,6 +1053,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
               ),
               Text('Pattern angle ${wall.tileAngle.round()}°'),
               Slider(
+                key: const ValueKey('tile-angle-slider'),
                 min: 0,
                 max: 180,
                 divisions: 36,
@@ -1041,30 +1145,65 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
               ),
           ],
         ),
-      if (panel == 1 && wall.marks.any((m) => m.region != null))
+      if (panel == 1 && wall.finish != LocalFinish.paint)
         TextButton.icon(
-          onPressed: busy || selectingWall
-              ? null
-              : () {
-                  changeWall(
-                    wall.copyWith(
-                      marks: [
-                        for (final mark in wall.marks)
-                          mark.region == null
-                              ? mark
-                              : PaintMark(
-                                  mark.kind,
-                                  mark.points,
-                                  width: mark.width,
-                                  region: extendWallSelectionEdge(mark.region!),
-                                ),
-                      ],
-                    ),
-                  );
-                  setState(() => showSelection = true);
-                },
-          icon: const Icon(Icons.open_in_full),
-          label: const Text('Extend selection edge'),
+          onPressed: busy ? null : startTileOutline,
+          icon: const Icon(Icons.crop_free),
+          label: Text(
+            wall.kind == LocalSurfaceKind.splashback
+                ? 'Outline full splashback'
+                : 'Outline full tiled surface',
+          ),
+        ),
+      if (panel == 1 && wall.marks.any((m) => m.region != null))
+        ExpansionTile(
+          key: PageStorageKey('surface-boundary-$selected'),
+          maintainState: true,
+          title: const Text('Grow selected area'),
+          children: [
+            Text('Grow boundary by $edgePixels selection pixels'),
+            Slider(
+              key: const ValueKey('edge-distance'),
+              min: 1,
+              max: 16,
+              divisions: 15,
+              value: edgePixels.toDouble(),
+              onChanged: (v) => setState(() => edgePixels = v.round()),
+            ),
+            Wrap(
+              spacing: 4,
+              children: [
+                IconButton(
+                  tooltip: 'Extend selection left',
+                  onPressed: () => extendEdge(left: true),
+                  icon: const Icon(Icons.arrow_back),
+                ),
+                IconButton(
+                  tooltip: 'Extend selection up',
+                  onPressed: () => extendEdge(up: true),
+                  icon: const Icon(Icons.arrow_upward),
+                ),
+                TextButton.icon(
+                  onPressed: () => extendEdge(all: true),
+                  icon: const Icon(Icons.open_in_full),
+                  label: const Text('Extend selection edge'),
+                ),
+                IconButton(
+                  tooltip: 'Extend selection down',
+                  onPressed: () => extendEdge(down: true),
+                  icon: const Icon(Icons.arrow_downward),
+                ),
+                IconButton(
+                  tooltip: 'Extend selection right',
+                  onPressed: () => extendEdge(right: true),
+                  icon: const Icon(Icons.arrow_forward),
+                ),
+              ],
+            ),
+            const Text(
+              'All sides or one direction. Check the boundary; Undo reverses growth.',
+            ),
+          ],
         ),
       if (panel == 1 && wall.marks.any((m) => m.region != null))
         TextButton.icon(
@@ -1090,8 +1229,12 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Coverage ${(wall.coverage * 100).round()}%'),
+            Text('Finish opacity ${(wall.coverage * 100).round()}%'),
+            const Text(
+              'Strength of the finish, not the size of the selected area.',
+            ),
             Slider(
+              key: const ValueKey('finish-opacity-slider'),
               min: 0,
               max: 1,
               divisions: 20,
@@ -1139,12 +1282,17 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         padding: const EdgeInsets.all(10),
         child: LayoutBuilder(
           builder: (context, bounds) => bounds.maxHeight < 260
-              ? ListView(padding: EdgeInsets.zero, children: content)
+              ? ListView(
+                  controller: compactControls,
+                  padding: EdgeInsets.zero,
+                  children: content,
+                )
               : Column(
                   children: [
                     ...content.take(4),
                     Expanded(
                       child: ListView(
+                        controller: finishControls,
                         padding: EdgeInsets.zero,
                         children: content.skip(4).toList(),
                       ),
@@ -1190,7 +1338,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
           ),
           HelpIcon(
             title: 'Colours & tiles',
-            message: 'Select a wall, floor or splashback and check its boundary. In Finish, use Wall tiles, kitchen Splashback tiles, or bathroom/Shower wall tiles shortcuts, then choose a pattern and colour. Add a separate surface layer to keep wall and floor choices independent. Changing colour or pattern reuses the same selection and makes no AI request. Selection uses connected colours and edges; similar surfaces can merge. Use sensitivity, outline or erase for difficult edges and patterned tiles. Tile scale and rotation are approximate 2D visual guidance, not measured installation dimensions or a product catalogue. Delete one surface or all layers, even after reopening. Finish with AI saves all local finishes and prepares one correction for review; only confirmed generation uses your paid AI connection. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
+            message: 'Select a wall, floor or splashback and check its boundary. In Finish, use Wall tiles, kitchen Splashback tiles, or bathroom/Shower wall tiles shortcuts, then choose a pattern and colour. Add a separate surface layer to keep wall and floor choices independent. Changing colour or pattern reuses the same selection and makes no AI request. Selection uses connected colours and edges; similar surfaces can merge. Use sensitivity, outline or erase for difficult edges and patterned tiles. For patterned splashbacks, Outline full splashback covers the reviewed four-corner area including grout gaps. Grow selected area expands in a chosen direction; Finish opacity changes strength, not area. Tile scale and rotation are approximate visual guidance, not measured installation dimensions or a product catalogue. Delete one surface or all layers, even after reopening. Polish paint / tiles with AI saves all local finishes and prepares one correction for review; only confirmed generation uses your paid AI connection. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
           ),
         ],
       ),
@@ -1205,8 +1353,12 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             )
           : Column(
               children: [
-                if (busy || selectingWall || rendering)
-                  const LinearProgressIndicator(),
+                SizedBox(
+                  height: 4,
+                  child: busy || selectingWall || rendering
+                      ? const LinearProgressIndicator()
+                      : null,
+                ),
                 if (selectingWall) const Text('Selecting wall…'),
                 if (busy) const Text('Saving full-resolution paint version…'),
                 Expanded(

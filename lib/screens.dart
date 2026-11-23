@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 
 import 'editors.dart';
 import 'project_management_widgets.dart';
+import 'project_look_widgets.dart';
 import 'models.dart';
 import 'store.dart';
 import 'ai_widgets.dart';
@@ -1294,7 +1295,7 @@ class SettingsTab extends StatelessWidget {
         Text('Save and restore', style: Theme.of(context).textTheme.titleLarge),
         const Text(
           kIsWeb
-              ? 'Projects save locally in this browser/profile. Backup files are separate portable copies; choose a file to restore one.'
+              ? 'Projects save locally in this browser/profile. Save project keeps the working file; Save project as makes another copy. Restore imports a separate project without replacing local work.'
               : 'Projects save locally in the app. Use Save project for a portable file and Open project to load one.',
         ),
         RestoreProjectButton(
@@ -1369,15 +1370,35 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   String? finishSourceId;
   FocusSection focusSection = FocusSection.room;
   int focusRevealRevision = 0;
+  final instructionAnchor = GlobalKey();
 
-  void _improveBrief(BriefTarget target) => setState(() {
-    focusSection = switch (target) {
-      BriefTarget.room => FocusSection.room,
-      BriefTarget.style || BriefTarget.palette => FocusSection.style,
-      BriefTarget.refine => FocusSection.refine,
-    };
-    focusRevealRevision++;
-  });
+  void _improveBrief(BriefTarget target) {
+    setState(() {
+      focusSection = switch (target) {
+        BriefTarget.room => FocusSection.room,
+        BriefTarget.style || BriefTarget.palette => FocusSection.style,
+        BriefTarget.refine => FocusSection.refine,
+      };
+      focusRevealRevision++;
+    });
+    if (target == BriefTarget.refine) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future<void>.microtask(() async {
+          final anchor = instructionAnchor.currentContext;
+          if (mounted &&
+              focusSection == FocusSection.refine &&
+              anchor != null &&
+              anchor.mounted) {
+            await Scrollable.ensureVisible(
+              anchor,
+              alignment: .2,
+              duration: const Duration(milliseconds: 180),
+            );
+          }
+        });
+      });
+    }
+  }
 
   Future<void> _reviewBrief() async {
     final room = widget.store.roomById(widget.roomId);
@@ -1616,10 +1637,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     selectedId = cameraPhoto
         ? null
         : widget.initialDesignId ?? room.approvedDesignId;
-    // A normal room open starts a design, not a remembered correction. Explicit
-    // Refine actions still enter precision; saved correction text/recipes stay.
-    draft.setPrecise(false);
-    if (widget.startInPrecision) draft.setPrecise(true);
+    // A selected design is the new baseline: subsequent requests are updates,
+    // rather than another run of its original whole-room renovation brief.
+    draft.setPrecise(selectedId != null || widget.startInPrecision);
     focusSection = selectedId == null ? FocusSection.room : FocusSection.refine;
     selectedPhotoId = cameraPhoto ? widget.initialPhotoId! : room.primaryId;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -1692,7 +1712,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     if (await _save() && !draft.dirty && mounted) Navigator.maybePop(context);
   }
 
-  void _selectDesign(String? id) {
+  void _selectDesign(String? id, {bool clearUpdate = false}) {
+    draft.setPrecise(id != null);
+    if (id != null) draft.setPrecisionConceptCount(1);
+    if (clearUpdate) draft.correction.clear();
     setState(() {
       selectedId = id;
       polishingFinishes = false;
@@ -2692,25 +2715,33 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 const SizedBox(height: 14),
               ],
               FocusSection.style: [
-                if (precise)
+                if (precise) ...[
                   const Text(
-                    'Style and colour choices are saved for whole-room renovation. Precise correction keeps the selected design and uses only your specific instruction.',
+                    'This update keeps the selected design. Describe the colour or fitting to change in Refine. Choose Partial or New design for a wider renovation.',
                   ),
-                RoomColourPaletteCard(
-                  store: widget.store,
-                  room: room,
-                  preview: source,
-                ),
-                const SizedBox(height: 12),
-                if (!precise) ...[
+                  TextButton(
+                    onPressed: () =>
+                        setState(() => focusSection = FocusSection.refine),
+                    child: const Text('Update selected image'),
+                  ),
+                ] else ...[
+                  SavedProjectLookButton(store: widget.store, draft: draft),
+                  RoomColourPaletteCard(
+                    store: widget.store,
+                    room: room,
+                    preview: source,
+                  ),
                   const SizedBox(height: 12),
-                  DesignStyleControls(draft: draft),
-                  RenovationScopeControls(draft: draft),
+                  if (!precise) ...[
+                    const SizedBox(height: 12),
+                    DesignStyleControls(draft: draft),
+                    RenovationScopeControls(draft: draft),
+                  ],
                 ],
               ],
               FocusSection.refine: [
                 DesignModeControls(draft: draft, enabled: !aiPending),
-                if (selectedId != null)
+                if (selectedId != null && precise)
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(10),
@@ -2724,21 +2755,24 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: 8),
-                          TextField(
-                            key: const ValueKey('selected-design-update'),
-                            controller: draft.correction,
-                            onChanged: (_) {
-                              if (!precise) {
-                                draft.setPrecise(true);
-                                draft.setPrecisionConceptCount(1);
-                              }
-                            },
-                            minLines: 1,
-                            maxLines: 4,
-                            decoration: const InputDecoration(
-                              labelText: 'What would you like to improve?',
-                              hintText: 'For example: replace only the extractor with a slim contemporary hood.',
-                              border: OutlineInputBorder(),
+                          KeyedSubtree(
+                            key: instructionAnchor,
+                            child: TextField(
+                              key: const ValueKey('selected-design-update'),
+                              controller: draft.correction,
+                              onChanged: (_) {
+                                if (!precise) {
+                                  draft.setPrecise(true);
+                                  draft.setPrecisionConceptCount(1);
+                                }
+                              },
+                              minLines: 1,
+                              maxLines: 4,
+                              decoration: const InputDecoration(
+                                labelText: 'What would you like to improve?',
+                                hintText: 'For example: replace only the extractor with a slim contemporary hood.',
+                                border: OutlineInputBorder(),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -2778,19 +2812,22 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 ],
                 const SizedBox(height: 12),
                 if (!precise || selectedId == null)
-                  TextField(
-                    key: ValueKey('instructions-$precise'),
-                    controller: changes,
-                    minLines: 1,
-                    maxLines: 4,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: precise
-                          ? 'Specific correction'
-                          : 'What should change?',
-                      hintText: precise
-                          ? 'Remove only the cupboard handles; keep everything else.'
-                          : 'Leave blank for a fresh concept, or add your must-haves.',
+                  KeyedSubtree(
+                    key: instructionAnchor,
+                    child: TextField(
+                      key: ValueKey('instructions-$precise'),
+                      controller: changes,
+                      minLines: 1,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: precise
+                            ? 'Specific correction'
+                            : 'What should change?',
+                        hintText: precise
+                            ? 'Remove only the cupboard handles; keep everything else.'
+                            : 'Leave blank for a fresh concept, or add your must-haves.',
+                      ),
                     ),
                   ),
                 const SizedBox(height: 12),
@@ -2813,7 +2850,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   },
                   buildRequest: () => _aiRequest(room),
                   onSaved: (design) {
-                    if (mounted) _selectDesign(design.id);
+                    if (mounted) _selectDesign(design.id, clearUpdate: true);
                   },
                 ),
                 ExpansionTile(
@@ -2847,7 +2884,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   key: const ValueKey('prepared-prompt-preview'),
                   title: const Text('Preview prepared prompt'),
                   subtitle: const Text(
-                    'Current choices, with matching photo observations and an enabled current AI proposal when available.',
+                    'Review the exact instructions that will be sent. Precision includes only the update; full and partial designs use their current scope.',
                   ),
                   children: [
                     Padding(

@@ -155,7 +155,7 @@ void main() {
       );
       await tester.tap(find.byTooltip('Delete or archive project'));
       await tester.pumpAndSettle();
-      expect(find.text('Export backup snapshot'), findsOneWidget);
+      expect(find.text('Save a project copy first (optional)'), findsOneWidget);
       expect(
         tester
             .widget<TextButton>(

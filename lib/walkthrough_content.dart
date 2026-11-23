@@ -138,7 +138,7 @@ const designWalkthrough = AppWalkthrough(
     WalkthroughStep(
       'Give the room a clear direction',
       'Choose New design for a coordinated renovation. Add a style, palette and any features to keep. Analyse your photos and review the drafted prompt.',
-      'A modern kitchen with charcoal cupboards and pale stone. Keep the walls, window and layout.',
+      'A modern kitchen with charcoal cupboards and pale stone. Keep the walls, window and layout. Partial instead changes only selected items; Precision uses only the next update on the chosen image.',
     ),
     WalkthroughStep(
       'Ask for different ideas',
@@ -223,9 +223,9 @@ const savingWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Keep backups private',
-      'Settings offers optional password-protected project exports. Keep the password somewhere safe and check that you can open your backup.',
+      'Save project as makes another normal copy. Settings > Advanced: encrypted export can password-protect one exported copy. Keep the password safe and check you can open the file.',
       'Use a protected file when sharing a project containing private room photos.',
-      note: 'Protected exports encrypt the portable file. App-local photo storage is not encrypted by this option. Provider keys are stored separately: encrypted in this browser/profile/address, or in Android secure storage. Clearing browser site data removes its keys.',
+      note: 'This protects only that exported file. Local project/photos and existing plain copies remain readable. Provider keys are stored separately: encrypted in this browser/profile/address, or in Android secure storage. Clearing browser site data removes its keys.',
     ),
   ],
 );
@@ -291,7 +291,7 @@ const paintWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Try tile layouts or remove a surface',
-      'Tile layout & grout adjusts size, angle and grout. Choose material sample imports a texture. For perspective, outline four corners clockwise from top-left and enable Fit tiles to four-corner outline. Add area to this surface fills missed patches. Select a layer and Delete selected surface, or Delete all surfaces. Undo lasts only for the open editing session.',
+      'Tile layout & grout adjusts size, angle and grout and stays open while sliders change. Choose material sample imports a texture. Outline full splashback fills the four-corner area across grout gaps and fits perspective. Grow selected area extends left, right, up, down or all sides. Finish opacity controls strength, not area. Delete a selected surface or all surfaces; Undo lasts for this editing session.',
       'Remove Wall 2 while keeping Wall 1. Original photos and saved versions stay unchanged.',
     ),
     WalkthroughStep(

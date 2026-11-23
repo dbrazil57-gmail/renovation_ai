@@ -108,7 +108,12 @@ class ProjectManagementButton extends StatelessWidget {
                 const Text(
                   'Archive hides this project and keeps all rooms, photos and designs. Delete also keeps a recoverable copy in Archived & deleted projects. Export a backup first for a separate safety copy.',
                 ),
-                ProjectBackupCard(store: store, project: project),
+                ExpansionTile(
+                  title: const Text('Save a project copy first (optional)'),
+                  children: [
+                    ProjectFileControls(store: store, projectId: project.id),
+                  ],
+                ),
                 TextField(
                   key: ValueKey('confirm-project-${project.id}'),
                   onChanged: (value) => change(() => typed = value),

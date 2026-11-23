@@ -239,15 +239,17 @@ void main() {
     },
   );
 
-  testWidgets('backup button saves a restorable project file', (tester) async {
+  testWidgets('Save project as saves a restorable complete project file', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: ProjectBackupCard(store: store, project: project),
+          body: ProjectFileControls(store: store, projectId: project.id),
         ),
       ),
     );
-    await tester.tap(find.text('Export backup snapshot'));
+    await tester.tap(find.text('Save project as…'));
     await tester.pumpAndSettle();
     expect(files.name, 'Claylands.renovision.json');
     expect(ProjectBackup.decode(files.saved!).designs, hasLength(2));
@@ -269,13 +271,13 @@ void main() {
         ),
       ),
     );
-    await tester.tap(find.text('Restore project backup'));
+    await tester.tap(find.text('Restore a separate copy…'));
     await tester.pumpAndSettle();
     expect(store.projects, hasLength(1));
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     expect(store.projects, hasLength(1));
-    await tester.tap(find.text('Restore project backup'));
+    await tester.tap(find.text('Restore a separate copy…'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Restore copy'));
     await tester.pumpAndSettle();

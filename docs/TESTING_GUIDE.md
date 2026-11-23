@@ -2,6 +2,36 @@
 
 ## Follow-up acceptance — 23 November
 
+Current corrections: owner confirms key saving. Agent-run real filesystem tests
+now pass in the actual Windows OneDrive Renos folder, using new uniquely named
+`RenoVision-save-check-*` subfolders and generated fixture photos. Save, autosave,
+Save as independence, failed-write recovery, reopen, separate-copy restore, encrypted
+export and wrong-password rejection were checked. No existing files were changed.
+Evidence: `output/onedrive-save-acceptance.log` and `project_disk_acceptance_test.dart`.
+This does not claim cloud-sync or physical phone chooser acceptance.
+
+Current correction-pass evidence: 394 full-suite tests pass (86s); 28 targeted paint/
+refinement tests pass after the final stable progress slot. Seven help captures and
+full MP4 decodes pass. Actual Chrome verifies the single update field, local project
+look reuse, Save as retaining both rooms/palette/independent instructions, and the
+advanced exported-copy-only protection explanation. Logs:
+`output/save-refine-tests-verified.log`, `save-refine-final-tile-checks.log`,
+`save-refine-final-desktop.log`, `save-refine-final-phone.log`,
+`save-refine-help-encoding.log`. Final source `2643765277`: clean final analysis
+27.2s, release web build 63.3s; desktop and phone screenshots inspected. Current
+APK remains 1.0.17+18; no paid AI request was made.
+
+Normal saving now has Save project / Save project as. The duplicate plain backup
+snapshot button is removed. Password export is collapsed in Advanced and protects
+only the exported copy. To test a snapshot, Save project as a new filename, edit
+the working file, then Restore a separate copy from the earlier file.
+
+Selecting a result now starts Precision and hides the original broad brief. Choose
+New design or Partial explicitly to return to wider changes. Test full-splashback
+four corners, directional growth and repeated sliders without reopening Tile layout.
+Use another room's look should copy only style/palette; its observations/layout
+must not appear in this room's prompt. None of these local actions needs AI.
+
 Use the same normal Chrome profile at **http://localhost:7357/**. Keep all old
 projects. A fresh test is a separate project/file, not a storage reset. Source
 changes in this batch are not in published APK 1.0.17. Ask for a new APK after

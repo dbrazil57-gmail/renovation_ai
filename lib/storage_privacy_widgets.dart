@@ -30,15 +30,15 @@ class StoragePrivacyCard extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         const Text(
-          'Save project and Back up project let you choose a file location. If your browser uses downloads, its Downloads setting controls the folder. App-local saving stays in the app/browser store.',
+          'Save project keeps your working file. Save project as chooses another location or makes a normal extra copy. Both contain the same rooms, photos, designs and saved choices. If your browser downloads files, its Downloads setting controls the folder. App-local saving stays in the app/browser store.',
         ),
         const SizedBox(height: 8),
         const Text(
-          'Backup protection',
+          'Optional exported-copy protection',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         const Text(
-          'Normal .renovision.json files are readable project copies. Password-protected .renovision backups encrypt their contents. Backup passwords and AI keys are not included in project exports.',
+          'Normal .renovision.json files are readable project copies. Advanced encrypted export protects only the exported .renovision file. It does not encrypt or remove local photos, local project records or any existing plain copies. Passwords and AI keys are excluded from project exports.',
         ),
         const SizedBox(height: 8),
         const Text(
@@ -46,7 +46,7 @@ class StoragePrivacyCard extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         Text(
-          'Local photos and project records do not yet have an app-level encryption layer. ${store.ai.keyRememberedOnDevice ? 'On Android, the API key is encrypted with Android Keystore.' : 'In this browser/device mode, the API key stays in session memory.'}',
+          'Local photos and project records do not yet have an app-level encryption layer. ${kIsWeb ? 'Remembered API keys use a separate encrypted vault in this browser/profile/address.' : 'On Android, remembered API keys are encrypted with Android Keystore.'}',
         ),
         const SizedBox(height: 8),
         const Text('Cloud AI', style: TextStyle(fontWeight: FontWeight.w600)),

@@ -18,22 +18,54 @@ class WallSelectionResult {
   WallSelectionResult(this.region, this.pixels);
 }
 
-/// Explicit one-pixel expansion of a reviewed mask. The original is immutable;
+/// Explicit directional expansion of a reviewed mask. The original is immutable;
 /// the editor records this as an undoable draft change, not a source-image edit.
-PaintRegion extendWallSelectionEdge(PaintRegion region) {
-  final bits = Uint8List.fromList(region.bits);
+PaintRegion extendWallSelectionEdge(
+  PaintRegion region, {
+  int left = 1,
+  int right = 1,
+  int top = 1,
+  int bottom = 1,
+}) {
+  if ([left, right, top, bottom].any((v) => v < 0 || v > 32)) {
+    throw ArgumentError('Use an edge extension from 0 to 32 pixels.');
+  }
+  // Separable moving windows stay linear in mask size, even for wider edges.
+  final horizontal = Uint8List(region.bits.length),
+      bits = Uint8List(region.bits.length);
+  void put(Uint8List bytes, int x, int y) {
+    final index = y * region.width + x;
+    bytes[index >> 3] |= 1 << (index & 7);
+  }
+
+  bool at(Uint8List bytes, int x, int y) {
+    final index = y * region.width + x;
+    return bytes[index >> 3] & (1 << (index & 7)) != 0;
+  }
+
   for (var y = 0; y < region.height; y++) {
+    var count = 0;
+    for (var x = 0; x <= left && x < region.width; x++) {
+      if (region.contains(x, y)) count++;
+    }
     for (var x = 0; x < region.width; x++) {
-      if (!region.contains(x, y)) continue;
-      for (var dy = -1; dy <= 1; dy++) {
-        for (var dx = -1; dx <= 1; dx++) {
-          final xx = x + dx, yy = y + dy;
-          if (xx < 0 || yy < 0 || xx >= region.width || yy >= region.height) {
-            continue;
-          }
-          final index = yy * region.width + xx;
-          bits[index >> 3] |= 1 << (index & 7);
-        }
+      if (count > 0) put(horizontal, x, y);
+      if (x - right >= 0 && region.contains(x - right, y)) count--;
+      if (x + left + 1 < region.width && region.contains(x + left + 1, y)) {
+        count++;
+      }
+    }
+  }
+  for (var x = 0; x < region.width; x++) {
+    var count = 0;
+    for (var y = 0; y <= top && y < region.height; y++) {
+      if (at(horizontal, x, y)) count++;
+    }
+    for (var y = 0; y < region.height; y++) {
+      if (count > 0) put(bits, x, y);
+      if (y - bottom >= 0 && at(horizontal, x, y - bottom)) count--;
+      if (y + top + 1 < region.height && at(horizontal, x, y + top + 1)) {
+        count++;
       }
     }
   }

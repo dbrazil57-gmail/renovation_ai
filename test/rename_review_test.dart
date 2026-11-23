@@ -82,6 +82,9 @@ void main() {
         TextField,
         'What should change?',
       );
+      await ensureFocusVisible(tester, find.text('New design'));
+      await tester.tap(find.text('New design'));
+      await tester.pumpAndSettle();
       await revealFocusControl(
         tester,
         instructions,

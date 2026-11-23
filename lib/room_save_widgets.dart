@@ -182,7 +182,7 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
   }
 
   Future<void> _saveAs(String action) async {
-    if (busy || widget.aiPending) return;
+    if (busy || widget.aiPending || !['copy', 'image'].contains(action)) return;
     final room = widget.store.roomById(widget.draft.roomId)!;
     final project = widget.store.projectById(room.projectId)!;
     setState(() {
@@ -191,11 +191,7 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
     });
     try {
       final name = await widget.askName(
-        action == 'copy'
-            ? 'Name duplicate project'
-            : action == 'image'
-            ? 'Save image as'
-            : 'Save project backup as',
+        action == 'copy' ? 'Name duplicate project' : 'Save image as',
         action == 'image' ? room.name : '${project.name} copy',
       );
       if (name == null || !mounted) return;
@@ -212,23 +208,19 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
       // async storage/encoding can consume browser transient activation.
       final destination = await chooseSaveDestination(
         widget.store.files,
-        name: action == 'image'
-            ? '${exportName(name)}.png'
-            : '${exportName(name)}.renovision.json',
-        mimeType: action == 'image' ? 'image/png' : 'application/json',
+        name: '${exportName(name)}.png',
+        mimeType: 'image/png',
       );
       if (destination == null) {
         if (mounted) setState(() => message = 'Save cancelled.');
         return;
       }
       if (!await _saveDraft()) return;
-      final image = action == 'image' ? widget.activeImage() : null;
-      if (action == 'image' && image == null) {
+      final image = widget.activeImage();
+      if (image == null) {
         throw const BackupFailure('Select an image to save.');
       }
-      final bytes = action == 'image'
-          ? pngExportBytes(image!)
-          : widget.store.backupFor(project.id).encode();
+      final bytes = pngExportBytes(image);
       final result = await destination.write(bytes);
       if (mounted) setState(() => message = saveMessage(result));
     } catch (error) {
@@ -333,11 +325,6 @@ class _RoomSaveControlsState extends State<RoomSaveControls> {
                           value: 'image',
                           enabled: widget.store.files.supported,
                           child: const Text('Image file…'),
-                        ),
-                        PopupMenuItem(
-                          value: 'backup',
-                          enabled: widget.store.files.supported,
-                          child: const Text('Project backup file…'),
                         ),
                       ],
                       child: const Padding(
