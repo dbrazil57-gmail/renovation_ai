@@ -23,11 +23,14 @@ import 'room_save_widgets.dart';
 import 'brief_readiness.dart';
 import 'app_session.dart';
 
+enum _SetupExit { previous, workspace, rooms, projects }
+
 class RoomSetupScreen extends StatefulWidget {
   final RenovisionStore store;
   final String roomId;
   final Widget Function(String? designId) workspace;
   final WidgetBuilder? settingsBuilder;
+  final WidgetBuilder? projectBuilder, projectsBuilder;
   final bool returnToWorkspace;
   const RoomSetupScreen({
     super.key,
@@ -35,6 +38,8 @@ class RoomSetupScreen extends StatefulWidget {
     required this.roomId,
     required this.workspace,
     this.settingsBuilder,
+    this.projectBuilder,
+    this.projectsBuilder,
     this.returnToWorkspace = false,
   });
   @override
@@ -113,23 +118,38 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
     }
   }
 
-  Future<void> leave({bool finish = false}) async {
+  Future<void> leave({_SetupExit destination = _SetupExit.previous}) async {
     if (busy) return;
     setState(() => saving = true);
     try {
       if (!await save()) return;
-      if (finish) {
-        await widget.store.updateRoom(
-          room.copyWith(setupComplete: true, setupStep: 3),
-        );
+      if (destination == _SetupExit.workspace) {
+        await widget.store.updateRoom(room.copyWith(setupComplete: true));
       }
       if (widget.store.documents.linked(room.projectId)) {
         await widget.store.documents.save(room.projectId);
       }
       if (!mounted) return;
-      if (widget.returnToWorkspace) {
+      if (destination == _SetupExit.projects) {
+        Navigator.pushAndRemoveUntil<void>(
+          context,
+          MaterialPageRoute(builder: widget.projectsBuilder!),
+          (_) => false,
+        );
+      } else if (destination == _SetupExit.rooms) {
+        final previous = AppPageSessionScope.maybeOf(context)
+            ?.projectRoute(room.projectId);
+        if (previous != null) {
+          Navigator.popUntil(context, (route) => route == previous);
+        } else {
+          Navigator.pushReplacement<void, void>(
+            context,
+            MaterialPageRoute(builder: widget.projectBuilder!),
+          );
+        }
+      } else if (widget.returnToWorkspace) {
         Navigator.pop(context, designId);
-      } else if (finish) {
+      } else if (destination == _SetupExit.workspace) {
         Navigator.pushReplacement<void, void>(
           context,
           MaterialPageRoute(
@@ -352,6 +372,24 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                         label: 'Room settings',
                         onPressed: busy ? null : openSettings,
                       ),
+                    if (widget.projectBuilder != null)
+                      ScreenTool(
+                        ScreenAction.projectRooms,
+                        label: 'Rooms & spaces',
+                        menuOnly: true,
+                        onPressed: busy
+                            ? null
+                            : () => leave(destination: _SetupExit.rooms),
+                      ),
+                    if (widget.projectsBuilder != null)
+                      ScreenTool(
+                        ScreenAction.projectsHome,
+                        label: 'Projects home',
+                        menuOnly: true,
+                        onPressed: busy
+                            ? null
+                            : () => leave(destination: _SetupExit.projects),
+                      ),
                     ScreenTool(
                       ScreenAction.finishLater,
                       label: 'Finish later',
@@ -360,7 +398,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                     ScreenTool.help(
                       context,
                       title: 'Room setup tools',
-                      message: 'Save keeps a complete project file. Guided room setup lets you choose any of the four steps without clearing your choices. Settings opens saving and AI options. The top arrow leaves setup and saves your progress; the bottom Back and Continue buttons move through the steps. Finish later also saves your current step and is available under More tools on smaller screens.',
+                      message: 'The four steps help you start a new room; you can open the workspace at any step without analysing or generating first. Workspace keeps your choices and opens directly next time. Use Guided room setup in the workspace to review the steps again. Adding another photo does not restart setup. Save keeps a complete project file. The top arrow leaves setup and saves your progress; bottom Back and Continue change steps. More tools includes Rooms & spaces, Projects home and Finish later. Leaving without opening the workspace keeps the saved setup step for next time.',
                     ),
                   ],
                 ),
@@ -573,6 +611,20 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                       runSpacing: 8,
                       alignment: WrapAlignment.end,
                       children: [
+                        if (step < 3)
+                          Tooltip(
+                            message:
+                                'Open design workspace with your saved choices',
+                            child: TextButton(
+                              key: const ValueKey('setup-open-workspace'),
+                              onPressed: busy
+                                  ? null
+                                  : () => leave(
+                                      destination: _SetupExit.workspace,
+                                    ),
+                              child: const Text('Workspace'),
+                            ),
+                          ),
                         if (step > 0)
                           OutlinedButton(
                             onPressed: busy ? null : () => move(step - 1),
@@ -587,7 +639,11 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                           ),
                         if (step == 3)
                           FilledButton(
-                            onPressed: busy ? null : () => leave(finish: true),
+                            key: const ValueKey('setup-open-workspace'),
+                            onPressed: busy
+                                ? null
+                                : () =>
+                                      leave(destination: _SetupExit.workspace),
                             child: const Text('Open design workspace'),
                           ),
                       ],

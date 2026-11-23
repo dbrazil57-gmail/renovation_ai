@@ -1,5 +1,38 @@
 # Testing and storage reference
 
+## Optional setup and room entry acceptance — current Chrome follow-up
+
+Source **`89ec77cc58`**. 40 relevant checks pass (29s), analysis clean (30.6s).
+This follow-up is shared Flutter source/Chrome only; APK 1.0.18 remains unchanged.
+
+1. Create a new photo room. It starts at step 1, with Workspace available at the
+   bottom. Follow Continue to step 2, enter a goal and leave via More tools → Rooms
+   & spaces. The room shows Continue setup · step 2 of 4. Reopen it: step 2 resumes.
+2. Refresh while in setup. The same step returns. Choose Workspace at any step:
+   choices save, the workspace opens and no analysis/image request is sent. Back
+   to the project and reopen the room: it opens directly in the workspace.
+3. Add another photo to that room; it stays completed and retains all existing
+   images/designs. A newly generated design also does not restart the wizard.
+4. From the workspace, reopen Guided room setup. More tools there now offers both
+   Rooms & spaces and Projects home. Each destination saves pending choices, even
+   with Auto off. Opening/choosing a destination does not analyse or generate.
+5. Reopen old/Live/completed rooms: they still enter the workspace. Four-step review
+   is optional. The top arrow goes to the previous screen; bottom Back changes
+   setup steps. Full prompt/analysis confirmations remain separate paid operations.
+
+Evidence: `output/setup-navigation-tests.log`, `setup-navigation-analysis.log`,
+`setup-navigation-help-capture.log` and `setup-navigation-help-encoding.log`.
+The tests include direct setup entry without a parent project route, all four
+Workspace buttons, saved-step refresh and new-photo preservation. No paid AI.
+
+Release web build passes (50.6s). Actual isolated 390×844 and 1280×900 Chrome
+acceptance passes for step-2 reload, Workspace, setup's Rooms & spaces / Projects
+home, reopening a completed room, existing Back/Settings navigation and name
+suggestions. Phone step-2 screenshot inspected: Workspace/Back/Continue fit in one
+footer row. Existing localhost:7357 serves `89ec77cc58`; owner profile untouched.
+Logs: `output/setup-navigation-web-build.log`, `setup-navigation-phone-browser.log`
+and `setup-navigation-desktop-browser.log`. Screenshot: `setup-entry-flow-step-two.png`.
+
 ## Names, navigation, costs and paint acceptance — after APK 1.0.18
 
 Application source **`e48ca6290f`**. **414 tests pass** (110s), static analysis clean

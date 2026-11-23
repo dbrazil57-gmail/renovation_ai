@@ -79,6 +79,11 @@ Widget roomEntry(
           initialDesignId: designId,
         ),
         settingsBuilder: (_) => settingsPage(store),
+        projectBuilder: (_) => ProjectScreen(
+          store: store,
+          project: store.projectById(room.projectId)!,
+        ),
+        projectsBuilder: (_) => AppShell(store: store),
         returnToWorkspace: returnToWorkspace,
       );
 
@@ -855,7 +860,8 @@ class ProjectScreen extends StatelessWidget {
                         ),
                         title: Text(room.displayName),
                         subtitle: Text(
-                          '${room.photoIds.length} photos · ${store.designsFor(room.id).length} design versions',
+                          '${room.photoIds.length} photos · ${store.designsFor(room.id).length} design versions'
+                          '${room.setupComplete ? '' : '\nContinue setup · step ${room.setupStep + 1} of 4'}',
                         ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,

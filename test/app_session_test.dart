@@ -69,6 +69,91 @@ void main() {
   );
   tearDown(() => store.dispose());
 
+  testWidgets(
+    'setup shortcuts retain progress and workspace choice across reload and new photos',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await store.setAutosaveEnabled(false);
+      final project = await store.createProject('Navigation test');
+      final room = await store.createRoom(
+        projectId: project.id,
+        name: 'Balcony',
+        originalImage: photo,
+        guidedSetup: true,
+      );
+      await tester.pumpWidget(RenovisionApp(store: store));
+      await tester.pumpAndSettle();
+      await revealFocusControl(tester, find.text('Navigation test'), 300);
+      await tester.tap(find.text('Navigation test'));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('Continue setup · step 1 of 4'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Balcony'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Your renovation goal (optional)'),
+        'Keep the view, change the finishes',
+      );
+      await tester.tap(find.byTooltip('More tools'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Rooms & spaces'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ProjectScreen), findsOneWidget);
+      expect(find.byType(WorkspaceScreen), findsNothing);
+      expect(
+        find.textContaining('Continue setup · step 2 of 4'),
+        findsOneWidget,
+      );
+      expect(
+        store.roomById(room.id)!.instructions,
+        'Keep the view, change the finishes',
+      );
+      await tester.tap(find.text('Balcony'));
+      await tester.pumpAndSettle();
+      expect(find.text('Step 2 of 4 · Design direction'), findsOneWidget);
+      await reloadApp(tester, store);
+      expect(find.text('Step 2 of 4 · Design direction'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('setup-open-workspace')));
+      await tester.pumpAndSettle();
+      expect(find.byType(WorkspaceScreen), findsOneWidget);
+      expect(store.roomById(room.id)!.setupComplete, isTrue);
+      await tester.tap(find.byTooltip('Guided room setup'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Your renovation goal (optional)'),
+        'Keep these newer choices too',
+      );
+      await tester.tap(find.byTooltip('More tools'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Projects home'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ProjectsTab), findsOneWidget);
+      expect(find.byType(WorkspaceScreen), findsNothing);
+      expect(
+        store.roomById(room.id)!.instructions,
+        'Keep these newer choices too',
+      );
+      await store.addRoomPhotos(room.id, [photo]);
+      await revealFocusControl(tester, find.text('Navigation test'), 300);
+      await tester.tap(find.text('Navigation test'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Continue setup · step'), findsNothing);
+      await tester.tap(find.text('Balcony'));
+      await tester.pumpAndSettle();
+      expect(find.byType(WorkspaceScreen), findsOneWidget);
+      expect(store.roomById(room.id)!.photoIds, hasLength(2));
+      expect(store.designsFor(room.id), isEmpty);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('project shortcuts save edits and leave the workspace directly', (
     tester,
   ) async {

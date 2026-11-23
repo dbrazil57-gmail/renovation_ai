@@ -1,5 +1,27 @@
 # Renovision feature status
 
+## Room entry and optional setup — current Chrome follow-up
+
+Source **`89ec77cc58`**. New photo rooms start the four-step helper; unfinished rooms
+resume their saved step. Completed, older and Live rooms open the workspace. Adding
+photos to an existing room or generating a new design does not restart setup.
+Refresh restores the last saved screen/tab separately from these per-room rules.
+
+The bottom Workspace action is now available at every setup step. It saves choices
+and opens the workspace without requiring analysis or generation; that room opens
+there on later visits. Reopen Guided room setup whenever useful. Setup's More tools
+also has Rooms & spaces and Projects home, matching the workspace. Leaving setup
+through those links or Back retains unfinished progress. The rooms list displays
+Continue setup · step N of 4 for unfinished rooms. Original photos, versions and
+saved choices are preserved; no account, AI request or data migration is needed.
+
+40 relevant navigation/setup/photo/toolbar/room-management checks pass; analysis
+clean (30.6s). The two affected help captures pass and their MP4s are refreshed.
+Prior full suite: 414 tests. Current APK remains 1.0.18+19, pending a requested build.
+Release web build passes (50.6s); isolated 390×844 and 1280×900 Chrome verify the
+new destinations and step-2 reload. The phone footer screenshot was inspected.
+Same localhost:7357 serves this source; owner browser storage/profile are untouched.
+
 ## Names, navigation, AI results and editor controls — source after APK 1.0.18
 
 Current source **`e48ca6290f`** adds local room-type suggestions beneath search as a

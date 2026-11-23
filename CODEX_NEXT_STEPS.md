@@ -7,6 +7,30 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Active follow-up and next acceptance pass — 23 November
 
+### Optional setup and consistent destinations — after APK 1.0.18
+
+- [x] Explain the existing per-room entry rule: new photo rooms start guided setup;
+  unfinished rooms resume their saved step; completed, legacy and Live rooms open
+  the workspace. Refresh restores the saved page separately. Added/generated images
+  do not restart setup. No project migration or data reset is needed.
+- [x] Make Workspace available at every setup step, without requiring photo analysis
+  or generation. It saves choices and makes the room open directly in the workspace
+  next time. The four-step tool remains available there for later guided review.
+- [x] Add Rooms & spaces / Projects home to setup's More tools, matching the
+  workspace. Leaving via those destinations or Back preserves unfinished progress;
+  choosing Workspace records the user's choice to work there. Pending edits save
+  even with Auto off, and existing photos/versions remain untouched.
+- [x] Show Continue setup · step N of 4 beneath unfinished rooms in the project list,
+  so opening setup rather than the workspace has an explanation before tapping.
+- [x] **40 relevant tests pass** (29s), static analysis clean (30.6s); update the two
+  affected offline walkthrough captures and validate the encoded videos. Current
+  source `89ec77cc58`. Prior full-suite result: 414 tests before this follow-up.
+- [x] Release web build passes (50.6s). Actual isolated phone/desktop Chrome checks
+  pass for step-2 reload, direct Workspace and setup's Rooms/Projects destinations,
+  reopening rooms, Settings/Back and suggestions. Phone footer screenshot inspected;
+  Workspace/Back/Continue fit together. Same localhost:7357 serves the current source.
+- [ ] Physical S21 acceptance in the next requested APK. APK 1.0.18 is unchanged.
+
 ### Names, navigation, AI results and paint controls — after APK 1.0.18
 
 - [x] Suggest up to four room/space types while typing a name, including partial

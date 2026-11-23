@@ -117,6 +117,63 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  for (var step = 0; step < 4; step++) {
+    testWidgets(
+      'step ${step + 1} can open the workspace without analysis or generation',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(390, 844));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await store.updateRoom(
+          room.copyWith(setupStep: step, instructions: 'Keep my saved goal'),
+        );
+        await show(tester);
+        expect(find.textContaining('Step ${step + 1} of 4'), findsOneWidget);
+        await tester.tap(find.byKey(const ValueKey('setup-open-workspace')));
+        await tester.pumpAndSettle();
+        expect(find.text('Finished workspace'), findsOneWidget);
+        final saved = store.roomById(room.id)!;
+        expect(saved.setupComplete, isTrue);
+        expect(saved.setupStep, step);
+        expect(saved.instructions, 'Keep my saved goal');
+        expect(saved.analysis, isNull);
+        expect(store.imageFor(saved.originalId), isNotNull);
+        expect(analyses, 0);
+        expect(edits, 0);
+        await store.addRoomPhotos(room.id, [store.imageFor(room.originalId)!]);
+        expect(store.roomById(room.id)!.setupComplete, isTrue);
+        await tester.pumpWidget(const SizedBox());
+        await tester.pumpWidget(
+          MaterialApp(home: roomEntry(store, store.roomById(room.id)!)),
+        );
+        await tester.pumpAndSettle();
+        expect(find.byType(WorkspaceScreen), findsOneWidget);
+        expect(store.roomById(room.id)!.photoIds, hasLength(2));
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets(
+    'setup opened directly can return to its rooms list without a parent project route',
+    (tester) async {
+      await tester.pumpWidget(MaterialApp(home: roomEntry(store, room)));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('More tools'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Rooms & spaces'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ProjectScreen), findsOneWidget);
+      expect(
+        find.textContaining('Continue setup · step 1 of 4'),
+        findsOneWidget,
+      );
+      expect(store.roomById(room.id)!.setupComplete, isFalse);
+      expect(analyses, 0);
+      expect(edits, 0);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets(
     'setup icon opens all four steps and saves edits without sending AI',
     (tester) async {

@@ -1,6 +1,13 @@
 # RenoVision
 
-Latest source follow-up **`e48ca6290f`**: Back leaves the current screen without
+Current Chrome follow-up **`89ec77cc58`** makes setup optional: Workspace is
+available at every setup step, and setup has the same Rooms & spaces / Projects
+home shortcuts as the workspace. Unfinished rooms show their saved setup step in
+the rooms list. Adding another photo never restarts setup. Refresh still restores
+the saved page. **40 related tests pass**, analysis is clean and the two affected
+help recordings are refreshed. The APK below remains unchanged.
+
+Previous source follow-up **`e48ca6290f`**: Back leaves the current screen without
 cycling workspace tabs. Setup's bottom Back changes steps; its top arrow saves
 and leaves setup. More tools offers Rooms & spaces and Projects home. Also adds
 room-name suggestions, photo/space wording, one pinned generation action,
