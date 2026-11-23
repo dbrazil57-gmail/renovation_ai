@@ -7,6 +7,29 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Active follow-up and next acceptance pass — 23 November
 
+### Requested test APK 1.0.18
+
+- [x] Package all completed shared-source changes as **1.0.18+19**, source
+  `e0ef2fa1ee`, without changing the app ID, icon or development signing identity.
+- [x] Run the complete suite: **401 tests pass**, static analysis clean (48.5s),
+  release APK build passes. Verify the matching 1.0.17 signature, bundled public
+  assets, private-file exclusion and 64-bit ELF/ZIP 16KB alignment. Preserve older
+  named APKs; update only the latest convenience copy.
+- [x] Provide `output/mobile-test/renovision-test-1.0.18.apk` and its SHA256 file.
+  Release facts and phone steps are in
+  [APK 1.0.18 acceptance](docs/TESTING_GUIDE.md#requested-apk-1018-acceptance).
+- [x] Actual read-only API 37 emulator: install over 1.0.17, retain sample project
+  and both versions, select the saved concept, restart and recover the same image
+  and Style tab; open the finish editor and inspect the first polish action.
+  Screenshots inspected; no AI/key entry. Physical S21 acceptance is still required.
+- [ ] Owner S21 acceptance: update in place, retained work/key, restart/current
+  screen, focused refinement and reviewed finish polish, camera/gallery/Live,
+  Save/Open/share, help and error recovery. No paid AI request was made by the
+  release checks. Physical phone and actual 16KB-runtime tests remain distinct.
+
+This package supersedes the older source-only/unchanged-1.0.17 notes below.
+Full translations remain deferred; English and existing regional wording remain.
+
 ### Broader product list — current position
 
 This is the wider feature list the owner asked to resume, not just the latest
@@ -24,7 +47,7 @@ translations. Optional automatic translation is a later candidate, not installed
 | Speed | Loading/progress states, preview resizing and compact thumbnails | Representative large-project timings, then measured decode/render/export improvements on Chrome and S21. |
 | Saving | Device autosave, complete portable files, Save/Open/Save as, separate-copy restore, additive room import and retained API keys | Durable Chrome file handles and Android document-URI links across restarts, with permission/conflict recovery. File-link work was inspected but no implementation changed in this regroup. |
 | Camera and sharing | Camera/gallery entry, captured-view analysis/redesign, aligned still overlay, image save/share and before/after slider | Export comparison/camera composites; tracked moving-camera room transformation is a separate later feature. |
-| Platforms | Shared Flutter source; Chrome current; existing S21 APK | Package current source only when requested, finish phone acceptance, then iPhone file/share/Keychain parity. Native desktop packaging follows later. |
+| Platforms | Shared Flutter source; Chrome current; requested test APK 1.0.18 | Finish S21 acceptance, then iPhone file/share/Keychain parity. Native desktop packaging follows later. |
 | Release/business | Offline sample, current walkthrough recordings, BYO AI keys, feedback drafts and tester-service preparation | Owner support address/hosting, real report delivery/privacy page, funded tester setup if wanted, signing/store accounts/testing and eventual billing. No hosting or support address exists yet. |
 
 Next implementation should be selected from this product list. Language translation
@@ -168,7 +191,7 @@ See [translation options and decision](docs/PRODUCT_NOTES.md#language-decision--
 3. Review the selected-image-only update screen, reusable project looks, four-corner
    splashback fill, directional growth and persistent sliders on real room images.
    Regional wording, approximate costs, optional research and help are implemented.
-4. When requested, package all post-1.0.17 changes into a new APK. Then check S21
+4. Test APK 1.0.18 now packages all completed post-1.0.17 changes. Check S21
    update/data continuity, restart, camera/gallery/Live overlay, zoom/crop/markup,
    finishes, Save/Open/share, Help and interrupted/offline/error recovery.
 5. Before public release: support/report delivery, privacy host/page, production
@@ -186,8 +209,8 @@ sections take precedence over unchecked or source-only notes in older history.
 
 - [x] Reconcile today's 11 commit batches against the conversation and actual
   source/tests. Distinguish implemented code, visual acceptance and future work.
-- [x] Chrome source is now `e0ef2fa1ee`; latest APK remains 1.0.17+18
-  (`d19f2fd3d2`). All post-APK changes need packaging only when explicitly requested.
+- [x] Chrome source is `e0ef2fa1ee`; requested APK 1.0.18+19 now packages the
+  same application source. Earlier named APKs and their checksums are unchanged.
 - [x] Recheck actual desktop and phone-sized Chrome Room/Style/Refine/Ideas navigation and inspect
   screenshots. Prior workspace automation stall did not reproduce in this pass.
 - [x] Agent tested real Save/Save as/autosave/Open/restore using new generated
@@ -197,7 +220,7 @@ sections take precedence over unchecked or source-only notes in older history.
   owner-confirmed analysis/design and a narrow refinement on the actual kitchen.
 - [ ] Check actual splashback/wall preview edges, imported material samples,
   reviewed perspective and colour replacement; these remain visual previews.
-- [ ] When Chrome acceptance is satisfactory, request a new APK and repeat S21
+- [ ] Install requested APK 1.0.18 and repeat S21
   camera/Live, permissions, storage, vault/restart, save/share and performance tests.
 - [x] Regional English selector, returned image usage/dated estimates, optional
   sourced OpenAI research, imported tile samples/reviewed plane mapping, additive

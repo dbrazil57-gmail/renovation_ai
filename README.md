@@ -1,6 +1,21 @@
 # RenoVision
 
-Latest refresh/review update: source **`e0ef2fa1ee`** remembers the main tab,
+Latest requested Android test build: **1.0.18+19**, source **`e0ef2fa1ee`**.
+[Download the APK](output/mobile-test/renovision-test-1.0.18.apk) and install over
+the existing RenoVision app, keeping its data. The olive-and-cream icon and signing
+identity are unchanged. **401 tests pass**, static analysis is clean and the release
+APK passes signature, public-asset/private-file and 16KB alignment checks.
+The physical S21 acceptance steps are in the
+[testing guide](docs/TESTING_GUIDE.md#requested-apk-1018-acceptance).
+
+This packages all completed post-1.0.17 changes: saved keys, visible Autosave,
+simpler Save/Save as, selected-design refinement, improved tile/grout controls,
+corrected AI polish inputs and review, navigation restoration and updated help.
+English remains the app language; full translations are deferred. Chrome uses
+the same application source at http://localhost:7357/. The dated notes below
+record earlier source-only verification; their old APK statements are superseded.
+
+Refresh/review update: source **`e0ef2fa1ee`** remembers the main tab,
 project, workspace tab/mode and selected image, Settings and workspace editing
 tools. Refresh rebuilds Back navigation and does not replay AI sends. Navigation
 preferences stay on this device and out of project files. The bottom **Review
@@ -10,7 +25,7 @@ from your next specific request; it does not approve or overwrite your design.
 Label follow-up: **33 paint/AI workflow tests pass**, clean analysis and updated
 paint help. Prior navigation regression: **401 tests pass**, release web build and refreshed help
 clips. Actual desktop/phone-size Chrome refresh, Settings Back and finish-review
-checks pass. Same localhost:7357; published APK stays 1.0.17+18.
+checks pass. Same localhost:7357; now packaged in test APK 1.0.18+19.
 
 Latest finish-polish correction, **23 November**: the owner confirms the tiled
 pictures were saved **Local finishes** previews. An AI attempt failed and left the

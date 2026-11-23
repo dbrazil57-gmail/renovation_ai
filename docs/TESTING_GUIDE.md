@@ -1,5 +1,62 @@
 # Testing and storage reference
 
+## Requested APK 1.0.18 acceptance
+
+Requested **23 November 2026**, Australia/Sydney. Version **1.0.18+19** packages
+shared application source **`e0ef2fa1ee`**, also used by the existing Chrome preview.
+Install `output/mobile-test/renovision-test-1.0.18.apk` as an update over RenoVision;
+keep the existing installation/data. App ID and development signing identity are
+unchanged. English remains the app language; full translations are deferred.
+
+Automated release evidence:
+
+- **401 tests pass** (150s), static analysis clean (48.5s), release APK build passes
+  (282.5s). This build ran alongside tests/emulator startup.
+- APK metadata/signature, optional camera permissions, matching olive/cream icon,
+  public assets, private-file exclusion and 64-bit ELF/ZIP 16KB alignment pass.
+  Older named APKs retain their original hashes. No paid provider request or key
+  entry was made during these checks.
+- Logs: `output/release18-tests.log`, `output/release18-analysis.log`,
+  `output/mobile-test/build-1.0.18.log` and `verification-1.0.18.log`.
+- Actual read-only API 37 emulator: updated 1.0.17 to 1.0.18 without uninstalling;
+  retained the sample practice project and both saved versions. Selected its saved
+  concept, opened Style and force-stopped/restarted: the same image/tab returned.
+  Opened the native finish editor with Review and send AI polish at the bottom.
+  Screenshots inspected. Evidence: `output/mobile-test/smoke-1.0.18.log`,
+  `rv18-updated-workspace.png`, `rv18-style-restored.png`, `rv18-finish-editor.png`.
+  Emulator page size is 4096 bytes; 16KB alignment was checked statically, not
+  exercised on a 16KB runtime. The temporary read-only emulator was shut down.
+- Size **85,845,891 bytes**. SHA256:
+  `05D93CEB4BC5BEB77677C2E2B452F47745B427842DCB94229328B91446262A8E`.
+  Separate checksum: `output/mobile-test/renovision-test-1.0.18.apk.sha256`.
+
+Physical S21 acceptance, in order:
+
+1. Open the existing project after updating. Original photos, rooms, generated
+   versions and saved key/settings remain. Save/Open/Save as retain a complete
+   portable project; keys stay separate. Autosave remains a visible switch.
+2. Select a saved design, switch Style/Refine/Ideas, then close/reopen the app.
+   Check the current room, working image and tab; open Settings and check Back.
+   Paid sends/confirmations must not restart automatically.
+3. Use the focused Update this design field for one change. Choose New design or
+   Partial only for a wider brief. Review & generate change makes a new version.
+4. Open Colours & tiles. Check separate tile/grout colours, saved surface selection,
+   perspective, directional growth and sliders that remain open. At the bottom,
+   Review and send AI polish prepares Refine without sending. Read/edit the prompt.
+   Polish with AI then opens confirmation: clean design image 1, rough guide image 2.
+   Cancel sends nothing; Send is the explicit paid action. A completed request
+   must create AI finish polish, while preserving the original and local preview.
+5. Check actual polish tile edges/perspective, protected window/view, sink/tap and
+   cupboards. Also compare three genuinely different concepts on one fixed brief.
+   Automated/mocked checks do not establish provider quality.
+6. Check camera/gallery permissions, Live captured-view analysis and still overlay,
+   rotation, full-screen zoom, crop/markup, image save/share, Help playback, offline
+   errors and interruption recovery. A tracked moving-camera redesign is not present.
+
+Native emulator checks do not replace physical S21 camera/file-chooser/performance
+or actual 16KB-runtime acceptance. Chrome stays at http://localhost:7357/.
+Earlier dated source-only checks below are historical; this APK includes them.
+
 ## Follow-up acceptance — 23 November
 
 Latest refresh/review source: **`e0ef2fa1ee`**. Load this update once, reopen your

@@ -1,5 +1,26 @@
 # Renovision feature status
 
+## Current requested Android package — 23 November
+
+**1.0.18+19**, application source **`e0ef2fa1ee`**, is now built and available as
+`output/mobile-test/renovision-test-1.0.18.apk`. It includes the completed saving,
+key retention, focused refinement, local tile/grout, finish-polish review, screen
+restoration and help changes described below. English remains the initial language.
+No translation SDK or new AI provider/dependency was added for this release.
+
+**401 full-suite tests pass**; static analysis is clean (48.5s), release Android
+build passes (282.5s). Package ID, olive/cream icon and development certificate
+match the existing installation. Public assets match their source hashes; no
+private projects/credentials are packaged. 64-bit ELF and ZIP 16KB alignment pass.
+See [current package acceptance](docs/TESTING_GUIDE.md#requested-apk-1018-acceptance).
+An actual read-only API 37 emulator update from 1.0.17 retained the sample project
+and both designs; its selected concept and Style tab survived force-stop/restart.
+The native finish editor opened with the requested first polish action; screenshots
+were inspected. No AI call or key entry was needed for this smoke check.
+S21 camera, chooser, touch/performance, real AI quality and actual 16KB-runtime
+acceptance remain separate. No paid AI call, data reset or deployment was made.
+This current package supersedes older source-only/unchanged-APK statements below.
+
 ## Broader feature backlog and language decision — 23 November
 
 The owner has chosen **English for now**, superseding the provisional request for
@@ -515,21 +536,21 @@ Unspecified (Live) until confirmed. Existing custom names/photos are preserved.
 
 | Item | Verified position |
 | --- | --- |
-| Latest existing APK | **1.0.17+18**, source stamp `d19f2fd3d2`; `output/mobile-test/renovision-test-1.0.17.apk`, also `renovision-test.apk` |
-| APK contents | Focus Canvas, embedded camera, manual same-view overlay, Live design and all completed shared features through 1.0.17 |
+| Latest existing APK | **1.0.18+19**, source stamp `e0ef2fa1ee`; `output/mobile-test/renovision-test-1.0.18.apk`, also `renovision-test.apk` |
+| APK contents | Focus Canvas, embedded camera, manual same-view overlay, Live design and all completed shared features through source `e0ef2fa1ee` |
 | New in 1.0.13 | AI settings discovery, visible delete, 1/2/3 correction choices, creative prompts, typed Live names, OpenAI/Gemini presets, seven help guides, fixed-brief tests, Open/resume/conflict handling, saved recipes/reuse/refine, startup Retry, Save image / Share creation |
 | New in 1.0.14 | Local paint and editable layers, regional style choices, saved feedback drafts/copy and optional contact handoff |
 | New in 1.0.15 | Confirmed A icon, consistent launcher/startup/header/web branding; same app identity and storage |
 | New in 1.0.16 | Recorded help with corrected native video timing, typed room deletion/recovery, legacy/immediate-save Live names, tap-wall recolouring, persistent wall deletion and save-then-review AI finishing |
 | New in 1.0.17 | Pinned generation/readiness, compact options and navigation, fuller analysis/lighting direction, wall/floor/splashback tile previews and polish handoff, authorised kitchen replay/practice project, prepared tester invitations and display-label cleanup |
-| Source after 1.0.17 | `71336f78f2`: automatic current design proposal, stronger material/lighting brief, bounded optional photo context and shared stale-proposal fallback across setup/workspace/Live; 368 tests and web build pass; no new APK or provider-quality benchmark |
-| Last APK checks | **363 tests pass**, clean analysis, release web/Android builds and actual Chrome/API 37 emulator checks pass; matching 1.0.16 certificate, olive/cream icon, public assets, private-file exclusion and 64-bit ELF/ZIP 16KB alignment verified |
+| New in 1.0.18 | Automatic design proposals, stronger brief, retained keys, visible Autosave, Save/Save as, focused updates/project look reuse, tile/grout/coverage controls, corrected and reviewed finish polish, navigation restore and updated help |
+| Last APK checks | **401 tests pass**, clean analysis and release Android build pass; matching 1.0.17 certificate, olive/cream icon, public assets, private-file exclusion and 64-bit ELF/ZIP 16KB alignment verified |
 | Earlier audit | Reviewed code and 11 rendered screens; documentation and private-export ignore correction only. One temporary fixture-rendering test passed. The subsequent requested APK build made no paid AI call or data migration |
 | Real user evidence | User reports successful phone installation, direct AI analysis/generation, good generated designs, project auto-reload and useful comparison/camera overlay. This does not validate every newer source change |
 
 APK SHA256:
-`9E4AE423009A1F6040203ACAD591A91B857381D6468D154FEDFD9D1DBC39E0E6`.
-Size: 84,941,239 bytes. Signature matches 1.0.16; its checksum and rollback
+`05D93CEB4BC5BEB77677C2E2B452F47745B427842DCB94229328B91446262A8E`.
+Size: 85,845,891 bytes. Signature matches 1.0.17; its checksum and rollback
 packages remain unchanged. Camera hardware is optional, ARM64 is included, and
 no microphone/storage-write permission or private project/credential files are
 bundled. Its release-mode build uses the development signing key and example

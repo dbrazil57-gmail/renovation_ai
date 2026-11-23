@@ -1,6 +1,6 @@
 # RenoVision — Google Play release guide
 
-Updated 22 November 2026, Australia/Sydney. This is the requested release plan,
+Updated 23 November 2026, Australia/Sydney. This is the requested release plan,
 not evidence of store approval. Google Play/Android is the first public target.
 Accept the app on the owner's Samsung S21, then finish iPhone parity so friends
 can provide TestFlight feedback. Keep Chrome current; native desktop follows later.
@@ -10,8 +10,9 @@ Follow-up **23 November**: source/Chrome now includes remembered browser keys,
 visible Autosave, selected-design updates, paint-only AI polish, recoverable
 project management/additive room import, regional wording, image-usage estimates,
 optional sourced OpenAI research and improved local material previews. These are
-not in the unchanged published 1.0.17 APK. Final owner S21 acceptance still needs
-a separately requested new package. Help recordings use real app widgets with
+now included in the requested **1.0.18+19 test APK**, source `e0ef2fa1ee`, together
+with corrected/reviewed finish polish and remembered working screens. Final owner
+S21 acceptance is next. Help recordings use real app widgets with
 simulated camera/AI; genuine Android launch footage remains a later step.
 
 Owner confirms **no hosting or support address yet**. Live tester funding/hosting,
@@ -26,15 +27,19 @@ vault too; this does not create a hosted allowance or provider balance.
   exported-copy-only password protection into Advanced; default selected results
   to focused updates; add optional project look reuse and better tile-area controls.
   Actual OneDrive-folder disk round trips passed with generated fixtures. Physical
-  chooser/cloud-sync acceptance remains distinct. No new APK was requested here.
+  chooser/cloud-sync acceptance remains distinct. Requested APK 1.0.18 includes
+  these completed changes; English stays the current app language.
 - Working Android/Chrome app: projects, room photos/camera, multiple views,
   analysis, style/palette/scope, concepts, refinement, history/comparison, local
   paint/tile previews, save/share, portable/protected project files and Help.
-- The requested 1.0.17 test APK includes the recent source changes, kitchen sample
-  replay/practice copy, branding cleanup and optional invitation-based test access.
-  Final checks: 363 tests, clean analysis, release web/Android builds and actual
-  Chrome/API 37 emulator sample/practice/restart checks pass. Physical S21 and
-  actual 16KB-runtime acceptance remain; see [test evidence](TESTING_GUIDE.md#requested-apk-1017-acceptance).
+- The requested 1.0.18 test APK includes all completed post-1.0.17 changes, kitchen
+  sample replay/practice copy, existing branding and optional invitation-based test
+  access. **401 tests pass**, analysis is clean and the release Android build and
+  signature/assets/private-file/16KB alignment checks pass. Physical S21 and actual
+  16KB-runtime acceptance remain; see [test evidence](TESTING_GUIDE.md#requested-apk-1018-acceptance).
+- A read-only API 37 emulator update from 1.0.17 retained its sample work; selected
+  image and Style tab survived restart, and the native finish editor opened.
+  These checks do not replace physical phone or real-provider acceptance.
 - Current Android test package/signature stays unchanged for update/data continuity.
   It is not yet a signed production Play bundle.
 - Sample replay is offline and clearly labelled. It uses owner-authorised kitchen
