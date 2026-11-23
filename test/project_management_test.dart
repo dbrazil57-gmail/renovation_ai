@@ -153,7 +153,7 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.byTooltip('Archive or delete project'));
+      await tester.tap(find.byTooltip('Delete or archive project'));
       await tester.pumpAndSettle();
       expect(find.text('Export backup snapshot'), findsOneWidget);
       expect(

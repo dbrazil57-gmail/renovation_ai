@@ -1,5 +1,11 @@
 # RenoVision
 
+Latest small follow-up: the Projects list now uses a visible delete icon, with
+typed confirmation, backup and recoverable archive/delete unchanged. Chrome
+source `c9a6649c1e`: five project tests, clean analysis and web build passed.
+Published APK stays 1.0.17+18. The remaining order is actual save/AI acceptance,
+then a requested S21 package and launch preparation; see the active checklist.
+
 Current follow-up, **23 November**: keys now survive browser reload in a separate
 encrypted browser vault, without an app login. Enter a key once after this update;
 it remains scoped to this browser profile and address. Clearing site data removes

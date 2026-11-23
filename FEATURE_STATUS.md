@@ -2,11 +2,18 @@
 
 ## Follow-up implementation — 23 November 2026
 
+Project list follow-up: the ellipsis is replaced with a visible delete icon.
+It opens the existing typed-name confirmation, backup and recoverable delete/archive
+choices. Five project-management tests and static analysis passed for this change.
+Current Chrome source: `c9a6649c1e`, same localhost:7357; web rebuilt (63.6s).
+The published APK remains unchanged at 1.0.17+18.
+Isolated Chrome bin/confirmation/cancel check passed; list screenshot inspected.
+
 This is the current source position. The 22 November audit below is historical
 where superseded here. No new APK, real paid AI request, deployment or user-data
 reset was performed for this follow-up.
 
-Chrome source **`ac96247b07`**, localhost:7357. Full suite: **388 passed**; final
+Prior full-batch source **`ac96247b07`**, localhost:7357. Full suite: **388 passed**; final
 archive visibility follow-up: **24 related tests passed**. Final analysis clean
 (17.7s); release web: 48.2s.
 Actual desktop/phone-sized tab navigation and inspected screenshots pass. Actual

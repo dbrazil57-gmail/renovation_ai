@@ -99,7 +99,7 @@ class ProjectManagementButton extends StatelessWidget {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, change) => AlertDialog(
-          title: Text('Manage ${project.name}'),
+          title: Text('Delete or archive ${project.name}?'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -159,9 +159,9 @@ class ProjectManagementButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => IconButton(
-    tooltip: 'Archive or delete project',
+    tooltip: 'Delete or archive project',
     onPressed: () => manage(context),
-    icon: const Icon(Icons.more_horiz),
+    icon: const Icon(Icons.delete_outline),
   );
 }
 

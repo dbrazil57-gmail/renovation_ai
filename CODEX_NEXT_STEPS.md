@@ -9,6 +9,12 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ### Active follow-up checklist
 
+- [x] Replace the project row's ellipsis with a visible delete icon. Opens the
+  existing typed confirmation, optional backup and recoverable archive/delete.
+  Five project-management tests and clean analysis (25.2s) passed; web rebuilt
+  (63.6s) as `c9a6649c1e` at the same localhost:7357. No new APK.
+  Actual isolated Chrome check passed: bin icon opens confirmation; Cancel retains
+  the sample project. List screenshot inspected.
 - [x] Remember provider keys across browser restarts; explicit remove option,
   separate encrypted storage and no credentials in project files. No login needed.
 - [x] Put a compact visible Autosave switch beside normal save controls; remove
@@ -38,7 +44,7 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
   MP4 codec/timestamps and full decodes verified before publishing bundled assets.
 - [x] Complete full regression (388 passing tests), plus 24 related checks after
   the final archive/Continue visibility fix. Release web build passed (48.2s).
-  Final Chrome source: `ac96247b07`, same localhost:7357, no new APK.
+  That full-batch Chrome source: `ac96247b07`, same localhost:7357, no new APK.
   Actual desktop and phone-sized Room/Style/Refine/Ideas navigation passed;
   screenshots inspected. Actual browser selected-update, Autosave reload retention
   and typed archive/restore passed in disposable profiles. Synthetic vault fixtures
@@ -50,6 +56,26 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
   their actual services/access. Prepare code/docs without spending or deploying.
   Owner confirms no hosting or support address yet. Do not deploy or invent one.
 
+### Remaining work in priority order
+
+1. Accept actual Windows/OneDrive Save as, autosave, Open after restart, backup,
+   room import and delete/recovery using a new separate test file.
+2. Accept remembered real provider keys and one real photo analysis/design;
+   compare three materially different concepts, a focused selected-design update
+   and paint/tile-only polish. Check actual boundaries and unrelated details.
+3. Accept the compact controls, regional wording, approximate cost display,
+   optional research and refreshed help. Those controls are implemented.
+4. When requested, package all post-1.0.17 changes into a new APK. Then check S21
+   update/data continuity, restart, camera/gallery/Live overlay, zoom/crop/markup,
+   finishes, Save/Open/share, Help and interrupted/offline/error recovery.
+5. Before public release: support/report delivery, privacy host/page, production
+   identity/signing, Play Console setup and required release testing. Hosted tester
+   allowances additionally need hosting/funding; BYO-key testing needs neither.
+6. Later work: durable Android external-file links, same-room edit reconciliation,
+   automatic semantic surface selection/enforced masks, tracked moving-view AR,
+   complete billing/provider balance, full translations, iOS parity and native
+   desktop packaging. Current Live remains an aligned still-design overlay.
+
 Use **Follow-up implementation** at the top of FEATURE_STATUS.md for coverage,
 including partial and proposed features. Use **Follow-up acceptance** at the
 top of docs/TESTING_GUIDE.md for exact actions/expected results. These current
@@ -57,7 +83,7 @@ sections take precedence over unchecked or source-only notes in older history.
 
 - [x] Reconcile today's 11 commit batches against the conversation and actual
   source/tests. Distinguish implemented code, visual acceptance and future work.
-- [x] Chrome source is now `ac96247b07`; latest APK remains 1.0.17+18
+- [x] Chrome source is now `c9a6649c1e`; latest APK remains 1.0.17+18
   (`d19f2fd3d2`). All post-APK changes need packaging only when explicitly requested.
 - [x] Recheck actual desktop and phone-sized Chrome Room/Style/Refine/Ideas navigation and inspect
   screenshots. Prior workspace automation stall did not reproduce in this pass.
