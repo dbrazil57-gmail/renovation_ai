@@ -10,6 +10,8 @@ import 'package:renovision_ai/models.dart';
 import 'package:renovision_ai/room_setup.dart';
 import 'package:renovision_ai/store.dart';
 import 'package:renovision_ai/image_viewer.dart';
+import 'package:renovision_ai/main.dart';
+import 'package:renovision_ai/screens.dart';
 
 import 'support/memory_box.dart';
 
@@ -113,6 +115,106 @@ void main() {
     );
     await tester.ensureVisible(target);
     await tester.pumpAndSettle();
+  }
+
+  testWidgets(
+    'setup icon opens all four steps and saves edits without sending AI',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await show(tester);
+      await tester.tap(find.byTooltip('Guided room setup'));
+      await tester.pumpAndSettle();
+      for (final label in [
+        '1. Room photos',
+        '2. Design direction',
+        '3. Analyse and review',
+        '4. Finalise and generate',
+      ]) {
+        expect(find.text(label), findsOneWidget);
+      }
+      await tester.tap(find.text('2. Design direction'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Your renovation goal (optional)'),
+        'Keep the window; change only the cabinets',
+      );
+      await tester.tap(find.byTooltip('Guided room setup'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('1. Room photos'));
+      await tester.pumpAndSettle();
+      expect(find.text('Step 1 of 4 · Room photos'), findsOneWidget);
+      expect(
+        store.roomById(room.id)!.instructions,
+        'Keep the window; change only the cabinets',
+      );
+      expect(store.imageFor(room.originalId), isNotNull);
+      expect(analyses, 0);
+      expect(edits, 0);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final kind in ['legacy', 'completed', 'live']) {
+    testWidgets(
+      '$kind room can reopen four-step setup without losing saved work',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(390, 844));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final version = await store.createDesign(
+          roomId: room.id,
+          image: store.imageFor(room.originalId)!,
+          title: 'Approved fixture',
+          prompt: 'Retain this saved version',
+        );
+        await store.approveBaseline(room.id, designId: version.id);
+        await store.updateRoom(
+          store
+              .roomById(room.id)!
+              .copyWith(
+                automaticLiveName: kind == 'live',
+                roomTypeId: 'kitchen',
+                setupComplete: true,
+                instructions: 'Keep the window; update the cabinets',
+                protectedFeatures: 'Window and sink',
+              ),
+        );
+        if (kind == 'legacy') {
+          final old = store.roomById(room.id)!.toMap()
+            ..remove('setupStep')
+            ..remove('setupComplete');
+          await store.records.put('room:${room.id}', old);
+        }
+        final before = store.roomById(room.id)!;
+        final original = store.imageFor(before.originalId)!;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: buildRenovisionTheme(),
+            home: roomEntry(store, before),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.byType(WorkspaceScreen), findsOneWidget);
+        expect(find.byTooltip('Guided room setup'), findsOneWidget);
+        await tester.tap(find.byKey(const ValueKey('focus-section-room')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('4-step room setup'));
+        await tester.pumpAndSettle();
+        expect(find.text('Step 1 of 4 · Room photos'), findsOneWidget);
+        expect(find.byTooltip('Guided room setup'), findsOneWidget);
+        final after = store.roomById(room.id)!;
+        expect(after.name, before.name);
+        expect(after.instructions, before.instructions);
+        expect(after.protectedFeatures, before.protectedFeatures);
+        expect(after.photoIds, before.photoIds);
+        expect(after.approvedDesignId, version.id);
+        expect(store.imageFor(after.originalId), orderedEquals(original));
+        expect(store.designsFor(room.id).single.id, version.id);
+        expect(analyses, 0);
+        expect(edits, 0);
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 
   testWidgets(

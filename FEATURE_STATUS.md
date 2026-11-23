@@ -1,5 +1,23 @@
 # Renovision feature status
 
+## Four-step room setup access — source after APK 1.0.18
+
+Older rooms without setup fields still open as completed rooms; no migration or
+reset is needed. The workspace already has Guided room setup. The setup screen
+now has the same numbered-list tool, opening a chooser for all four steps. A
+labelled **4-step room setup** button is also at the start of the workspace Room
+tab. Step changes save pending choices; opening/choosing a step does not run AI.
+On small phones Finish later moves into More tools so Save/setup/Settings retain
+their common toolbar order. Existing rooms, photos and approved versions remain.
+
+Source **`7f94718c8f`**: 22 related setup/toolbar/session/sample checks pass, including
+legacy, completed and Live-room data preservation. Static analysis clean (26.9s).
+Release web build passes (48.6s); actual isolated 390×844 Chrome opens both entry
+points, lists all steps and restores step 2 after refresh. Screenshots inspected;
+the same localhost:7357 preview serves this source. No paid AI request was made.
+The installed test APK stays **1.0.18+19**, source `e0ef2fa1ee`; this follow-up needs
+the next requested Android package for physical S21 acceptance.
+
 ## Current requested Android package — 23 November
 
 **1.0.18+19**, application source **`e0ef2fa1ee`**, is now built and available as

@@ -2649,6 +2649,14 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
               footer: _generationFooter(),
               sections: {
                 FocusSection.room: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: aiPending ? null : _openSetup,
+                      icon: const Icon(Icons.format_list_numbered),
+                      label: const Text('4-step room setup'),
+                    ),
+                  ),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(14),
@@ -2911,9 +2919,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                                     ? null
                                     : () => _polishFinishes(finishPreview!),
                                 icon: const Icon(Icons.auto_awesome_outlined),
-                                label: const Text(
-                                  'Review and send AI polish',
-                                ),
+                                label: const Text('Review and send AI polish'),
                               ),
                           ],
                         ),

@@ -1,5 +1,12 @@
 # RenoVision
 
+Source follow-up after APK 1.0.18: the workspace Room tab now has a labelled
+**4-step room setup** button. Guided room setup is also available inside setup,
+with a chooser for all four steps that saves existing choices. Older/completed/
+Live rooms retain their work. Source `7f94718c8f`: 22 related tests pass, analysis
+is clean, web build and actual phone-sized Chrome navigation/reload checks pass.
+Same http://localhost:7357/. This follow-up is not yet in the unchanged APK below.
+
 Latest requested Android test build: **1.0.18+19**, source **`e0ef2fa1ee`**.
 [Download the APK](output/mobile-test/renovision-test-1.0.18.apk) and install over
 the existing RenoVision app, keeping its data. The olive-and-cream icon and signing

@@ -7,6 +7,24 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Active follow-up and next acceptance pass — 23 November
 
+### Four-step setup access follow-up — after APK 1.0.18
+
+- [x] Check older room compatibility: missing setup status defaults to completed,
+  so those rooms enter the workspace. Toolbar tools are supplied by the screen,
+  not saved separately for each room. Keep that compatibility default and all data.
+- [x] Fix the screen inconsistency: add Guided room setup to the setup screen too.
+  It lists all four steps and saves pending choices when changing steps, without
+  sending AI. Keep the existing workspace icon and add a labelled 4-step room setup
+  button at the start of the Room tab for older, completed and Live rooms.
+- [x] 22 related room/setup/toolbar/session/sample tests pass; static analysis clean
+  (26.9s). Legacy fixtures omit setup fields; reopening preserves original bytes,
+  saved versions, approved baseline and instructions. Source `7f94718c8f`.
+- [x] Release web build passes (48.6s); actual isolated 390×844 Chrome check opens
+  the labelled entry and four-step chooser, reloads step 2 and returns to step 1.
+  Screenshots inspected; same localhost:7357 serves the tested source. No paid AI.
+- [ ] Accept the clarified entry points on the S21 in the next requested APK.
+  Installed/published 1.0.18 remains unchanged; this is a shared-source follow-up.
+
 ### Requested test APK 1.0.18
 
 - [x] Package all completed shared-source changes as **1.0.18+19**, source

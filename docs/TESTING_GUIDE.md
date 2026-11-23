@@ -1,5 +1,31 @@
 # Testing and storage reference
 
+## Four-step setup access — source after APK 1.0.18
+
+Source `7f94718c8f`; the installed/published APK remains 1.0.18+19 (`e0ef2fa1ee`).
+22 targeted setup/toolbar/session/sample checks pass; analysis clean (26.9s).
+
+1. Open an older room, a completed room and a Live room. In the workspace choose
+   Room, then the labelled **4-step room setup** button. The existing top-right
+   numbered-list **Guided room setup** icon remains another entry point.
+2. Inside setup, the same icon now opens **4-step room setup**, listing Room photos,
+   Design direction, Analyse and review, and Finalise and generate. Move between
+   steps, edit the renovation goal, return and reload. Saved choices remain; merely
+   choosing a step does not analyse or generate.
+3. Check originals, other photos, generated versions, instructions and approved
+   baseline remain. Legacy room fixtures omit setup fields to exercise compatibility.
+   Old rooms still skip the initial wizard until explicitly reopening it.
+4. On a small phone, **Finish later** is under **More tools**; Save/setup/Settings
+   retain their common order. Physical S21 acceptance follows a requested new APK.
+
+Release web build passes (48.6s); actual isolated 390×844 Chrome verifies the
+labelled workspace entry, all four step choices, step 2 after refresh and return
+to step 1. Screenshots inspected. Same localhost:7357 serves source `7f94718c8f`.
+No key entry, paid AI or existing customer-profile change was made.
+Evidence: `output/room-setup-access-tests.log`, `room-setup-access-analysis.log`,
+`room-setup-access-build.log`, `room-setup-access-browser.log`,
+`room-setup-access-room-link.png` and `room-setup-access-step-menu.png`.
+
 ## Requested APK 1.0.18 acceptance
 
 Requested **23 November 2026**, Australia/Sydney. Version **1.0.18+19** packages

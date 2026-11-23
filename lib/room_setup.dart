@@ -254,6 +254,29 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
     }
   }
 
+  Future<void> chooseStep() async {
+    if (busy) return;
+    final next = await showDialog<int>(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        title: const Text('4-step room setup'),
+        children: [
+          for (var index = 0; index < steps.length; index++)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(dialogContext, index),
+              child: Row(
+                children: [
+                  Expanded(child: Text('${index + 1}. ${steps[index]}')),
+                  if (index == step) const Icon(Icons.check, size: 20),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+    if (next != null && mounted) await move(next);
+  }
+
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: Listenable.merge([
@@ -307,6 +330,11 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                               beforeSave: save,
                             ),
                     ),
+                    ScreenTool(
+                      ScreenAction.setup,
+                      label: 'Guided room setup',
+                      onPressed: busy ? null : chooseStep,
+                    ),
                     if (widget.settingsBuilder != null)
                       ScreenTool(
                         ScreenAction.settings,
@@ -321,7 +349,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                     ScreenTool.help(
                       context,
                       title: 'Room setup tools',
-                      message: 'Save keeps a complete project file. Settings opens saving and AI options. Finish later saves your current setup step so you can continue later. The bottom buttons move through the four steps.',
+                      message: 'Save keeps a complete project file. Guided room setup lets you choose any of the four steps without clearing your choices. Settings opens saving and AI options. Finish later saves your current step and is available under More tools on smaller screens. The bottom buttons also move through the steps.',
                     ),
                   ],
                 ),
