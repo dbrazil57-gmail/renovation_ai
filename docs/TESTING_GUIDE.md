@@ -2,6 +2,29 @@
 
 ## Follow-up acceptance — 23 November
 
+Latest finish-polish source: **`7821f8aa18`**, same localhost:7357, no APK update.
+396 full-suite tests (100s), clean analysis, web build and refreshed paint-help
+capture/full decode pass. Mocked tests verify actual clean/guide byte order, no
+request before confirmation or after Cancel, legacy draft reopening, missing-source
+refusal and portable Save/restore with both source references. No paid AI call.
+
+Owner confirms the supplied tile pictures are **Local finishes** versions; an AI
+attempt failed, leaving that preview selected. This does not establish that no AI
+was attempted. For the
+next real polish test, select that version and use Refine > **Polish saved finishes
+with AI** (or the pinned **Polish with AI** action inside Colours & tiles). Review
+the confirmation: **Clean design · image 1**, **Rough finish guide · image 2**.
+Cancel first to check no new AI version. Confirm only when ready for a paid request.
+The completed result must be a separate **AI finish polish** version. Compare its
+actual splashback wall planes, tile/grout colours, window/view, sink/tap, worktop
+and cupboard edges with the clean source. A saved local preview alone does not
+establish that AI ran; local outlines can cross objects and need checking.
+
+Local checks: White/Black/custom grout must change only grout, retain tile colour,
+and survive save/reopen. The Polish action stays visible in Select, Finish and
+while Tile layout & grout is expanded. Phone touch/camera/chooser acceptance still
+follows the next explicitly requested APK.
+
 Current corrections: owner confirms key saving. Agent-run real filesystem tests
 now pass in the actual Windows OneDrive Renos folder, using new uniquely named
 `RenoVision-save-check-*` subfolders and generated fixture photos. Save, autosave,
@@ -42,11 +65,11 @@ checks on the S21. Mocked tests cannot establish AI design quality.
 | --- | --- |
 | Remembered key | Enter privately in Settings > AI connection and models once after updating. Visit all four workspace tabs, reload, then close/reopen this same address/profile. Connection restores. Remove key explicitly and reload: it stays removed. Never put keys in screenshots or project files. |
 | Autosave and real file | Use the visible switch under the title. With it on, change an instruction, leave/reopen the room: it returns. Save project as a new file in Renos, verify nonzero Windows size, open the file and compare rooms/photos/designs/choices. Edit while that browser file is linked and reopen it to verify the update. A restart requires reconnecting the external file; local work still returns. Android chooser exports are not persistent linked-file autosave. |
-| Snapshot vs import | Export backup snapshot, edit the working project, restore the old snapshot: an independent older copy appears. In the active project's settings choose Import rooms from project: confirm to add remapped room copies, preserving existing rooms. It does not merge same-room edits. |
+| Snapshot vs import | Save project as a separate filename, edit the working project, restore the earlier file: an independent older copy appears. In the active project's settings choose Import rooms from project: confirm to add remapped room copies, preserving existing rooms. It does not merge same-room edits. |
 | Project names/delete | Create two projects with the same proposed name: the second gets a numeric suffix. Use the project row's delete icon, optionally back up, type its exact name, then Archive or Delete. It disappears from the active list; restore it under Archived & deleted projects and verify full contents. |
 | Whole room | In Style, turn Whole room off/on before opening detailed choices. Expanded Keep exceptions and individual item choices remain editable where applicable. |
 | Focused update | Select a generated version. Refine shows Update this design. Request only a brass tap; choose Apply focused update and review. Cancel first: no request. Confirm only when ready to pay. Result is a child version; original renovation instructions and approved baseline remain unchanged. |
-| Paint polish | Start on an original photo, select a wall, change colour twice. Add area to this surface fills missed patches without replacing the earlier selection. Choose Polish paint / tiles with AI; review the narrow guide + clean-source request. It must not include whole-room replacement instructions or old correction text. Cancel sends nothing. |
+| Paint polish | Select a wall/splashback and finish; use the pinned Polish with AI action. Review clean source first, rough guide second. It must exclude whole-room replacement instructions and unrelated angles. Cancel sends nothing; confirmed success saves AI finish polish separately from Local finishes. Reopened local versions offer Polish saved finishes with AI in Refine. |
 | Materials | Outline a splashback with four convex corners clockwise from top-left, import a cropped material sample, enable Fit tiles to four-corner outline, adjust scale/grout. Save/reopen and change colour. Unselected objects and original remain intact locally; judge perspective/edges as a preview. |
 | Distinct options | With a fixed palette/Keep layout, choose three new concepts. Inspect prompt directions before confirming three paid requests. Compare actual cabinetry/hood/material/main-light schemes, not plants alone; record model/quality/elapsed time. |
 | Notices and compact UI | Switch Room/Style/Refine/Ideas on desktop and phone width. Generate/Brief % and Autosave stay available. Informational notices dismiss or expire; a failed-save retry remains available. Check enlarged text and keyboard. |

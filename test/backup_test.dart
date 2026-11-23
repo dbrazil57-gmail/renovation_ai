@@ -176,7 +176,18 @@ void main() {
     },
   );
 
-  test('bad format, photo integrity, references and ancestry are rejected before writes', () {
+  test('bad format, photo integrity, references and ancestry are rejected before writes', () async {
+    final otherRoom = await store.createRoom(
+      projectId: project.id,
+      name: 'Other room',
+      originalImage: original,
+    );
+    final otherDesign = await store.createDesign(
+      roomId: otherRoom.id,
+      image: original,
+      title: 'Unrelated design',
+      prompt: '',
+    );
     final source = store.backupFor(project.id).encode();
     final snapshot = jsonEncode(records.entries);
     void invalid(void Function(Map<String, dynamic>) change) {
@@ -201,6 +212,26 @@ void main() {
           (data['designs'] as List).first['id'],
     );
     invalid((data) => (data['photos'] as Map).clear());
+    invalid(
+      (data) => (data['designs'] as List).firstWhere(
+        (v) => v['id'] == first.id,
+      )['supportingImageIds'] = [otherDesign.imageId],
+    );
+    invalid(
+      (data) => (data['designs'] as List).first['supportingImageIds'] = [
+        room.originalId,
+        room.originalId,
+      ],
+    );
+    invalid(
+      (data) =>
+          (data['designs'] as List).first['supportingImageIds'] = ['missing'],
+    );
+    invalid(
+      (data) => (data['designs'] as List).first['supportingImageIds'] = [
+        (data['designs'] as List).first['imageId'],
+      ],
+    );
     invalid(
       (data) => (data['rooms'] as List).add((data['rooms'] as List).first),
     );

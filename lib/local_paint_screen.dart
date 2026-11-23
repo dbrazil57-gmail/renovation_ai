@@ -535,12 +535,22 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
     changeWall(wall.copyWith(marks: [...wall.marks, mark]));
   }
 
-  Future<void> customColour() async {
-    var input = wall.rgb.toRadixString(16).padLeft(6, '0').toUpperCase();
+  Future<void> customColour({bool grout = false}) async {
+    final originalIndex = selected;
+    var input = (grout ? wall.groutRgb : wall.rgb)
+        .toRadixString(16)
+        .padLeft(6, '0')
+        .toUpperCase();
     final result = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Custom paint colour'),
+        title: Text(
+          grout
+              ? 'Custom grout colour'
+              : wall.finish == LocalFinish.paint
+              ? 'Custom paint colour'
+              : 'Custom tile colour',
+        ),
         content: TextFormField(
           initialValue: input,
           onChanged: (value) => input = value,
@@ -562,13 +572,14 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         ],
       ),
     );
-    if (result == null || !mounted) return;
+    if (result == null || !mounted || selected != originalIndex) return;
     final text = result.trim().replaceFirst('#', '');
     if (!RegExp(r'^[0-9a-fA-F]{6}$').hasMatch(text)) {
       tell('Use six hexadecimal digits, for example #98A58E.');
       return;
     }
-    changeWall(wall.copyWith(rgb: int.parse(text, radix: 16)));
+    final rgb = int.parse(text, radix: 16);
+    changeWall(grout ? wall.copyWith(groutRgb: rgb) : wall.copyWith(rgb: rgb));
     setState(() => showSelection = false);
   }
 
@@ -1060,10 +1071,17 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                 value: wall.tileAngle,
                 onChanged: (v) => changeWall(wall.copyWith(tileAngle: v)),
               ),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Grout colour'),
+              ),
               Wrap(
                 spacing: 4,
                 children: [
                   for (final entry in {
+                    0xFFFFFF: 'White grout',
+                    0x000000: 'Black grout',
+                    0xA0A0A0: 'Grey grout',
                     0xDED8CE: 'Warm grout',
                     0xF0F0EC: 'Light grout',
                     0x555550: 'Dark grout',
@@ -1075,6 +1093,11 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                           changeWall(wall.copyWith(groutRgb: entry.key)),
                     ),
                 ],
+              ),
+              TextButton.icon(
+                onPressed: () => customColour(grout: true),
+                icon: const Icon(Icons.color_lens_outlined),
+                label: const Text('Custom grout colour'),
               ),
             ],
           ),
@@ -1128,21 +1151,6 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
               icon: const Icon(Icons.color_lens_outlined),
               label: const Text('Custom colour'),
             ),
-            if (widget.requestAiFinish != null)
-              TextButton.icon(
-                onPressed:
-                    recipe!.surfaces.any(
-                      (wall) =>
-                          wall.coverage > 0 &&
-                          wall.marks.any(
-                            (mark) => mark.kind != PaintMarkKind.erase,
-                          ),
-                    )
-                    ? () => save(finishWithAi: true)
-                    : null,
-                icon: const Icon(Icons.auto_awesome_outlined),
-                label: const Text('Polish paint / tiles with AI'),
-              ),
           ],
         ),
       if (panel == 1 && wall.finish != LocalFinish.paint)
@@ -1338,10 +1346,50 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
           ),
           HelpIcon(
             title: 'Colours & tiles',
-            message: 'Select a wall, floor or splashback and check its boundary. In Finish, use Wall tiles, kitchen Splashback tiles, or bathroom/Shower wall tiles shortcuts, then choose a pattern and colour. Add a separate surface layer to keep wall and floor choices independent. Changing colour or pattern reuses the same selection and makes no AI request. Selection uses connected colours and edges; similar surfaces can merge. Use sensitivity, outline or erase for difficult edges and patterned tiles. For patterned splashbacks, Outline full splashback covers the reviewed four-corner area including grout gaps. Grow selected area expands in a chosen direction; Finish opacity changes strength, not area. Tile scale and rotation are approximate visual guidance, not measured installation dimensions or a product catalogue. Delete one surface or all layers, even after reopening. Polish paint / tiles with AI saves all local finishes and prepares one correction for review; only confirmed generation uses your paid AI connection. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
+            message: 'Select a wall, floor or splashback and check its boundary. In Finish, use Wall tiles, kitchen Splashback tiles, or bathroom/Shower wall tiles shortcuts, then choose a pattern and colour. Add a separate surface layer to keep wall and floor choices independent. Changing colour or pattern reuses the same selection and makes no AI request. Selection uses connected colours and edges; similar surfaces can merge. Use sensitivity, outline or erase for difficult edges and patterned tiles. For patterned splashbacks, Outline full splashback covers the reviewed four-corner area including grout gaps. Grow selected area expands in a chosen direction; Finish opacity changes strength, not area. Tile scale and rotation are approximate visual guidance, not measured installation dimensions or a product catalogue. Delete one surface or all layers, even after reopening. Polish with AI saves all local finishes and prepares one correction for review; only confirmed generation uses your paid AI connection. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
           ),
         ],
       ),
+      bottomNavigationBar: widget.requestAiFinish == null
+          ? null
+          : SafeArea(
+              minimum: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+              child: Align(
+                alignment: Alignment.centerRight,
+                heightFactor: 1,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      key: const ValueKey('polish-finishes-action'),
+                      onPressed:
+                          loading ||
+                              busy ||
+                              selectingWall ||
+                              fourCornerOutline ||
+                              !(recipe?.surfaces.any(
+                                    (surface) =>
+                                        surface.coverage > 0 &&
+                                        surface.marks.any(
+                                          (mark) =>
+                                              mark.kind !=
+                                                  PaintMarkKind.erase &&
+                                              (mark.kind !=
+                                                      PaintMarkKind.polygon ||
+                                                  mark.points.length >= 3),
+                                        ),
+                                  ) ??
+                                  false)
+                          ? null
+                          : () => save(finishWithAi: true),
+                      icon: const Icon(Icons.auto_awesome_outlined),
+                      label: const Text('Polish with AI'),
+                    ),
+                  ),
+                ),
+              ),
+            ),
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : recipe == null

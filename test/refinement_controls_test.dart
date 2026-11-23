@@ -230,7 +230,19 @@ void main() {
       await ready(tester, () => saved?.surfaces.single.tileSize == .22);
       await settlePaint(tester);
       final outline = find.text('Outline full splashback');
+      if (outline.evaluate().isEmpty) {
+        await tester.scrollUntilVisible(
+          outline,
+          150,
+          scrollable: find
+              .byWidgetPredicate(
+                (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+              )
+              .first,
+        );
+      }
       await tester.ensureVisible(outline);
+      await tester.pumpAndSettle();
       await tester.tap(outline);
       await settlePaint(tester);
       final bounds = tester.getRect(find.byKey(const ValueKey('paint-canvas')));

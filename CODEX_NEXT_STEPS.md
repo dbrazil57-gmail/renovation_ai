@@ -9,6 +9,33 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ### Active follow-up checklist
 
+- [x] Diagnose the supplied tile images: owner confirms they are Local finishes /
+  local preview versions; an AI attempt failed and left the preview selected.
+  This does not mean the owner never attempted AI. Local masks do not recognise
+  windows/fixtures. Clarify that saving the preview does not run paid AI.
+- [x] Fix finish-polish inputs: clean same-view design first, rough guide second;
+  explicit physical splashback boundaries, protected window/tap/cupboards, and
+  separate tile/grout intent. Retain the selected newer design, not an old original.
+- [x] Recover polish image roles from saved local recipe/source and current or
+  legacy correction drafts after reopening. Offer Polish saved finishes with AI
+  directly in Refine. Missing clean source blocks sending rather than falling back
+  to the rough guide. One confirmed image request; Cancel sends none.
+- [x] Keep Polish with AI pinned in Select and Finish, including expanded tile
+  controls. Label clean design / rough guide in confirmation. Preserve guide as
+  parent and clean source as source; allow same-room supporting design images in
+  project files and remap them on restore. Reject unrelated/missing/self references.
+- [x] Verification: 396 full-suite tests pass (100s), 46 related checks pass after
+  suppressing the misleading broad-design warning for finish-only requests;
+  final analysis clean (23.7s),
+  refreshed paint clip passes capture, H.264/timestamps and full decode. Web source
+  `7821f8aa18`, same localhost:7357. No APK or paid AI call.
+- [x] Final web build passes (53.3s); actual isolated desktop/phone browser checks
+  pass for reopened polish, pinned action in both phases and custom grout. Screenshots
+  inspected. Owner reports the real AI polish now worked well. Next feedback:
+  preserve current screen on refresh, review instructions before sending, refine
+  polish placement and clarify the next selected-design update action.
+- [x] Expand the existing independent grout picker: pure white, pure black, grey,
+  warm, light and dark presets plus custom hex colour. Tile colour remains separate.
 - [x] Simplify normal file saving to Save project and Save project as. Remove
   duplicate plaintext backup-snapshot actions; keep encrypted export collapsed
   under Advanced with explicit exported-copy-only protection.
@@ -112,7 +139,7 @@ sections take precedence over unchecked or source-only notes in older history.
 
 - [x] Reconcile today's 11 commit batches against the conversation and actual
   source/tests. Distinguish implemented code, visual acceptance and future work.
-- [x] Chrome source is now `2643765277`; latest APK remains 1.0.17+18
+- [x] Chrome source is now `7821f8aa18`; latest APK remains 1.0.17+18
   (`d19f2fd3d2`). All post-APK changes need packaging only when explicitly requested.
 - [x] Recheck actual desktop and phone-sized Chrome Room/Style/Refine/Ideas navigation and inspect
   screenshots. Prior workspace automation stall did not reproduce in this pass.

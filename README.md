@@ -1,5 +1,20 @@
 # RenoVision
 
+Latest finish-polish correction, **23 November**: the owner confirms the tiled
+pictures were saved **Local finishes** previews. An AI attempt failed and left the
+preview selected; this is not a completed AI polish result.
+**Polish with AI** is now pinned in the finish editor; reopened local versions
+also offer **Polish saved finishes with AI** in Refine. Confirmation sends the
+clean same-view design first and rough finish guide second, with physical
+splashback boundaries and protected window/tap/cupboards. Only confirmed generation
+saves **AI finish polish**. Independent grout adds White/Black and custom colour.
+Save/restore retains both image references; originals and earlier versions remain.
+
+Current Chrome source **`7821f8aa18`**, same localhost:7357: **396 full-suite tests
+pass**, final analysis clean, release web build and updated paint-help clip/full
+decode pass. No paid AI call or APK build. Provider appearance/boundary acceptance
+is still required; local selections are not automatic semantic masks.
+
 Latest saving/refinement corrections, **23 November**:
 
 - Normal project-file actions are Save project and Save project as. The duplicate
@@ -37,8 +52,8 @@ it. Android continues to use its secure device store. Project files exclude keys
 
 Autosave is a visible switch below the title, not a menu-only action. Selected
 designs have **Update this design** and **Apply focused update**. Local finishes
-have **Polish paint / tiles with AI**, which sends only the finish correction and
-clean source view, rather than the original whole-room brief. Sending still needs
+have **Polish with AI**, which sends only the finish correction, clean design and
+rough guide, rather than the original whole-room brief. Sending still needs
 confirmation. Originals, approved baselines and prior versions are preserved.
 
 Projects now offer confirmed, recoverable archive/delete, unique new names,
@@ -56,7 +71,7 @@ they are not automatic wall recognition or measured installation plans.
 **Save/Open meanings:** Autosave keeps local room edits; photos and completed
 designs save when added. A connected reusable browser working file is also updated
 while linked. Save project writes the full project. Save as chooses another file.
-Backup snapshot is an optional fixed copy, with the same project contents.
+Use Save as for a separate fixed copy with the same project contents.
 Open resumes the matching project with conflict choices; Restore copy adds a
 separate project. Android currently exports through its chooser; it does not
 continuously overwrite a persistently linked external document URI.

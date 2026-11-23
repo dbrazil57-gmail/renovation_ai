@@ -536,6 +536,7 @@ class AiEditRequest {
   final String instructions;
   final bool precise;
   final Map<String, Uint8List> supportingImages;
+  final bool finishPolish;
   final List<String> styleIds;
   final String otherStyle;
   const AiEditRequest({
@@ -549,6 +550,7 @@ class AiEditRequest {
     required this.instructions,
     required this.precise,
     this.supportingImages = const {},
+    this.finishPolish = false,
     this.styleIds = const [],
     this.otherStyle = '',
   });
@@ -566,6 +568,7 @@ class AiEditRequest {
     sourceImageId: sourceImageId,
     image: image,
     supportingImages: supportingImages,
+    finishPolish: finishPolish,
     styleIds: styleIds,
     otherStyle: otherStyle,
     prompt: concept.prompt,
@@ -796,6 +799,8 @@ class _AiEditCardState extends State<AiEditCard>
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (captured.finishPolish)
+                    const Text('Clean design · image 1'),
                   Image.memory(
                     captured.image,
                     height: 130,
@@ -803,7 +808,9 @@ class _AiEditCardState extends State<AiEditCard>
                   ),
                   if (captured.supportingImages.isNotEmpty) ...[
                     Text(
-                      '${captured.supportingImages.length} supporting room views will also be sent:',
+                      captured.finishPolish
+                          ? 'Rough finish guide · image 2'
+                          : '${captured.supportingImages.length} supporting room views will also be sent:',
                     ),
                     Wrap(
                       spacing: 8,

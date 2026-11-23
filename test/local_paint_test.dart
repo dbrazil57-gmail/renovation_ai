@@ -138,6 +138,32 @@ void main() {
     final grout = tiles.getPixel(40, 30), tile = tiles.getPixel(44, 32);
     expect((grout.r - grout.g).abs(), lessThan(10));
     expect(tile.g, greaterThan(tile.r));
+    final whiteTiles = tiled(rgb: 0xFFFFFF);
+    final whiteGrout = img.decodePng(
+      renderLocalPaint(
+        PaintRenderInput(
+          original,
+          whiteTiles.replaceSurface(
+            0,
+            whiteTiles.surfaces.single.copyWith(groutRgb: 0xFFFFFF),
+          ),
+        ),
+      ).bytes,
+    )!;
+    final blackGrout = img.decodePng(
+      renderLocalPaint(
+        PaintRenderInput(
+          original,
+          whiteTiles.replaceSurface(
+            0,
+            whiteTiles.surfaces.single.copyWith(groutRgb: 0x000000),
+          ),
+        ),
+      ).bytes,
+    )!;
+    samePixel(whiteGrout, blackGrout, 44, 32);
+    expect(blackGrout.getPixel(40, 30).r, 0);
+    expect(whiteGrout.getPixel(40, 30).r, greaterThan(100));
     for (var y = 0; y < 60; y++) {
       for (var x = 0; x < 80; x++) {
         expect(tiles.getPixel(x, y).a, image.getPixel(x, y).a);
@@ -505,11 +531,17 @@ void main() {
       await tester.tap(find.byTooltip('Colours & tiles without AI'));
       await tester.pump();
       await drawWall(tester);
+      expect(
+        find.byKey(const ValueKey('polish-finishes-action')).hitTestable(),
+        findsOneWidget,
+      );
       await tester.tap(find.text('2 Finish'));
       await tester.pump();
-      await tester.ensureVisible(find.text('Polish paint / tiles with AI'));
-      await tester.pump();
-      await tester.tap(find.text('Polish paint / tiles with AI'));
+      expect(
+        find.byKey(const ValueKey('polish-finishes-action')).hitTestable(),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Polish with AI'));
       await tester.pump();
       await waitFor(
         tester,
@@ -573,7 +605,11 @@ void main() {
         name: 'Bathroom',
         originalImage: original,
       );
-      await store.savePaintDraft(room.id, room.originalId, tiled());
+      await store.savePaintDraft(
+        room.id,
+        room.originalId,
+        tiled(rgb: 0xFFFFFF),
+      );
       await store.updateRoom(
         store.roomById(room.id)!.copyWith(precisionConceptCount: 3),
       );
@@ -598,6 +634,43 @@ void main() {
       await tester.ensureVisible(find.text('Tile layout & grout'));
       await tester.tap(find.text('Tile layout & grout'));
       await tester.pumpAndSettle();
+      expect(
+        find.byKey(const ValueKey('polish-finishes-action')).hitTestable(),
+        findsOneWidget,
+      );
+      PaintSurface savedSurface() => store
+          .roomById(room.id)!
+          .paintDrafts[room.originalId]!
+          .surfaces
+          .single;
+      for (final entry in {
+        'White grout': 0xFFFFFF,
+        'Black grout': 0x000000,
+      }.entries) {
+        await Scrollable.ensureVisible(
+          tester.element(find.text(entry.key)),
+          alignment: .5,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(entry.key));
+        await settlePreview();
+        expect(savedSurface().groutRgb, entry.value);
+        expect(savedSurface().rgb, 0xFFFFFF);
+      }
+      await tester.ensureVisible(find.text('Custom grout colour'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Custom grout colour'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField), '#2A4B6C');
+      await tester.tap(find.text('Apply'));
+      await settlePreview();
+      expect(savedSurface().groutRgb, 0x2A4B6C);
+      expect(savedSurface().rgb, 0xFFFFFF);
+      final restored = LocalPaintRecipe.fromMap(
+        store.roomById(room.id)!.paintDrafts[room.originalId]!.toMap(),
+      );
+      expect(restored.surfaces.single.groutRgb, 0x2A4B6C);
+      expect(restored.surfaces.single.rgb, 0xFFFFFF);
       await Scrollable.ensureVisible(
         tester.element(find.text('Dark grout')),
         alignment: .5,
@@ -605,7 +678,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Dark grout'));
       await settlePreview();
-      final finish = find.text('Polish paint / tiles with AI');
+      final finish = find.text('Polish with AI');
       await tester.scrollUntilVisible(
         finish,
         120,

@@ -48,7 +48,12 @@ import 'design_recipe_widgets.dart';
 import 'feedback_widgets.dart';
 import 'feedback_storage.dart';
 import 'local_paint_screen.dart';
-import 'local_paint.dart' show paintRefinementPrompt, LocalFinish;
+import 'local_paint.dart'
+    show
+        paintRefinementPrompt,
+        isPaintRefinementPrompt,
+        paintRefinementRequestPrompt,
+        LocalFinish;
 import 'brand_mark.dart';
 import 'room_delete_widgets.dart';
 import 'brief_readiness.dart';
@@ -1366,8 +1371,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   late String selectedPhotoId;
   List<String>? restoredSupportingIds;
   bool includeRoomContext = true;
-  bool polishingFinishes = false;
-  String? finishSourceId;
+  DesignVersion? get finishPreview => widget.store
+      .designsFor(widget.roomId)
+      .where((design) => design.id == selectedId && design.paintRecipe != null)
+      .firstOrNull;
+  bool get polishingFinishes =>
+      precise && finishPreview != null && isPaintRefinementPrompt(changes.text);
   FocusSection focusSection = FocusSection.room;
   int focusRevealRevision = 0;
   final instructionAnchor = GlobalKey();
@@ -1482,10 +1491,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   ? 'AI working…'
                   : !widget.store.ai.connected
                   ? 'Connect AI to generate'
-                  : (precise
-                            ? draft.precisionConceptCount
-                            : draft.conceptCount) >
-                        1
+                  : !polishingFinishes &&
+                        (precise
+                                ? draft.precisionConceptCount
+                                : draft.conceptCount) >
+                            1
                   ? 'Generate ${precise ? draft.precisionConceptCount : draft.conceptCount} ${precise ? 'variations' : 'design ideas'}'
                   : polishingFinishes && precise
                   ? 'Polish finishes with AI'
@@ -1713,13 +1723,14 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   }
 
   void _selectDesign(String? id, {bool clearUpdate = false}) {
+    final previousPolish = polishingFinishes;
     draft.setPrecise(id != null);
     if (id != null) draft.setPrecisionConceptCount(1);
-    if (clearUpdate) draft.correction.clear();
+    if (clearUpdate || (previousPolish && id != selectedId)) {
+      draft.correction.clear();
+    }
     setState(() {
       selectedId = id;
-      polishingFinishes = false;
-      finishSourceId = null;
       restoredSupportingIds = null;
       if (id != null) focusSection = FocusSection.refine;
     });
@@ -2045,7 +2056,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
 
   String _prompt(RenovationRoom room) {
     if (precise && polishingFinishes) {
-      return '${_templatePrompt(room)}\nIMAGE ROLES: Image 1 is the rough local finish guide. Image 2, when attached, is the clean same-view source. Use it to recognise the intended surface boundaries and preserve objects/texture; apply only the listed finishes from image 1. Do not redesign or restore obsolete colours.';
+      return '${paintRefinementRequestPrompt(finishPreview!.paintRecipe!, changes.text)}\n'
+          '${protected.text.trim().isEmpty ? '' : 'MUST RETAIN: ${protected.text.trim()}.\n'}'
+          '${buildRoomItemsPrompt(draft.effectiveRoomType, Map.fromEntries(draft.roomItemChoices.entries.where((e) => e.value == 'keep')), const [])}';
     }
     final sourceId = selectedId == null
         ? selectedPhotoId
@@ -2100,16 +2113,25 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       }
       sourceId = selected.first.imageId;
     }
+    final guideId = sourceId;
+    final finishPolish = !forAnalysis && polishingFinishes;
+    if (finishPolish) {
+      final cleanId = finishPreview!.sourceImageId;
+      if (cleanId == null ||
+          cleanId == guideId ||
+          widget.store.imageFor(cleanId) == null) {
+        throw const AiFailure(
+          'The clean source for this finish preview is unavailable. Select the clean design and reopen Colours & tiles before polishing. No AI request was sent.',
+        );
+      }
+      sourceId = cleanId;
+    }
     final image = widget.store.imageFor(sourceId);
     if (image == null) {
       throw const AiFailure('The selected image is unavailable.');
     }
     final supporting = {
-      if (precise &&
-          polishingFinishes &&
-          finishSourceId != null &&
-          finishSourceId != sourceId)
-        finishSourceId!: widget.store.imageFor(finishSourceId!)!,
+      if (finishPolish) guideId: widget.store.imageFor(guideId)!,
       if (!precise && includeRoomContext && room.photoIds.length > 1)
         for (final id in (restoredSupportingIds ?? room.photoIds).where(
           (id) => id != sourceId,
@@ -2130,6 +2152,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       sourceImageId: sourceId,
       image: image,
       supportingImages: supporting,
+      finishPolish: finishPolish,
       styleIds: draft.styleIds.toList(),
       otherStyle: draft.otherStyle.text,
       prompt: prompt,
@@ -2178,7 +2201,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     if (mounted) {
       notice(
         context,
-        'Prompt copied. Paste it into your AI app and attach the working photo and any selected supporting views.',
+        polishingFinishes
+            ? 'Prompt copied. Attach the clean design first and this local finish preview second in your AI app.'
+            : 'Prompt copied. Paste it into your AI app and attach the working photo and any selected supporting views.',
       );
     }
   }
@@ -2310,30 +2335,26 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     );
     if (mounted && created != null) {
       _selectDesign(created!.id);
-      if (finishWithAi) {
-        final correction = paintRefinementPrompt(created!.paintRecipe!);
-        draft.correction.text = correction;
-        draft.setPrecise(true);
-        draft.setPrecisionConceptCount(1);
-        draft.setUseAiPrompt(false);
-        setState(() {
-          polishingFinishes = true;
-          finishSourceId = sourceId;
-          focusSection = FocusSection.refine;
-        });
-        final saved = await draft.save();
-        if (mounted) {
-          notice(
-            context,
-            saved
-                ? 'Finish preview saved. Polish finishes with AI corrects only these surfaces; the whole-room brief is excluded.'
-                : 'Finish preview saved. Correction draft could not save; keep this screen open and retry Save.',
-          );
-          if (saved && widget.store.ai.connected) {
-            await _generateFromWorkspace(briefReviewed: true);
-          }
-        }
-      }
+      if (finishWithAi) await _polishFinishes(created!);
+    }
+  }
+
+  Future<void> _polishFinishes(DesignVersion preview) async {
+    draft.correction.text = paintRefinementPrompt(preview.paintRecipe!);
+    draft.setPrecise(true);
+    draft.setPrecisionConceptCount(1);
+    draft.setUseAiPrompt(false);
+    setState(() => focusSection = FocusSection.refine);
+    final saved = await draft.save();
+    if (!mounted) return;
+    notice(
+      context,
+      saved
+          ? 'Local preview saved. AI has not run yet. Review the clean design and finish guide, then confirm to polish.'
+          : 'Local preview saved. Correction draft could not save; keep this screen open and retry Save.',
+    );
+    if (saved && widget.store.ai.connected) {
+      await _generateFromWorkspace(briefReviewed: true);
     }
   }
 
@@ -2793,14 +2814,29 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                                   : 'Apply focused update',
                             ),
                           ),
-                          const Text(
-                            'Uses this selected image and your update only. The original room brief stays saved.',
+                          Text(
+                            polishingFinishes
+                                ? 'Uses the clean design first and this rough finish guide second. Review and confirm before AI runs.'
+                                : 'Uses this selected image and your update only. The original room brief stays saved.',
                           ),
+                          if (finishPreview != null && !polishingFinishes)
+                            OutlinedButton.icon(
+                              key: const ValueKey('resume-finish-polish'),
+                              onPressed: aiPending
+                                  ? null
+                                  : () => _polishFinishes(finishPreview!),
+                              icon: const Icon(Icons.auto_awesome_outlined),
+                              label: const Text(
+                                'Polish saved finishes with AI',
+                              ),
+                            ),
                         ],
                       ),
                     ),
                   ),
-                if (precise && looksLikeBroadRenovation(changes.text)) ...[
+                if (precise &&
+                    !polishingFinishes &&
+                    looksLikeBroadRenovation(changes.text)) ...[
                   const SizedBox(height: 8),
                   const Text(
                     'This is a broad renovation request. Choose New design to coordinate the selected changes; use Precise correction for a specific detail.',
@@ -2837,6 +2873,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 ),
                 AiEditCard(
                   compact: true,
+                  singleConcept: polishingFinishes,
                   store: widget.store,
                   draft: draft,
                   controller: generation,

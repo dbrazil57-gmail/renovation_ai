@@ -1,5 +1,39 @@
 # Renovision feature status
 
+## Finish-polish follow-up — 23 November
+
+Owner confirms the supplied tile results are **Local finishes / local preview**;
+an AI attempt failed, leaving that preview selected. It is not a completed AI
+finish-polish result. Saving local finishes does not send a provider request.
+The local mask cannot identify and exclude windows, taps or cupboards automatically.
+
+- Polish now sends the **clean same-view design first**, rough finish guide second.
+  Surface boundaries and objects in the clean design take priority over guide spill.
+  Splashback instructions require separate wall-plane perspective and preserve
+  window glass/frame/view, sink/tap, worktop, cupboards, outlets and appliances.
+- Polish roles survive reopening a saved local version/current or legacy draft;
+  Refine also offers **Polish saved finishes with AI**. A missing clean source
+  blocks sending. No broad renovation brief, old room angles or palette is reapplied.
+- **Polish with AI** stays pinned in Select/Finish, including expanded grout
+  controls. Confirmation labels clean design and rough guide. Only confirmation
+  sends one paid request; its separate result is labelled **AI finish polish**.
+- Independent grout colour offers White, Black, Grey, Warm, Light and Dark plus
+  custom hex. Choosing grout leaves tile colour unchanged; both values persist.
+- Portable projects now accept/remap supporting same-room design images, retaining
+  the guide parent and clean source through Save/Open/restore. Missing, unrelated,
+  duplicate and self-referencing supporting IDs remain invalid.
+
+Source **`7821f8aa18`**: **396 tests pass**, plus 46 related checks after excluding
+finish polish from the broad-renovation warning; clean analysis, release web build,
+and updated paint help capture/MP4 validation pass. Same localhost:7357; APK stays
+1.0.17+18. All AI tests use mocks. Real-provider boundary/appearance acceptance is
+still required; the local outline is not a semantic mask or enforced AI boundary.
+Actual isolated desktop and phone-sized finish/grout checks pass; screenshots
+inspected. Owner reports the next real polish worked well. Further surface cases
+remain acceptance work. Refresh restoration and action placement are the next batch.
+
+The earlier verification sections below describe their stated builds.
+
 ## Saving, selected-image updates and splashback corrections — 23 November
 
 This section supersedes the earlier duplicate-backup and selected-image defaults.
@@ -51,7 +85,7 @@ help captures and full MP4 decodes pass. No real provider or physical-phone test
 | Visible Autosave (T03/T11) | Compact switch under the title in project, room setup and workspace. Saved setting, save errors retained. | Confirm placement on the physical phone after a requested APK. Local autosave is distinct from a reusable external file link. |
 | Save/Open/import and project management (T10/T11) | Full portable project; optional snapshot; duplicate; typed archive/delete with backup suggestion; restore archived/deleted work; unique new names and numbered legacy labels. Import room copies adds all images/history with fresh IDs. | Original OneDrive incident cause remains unproven; system-picker destination save/reopen still required. Additive import does not reconcile same-room edits. Android durable linked URI overwriting remains open. |
 | Narrow refinement | Selected result opens Refine with Update this design and Apply focused update; original broad brief/Keep fields remain separate. Typing an update also switches the footer to focused correction. | Mocked confirmation/cancellation, parent/version and brief preservation pass. Real-image adherence is not guaranteed. |
-| Paint-only AI polish (T12) | Dedicated Polish paint / tiles with AI uses the rough guide and clean source view; excludes broad brief, old corrections, palette/analysis/research and unrelated angles. | Automatic colour selection can miss edges; add missed area or outline it. Actual owner-image boundary acceptance remains. |
+| Paint-only AI polish (T12) | Pinned Polish with AI sends the clean design first and rough guide second; saved local versions can resume in Refine. Excludes broad brief, old corrections, palette/analysis/research and unrelated angles. | Local preview is not a completed AI result. Automatic colour selection can miss edges; actual owner-image boundary acceptance remains. |
 | Tile material/perspective (T12) | Bounded, metadata-stripped material import, editable colour/scale/grout and reviewed four-corner perspective; portable saved layers. | Approximate projection and lighting; no semantic segmentation, measured scale or verified product catalogue. |
 | Three different concepts (T07) | Kitchen schemes explicitly vary cabinetry/front detail, hood, focal materials and main light within palette/Keep constraints. Other rooms retain distinct design directions. | Real two/three-result appeal and distinctness need an owner-confirmed paid test. No automatic similarity critique or paid retry. |
 | Notice obstruction | Main workspace notices push content, replace old messages and expire after six seconds. Other snackbars explicitly expire, with close controls. Completed AI progress expires after ten seconds; failed-save recovery remains available. | Check real phone touch and enlarged text; active progress/save recovery must stay usable. |

@@ -296,7 +296,7 @@ const paintWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Save a version',
-      'Back keeps the working draft. Save finish version adds a new image with editable surface layers. Polish paint / tiles with AI saves the preview and prepares one focused correction using the guide and clean source view. Review and confirm separately. This does not send the original whole-room renovation brief.',
+        'Back keeps the working draft. Save finish version adds a new image with editable surface layers. The pinned Polish with AI action saves the preview and prepares one focused correction: clean design first, rough finish guide second. Review and confirm separately. Reopened local versions also offer Polish saved finishes with AI. This does not send the original whole-room renovation brief.',
       'Reopen the saved version to try another colour. Local edits need no key; only confirmed AI polishing uses your paid connection. Original photos and the approved design remain saved.',
     ),
   ],

@@ -400,6 +400,52 @@ class LocalPaintRecipe {
   };
 }
 
+/// Recognise saved polish drafts only alongside a version's local paint recipe.
+/// Older drafts used the preview-first wording; their image roles still need the
+/// current clean-first handoff when the user resumes them.
+bool isPaintRefinementPrompt(String text) {
+  final instruction = text.trimLeft();
+  return instruction.startsWith('FINISH POLISH:') ||
+      instruction.startsWith(
+        'The selected image is a rough local finish preview',
+      ) ||
+      instruction.startsWith(
+        'The selected image is a rough local paint preview',
+      );
+}
+
+const paintRefinementImageRoles =
+    'IMAGE ROLES: Image 1 is the clean same-view design before the local finish preview. '
+    'Edit image 1. It is authoritative for the camera, room geometry, physical surface boundaries and objects. '
+    'Image 2 is a rough local paint/tile guide of that same view, not a finished design or another room angle. '
+    'Use image 2 only to locate the intended surfaces and understand finish choices. '
+    'The guide can spill over objects or leave gaps. The real surfaces in image 1 take priority over the drawn selection. '
+    'Recover any objects obscured by the guide from image 1; do not copy guide spill, a flat rectangular band, floating panels or missing objects into the result. '
+    'Return one photorealistic corrected image from image 1, not a collage or written plan. '
+    'This is visual inspiration, not a measured construction plan.';
+
+const _splashbackRefinementBoundaries =
+    'SPLASHBACK: Apply the finish to the actual splashback wall behind the worktop, '
+    'bounded by the benchtop, cupboards, hood and window edges. Treat each visible '
+    'wall plane separately, with grout lines following that plane. Keep the window '
+    'glass, frame and outdoor view, tap, sink, worktop, cupboards, outlets and '
+    'appliances visible as in the clean design, even where the rough guide covers '
+    'them. Do not lay a tile band across the window, tap or cabinets. ';
+
+String paintRefinementRequestPrompt(
+  LocalPaintRecipe recipe,
+  String instruction,
+) {
+  // Preserve the user's focused notes, while repairing legacy preview-first
+  // wording. The clean image's authority must not depend on retyping a draft.
+  final correction = instruction.trim().replaceFirst(
+    RegExp(r'^The selected image is a rough local'),
+    'Image 2 is a rough local',
+  );
+  return '$paintRefinementImageRoles\nPRECISION EDIT: $correction\n'
+      '${recipe.surfaces.any((s) => s.kind == LocalSurfaceKind.splashback) && !correction.contains(_splashbackRefinementBoundaries) ? _splashbackRefinementBoundaries : ''}';
+}
+
 /// A reviewable correction request, not an enforced edit mask or paid request.
 String paintRefinementPrompt(LocalPaintRecipe recipe) {
   final targets = recipe.surfaces.where(
@@ -424,9 +470,10 @@ String paintRefinementPrompt(LocalPaintRecipe recipe) {
       })
       .join('; ');
   final tiles = targets.any((surface) => surface.finish != LocalFinish.paint);
-  return 'The selected image is a rough local ${tiles ? 'finish preview with paint/tile choices' : 'paint preview'}. Polish the selected finishes together in one photorealistic correction using these choices: $colours. '
+  return 'FINISH POLISH: Use the rough local ${tiles ? 'finish preview with paint/tile choices' : 'paint preview'} as guidance for these selected finishes only: $colours. '
       '${targets.any((s) => s.finish != LocalFinish.paint && s.tileTexture != null) ? 'Retain the imported material sample character visible in the guide, integrating its texture naturally rather than substituting a generic flat fill. ' : ''}'
       'Clean uneven boundaries, halos and small missed patches on those same selected surfaces. Integrate natural material texture, light and shadows with the approved design. '
+      '${targets.any((s) => s.kind == LocalSurfaceKind.splashback) ? _splashbackRefinementBoundaries : ''}'
       '${tiles ? 'Refine tile perspective, grout alignment and material realism within the selected floor/wall/splashback areas. Use realistic wall/splashback tile proportions and fine joints rather than copying an oversized screen-space grid literally. The local pattern scale and angle are visual guidance, not measured installation dimensions. ' : ''}'
       'Keep all unselected surfaces, ceilings, trim, windows, doors, furniture, appliances, artwork, layout and camera viewpoint unchanged. A floor may change only if explicitly listed among the selected targets above. '
       'Do not redesign the approved concept, reintroduce old finishes, add decoration or recolour unrelated surfaces. Hex colours are approximate visual references, not exact paint or tile-product matches.';

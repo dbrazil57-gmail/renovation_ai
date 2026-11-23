@@ -273,6 +273,10 @@ class ProjectBackup {
       for (final design in designs) {
         final room = byRoom[design.roomId];
         if (room == null) throw const FormatException();
+        final validImages = {
+          ...room.photoIds,
+          ...designs.where((d) => d.roomId == room.id).map((d) => d.imageId),
+        };
         if (design.paintRecipe != null &&
             (design.sourceImageId == null ||
                 design.aiProvider != null ||
@@ -285,10 +289,6 @@ class ProjectBackup {
         }
         final savedAnalysis = design.recipe?.analysis;
         if (savedAnalysis != null) {
-          final validImages = {
-            ...room.photoIds,
-            ...designs.where((d) => d.roomId == room.id).map((d) => d.imageId),
-          };
           if (!validImages.contains(savedAnalysis.sourceImageId) ||
               !savedAnalysis.supportingImageIds.every(room.photoIds.contains)) {
             throw const BackupFailure(
@@ -318,7 +318,9 @@ class ProjectBackup {
         }
         if (design.supportingImageIds.toSet().length !=
                 design.supportingImageIds.length ||
-            !design.supportingImageIds.every(room.photoIds.contains)) {
+            !design.supportingImageIds.every(
+              (id) => id != design.imageId && validImages.contains(id),
+            )) {
           throw const FormatException();
         }
         requiredPhotos.addAll(design.supportingImageIds);

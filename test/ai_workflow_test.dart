@@ -11,7 +11,9 @@ import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
 import 'package:renovision_ai/ai_service.dart';
 import 'package:renovision_ai/ai_widgets.dart';
+import 'package:renovision_ai/local_paint.dart';
 import 'package:renovision_ai/models.dart';
+import 'package:renovision_ai/project_backup.dart';
 import 'package:renovision_ai/store.dart';
 import 'package:renovision_ai/screens.dart';
 
@@ -443,6 +445,232 @@ void main() {
       expect(generated.prompt, isNot(contains('Modernise the whole room')));
       expect(store.roomById(room.id)!.approvedDesignId, baseline.id);
       expect(store.imageFor(room.originalId), orderedEquals(original));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'finish polish resumes with clean source first, guide second and no request before confirmation',
+    (tester) async {
+      final clean = await store.createDesign(
+        roomId: room.id,
+        image: output,
+        title: 'Approved kitchen design',
+        prompt: 'Earlier approved concept',
+      );
+      await store.approveBaseline(room.id, designId: clean.id);
+      await store.addRoomPhotos(room.id, [original]);
+      final finish = LocalPaintRecipe(
+        width: 80,
+        height: 50,
+        surfaces: [
+          PaintSurface(
+            name: 'Splashback 1',
+            kind: LocalSurfaceKind.splashback,
+            finish: LocalFinish.rectangleTiles,
+            rgb: 0x7D6247,
+            groutRgb: 0x555550,
+            marks: [
+              PaintMark(PaintMarkKind.polygon, const [
+                PaintPoint(.1, .2),
+                PaintPoint(.9, .2),
+                PaintPoint(.9, .6),
+                PaintPoint(.1, .6),
+              ]),
+            ],
+          ),
+        ],
+      );
+      final guideBytes = renderLocalPaint(PaintRenderInput(output, finish))
+          .bytes;
+      final guide = await store.createDesign(
+        roomId: room.id,
+        image: guideBytes,
+        title: 'Local finishes',
+        prompt: 'Local finish preview; no AI request.',
+        parentId: clean.id,
+        sourceImageId: clean.imageId,
+        paintRecipe: finish,
+      );
+      await store.updateRoom(
+        store
+            .roomById(room.id)!
+            .copyWith(
+              instructions: 'Replace every cabinet and the entire floor',
+              correctionInstructions: '',
+            ),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WorkspaceScreen(
+            store: store,
+            roomId: room.id,
+            initialDesignId: guide.id,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final resume = find.byKey(const ValueKey('resume-finish-polish'));
+      await ensureFocusVisible(tester, resume);
+      await tester.tap(resume);
+      await tester.pumpAndSettle();
+      expect(find.text('Clean design · image 1'), findsOneWidget);
+      expect(find.text('Rough finish guide · image 2'), findsOneWidget);
+      expect(
+        find.textContaining('This is a broad renovation request'),
+        findsNothing,
+      );
+      expect(edits, 0);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(edits, 0);
+      expect(store.designsFor(room.id), hasLength(2));
+      expect(
+        store.roomById(room.id)!.correctionInstructions,
+        startsWith('FINISH POLISH:'),
+      );
+
+      // Reopening a previous-release draft must also recover roles from its
+      // local recipe/source provenance, without going back through the editor.
+      await tester.pumpWidget(const SizedBox());
+      await store.updateRoom(
+        store
+            .roomById(room.id)!
+            .copyWith(
+              correctionInstructions:
+                  'The selected image is a rough local finish preview with paint/tile choices. '
+                  'Use bronze tiles with dark grout. Keep the tile joints especially fine.',
+              precisionConceptCount: 3,
+            ),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WorkspaceScreen(
+            store: store,
+            roomId: room.id,
+            initialDesignId: guide.id,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await confirm(tester);
+      expect(edits, 1);
+      expect(
+        base64Decode(submitted!['image'] as String),
+        orderedEquals(output),
+      );
+      final supporting = submitted!['supportingImages'] as List;
+      expect(supporting, hasLength(1));
+      expect(
+        base64Decode(supporting.single as String),
+        orderedEquals(guideBytes),
+      );
+      final prompt = submitted!['prompt'] as String;
+      expect(prompt, contains('Edit image 1'));
+      expect(prompt, contains('Image 2 is a rough local'));
+      expect(prompt, contains('actual splashback wall'));
+      expect(prompt, contains('window glass, frame and outdoor view'));
+      expect(prompt, contains('even where the rough guide covers them'));
+      expect(prompt, contains('Keep the tile joints especially fine'));
+      expect(prompt, isNot(contains('Replace every cabinet')));
+      expect(prompt, isNot(contains('MULTIPLE VIEWS OF THE SAME ROOM')));
+      expect(prompt, isNot(contains('Image 1 is the rough')));
+      final polished = store
+          .designsFor(room.id)
+          .singleWhere((version) => version.providerRequestId != null);
+      expect(polished.title, startsWith('AI finish polish'));
+      expect(polished.parentId, guide.id);
+      expect(polished.sourceImageId, clean.imageId);
+      expect(polished.supportingImageIds, [guide.imageId]);
+      expect(polished.paintRecipe, isNull);
+      expect(store.roomById(room.id)!.approvedDesignId, clean.id);
+      expect(store.imageFor(room.originalId), orderedEquals(original));
+      expect(store.imageFor(guide.imageId), orderedEquals(guideBytes));
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+      expect(store.roomById(room.id)!.correctionInstructions, isEmpty);
+      final portable = ProjectBackup.decode(
+        store.backupFor(room.projectId).encode(),
+      );
+      final restored = await store.restoreBackup(portable);
+      final restoredRoom = store.roomsFor(restored.id).single;
+      final restoredVersions = store.designsFor(restoredRoom.id);
+      final restoredPolish = restoredVersions.singleWhere(
+        (v) => v.aiModel != null,
+      );
+      final restoredGuide = restoredVersions.singleWhere(
+        (v) => v.paintRecipe != null,
+      );
+      expect(restoredPolish.parentId, restoredGuide.id);
+      expect(restoredPolish.supportingImageIds, [restoredGuide.imageId]);
+      expect(restoredPolish.sourceImageId, restoredGuide.sourceImageId);
+      expect(
+        store.imageFor(restoredPolish.sourceImageId!),
+        orderedEquals(output),
+      );
+      expect(store.imageFor(restoredGuide.imageId), orderedEquals(guideBytes));
+      expect(edits, 1);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'finish polish refuses an unavailable clean source instead of sending only the rough guide',
+    (tester) async {
+      final finish = LocalPaintRecipe(
+        width: 60,
+        height: 40,
+        surfaces: [
+          PaintSurface(
+            name: 'Wall',
+            marks: [
+              PaintMark(PaintMarkKind.polygon, const [
+                PaintPoint(.1, .1),
+                PaintPoint(.8, .1),
+                PaintPoint(.8, .8),
+              ]),
+            ],
+          ),
+        ],
+      );
+      final guide = await store.createDesign(
+        roomId: room.id,
+        image: output,
+        title: 'Clean design',
+        prompt: '',
+      );
+      final preview = await store.createDesign(
+        roomId: room.id,
+        image: output,
+        title: 'Local paint',
+        prompt: '',
+        sourceImageId: guide.imageId,
+        paintRecipe: finish,
+      );
+      await store.updateRoom(
+        room.copyWith(correctionInstructions: paintRefinementPrompt(finish)),
+      );
+      await store.photos.delete(guide.imageId);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WorkspaceScreen(
+            store: store,
+            roomId: room.id,
+            initialDesignId: preview.id,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('workspace-generate')));
+      await tester.pumpAndSettle();
+      expect(edits, 0);
+      expect(
+        find.textContaining(
+          'clean source for this finish preview is unavailable',
+        ),
+        findsOneWidget,
+      );
+      expect(store.designsFor(room.id), hasLength(2));
       expect(tester.takeException(), isNull);
     },
   );
