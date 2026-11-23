@@ -1,5 +1,21 @@
 # Renovision feature status
 
+## Broader feature backlog and language decision — 23 November
+
+The owner has chosen **English for now**, superseding the provisional request for
+full interface/AI-text translation. AU/NZ/UK/US English wording remains implemented.
+No translation SDK, cloud service, foreign-language rollout or new app dependency
+has been added. Optional automatic translation is researched/proposed, not available.
+
+The wider remaining list is now consolidated at the top of CODEX_NEXT_STEPS.md:
+wallpaper/material tools, editable reference geometry and enforced region editing,
+broader illustrated examples, real AI diversity/value comparison, measured larger-
+project speed, durable external-file links, camera/comparison exports, later tracked
+AR, iPhone/native-desktop parity and release/support services. These have different
+statuses and are not all prerequisites for the current English BYO-key prototype.
+Existing rooms/styles/palettes, multi-photo AI, local tiles/paint, refinement,
+save/share, remembered keys, navigation restore and current help remain available.
+
 ## Refresh and review workflow — 23 November
 
 Current source **`e0ef2fa1ee`** adds local navigation restoration for Projects /

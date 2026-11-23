@@ -1,5 +1,39 @@
 # Product and research reference
 
+## Language decision — 23 November
+
+The owner first considered translated UI and AI text, then chose **English for
+now** because they cannot personally assess foreign-language quality. This latest
+choice supersedes the provisional rollout. Retain AU/NZ/UK/US English terminology;
+do not translate existing project names, notes, prompts or version history.
+
+Optional automatic translation could avoid hand-authoring every language pack,
+but it still requires integrating the app's labels/messages and testing the UI.
+It does not guarantee accurate renovation terms or remove the need for feedback
+from users who understand the target language. Keep English source/fallback and a
+clear option to return to English in any future implementation.
+
+- **Phone app candidate:** Google's [ML Kit on-device translation](https://developers.google.com/ml-kit/language/translation)
+  supports Android/iOS and more than 50 languages. Download/manage language models,
+  then translate text on-device. Google describes it as suitable for casual/simple
+  translation and recommends evaluation for the particular use case. Its Android
+  integration translates supplied strings; it does not automatically rewrite a
+  whole Flutter interface. [Android integration](https://developers.google.com/ml-kit/language/translation/android).
+- **External user option:** Google Translate's [Tap to Translate](https://support.google.com/translate/answer/6350658?hl=en&co=GENIE.Platform%3DAndroid)
+  translates copied text from another Android app. It does not translate every
+  control or image in place and is not an embedded RenoVision translation feature.
+- **Browser limitation:** a Chrome extension is not an Android-app integration.
+  Flutter web uses graphics renderers, so ordinary website translation should not
+  be relied on for complete interface coverage. This is our implementation inference
+  from [Flutter's web architecture](https://docs.flutter.dev/platform-integration/web).
+- **Cloud alternative:** [Google Cloud Translation](https://docs.cloud.google.com/translate/docs/setup)
+  needs a configured Cloud project, authentication and billing. It is an optional
+  future service, not an account or expense enabled in the current app.
+
+No translation code or dependency was installed. The broader feature list is
+consolidated in CODEX_NEXT_STEPS.md; do not treat old historical unchecked rows as
+proof that recently completed controls are absent.
+
 ## Saving, scope and reusable project looks — current correction pass
 
 Save and plaintext backup held the same project contents, so their separate normal

@@ -7,6 +7,31 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Active follow-up and next acceptance pass — 23 November
 
+### Broader product list — current position
+
+This is the wider feature list the owner asked to resume, not just the latest
+paint/save fixes. It supersedes older unchecked rows where the feature now exists.
+English stays the initial app language; the owner's latest decision defers full
+translations. Optional automatic translation is a later candidate, not installed.
+
+| Item | Already available | Remaining work |
+| --- | --- | --- |
+| Languages | AU/NZ/UK/US English terminology and regional prompt guidance | Full interface/AI-text language selection deferred. Consider optional on-device translation rather than owner-written language packs; still needs UI integration and language-user validation. |
+| Rooms, styles and palettes | 42 room/outdoor types, 23 styles including regional influences, 12 palettes | Broader illustrated inspiration: currently six bundled room examples. Existing lists are not missing; image coverage can grow. |
+| Local materials | Wall paint, wall/floor/splashback tiles, imported tile sample, independent grout, saved selections/plane mapping and AI polish | Dedicated wallpaper with repeat/offset/perspective; further finish types and tricky-boundary quality work. |
+| Precise editing | Focused update, crop handles, markup/shapes/notes, local surface layers | Reopen/edit saved crop/markup geometry; provider mask transport/compositing and checks for changes outside the target. Prompt-only precision is not an enforced pixel boundary. |
+| AI quality and alternatives | Multi-photo analysis, reusable facts, editable plan, saved version recipes and 1/2/3 distinct directions | Controlled real-model/quality comparison and assessment of materially different results. Owner reports the corrected polish worked well; no automatic paid retries. |
+| Speed | Loading/progress states, preview resizing and compact thumbnails | Representative large-project timings, then measured decode/render/export improvements on Chrome and S21. |
+| Saving | Device autosave, complete portable files, Save/Open/Save as, separate-copy restore, additive room import and retained API keys | Durable Chrome file handles and Android document-URI links across restarts, with permission/conflict recovery. File-link work was inspected but no implementation changed in this regroup. |
+| Camera and sharing | Camera/gallery entry, captured-view analysis/redesign, aligned still overlay, image save/share and before/after slider | Export comparison/camera composites; tracked moving-camera room transformation is a separate later feature. |
+| Platforms | Shared Flutter source; Chrome current; existing S21 APK | Package current source only when requested, finish phone acceptance, then iPhone file/share/Keychain parity. Native desktop packaging follows later. |
+| Release/business | Offline sample, current walkthrough recordings, BYO AI keys, feedback drafts and tester-service preparation | Owner support address/hosting, real report delivery/privacy page, funded tester setup if wanted, signing/store accounts/testing and eventual billing. No hosting or support address exists yet. |
+
+Next implementation should be selected from this product list. Language translation
+is deferred; do not begin foreign-language rollout or buy/deploy a translation
+service from the earlier provisional choice. English app/project data are unchanged.
+See [translation options and decision](docs/PRODUCT_NOTES.md#language-decision--23-november).
+
 ### Active follow-up checklist
 
 - [x] Refresh/resume: remember main tab, project, workspace tab/mode and selected
