@@ -49,6 +49,62 @@ vault too; this does not create a hosted allowance or provider balance.
 - Initial tester-access client and a single-process gateway are prepared. They
   are not a deployed/funded service, payment system or production credit platform.
 
+## Copyright, licences and name clearance — 23 November
+
+This is a preliminary release check, not legal clearance. Google Play requires
+publishers to respect copyright, trade marks, patents and other IP; approval is
+not a substitute for checking rights to the app and its store-listing content.
+[Google Play IP policy](https://support.google.com/googleplay/android-developer/answer/9888072?hl=en).
+
+In Australia, qualifying original work receives copyright automatically; a ©
+notice is optional. A suitable About notice can identify the actual owner and
+year, for example `© 2026 [confirmed legal owner/publisher]`, with third-party
+notices separate. The legal owner/publisher has not been confirmed, so no ownership
+claim, root software licence or public copyright statement was invented. Copyright
+protects expression such as source code and artwork, rather than the general idea
+of renovation software or a before/after slider.
+[Australian government copyright guidance](https://www.business.qld.gov.au/running-business/risk/ip/ip-kit/browse-ip-topics/copyright-works).
+
+Repository findings:
+
+- Six inspiration pictures have generation prompts/provenance in
+  `assets/inspiration/provenance.json`; the record states no competitor or private
+  room photos were used. The kitchen demo has the owner's recorded permission in
+  `assets/demo/flow.json`. Retain these records and review rights to all inputs and
+  provider terms before public use; AI generation alone is not IP clearance.
+- The direct installed Dart-package licence files inspected use BSD-style, MIT or
+  Apache terms. The web build already contains Flutter's bundled NOTICES asset.
+  No visible About/Licences entry was found in Settings. Add access to those notices
+  and audit transitive/native dependencies, icons/fonts, images and store artwork
+  before release. This initial check is not a complete licence compliance audit.
+  [Flutter licence-page support](https://api.flutter.dev/flutter/material/showLicensePage.html).
+- Planner 5D, HOMLY and Forma were recorded as workflow/styling references, not
+  licensed source/templates. Retain independently implemented code and artwork;
+  public screenshots or design inspiration do not grant redistribution rights.
+
+**Name finding:** a public service called [RenoVisions](https://renovisions.ai/)
+advertises photo-based AI renovation visualisation and uses RenoVision wording.
+This is a relevant similar-name use, not proof of a registered trade mark or of
+infringement by either party. A completed trade-mark-register search and assessment
+of confusing similarity in target countries have not been performed. Do not market
+the name as cleared. Keep existing test installations/data while checking it.
+
+Use IP Australia's [Australian trade mark search and TM Checker](https://www.ipaustralia.gov.au/trade-marks/search-existing-trade-marks),
+including similar spellings and the proposed icon. Check app stores and ordinary
+business use too. Search target countries if distributing overseas. Given the
+related service name, consider a trade mark professional's clearance assessment
+before investing in public branding. No registration, payment, rename or contact
+with another business was made.
+
+- [ ] Confirm the publishing entity and rights to original/human-authored material.
+- [ ] Complete name/logo clearance; resolve the RenoVisions similarity before launch.
+- [ ] Add About/Legal and accessible third-party licence notices; complete the
+  asset/dependency audit and retain permissions/licence texts.
+- [ ] Finalise terms covering user-upload rights, AI concepts/limitations and actual
+  service behaviour, alongside the separate privacy policy. Do not claim exclusive
+  ownership of all generated outputs or apply an open-source licence to the entire
+  app without an explicit owner decision.
+
 ## Website, email and privacy
 
 A custom domain and full marketing website are optional for this first stage.
@@ -164,6 +220,8 @@ refunds, identity recovery, abuse monitoring and a dollar ledger remain future w
 - [ ] Prepare store icon A, feature graphic, real screenshots, clear descriptions,
   audience/content rating, support contact and licenses. Label Live accurately:
   a generated still overlay, not instant moving-view VR or a measured room scan.
+- [ ] Complete copyright/licence and name/logo clearance above, including the
+  similar RenoVisions renovation service. Store acceptance is not legal clearance.
 - [ ] Give reviewers valid private instructions/access to test AI. Do not require
   them to establish/fund a provider account or hide review-only behaviour.
 - [ ] Choose pricing and configure payment/payout arrangements if charging.

@@ -7,6 +7,20 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Active follow-up and next acceptance pass — 23 November
 
+### Pre-launch IP check — 23 November
+
+- [x] Inspect asset provenance, recorded kitchen permission, direct dependency
+  licence files, bundled NOTICES and Settings. No visible Licences/About entry yet.
+- [x] Check current Australian copyright, IP Australia search and Google Play IP
+  guidance. Record the preliminary RenoVisions similar-service name finding in
+  [the release guide](docs/GOOGLE_PLAY_RELEASE.md#copyright-licences-and-name-clearance--23-november).
+- [ ] Confirm the legal owner/publisher; add accurate About/legal notices and
+  accessible third-party licences. Finish asset, transitive/native dependency and
+  provider-terms review. Do not invent ownership or open-source the whole app.
+- [ ] Complete name/logo trade-mark and marketplace clearance for launch countries.
+  The public similar-name finding is not a legal conclusion or completed register
+  search. Keep current test branding, installations and private data during review.
+
 ### Optional setup and consistent destinations — after APK 1.0.18
 
 - [x] Explain the existing per-room entry rule: new photo rooms start guided setup;
