@@ -385,7 +385,6 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                       ScreenTool(
                         ScreenAction.projectsHome,
                         label: 'Projects home',
-                        menuOnly: true,
                         onPressed: busy
                             ? null
                             : () => leave(destination: _SetupExit.projects),
@@ -398,7 +397,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                     ScreenTool.help(
                       context,
                       title: 'Room setup tools',
-                      message: 'The four steps help you start a new room; you can open the workspace at any step without analysing or generating first. Workspace keeps your choices and opens directly next time. Use Guided room setup in the workspace to review the steps again. Adding another photo does not restart setup. Save keeps a complete project file. The top arrow leaves setup and saves your progress; bottom Back and Continue change steps. More tools includes Rooms & spaces, Projects home and Finish later. Leaving without opening the workspace keeps the saved setup step for next time.',
+                      message: 'The four steps help you start a new room; you can open the workspace at any step without analysing or generating first. Workspace keeps your choices and opens directly next time. Use Guided room setup in the workspace to review the steps again. Adding another photo does not restart setup. The Home icon saves your progress and returns to Projects. Save keeps a complete project file. The top arrow leaves setup and saves your progress; bottom Back and Continue change steps. More tools includes Rooms & spaces and Finish later. Leaving without opening the workspace keeps the saved setup step for next time.',
                     ),
                   ],
                 ),

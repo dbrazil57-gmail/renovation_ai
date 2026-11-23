@@ -2,7 +2,18 @@
 
 ## Room entry and optional setup — current Chrome follow-up
 
-Source **`89ec77cc58`**. New photo rooms start the four-step helper; unfinished rooms
+Current source **`62350daf12`** includes a visible Home icon in the project rooms
+list, setup and workspace. It returns to Projects, saving pending room choices and
+retaining setup progress and all existing data. Home has its own toolbar slot so
+Save/setup/Settings stay visible on phones; Back remains previous-screen navigation.
+Rooms & spaces remains in More tools. 39 related tests pass (28s), analysis clean
+(32.2s), all seven help recordings refreshed/validated. Native APK stays 1.0.18+19.
+RenoVision remains the test name; the owner will revisit public naming later.
+Release web build passes (49.8s). Actual isolated phone/desktop Chrome Home checks
+pass on all three screens; phone screenshot inspected. Localhost:7357 serves this
+source without resetting the owner's browser store/profile.
+
+Optional-setup source **`89ec77cc58`**: new photo rooms start the four-step helper; unfinished rooms
 resume their saved step. Completed, older and Live rooms open the workspace. Adding
 photos to an existing room or generating a new design does not restart setup.
 Refresh restores the last saved screen/tab separately from these per-room rules.
@@ -10,7 +21,7 @@ Refresh restores the last saved screen/tab separately from these per-room rules.
 The bottom Workspace action is now available at every setup step. It saves choices
 and opens the workspace without requiring analysis or generation; that room opens
 there on later visits. Reopen Guided room setup whenever useful. Setup's More tools
-also has Rooms & spaces and Projects home, matching the workspace. Leaving setup
+also has Rooms & spaces, and the toolbar has Home, matching the workspace. Leaving setup
 through those links or Back retains unfinished progress. The rooms list displays
 Continue setup · step N of 4 for unfinished rooms. Original photos, versions and
 saved choices are preserved; no account, AI request or data migration is needed.

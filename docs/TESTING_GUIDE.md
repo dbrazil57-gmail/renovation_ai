@@ -1,5 +1,32 @@
 # Testing and storage reference
 
+## Visible Home acceptance — source after APK 1.0.18
+
+Source **`62350daf12`**. 39 related checks pass (28s), analysis clean (32.2s).
+All seven refreshed help captures and MP4 encoding/timestamp/full decode checks pass.
+
+1. Open a project's Rooms and spaces page. Tap the visible Home icon at the start
+   of the top-right toolbar: Projects opens and the rooms/photos/designs remain.
+2. Open unfinished four-step setup, change a choice with Auto off and tap Home.
+   Reopen the room: its saved step and latest choices remain. Merely leaving does
+   not mark setup complete or send anything to AI.
+3. Open a workspace, edit an instruction with Auto off and tap Home. Return to the
+   room and inspect the saved choice. Originals and existing designs remain.
+4. On a narrow phone check Home, Save, setup and Settings stay visible; other tools
+   remain in More tools. Back still returns to the previous screen. A pending linked
+   project-file save must finish before Home leaves; failure keeps the local work.
+
+Evidence: `output/home-button-tests.log`, `home-button-analysis.log`,
+`home-button-help-capture.log`, `home-button-help-encoding.log`. Layout/action tests
+cover 320, 390 and 1280px. No paid AI, customer-data reset or APK build.
+
+Release web build passes (49.8s). Actual isolated 390×844 and 1280×900 Chrome checks
+pass: Home is directly available in setup, the rooms list and workspace, and each
+returns to Projects. Setup reload, Back/Settings, workspace and photo entry remain
+usable. Phone header screenshot inspected; same localhost:7357 serves `62350daf12`.
+Evidence: `output/home-button-web-build.log`, `home-button-phone-browser.log`,
+`home-button-desktop-browser.log` and `home-button-flow-step-two.png`.
+
 ## Optional setup and room entry acceptance — current Chrome follow-up
 
 Source **`89ec77cc58`**. 40 relevant checks pass (29s), analysis clean (30.6s).

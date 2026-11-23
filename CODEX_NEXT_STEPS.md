@@ -7,6 +7,25 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Active follow-up and next acceptance pass — 23 November
 
+### Visible Projects home — source after APK 1.0.18
+
+- [x] Promote Projects home to a visible Home icon in the rooms list, setup and
+  workspace. Give Home its own toolbar slot so Save/setup/Settings stay visible
+  on phones. Keep common order, existing Back and More tools → Rooms & spaces.
+- [x] Home from setup/workspace saves pending choices even with Auto off, retains
+  setup progress and returns to Projects. The rooms list waits for a pending linked
+  project-file save; a failure retains local work and leaves the screen open.
+- [x] **39 relevant checks pass** (28s), analysis clean (32.2s), all seven offline
+  walkthrough captures and standard MP4 validations pass. Source `62350daf12`.
+  Test Home layout/action at 320, 390 and 1280px; retain images/designs on return.
+- [x] Release web build passes (49.8s). Actual isolated phone/desktop Chrome opens
+  Home directly from setup, rooms and workspace and returns to Projects each time.
+  Inspect the phone header screenshot; verify same localhost:7357 serves this build.
+- [x] Owner is comfortable revisiting the name later. Keep RenoVision and current
+  package/signature/installation data while testing. Name clearance is still a
+  pre-launch gate; do not register, rename or buy branding from this instruction.
+- [ ] Physical S21 acceptance in the next requested APK. APK 1.0.18 is unchanged.
+
 ### Pre-launch IP check — 23 November
 
 - [x] Inspect asset provenance, recorded kitchen permission, direct dependency

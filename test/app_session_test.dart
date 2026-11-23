@@ -70,6 +70,41 @@ void main() {
   tearDown(() => store.dispose());
 
   testWidgets(
+    'Home in Rooms and spaces returns to Projects and retains all images and designs',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1280, 900));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final project = await store.createProject('Home navigation');
+      final room = await store.createRoom(
+        projectId: project.id,
+        name: 'Kitchen',
+        originalImage: photo,
+        additionalImages: [photo],
+      );
+      final design = await store.createDesign(
+        roomId: room.id,
+        image: photo,
+        title: 'Saved option',
+        prompt: 'Fixture',
+      );
+      await tester.pumpWidget(RenovisionApp(store: store));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Home navigation'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ProjectScreen), findsOneWidget);
+      await tester.tap(find.byTooltip('Projects home'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ProjectsTab), findsOneWidget);
+      expect(find.byType(ProjectScreen), findsNothing);
+      expect(store.roomById(room.id)!.photoIds, hasLength(2));
+      expect(store.designsFor(room.id).single.id, design.id);
+      expect(store.imageFor(room.originalId), orderedEquals(photo));
+      expect(store.imageFor(design.imageId), orderedEquals(photo));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'setup shortcuts retain progress and workspace choice across reload and new photos',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
@@ -130,9 +165,7 @@ void main() {
         find.widgetWithText(TextField, 'Your renovation goal (optional)'),
         'Keep these newer choices too',
       );
-      await tester.tap(find.byTooltip('More tools'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Projects home'));
+      await tester.tap(find.byTooltip('Projects home'));
       await tester.pumpAndSettle();
       expect(find.byType(ProjectsTab), findsOneWidget);
       expect(find.byType(WorkspaceScreen), findsNothing);
@@ -178,9 +211,13 @@ void main() {
       final goal = find.widgetWithText(TextField, 'What should change?');
       await ensureFocusVisible(tester, goal);
       await tester.enterText(goal, 'Save before $destination');
-      await tester.tap(find.byTooltip('More tools'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text(destination));
+      if (destination == 'Projects home') {
+        await tester.tap(find.byTooltip('Projects home'));
+      } else {
+        await tester.tap(find.byTooltip('More tools'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(destination));
+      }
       await tester.pumpAndSettle();
       expect(store.roomById(room.id)!.instructions, 'Save before $destination');
       if (destination == 'Rooms & spaces') {

@@ -1,11 +1,13 @@
 # RenoVision
 
-Current Chrome follow-up **`89ec77cc58`** makes setup optional: Workspace is
-available at every setup step, and setup has the same Rooms & spaces / Projects
-home shortcuts as the workspace. Unfinished rooms show their saved setup step in
-the rooms list. Adding another photo never restarts setup. Refresh still restores
-the saved page. **40 related tests pass**, analysis is clean and the two affected
-help recordings are refreshed. The APK below remains unchanged.
+Current Chrome source **`62350daf12`** adds a visible Home icon in the project rooms
+list, four-step setup and workspace. It returns directly to Projects after saving
+pending work, and stays visible beside Save/setup/Settings on phones. Workspace
+remains available at every setup step; unfinished rooms show their saved step in
+the rooms list. Adding another photo never restarts setup. Refresh restores the
+saved page. **39 related tests pass**, analysis is clean and all seven help recordings
+are refreshed. The APK below remains unchanged. Keep RenoVision for testing; the
+public name/logo check remains on the release list.
 
 Previous source follow-up **`e48ca6290f`**: Back leaves the current screen without
 cycling workspace tabs. Setup's bottom Back changes steps; its top arrow saves

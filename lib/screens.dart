@@ -676,6 +676,28 @@ class ProjectScreen extends StatelessWidget {
     await startRoomWithPhotos(context, store, project: project, camera: camera);
   }
 
+  Future<void> _home(BuildContext context) async {
+    if (store.ai.activity.active) return;
+    try {
+      if (store.documents.hasPending(project.id)) {
+        await store.documents.save(project.id);
+      }
+      if (!context.mounted) return;
+      Navigator.pushAndRemoveUntil<void>(
+        context,
+        MaterialPageRoute(builder: (_) => AppShell(store: store)),
+        (_) => false,
+      );
+    } catch (_) {
+      if (context.mounted) {
+        notice(
+          context,
+          'Project file could not be saved. Local work is retained; retry Save project before leaving.',
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) => SavedAppPage(
     page: {'page': 'project', 'projectId': project.id},
@@ -702,6 +724,11 @@ class ProjectScreen extends StatelessWidget {
         actions: [
           ScreenToolbar(
             tools: [
+              ScreenTool(
+                ScreenAction.projectsHome,
+                label: 'Projects home',
+                onPressed: () => _home(context),
+              ),
               ScreenTool(
                 ScreenAction.save,
                 label: 'Save project file',
@@ -2693,7 +2720,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                     ScreenTool(
                       ScreenAction.projectsHome,
                       label: 'Projects home',
-                      menuOnly: true,
                       onPressed: aiPending
                           ? null
                           : () => _goToProject(home: true),
@@ -2701,7 +2727,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                     ScreenTool.help(
                       context,
                       title: 'Room tools',
-                      message: 'Save writes a project file. Guided setup walks through room choices. Room settings holds saving and AI options. Rename changes this room name. Extra tools remain in the same order under More tools on smaller screens.',
+                      message: 'The Home icon returns to Projects after saving pending room choices. Save writes a project file. Guided setup walks through room choices. Room settings holds saving and AI options. Rooms & spaces and other extra tools are under More tools.',
                     ),
                   ],
                 ),

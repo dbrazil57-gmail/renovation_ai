@@ -4,6 +4,7 @@ import 'context_help.dart';
 
 /// Shared left-to-right order. Screens supply only their applicable tools.
 enum ScreenAction {
+  projectsHome,
   save,
   autosave,
   setup,
@@ -15,7 +16,6 @@ enum ScreenAction {
   fit,
   settings,
   projectRooms,
-  projectsHome,
   rename,
   finishLater,
   help,
@@ -74,7 +74,12 @@ class ScreenToolbar extends StatelessWidget {
   Widget build(BuildContext context) {
     final ordered = [...tools]
       ..sort((a, b) => a.action.index.compareTo(b.action.index));
-    final limit = MediaQuery.sizeOf(context).width < 600 ? 3 : 6;
+    // Home gets its own slot, keeping Save/setup/Settings visible on phones.
+    final hasHome = ordered.any(
+      (tool) => tool.action == ScreenAction.projectsHome && !tool.menuOnly,
+    );
+    final limit =
+        (MediaQuery.sizeOf(context).width < 600 ? 3 : 6) + (hasHome ? 1 : 0);
     final visible = ordered
         .where((tool) => !tool.menuOnly)
         .take(limit)

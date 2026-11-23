@@ -45,6 +45,79 @@ class FailAutosaveRecords extends MemoryBox {
 }
 
 void main() {
+  for (final width in [320.0, 390.0, 1280.0]) {
+    testWidgets(
+      'Home stays visible with Save setup and Settings at width $width',
+      (tester) async {
+        await tester.binding.setSurfaceSize(Size(width, 844));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        var homePressed = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              appBar: AppBar(
+                title: const Text(
+                  'A longer room or project name',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                actions: [
+                  ScreenToolbar(
+                    tools: [
+                      ScreenTool(
+                        ScreenAction.rename,
+                        label: 'Rename',
+                        onPressed: () {},
+                      ),
+                      ScreenTool(
+                        ScreenAction.settings,
+                        label: 'Settings',
+                        onPressed: () {},
+                      ),
+                      ScreenTool(
+                        ScreenAction.setup,
+                        label: 'Guided room setup',
+                        onPressed: () {},
+                      ),
+                      ScreenTool(
+                        ScreenAction.save,
+                        label: 'Save project file',
+                        onPressed: () {},
+                      ),
+                      ScreenTool(
+                        ScreenAction.projectsHome,
+                        label: 'Projects home',
+                        onPressed: () => homePressed++,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        final buttons = tester.widgetList<IconButton>(
+          find.descendant(
+            of: find.byType(ScreenToolbar),
+            matching: find.byType(IconButton),
+          ),
+        );
+        expect(buttons.take(4).map((button) => button.tooltip), [
+          'Projects home',
+          'Save project file',
+          'Guided room setup',
+          'Settings',
+        ]);
+        expect(find.byTooltip('Projects home').hitTestable(), findsOneWidget);
+        expect(find.byTooltip('Settings').hitTestable(), findsOneWidget);
+        await tester.tap(find.byTooltip('Projects home'));
+        await tester.pumpAndSettle();
+        expect(homePressed, 1);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   for (final width in [390.0, 1000.0]) {
     testWidgets('Autosave is a visible switch and persists at width $width', (
       tester,
