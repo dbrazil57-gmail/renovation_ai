@@ -4,15 +4,18 @@ import 'package:material_ui/material_ui.dart';
 
 import 'screen_toolbar.dart';
 import 'creation_export_widgets.dart';
+import 'app_session.dart';
 
 Future<void> openImageViewer(
   BuildContext context,
   Uint8List bytes, {
   required String title,
+  Map<String, dynamic>? sessionPage,
 }) => Navigator.of(context).push<void>(
   MaterialPageRoute(
     fullscreenDialog: true,
-    builder: (_) => ImageViewerScreen(bytes: bytes, title: title),
+    builder: (_) =>
+        ImageViewerScreen(bytes: bytes, title: title, sessionPage: sessionPage),
   ),
 );
 
@@ -23,6 +26,7 @@ class ExpandableImage extends StatelessWidget {
   final double height;
   final bool inlineZoom;
   final bool showHint;
+  final Map<String, dynamic>? sessionPage;
   const ExpandableImage({
     super.key,
     required this.bytes,
@@ -30,6 +34,7 @@ class ExpandableImage extends StatelessWidget {
     this.height = 260,
     this.inlineZoom = false,
     this.showHint = true,
+    this.sessionPage,
   });
 
   @override
@@ -54,7 +59,8 @@ class ExpandableImage extends StatelessWidget {
               ),
             ),
     );
-    void open() => openImageViewer(context, bytes, title: title);
+    void open() =>
+        openImageViewer(context, bytes, title: title, sessionPage: sessionPage);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -108,10 +114,12 @@ class ExpandableImage extends StatelessWidget {
 class ImageViewerScreen extends StatefulWidget {
   final Uint8List bytes;
   final String title;
+  final Map<String, dynamic>? sessionPage;
   const ImageViewerScreen({
     super.key,
     required this.bytes,
     required this.title,
+    this.sessionPage,
   });
   @override
   State<ImageViewerScreen> createState() => _ImageViewerScreenState();
@@ -149,120 +157,130 @@ class _ImageViewerScreenState extends State<ImageViewerScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: Colors.black,
-    appBar: AppBar(
+  Widget build(BuildContext context) => SavedAppPage(
+    page: widget.sessionPage ?? const {},
+    child: Scaffold(
       backgroundColor: Colors.black,
-      foregroundColor: Colors.white,
-      leading: IconButton(
-        tooltip: 'Close image viewer',
-        icon: const Icon(Icons.close),
-        onPressed: () => Navigator.pop(context),
-      ),
-      title: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-      actions: [
-        ListenableBuilder(
-          listenable: transform,
-          builder: (context, _) => ScreenToolbar(
-            tools: [
-              ScreenTool(
-                ScreenAction.zoomOut,
-                label: 'Zoom out',
-                onPressed: transform.value.getMaxScaleOnAxis() <= 1
-                    ? null
-                    : () => zoom(1 / 1.5),
-              ),
-              ScreenTool(
-                ScreenAction.zoomIn,
-                label: 'Zoom in',
-                onPressed: transform.value.getMaxScaleOnAxis() >= maxZoom
-                    ? null
-                    : () => zoom(1.5),
-              ),
-              ScreenTool(ScreenAction.fit, label: 'Fit image', onPressed: fit),
-              ScreenTool.help(
-                context,
-                title: 'Image viewer',
-                message: 'Pinch or use the zoom buttons, then drag to pan. Fit image resets the view. Double-tap zooms or fits. Enable Android Auto rotate and turn your phone sideways for a wider view. Save image exports a copy to Gallery on modern Android, or Downloads in Chrome. Share creation opens device sharing where supported. Only the image is exported; project settings and API keys stay separate.',
-              ),
-            ],
-          ),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        leading: IconButton(
+          tooltip: 'Close image viewer',
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.pop(context),
         ),
-      ],
-    ),
-    body: SafeArea(
-      child: LayoutBuilder(
-        builder: (context, bounds) {
-          final size = bounds.biggest;
-          if (viewport != size) {
-            viewport = size;
-            // Refit after rotation/resizing rather than leave a zoomed photo off screen.
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) fit();
-            });
-          }
-          return GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onDoubleTapDown: (details) =>
-                doubleTapPosition = details.localPosition,
-            onDoubleTap: () => transform.value.getMaxScaleOnAxis() > 1
-                ? fit()
-                : zoom(2.5, focalPoint: doubleTapPosition),
-            child: InteractiveViewer(
-              key: const ValueKey('full-screen-image'),
-              transformationController: transform,
-              minScale: 1,
-              maxScale: maxZoom,
-              child: SizedBox.expand(
-                child: Image.memory(
-                  widget.bytes,
-                  fit: BoxFit.contain,
-                  gaplessPlayback: true,
-                  semanticLabel: widget.title,
-                  frameBuilder: (context, child, frame, synchronous) =>
-                      synchronous || frame != null
-                      ? child
-                      : Stack(
-                          children: [
-                            child,
-                            const Center(
-                              child: Text(
-                                'Opening image…',
-                                style: TextStyle(color: Colors.white70),
+        title: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+        actions: [
+          ListenableBuilder(
+            listenable: transform,
+            builder: (context, _) => ScreenToolbar(
+              tools: [
+                ScreenTool(
+                  ScreenAction.zoomOut,
+                  label: 'Zoom out',
+                  onPressed: transform.value.getMaxScaleOnAxis() <= 1
+                      ? null
+                      : () => zoom(1 / 1.5),
+                ),
+                ScreenTool(
+                  ScreenAction.zoomIn,
+                  label: 'Zoom in',
+                  onPressed: transform.value.getMaxScaleOnAxis() >= maxZoom
+                      ? null
+                      : () => zoom(1.5),
+                ),
+                ScreenTool(
+                  ScreenAction.fit,
+                  label: 'Fit image',
+                  onPressed: fit,
+                ),
+                ScreenTool.help(
+                  context,
+                  title: 'Image viewer',
+                  message: 'Pinch or use the zoom buttons, then drag to pan. Fit image resets the view. Double-tap zooms or fits. Enable Android Auto rotate and turn your phone sideways for a wider view. Save image exports a copy to Gallery on modern Android, or Downloads in Chrome. Share creation opens device sharing where supported. Only the image is exported; project settings and API keys stay separate.',
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, bounds) {
+            final size = bounds.biggest;
+            if (viewport != size) {
+              viewport = size;
+              // Refit after rotation/resizing rather than leave a zoomed photo off screen.
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) fit();
+              });
+            }
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onDoubleTapDown: (details) =>
+                  doubleTapPosition = details.localPosition,
+              onDoubleTap: () => transform.value.getMaxScaleOnAxis() > 1
+                  ? fit()
+                  : zoom(2.5, focalPoint: doubleTapPosition),
+              child: InteractiveViewer(
+                key: const ValueKey('full-screen-image'),
+                transformationController: transform,
+                minScale: 1,
+                maxScale: maxZoom,
+                child: SizedBox.expand(
+                  child: Image.memory(
+                    widget.bytes,
+                    fit: BoxFit.contain,
+                    gaplessPlayback: true,
+                    semanticLabel: widget.title,
+                    frameBuilder: (context, child, frame, synchronous) =>
+                        synchronous || frame != null
+                        ? child
+                        : Stack(
+                            children: [
+                              child,
+                              const Center(
+                                child: Text(
+                                  'Opening image…',
+                                  style: TextStyle(color: Colors.white70),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                  errorBuilder: (_, error, stack) => const Center(
-                    child: Text(
-                      'This image could not be displayed.',
-                      style: TextStyle(color: Colors.white),
+                            ],
+                          ),
+                    errorBuilder: (_, error, stack) => const Center(
+                      child: Text(
+                        'This image could not be displayed.',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
-    ),
-    bottomNavigationBar: SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: DefaultTextStyle.merge(
-          style: const TextStyle(color: Colors.white70),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CreationExportControls(bytes: widget.bytes, title: widget.title),
-              if (MediaQuery.sizeOf(context).height >= 480)
-                const Text(
-                  'Pinch to zoom · Drag to pan · Double-tap to zoom or fit\nTurn your phone sideways for a wider view (Auto rotate on).',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: DefaultTextStyle.merge(
+            style: const TextStyle(color: Colors.white70),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CreationExportControls(
+                  bytes: widget.bytes,
+                  title: widget.title,
                 ),
-            ],
+                if (MediaQuery.sizeOf(context).height >= 480)
+                  const Text(
+                    'Pinch to zoom · Drag to pan · Double-tap to zoom or fit\nTurn your phone sideways for a wider view (Auto rotate on).',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

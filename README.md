@@ -1,5 +1,16 @@
 # RenoVision
 
+Latest refresh/review update: source **`58f3b34f01`** remembers the main tab,
+project, workspace tab/mode and selected image, Settings and workspace editing
+tools. Refresh rebuilds Back navigation and does not replay AI sends. Navigation
+preferences stay on this device and out of project files. The bottom **Polish
+with AI** action first prepares Refine; **Review & send AI polish** shows the exact
+prompt before confirmation. **Review & generate change** creates a new AI version
+from your next specific request; it does not approve or overwrite your design.
+Verified: **401 tests pass**, clean analysis, release web build and refreshed help
+clips. Actual desktop/phone-size Chrome refresh, Settings Back and finish-review
+checks pass. Same localhost:7357; published APK stays 1.0.17+18.
+
 Latest finish-polish correction, **23 November**: the owner confirms the tiled
 pictures were saved **Local finishes** previews. An AI attempt failed and left the
 preview selected; this is not a completed AI polish result.

@@ -786,7 +786,9 @@ class _AiEditCardState extends State<AiEditCard>
         context: context,
         builder: (dialogContext) => AlertDialog(
           title: Text(
-            requests.length == 1
+            captured.finishPolish
+                ? 'Review AI finish polish'
+                : requests.length == 1
                 ? 'Send this edit to $providerLabel?'
                 : captured.precise
                 ? 'Generate ${requests.length} correction variations?'
@@ -799,6 +801,24 @@ class _AiEditCardState extends State<AiEditCard>
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (captured.finishPolish) ...[
+                    const Text('Instructions to send'),
+                    Container(
+                      key: const ValueKey('polish-prompt-before-send'),
+                      height: 170,
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: SingleChildScrollView(
+                        child: SelectableText(captured.prompt),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   if (captured.finishPolish)
                     const Text('Clean design · image 1'),
                   Image.memory(
@@ -846,7 +866,9 @@ class _AiEditCardState extends State<AiEditCard>
                           ? 'Each variation applies the same specific correction to the same starting image. Variation is limited to choices your instruction leaves open; unrelated features stay protected. Each result saves before the next paid request. Stop after this image prevents further requests; the current request may still be billed.'
                           : 'Each option starts from the same room but requests a distinct renovation scheme, not accessory changes. Your Keep choices and layout restrictions still apply. Each result saves before the next request. Stop after this image prevents further requests; the current request may still be billed.',
                     ),
-                  for (final item in requests)
+                  for (final item in requests.where(
+                    (_) => !captured.finishPolish,
+                  ))
                     if (requests.length == 1)
                       Text(item.prompt)
                     else

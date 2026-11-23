@@ -11,6 +11,8 @@ import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
 import 'package:renovision_ai/ai_service.dart';
 import 'package:renovision_ai/ai_widgets.dart';
+import 'package:renovision_ai/app_session.dart';
+import 'package:renovision_ai/main.dart' show RenovisionApp;
 import 'package:renovision_ai/local_paint.dart';
 import 'package:renovision_ai/models.dart';
 import 'package:renovision_ai/project_backup.dart';
@@ -233,7 +235,7 @@ void main() {
       await tester.enterText(update, 'Change only the tap to brushed brass');
       FocusManager.instance.primaryFocus?.unfocus();
       await tester.pumpAndSettle();
-      final apply = find.text('Apply focused update');
+      final apply = find.text('Review & generate change').first;
       await Scrollable.ensureVisible(tester.element(apply), alignment: .5);
       await tester.pumpAndSettle();
       await tester.tap(apply);
@@ -514,6 +516,16 @@ void main() {
       await ensureFocusVisible(tester, resume);
       await tester.tap(resume);
       await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(edits, 0);
+      final review = find.text('Review & send AI polish').first;
+      await ensureFocusVisible(tester, review);
+      await tester.tap(review);
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(const ValueKey('polish-prompt-before-send')),
+        findsOneWidget,
+      );
       expect(find.text('Clean design · image 1'), findsOneWidget);
       expect(find.text('Rough finish guide · image 2'), findsOneWidget);
       expect(
@@ -710,6 +722,42 @@ void main() {
       expect(generated.sourceImageId, views[1]);
       expect(generated.supportingImageIds, [views[0], views[2]]);
       expect(store.imageFor(room.originalId), orderedEquals(original));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'refresh while reviewing AI confirmation restores workspace without replaying the dialog or request',
+    (tester) async {
+      await store.updateRoom(room.copyWith(instructions: 'Update the floor'));
+      await store.records.put(AppPageSession.recordKey, [
+        {'page': 'home', 'tab': 0},
+        {
+          'page': 'workspace',
+          'projectId': room.projectId,
+          'roomId': room.id,
+          'photoId': room.originalId,
+          'section': 'refine',
+          'mode': 'newDesign',
+        },
+      ]);
+      await tester.pumpWidget(RenovisionApp(store: store));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('workspace-generate')));
+      await tester.pumpAndSettle();
+      expect(find.text('Send to OpenAI'), findsOneWidget);
+      expect(edits, 0);
+      final session = tester
+          .widget<AppPageSessionScope>(find.byType(AppPageSessionScope))
+          .session;
+      await session.flush();
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpWidget(RenovisionApp(store: store));
+      await tester.pumpAndSettle();
+      expect(find.byType(WorkspaceScreen), findsOneWidget);
+      expect(find.text('Send to OpenAI'), findsNothing);
+      expect(edits, 0);
+      expect(store.designsFor(room.id), isEmpty);
       expect(tester.takeException(), isNull);
     },
   );

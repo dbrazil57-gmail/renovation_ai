@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
 import 'package:renovision_ai/ai_service.dart';
+import 'package:renovision_ai/app_session.dart';
 import 'package:renovision_ai/context_help.dart';
 import 'package:renovision_ai/main.dart';
 import 'package:renovision_ai/screens.dart';
@@ -22,7 +23,7 @@ void size(WidgetTester tester, Size value) {
 
 void main() {
   testWidgets(
-    'app Help opens sample guides and returns to the existing project without writes or AI',
+    'app Help returns to the existing project without project writes or AI',
     (tester) async {
       size(tester, const Size(390, 844));
       var requests = 0;
@@ -73,7 +74,11 @@ void main() {
       expect(find.byType(AppWalkthroughsScreen), findsNothing);
       expect(find.byType(ProjectsTab), findsOneWidget);
       expect(store.projectById(project.id)!.name, 'Existing home');
-      expect(jsonEncode(records.entries), recordsBefore);
+      final after = Map.of(records.entries)..remove(AppPageSession.recordKey);
+      expect(jsonEncode(after), recordsBefore);
+      expect(records.get(AppPageSession.recordKey), [
+        {'page': 'home', 'tab': 0},
+      ]);
       expect(jsonEncode(photos.entries), photosBefore);
       expect(requests, 0);
       expect(store.ai.connected, isFalse);

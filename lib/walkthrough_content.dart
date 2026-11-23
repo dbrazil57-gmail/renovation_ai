@@ -148,7 +148,7 @@ const designWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Refine a selected design',
-      'Select the saved version you like. Refine opens Update this design. Describe only the change in that field and choose Apply focused update. Review the confirmation before sending. Saved settings in history can also load a version’s recorded choices.',
+      'Select the saved version you like. Refine opens Update this design. Describe only the change in that field and choose Review & generate change. Confirm sending to create another AI version; it does not approve or overwrite the selected image. Saved settings in history can also load a version’s recorded choices.',
       'Change only the benchtop to pale stone. Keep the chosen cabinetry, flooring and layout.',
       note: 'Precise prompts and markup guide the AI; they do not guarantee unchanged pixels outside the edit.',
     ),
@@ -296,7 +296,7 @@ const paintWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Save a version',
-        'Back keeps the working draft. Save finish version adds a new image with editable surface layers. The pinned Polish with AI action saves the preview and prepares one focused correction: clean design first, rough finish guide second. Review and confirm separately. Reopened local versions also offer Polish saved finishes with AI. This does not send the original whole-room renovation brief.',
+        'Back keeps the working draft. Save finish version adds a new image with editable surface layers. The bottom Polish with AI action saves the preview and opens Refine so you can read or edit the instructions first. Review & send AI polish then shows the exact prompt and both image roles: clean design first, rough guide second. Confirm sending separately. Reopened local versions also offer Polish saved finishes with AI. This does not send the original whole-room renovation brief.',
       'Reopen the saved version to try another colour. Local edits need no key; only confirmed AI polishing uses your paid connection. Original photos and the approved design remain saved.',
     ),
   ],

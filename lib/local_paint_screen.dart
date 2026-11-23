@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'context_help.dart';
 import 'design_palettes.dart';
 import 'local_paint.dart';
+import 'app_session.dart';
 import 'room_features.dart';
 import 'wall_selection.dart';
 import 'app_notices.dart';
@@ -23,6 +24,8 @@ class LocalPaintScreen extends StatefulWidget {
   final Future<void> Function(LocalPaintRecipe) saveDraft;
   final Future<void> Function(PaintRenderResult, LocalPaintRecipe) saveVersion;
   final VoidCallback? requestAiFinish;
+  final Map<String, dynamic>? sessionPage;
+  final int initialPanel;
   const LocalPaintScreen({
     super.key,
     required this.source,
@@ -33,6 +36,8 @@ class LocalPaintScreen extends StatefulWidget {
     required this.saveDraft,
     required this.saveVersion,
     this.requestAiFinish,
+    this.sessionPage,
+    this.initialPanel = 0,
   });
   @override
   State<LocalPaintScreen> createState() => _LocalPaintScreenState();
@@ -74,6 +79,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
   @override
   void initState() {
     super.initState();
+    panel = widget.initialPanel;
     WidgetsBinding.instance.addObserver(this);
     unawaited(load());
   }
@@ -1313,124 +1319,127 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
   }
 
   @override
-  Widget build(BuildContext context) => PopScope(
-    canPop: allowClose || (!busy && !selectingWall && !dirty),
-    onPopInvokedWithResult: (didPop, _) async {
-      if (didPop || busy || selectingWall) return;
-      if (await flush() && context.mounted && !dirty) Navigator.pop(context);
-    },
-    child: Scaffold(
-      appBar: AppBar(
-        title: const Text('Surface finishes'),
-        actions: [
-          IconButton(
-            tooltip: 'Undo paint',
-            onPressed: busy || selectingWall || undo.isEmpty
-                ? null
-                : () => history(true),
-            icon: const Icon(Icons.undo),
-          ),
-          IconButton(
-            tooltip: 'Redo paint',
-            onPressed: busy || selectingWall || redo.isEmpty
-                ? null
-                : () => history(false),
-            icon: const Icon(Icons.redo),
-          ),
-          IconButton(
-            tooltip: 'Save finish version',
-            onPressed: busy || selectingWall || loading || recipe == null
-                ? null
-                : save,
-            icon: const Icon(Icons.save_outlined),
-          ),
-          HelpIcon(
-            title: 'Colours & tiles',
-            message: 'Select a wall, floor or splashback and check its boundary. In Finish, use Wall tiles, kitchen Splashback tiles, or bathroom/Shower wall tiles shortcuts, then choose a pattern and colour. Add a separate surface layer to keep wall and floor choices independent. Changing colour or pattern reuses the same selection and makes no AI request. Selection uses connected colours and edges; similar surfaces can merge. Use sensitivity, outline or erase for difficult edges and patterned tiles. For patterned splashbacks, Outline full splashback covers the reviewed four-corner area including grout gaps. Grow selected area expands in a chosen direction; Finish opacity changes strength, not area. Tile scale and rotation are approximate visual guidance, not measured installation dimensions or a product catalogue. Delete one surface or all layers, even after reopening. Polish with AI saves all local finishes and prepares one correction for review; only confirmed generation uses your paid AI connection. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
-          ),
-        ],
-      ),
-      bottomNavigationBar: widget.requestAiFinish == null
-          ? null
-          : SafeArea(
-              minimum: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-              child: Align(
-                alignment: Alignment.centerRight,
-                heightFactor: 1,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      key: const ValueKey('polish-finishes-action'),
-                      onPressed:
-                          loading ||
-                              busy ||
-                              selectingWall ||
-                              fourCornerOutline ||
-                              !(recipe?.surfaces.any(
-                                    (surface) =>
-                                        surface.coverage > 0 &&
-                                        surface.marks.any(
-                                          (mark) =>
-                                              mark.kind !=
-                                                  PaintMarkKind.erase &&
-                                              (mark.kind !=
-                                                      PaintMarkKind.polygon ||
-                                                  mark.points.length >= 3),
-                                        ),
-                                  ) ??
-                                  false)
-                          ? null
-                          : () => save(finishWithAi: true),
-                      icon: const Icon(Icons.auto_awesome_outlined),
-                      label: const Text('Polish with AI'),
+  Widget build(BuildContext context) => SavedAppPage(
+    page: {...?widget.sessionPage, 'panel': panel},
+    child: PopScope(
+      canPop: allowClose || (!busy && !selectingWall && !dirty),
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop || busy || selectingWall) return;
+        if (await flush() && context.mounted && !dirty) Navigator.pop(context);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Surface finishes'),
+          actions: [
+            IconButton(
+              tooltip: 'Undo paint',
+              onPressed: busy || selectingWall || undo.isEmpty
+                  ? null
+                  : () => history(true),
+              icon: const Icon(Icons.undo),
+            ),
+            IconButton(
+              tooltip: 'Redo paint',
+              onPressed: busy || selectingWall || redo.isEmpty
+                  ? null
+                  : () => history(false),
+              icon: const Icon(Icons.redo),
+            ),
+            IconButton(
+              tooltip: 'Save finish version',
+              onPressed: busy || selectingWall || loading || recipe == null
+                  ? null
+                  : save,
+              icon: const Icon(Icons.save_outlined),
+            ),
+            HelpIcon(
+              title: 'Colours & tiles',
+              message: 'Select a wall, floor or splashback and check its boundary. In Finish, use Wall tiles, kitchen Splashback tiles, or bathroom/Shower wall tiles shortcuts, then choose a pattern and colour. Add a separate surface layer to keep wall and floor choices independent. Changing colour or pattern reuses the same selection and makes no AI request. Selection uses connected colours and edges; similar surfaces can merge. Use sensitivity, outline or erase for difficult edges and patterned tiles. For patterned splashbacks, Outline full splashback covers the reviewed four-corner area including grout gaps. Grow selected area expands in a chosen direction; Finish opacity changes strength, not area. Tile scale and rotation are approximate visual guidance, not measured installation dimensions or a product catalogue. Delete one surface or all layers, even after reopening. Polish with AI saves all local finishes and prepares one correction for review; only confirmed generation uses your paid AI connection. AI may change unselected details. Undo lasts for this editing session. Back keeps your draft; Save version preserves the original and approval. Colours are approximate.',
+            ),
+          ],
+        ),
+        bottomNavigationBar: widget.requestAiFinish == null
+            ? null
+            : SafeArea(
+                minimum: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  heightFactor: 1,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        key: const ValueKey('polish-finishes-action'),
+                        onPressed:
+                            loading ||
+                                busy ||
+                                selectingWall ||
+                                fourCornerOutline ||
+                                !(recipe?.surfaces.any(
+                                      (surface) =>
+                                          surface.coverage > 0 &&
+                                          surface.marks.any(
+                                            (mark) =>
+                                                mark.kind !=
+                                                    PaintMarkKind.erase &&
+                                                (mark.kind !=
+                                                        PaintMarkKind.polygon ||
+                                                    mark.points.length >= 3),
+                                          ),
+                                    ) ??
+                                    false)
+                            ? null
+                            : () => save(finishWithAi: true),
+                        icon: const Icon(Icons.auto_awesome_outlined),
+                        label: const Text('Polish with AI'),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-      body: loading
-          ? const Center(child: CircularProgressIndicator())
-          : recipe == null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Text(error!),
-              ),
-            )
-          : Column(
-              children: [
-                SizedBox(
-                  height: 4,
-                  child: busy || selectingWall || rendering
-                      ? const LinearProgressIndicator()
-                      : null,
+        body: loading
+            ? const Center(child: CircularProgressIndicator())
+            : recipe == null
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text(error!),
                 ),
-                if (selectingWall) const Text('Selecting wall…'),
-                if (busy) const Text('Saving full-resolution paint version…'),
-                Expanded(
-                  child: LayoutBuilder(
-                    builder: (context, bounds) => bounds.maxWidth > 650
-                        ? Row(
-                            children: [
-                              Expanded(child: image()),
-                              SizedBox(width: 300, child: controls()),
-                            ],
-                          )
-                        : Column(
-                            children: [
-                              Expanded(child: image()),
-                              SizedBox(
-                                height: math.min(290, bounds.maxHeight * .48),
-                                child: controls(),
-                              ),
-                            ],
-                          ),
+              )
+            : Column(
+                children: [
+                  SizedBox(
+                    height: 4,
+                    child: busy || selectingWall || rendering
+                        ? const LinearProgressIndicator()
+                        : null,
                   ),
-                ),
-              ],
-            ),
+                  if (selectingWall) const Text('Selecting wall…'),
+                  if (busy) const Text('Saving full-resolution paint version…'),
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (context, bounds) => bounds.maxWidth > 650
+                          ? Row(
+                              children: [
+                                Expanded(child: image()),
+                                SizedBox(width: 300, child: controls()),
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                Expanded(child: image()),
+                                SizedBox(
+                                  height: math.min(290, bounds.maxHeight * .48),
+                                  child: controls(),
+                                ),
+                              ],
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+      ),
     ),
   );
 }

@@ -1,5 +1,31 @@
 # Renovision feature status
 
+## Refresh and review workflow — 23 November
+
+Current source **`58f3b34f01`** adds local navigation restoration for Projects /
+Explore / Library, project rooms, workspace tab/mode and selected design/photo,
+Settings and Back navigation. Colours & tiles reopens at Select/Finish with saved
+layers; workspace viewer/comparison/crop/markup reopens from the same stored image.
+Invalid or archived/deleted targets fall back safely. This preference is excluded
+from portable projects. Dialogs, pending paid requests and transient camera capture
+are not replayed. Tool pages reopen; unsaved crop strokes, viewer zoom and camera
+frames are not a saved navigation state. Project photos/versions remain unchanged.
+
+The owner chooses to keep **Polish with AI** at the bottom. It now saves a preview
+and opens Refine for reading/editing first. **Review & send AI polish** opens the
+confirmation with the exact prompt at the top, clean-source/guide roles and a
+separate Send action. **Review & generate change** replaces the ambiguous Apply
+update action: it creates another AI version from the selected image and update,
+not approval or an overwrite. The original room brief remains separate.
+
+Four page/tool restoration tests and a mocked refresh-during-confirmation test
+pass. Shared source applies to Chrome and Android; physical S21 acceptance follows
+the next requested APK. The earlier polish fix is locally committed as `e9b5f35`.
+Final verification: **401 tests pass** (97s), clean analysis (49s), release web
+build (104.9s), seven refreshed help recordings/full decodes. Actual isolated
+desktop and phone Chrome refresh, Settings Back, Finish restoration and pre-send
+Refine review pass; screenshots inspected. No paid request, APK or user-data reset.
+
 ## Finish-polish follow-up — 23 November
 
 Owner confirms the supplied tile results are **Local finishes / local preview**;

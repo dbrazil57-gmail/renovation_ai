@@ -9,7 +9,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 1264343
+      "bytes": 1267080
     },
     "capture": {
       "id": "capture",
@@ -27,7 +27,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 627969
+      "bytes": 627591
     },
     "paint": {
       "id": "paint",
@@ -36,7 +36,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 1063667
+      "bytes": 1053197
     },
     "library": {
       "id": "library",

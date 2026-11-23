@@ -21,6 +21,7 @@ import 'design_delete_widgets.dart';
 import 'screen_toolbar.dart';
 import 'room_save_widgets.dart';
 import 'brief_readiness.dart';
+import 'app_session.dart';
 
 class RoomSetupScreen extends StatefulWidget {
   final RenovisionStore store;
@@ -263,278 +264,287 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
     ]),
     builder: (context, _) {
       final current = room;
-      return PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, _) {
-          if (!didPop) leave();
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              'Set up ${current.displayName}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(40),
-              child: SizedBox(
-                height: 40,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Row(
-                    children: [
-                      AutosaveSwitch(store: widget.store, enabled: !busy),
-                    ],
+      return SavedAppPage(
+        page: {'page': 'setup', 'projectId': room.projectId, 'roomId': room.id},
+        child: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop) leave();
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(
+                'Set up ${current.displayName}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(40),
+                child: SizedBox(
+                  height: 40,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    child: Row(
+                      children: [
+                        AutosaveSwitch(store: widget.store, enabled: !busy),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            actions: [
-              ScreenToolbar(
-                tools: [
-                  ScreenTool(
-                    ScreenAction.save,
-                    label: 'Save project file',
-                    onPressed: busy
-                        ? null
-                        : () => showProjectSaveDialog(
-                            context,
-                            store: widget.store,
-                            projectId: current.projectId,
-                            beforeSave: save,
-                          ),
-                  ),
-                  if (widget.settingsBuilder != null)
+              actions: [
+                ScreenToolbar(
+                  tools: [
                     ScreenTool(
-                      ScreenAction.settings,
-                      label: 'Room settings',
-                      onPressed: busy ? null : openSettings,
+                      ScreenAction.save,
+                      label: 'Save project file',
+                      onPressed: busy
+                          ? null
+                          : () => showProjectSaveDialog(
+                              context,
+                              store: widget.store,
+                              projectId: current.projectId,
+                              beforeSave: save,
+                            ),
                     ),
-                  ScreenTool(
-                    ScreenAction.finishLater,
-                    label: 'Finish later',
-                    onPressed: busy ? null : () => leave(),
-                  ),
-                  ScreenTool.help(
-                    context,
-                    title: 'Room setup tools',
-                    message: 'Save keeps a complete project file. Settings opens saving and AI options. Finish later saves your current setup step so you can continue later. The bottom buttons move through the four steps.',
-                  ),
-                ],
-              ),
-            ],
-          ),
-          body: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 950),
-              child: ListView(
-                controller: scroll,
-                padding: const EdgeInsets.all(12),
-                children: [
-                  Text(
-                    'Step ${step + 1} of 4 · ${steps[step]}',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 10),
-                  LinearProgressIndicator(value: (step + 1) / 4),
-                  const SizedBox(height: 12),
-                  Semantics(
-                    liveRegion: true,
-                    child: Text(
-                      analysing
-                          ? 'Analysing room photos…'
-                          : generating
-                          ? 'Generating design and saving the result…'
-                          : saving
-                          ? 'Saving your work…'
-                          : draft.status,
+                    if (widget.settingsBuilder != null)
+                      ScreenTool(
+                        ScreenAction.settings,
+                        label: 'Room settings',
+                        onPressed: busy ? null : openSettings,
+                      ),
+                    ScreenTool(
+                      ScreenAction.finishLater,
+                      label: 'Finish later',
+                      onPressed: busy ? null : () => leave(),
                     ),
-                  ),
-                  if (message != null) Text(message!),
-                  const SizedBox(height: 16),
-                  if (step == 0) ...[
-                    const Text(
-                      'Your first photos are saved. Add more angles if useful and choose the primary view. This sets the camera viewpoint for the design.',
-                    ),
-                    RoomPhotosCard(
-                      store: widget.store,
-                      room: current,
-                      selectedPhotoId: current.primaryId,
-                      onView: (id) {
-                        widget.store.setPrimaryPhoto(current.id, id).catchError(
-                          (_) {
-                            if (mounted) {
-                              setState(
-                                () => message =
-                                    'Could not save the primary view.',
-                              );
-                            }
-                          },
-                        );
-                      },
-                      includeContext: true,
-                      onContextChanged: null,
-                    ),
-                    ProjectFileControls(
-                      store: widget.store,
-                      projectId: current.projectId,
-                      beforeSave: save,
+                    ScreenTool.help(
+                      context,
+                      title: 'Room setup tools',
+                      message: 'Save keeps a complete project file. Settings opens saving and AI options. Finish later saves your current setup step so you can continue later. The bottom buttons move through the four steps.',
                     ),
                   ],
-                  if (step == 1 || step == 3) ...[
-                    if (step == 3)
-                      ExpandableImage(
-                        bytes: widget.store.imageFor(current.primaryId)!,
-                        title: '${current.displayName} · original',
-                        height: 220,
-                      ),
-                    DesignModeControls(draft: draft, enabled: !busy),
-                    const SizedBox(height: 12),
-                    TextField(
-                      key: ValueKey('setup-goal-${draft.preciseEdit}'),
-                      controller: draft.preciseEdit
-                          ? draft.correction
-                          : draft.changes,
-                      minLines: 2,
-                      maxLines: 5,
-                      enabled: !busy,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: draft.preciseEdit
-                            ? 'Specific correction'
-                            : 'Your renovation goal (optional)',
-                        hintText: 'Modernise the whole room; keep the layout.',
-                      ),
-                    ),
-                    if (!draft.preciseEdit)
-                      TextButton(
-                        onPressed: busy
-                            ? null
-                            : () {
-                                draft.changes.text = 'Suggest a coordinated whole-room design using these photos.';
-                              },
-                        child: const Text('Suggest a design for me'),
-                      ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: draft.protected,
-                      minLines: 2,
-                      maxLines: 4,
-                      enabled: !busy,
-                      decoration: const InputDecoration(
-                        labelText: 'What must stay? (optional)',
-                        hintText: 'Layout, windows, favourite furniture…',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    SwitchListTile(
-                      title: const Text('Keep the existing layout'),
-                      value: draft.keepLayout,
-                      onChanged: busy ? null : draft.setKeepLayout,
-                    ),
-                    if (!draft.preciseEdit) ...[
-                      RoomColourPaletteCard(
-                        store: widget.store,
-                        room: current,
-                        preview: widget.store.imageFor(current.primaryId),
-                      ),
-                      DesignStyleControls(draft: draft),
-                      ExpansionTile(
-                        key: const ValueKey('setup-advanced'),
-                        title: const Text('Advanced Keep / Replace controls'),
-                        children: [RenovationScopeControls(draft: draft)],
-                      ),
-                    ],
-                  ],
-                  if (step == 2 || step == 3) ...[
-                    if (!widget.store.ai.supportsAnalysis)
-                      const Text(
-                        'AI analysis is optional. Your room is saved; connect AI below or continue with a clearly labelled prepared brief.',
-                      ),
-                    RoomAnalysisCard(
-                      store: widget.store,
-                      draft: draft,
-                      buildRequest: () => request(analysis: true),
-                      onBusyChanged: (value) {
-                        setState(() => analysing = value);
-                        updateGuard();
-                      },
-                    ),
-                    AiConnectionSettingsCard(ai: widget.store.ai),
-                  ],
-                  if (step == 3) ...[
-                    ExpansionTile(
-                      title: const Text('Preview final prompt'),
-                      children: [SelectableText(previewPrompt())],
-                    ),
-                    AiEditCard(
-                      store: widget.store,
-                      draft: draft,
-                      onImproveBrief: (target) =>
-                          move(target == BriefTarget.room ? 0 : 1),
-                      buildRequest: request,
-                      onPendingChanged: (value) {
-                        if (mounted) setState(() => generating = value);
-                        updateGuard();
-                      },
-                      onSaved: (design) {
-                        if (mounted) setState(() => designId = design.id);
-                      },
-                    ),
-                    if (designId != null &&
-                        !widget.store.isDesignDeleted(designId!)) ...[
-                      const Text(
-                        'Design saved. Open the workspace to compare, approve or refine it.',
-                      ),
-                    ],
-                    DeletedDesignsCard(store: widget.store, roomId: current.id),
-                    ProjectFileControls(
-                      store: widget.store,
-                      projectId: current.projectId,
-                      beforeSave: save,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-          bottomNavigationBar: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AiActivityStrip(
-                  activity: widget.store.ai.activity,
-                  roomId: current.id,
-                  safeArea: false,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Wrap(
-                    spacing: 10,
-                    runSpacing: 8,
-                    alignment: WrapAlignment.end,
-                    children: [
-                      if (step > 0)
-                        OutlinedButton(
-                          onPressed: busy ? null : () => move(step - 1),
-                          child: const Text('Back'),
-                        ),
-                      if (step < 3)
-                        FilledButton(
-                          onPressed: busy ? null : () => move(step + 1),
-                          child: Text(
-                            step == 2 ? 'Choose redesign options' : 'Continue',
-                          ),
-                        ),
-                      if (step == 3)
-                        FilledButton(
-                          onPressed: busy ? null : () => leave(finish: true),
-                          child: const Text('Open design workspace'),
-                        ),
-                    ],
-                  ),
                 ),
               ],
+            ),
+            body: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 950),
+                child: ListView(
+                  controller: scroll,
+                  padding: const EdgeInsets.all(12),
+                  children: [
+                    Text(
+                      'Step ${step + 1} of 4 · ${steps[step]}',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 10),
+                    LinearProgressIndicator(value: (step + 1) / 4),
+                    const SizedBox(height: 12),
+                    Semantics(
+                      liveRegion: true,
+                      child: Text(
+                        analysing
+                            ? 'Analysing room photos…'
+                            : generating
+                            ? 'Generating design and saving the result…'
+                            : saving
+                            ? 'Saving your work…'
+                            : draft.status,
+                      ),
+                    ),
+                    if (message != null) Text(message!),
+                    const SizedBox(height: 16),
+                    if (step == 0) ...[
+                      const Text(
+                        'Your first photos are saved. Add more angles if useful and choose the primary view. This sets the camera viewpoint for the design.',
+                      ),
+                      RoomPhotosCard(
+                        store: widget.store,
+                        room: current,
+                        selectedPhotoId: current.primaryId,
+                        onView: (id) {
+                          widget.store
+                              .setPrimaryPhoto(current.id, id)
+                              .catchError((_) {
+                                if (mounted) {
+                                  setState(
+                                    () => message =
+                                        'Could not save the primary view.',
+                                  );
+                                }
+                              });
+                        },
+                        includeContext: true,
+                        onContextChanged: null,
+                      ),
+                      ProjectFileControls(
+                        store: widget.store,
+                        projectId: current.projectId,
+                        beforeSave: save,
+                      ),
+                    ],
+                    if (step == 1 || step == 3) ...[
+                      if (step == 3)
+                        ExpandableImage(
+                          bytes: widget.store.imageFor(current.primaryId)!,
+                          title: '${current.displayName} · original',
+                          height: 220,
+                        ),
+                      DesignModeControls(draft: draft, enabled: !busy),
+                      const SizedBox(height: 12),
+                      TextField(
+                        key: ValueKey('setup-goal-${draft.preciseEdit}'),
+                        controller: draft.preciseEdit
+                            ? draft.correction
+                            : draft.changes,
+                        minLines: 2,
+                        maxLines: 5,
+                        enabled: !busy,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: draft.preciseEdit
+                              ? 'Specific correction'
+                              : 'Your renovation goal (optional)',
+                          hintText:
+                              'Modernise the whole room; keep the layout.',
+                        ),
+                      ),
+                      if (!draft.preciseEdit)
+                        TextButton(
+                          onPressed: busy
+                              ? null
+                              : () {
+                                  draft.changes.text = 'Suggest a coordinated whole-room design using these photos.';
+                                },
+                          child: const Text('Suggest a design for me'),
+                        ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: draft.protected,
+                        minLines: 2,
+                        maxLines: 4,
+                        enabled: !busy,
+                        decoration: const InputDecoration(
+                          labelText: 'What must stay? (optional)',
+                          hintText: 'Layout, windows, favourite furniture…',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      SwitchListTile(
+                        title: const Text('Keep the existing layout'),
+                        value: draft.keepLayout,
+                        onChanged: busy ? null : draft.setKeepLayout,
+                      ),
+                      if (!draft.preciseEdit) ...[
+                        RoomColourPaletteCard(
+                          store: widget.store,
+                          room: current,
+                          preview: widget.store.imageFor(current.primaryId),
+                        ),
+                        DesignStyleControls(draft: draft),
+                        ExpansionTile(
+                          key: const ValueKey('setup-advanced'),
+                          title: const Text('Advanced Keep / Replace controls'),
+                          children: [RenovationScopeControls(draft: draft)],
+                        ),
+                      ],
+                    ],
+                    if (step == 2 || step == 3) ...[
+                      if (!widget.store.ai.supportsAnalysis)
+                        const Text(
+                          'AI analysis is optional. Your room is saved; connect AI below or continue with a clearly labelled prepared brief.',
+                        ),
+                      RoomAnalysisCard(
+                        store: widget.store,
+                        draft: draft,
+                        buildRequest: () => request(analysis: true),
+                        onBusyChanged: (value) {
+                          setState(() => analysing = value);
+                          updateGuard();
+                        },
+                      ),
+                      AiConnectionSettingsCard(ai: widget.store.ai),
+                    ],
+                    if (step == 3) ...[
+                      ExpansionTile(
+                        title: const Text('Preview final prompt'),
+                        children: [SelectableText(previewPrompt())],
+                      ),
+                      AiEditCard(
+                        store: widget.store,
+                        draft: draft,
+                        onImproveBrief: (target) =>
+                            move(target == BriefTarget.room ? 0 : 1),
+                        buildRequest: request,
+                        onPendingChanged: (value) {
+                          if (mounted) setState(() => generating = value);
+                          updateGuard();
+                        },
+                        onSaved: (design) {
+                          if (mounted) setState(() => designId = design.id);
+                        },
+                      ),
+                      if (designId != null &&
+                          !widget.store.isDesignDeleted(designId!)) ...[
+                        const Text(
+                          'Design saved. Open the workspace to compare, approve or refine it.',
+                        ),
+                      ],
+                      DeletedDesignsCard(
+                        store: widget.store,
+                        roomId: current.id,
+                      ),
+                      ProjectFileControls(
+                        store: widget.store,
+                        projectId: current.projectId,
+                        beforeSave: save,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            bottomNavigationBar: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AiActivityStrip(
+                    activity: widget.store.ai.activity,
+                    roomId: current.id,
+                    safeArea: false,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Wrap(
+                      spacing: 10,
+                      runSpacing: 8,
+                      alignment: WrapAlignment.end,
+                      children: [
+                        if (step > 0)
+                          OutlinedButton(
+                            onPressed: busy ? null : () => move(step - 1),
+                            child: const Text('Back'),
+                          ),
+                        if (step < 3)
+                          FilledButton(
+                            onPressed: busy ? null : () => move(step + 1),
+                            child: Text(
+                              step == 2
+                                  ? 'Choose redesign options'
+                                  : 'Continue',
+                            ),
+                          ),
+                        if (step == 3)
+                          FilledButton(
+                            onPressed: busy ? null : () => leave(finish: true),
+                            child: const Text('Open design workspace'),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

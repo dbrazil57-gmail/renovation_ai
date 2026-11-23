@@ -2,7 +2,36 @@
 
 ## Follow-up acceptance — 23 November
 
-Latest finish-polish source: **`7821f8aa18`**, same localhost:7357, no APK update.
+Latest refresh/review source: **`58f3b34f01`**. Load this update once, reopen your
+room, then test subsequent refreshes:
+
+1. Select a different saved image and Style or Ideas; refresh. The same room,
+   working image and tab return. Try Partial mode too; approval stays unchanged.
+2. Open Settings, refresh, then Back: Settings returns first, followed by the same
+   workspace tab. Repeat Projects/Explore/Library and Rooms and spaces.
+3. Open Colours & tiles, select Finish and refresh: editor/phase and saved layers
+   return. Workspace full-screen viewer, comparison, crop and markup should also
+   reopen on the same image. Saved layers persist; unsaved crop/sketch gestures,
+   zoom position and transient camera frames are not reconstructed from navigation.
+4. Keep Polish with AI at the bottom. Tap it: Refine opens with the prepared
+   instructions and no paid request. Read/edit, then Review & send AI polish.
+   The confirmation shows exact instructions at the top, clean design first and
+   rough guide second. Cancel sends nothing; Send is the only paid action.
+5. Refresh with a sending confirmation open: return to the workspace without
+   reopening it or sending. A request already sent to a provider is not cancelled
+   or automatically resumed by a page reload; keep the page open during generation.
+
+Four fixture page/tool reload workflows plus mocked confirmation-reload checks
+pass. Invalid/archived targets fall back without clearing data. These preferences
+contain IDs/view choices only and are excluded from project exports. No APK update.
+Final evidence: 401 full-suite tests pass (97s), clean analysis (49s), web build
+(104.9s), seven help captures/full decodes. Actual isolated Chrome desktop and
+390×844 refresh/Settings Back/Finish/prepare-before-send checks pass; screenshots
+inspected. Logs: `output/screen-session-final-tests.log`,
+`screen-session-final-analysis.log`, `screen-session-desktop-verified.log`,
+`screen-session-phone-final.log`, `screen-session-help-encoding.log`.
+
+Earlier finish-polish source: **`7821f8aa18`**, same localhost:7357, no APK update.
 396 full-suite tests (100s), clean analysis, web build and refreshed paint-help
 capture/full decode pass. Mocked tests verify actual clean/guide byte order, no
 request before confirmation or after Cancel, legacy draft reopening, missing-source

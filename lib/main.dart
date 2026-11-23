@@ -10,6 +10,9 @@ import 'app_appearance.dart';
 import 'feedback_widgets.dart';
 import 'feedback_storage.dart';
 import 'app_store_scope.dart';
+import 'app_session.dart';
+import 'focus_workspace.dart';
+import 'room_draft.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -118,9 +121,92 @@ class _RenovisionStartupState extends State<RenovisionStartup> {
   }
 }
 
-class RenovisionApp extends StatelessWidget {
+class RenovisionApp extends StatefulWidget {
   final RenovisionStore store;
   const RenovisionApp({super.key, required this.store});
+
+  @override
+  State<RenovisionApp> createState() => _RenovisionAppState();
+}
+
+class _RenovisionAppState extends State<RenovisionApp> {
+  RenovisionStore get store => widget.store;
+  late final session = AppPageSession(store.records);
+
+  List<Route<dynamic>> restorePages(String _) {
+    final saved = session.initialPages;
+    final tab = saved.firstOrNull?['tab'];
+    final pages = <Widget>[
+      AppShell(store: store, initialTab: tab is int ? tab.clamp(0, 2) : 0),
+    ];
+    for (var index = 0; index < saved.length; index++) {
+      final page = saved[index], kind = page['page'];
+      if (kind == 'home') continue;
+      if (kind == 'settings') {
+        pages.add(settingsPage(store));
+        continue;
+      }
+      final project = store.projectById(page['projectId']?.toString() ?? '');
+      if (project == null || project.archived || project.deleted) break;
+      if (kind == 'project') {
+        pages.add(ProjectScreen(store: store, project: project));
+        continue;
+      }
+      final room = store.roomById(page['roomId']?.toString() ?? '');
+      if (room == null || room.projectId != project.id || room.deleted) break;
+      if (kind == 'setup') {
+        pages.add(roomEntry(store, room));
+        continue;
+      }
+      if (kind != 'workspace') break;
+      final selected = store
+          .designsFor(room.id)
+          .where((design) => design.id == page['designId'])
+          .firstOrNull;
+      final photoId = room.photoIds.contains(page['photoId'])
+          ? page['photoId'] as String
+          : room.primaryId;
+      final next = index + 1 < saved.length ? saved[index + 1] : null;
+      final finishPanel = next != null && next['page'] == 'finishes'
+          ? next['panel']
+          : null;
+      final tool =
+          next != null &&
+              next['page'] == 'tool' &&
+              const [
+                'crop',
+                'sketch',
+                'compare',
+                'viewer',
+              ].contains(next['tool'])
+          ? next['tool'] as String
+          : null;
+      pages.add(
+        WorkspaceScreen(
+          store: store,
+          roomId: room.id,
+          initialDesignId: selected?.id,
+          initialPhotoId: selected == null ? photoId : null,
+          initialSection: FocusSection.values
+              .where((v) => v.name == page['section'])
+              .firstOrNull,
+          initialMode: RoomDesignMode.values
+              .where((v) => v.name == page['mode'])
+              .firstOrNull,
+          initialFinishPanel: finishPanel is int
+              ? finishPanel.clamp(0, 1)
+              : null,
+          initialTool: tool,
+        ),
+      );
+      // Reopen the finish editor through its workspace callbacks so Save/Back
+      // keep their existing source/version semantics, never replaying AI.
+      if (next?['page'] == 'finishes' || tool != null) index++;
+    }
+    return [
+      for (final page in pages) MaterialPageRoute<void>(builder: (_) => page),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,15 +222,23 @@ class RenovisionApp extends StatelessWidget {
           ),
         ),
       ),
-      child: FeedbackScope(
-        drafts: LocalFeedbackDrafts(store.records),
-        child: ValueListenableBuilder<AppThemeChoice>(
-          valueListenable: store.appearance,
-          builder: (context, choice, _) => MaterialApp(
-            title: 'RenoVision',
-            debugShowCheckedModeBanner: false,
-            theme: buildRenovisionTheme(choice: choice),
-            home: AppShell(store: store),
+      child: AppPageSessionScope(
+        session: session,
+        child: FeedbackScope(
+          drafts: LocalFeedbackDrafts(store.records),
+          child: ValueListenableBuilder<AppThemeChoice>(
+            valueListenable: store.appearance,
+            builder: (context, choice, _) => MaterialApp(
+              title: 'RenoVision',
+              debugShowCheckedModeBanner: false,
+              theme: buildRenovisionTheme(choice: choice),
+              onGenerateRoute: (settings) => MaterialPageRoute<void>(
+                settings: settings,
+                builder: (_) => AppShell(store: store),
+              ),
+              navigatorObservers: [session],
+              onGenerateInitialRoutes: restorePages,
+            ),
           ),
         ),
       ),
