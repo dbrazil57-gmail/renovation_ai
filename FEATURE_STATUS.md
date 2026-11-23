@@ -1,5 +1,56 @@
 # Renovision feature status
 
+## Names, navigation, AI results and editor controls — source after APK 1.0.18
+
+Current source **`e48ca6290f`** adds local room-type suggestions beneath search as a
+custom name is typed; choosing a suggestion preserves that name. It does not infer
+or change a room type automatically or send anything to AI. Analysis actions now
+use photo/space wording suitable for exteriors as well as rooms.
+
+Four-step setup separates photo analysis (step 3) from image generation (step 4),
+without repeating the analysis controls at the last step. The workspace has one
+pinned generation/update/polish action and retains the chosen variation count.
+Analysis and generation are separate confirmed provider requests; a saved plan is
+not a generated image. Existing analysis, originals and generated designs remain.
+
+Back leaves the current screen without cycling its tabs, matching the owner's
+latest preference. In setup, bottom Back changes steps; top/system Back saves and
+leaves. More tools includes Rooms & spaces and Projects home. Reopened setup keeps
+its parent workspace and completed status; choices refresh the parent draft on
+return, including after reload. View/edit/Settings return to the same workspace.
+No pending paid request or confirmation is automatically replayed.
+
+Auto now uses a small switch and information icon. Its explanation distinguishes
+local drafts, imported photos, saved analysis/results, linked files and portable
+Save/Save as. Keys/settings remain separate from project exports. Back still saves
+pending room choices when automatic draft saving is off.
+
+Analysis and AI-design results show usage/cost details. Supported OpenAI estimates
+include input/output, cached analysis input and a dated rate reference; missing
+metadata, unsupported tiers/models and Gemini dollar values stay unpriced. Old
+analysis files remain readable. Settings image totals still exclude analysis and
+are estimates, not a provider account balance. See the pricing notes in PRODUCT_NOTES.
+
+Style for a selected design shows its saved look and palette, with Partial/New
+design buttons for broader changes. Precise updates do not silently reapply those
+style choices or the original renovation brief.
+
+Paint sensitivity no longer switches back to Finish after adjusting the mask.
+It updates existing automatic patches without duplicating or dropping added areas.
+Grow is available in both phases, remembers expansion, keeps the direction arrows
+together and includes local Undo/Redo. Add area remains available in Select; moving
+to Grow there preserves that switch and sensitivity. History remains session-only.
+
+**414 full-suite tests pass** (110s), analysis clean (25.2s), all seven refreshed
+help recordings pass capture and full MP4 validation. The physical phone package
+remains **1.0.18+19**, source `e0ef2fa1ee`; these changes need the next requested APK.
+Final release web build passes (50s). Actual isolated 390×844 and 1280×900 Chrome
+checks pass for reopened setup/reload, screen-level Back, Settings return, direct
+project navigation and name suggestions. Screenshots were inspected, including
+the populated Style card and the corrected Auto information-icon contrast.
+The final contrast adjustment also passes 19 related tests; localhost:7357 serves
+the current source without changing the owner's profile or project storage.
+
 ## Four-step room setup access — source after APK 1.0.18
 
 Older rooms without setup fields still open as completed rooms; no migration or

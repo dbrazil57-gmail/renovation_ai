@@ -155,7 +155,14 @@ class _RenovisionAppState extends State<RenovisionApp> {
       final room = store.roomById(page['roomId']?.toString() ?? '');
       if (room == null || room.projectId != project.id || room.deleted) break;
       if (kind == 'setup') {
-        pages.add(roomEntry(store, room));
+        pages.add(
+          roomEntry(
+            store,
+            room,
+            forceSetup: true,
+            returnToWorkspace: page['returnToWorkspace'] == true,
+          ),
+        );
         continue;
       }
       if (kind != 'workspace') break;

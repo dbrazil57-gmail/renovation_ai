@@ -279,8 +279,8 @@ void main() {
         await tester.tap(find.text('OK'));
         await tester.pumpAndSettle();
       }
-      await reach(tester, find.text('Analyse room photos'), up: true);
-      await tester.tap(find.text('Analyse room photos'));
+      await reach(tester, find.text('Analyse photos with AI'), up: true);
+      await tester.tap(find.text('Analyse photos with AI'));
       await tester.pumpAndSettle();
       expect(find.textContaining('is a whole-room request'), findsOneWidget);
       expect(sent, isNull);
@@ -369,8 +369,8 @@ void main() {
         store.roomById(room.id)!.copyWith(fullRenovation: false),
       );
       await showRoom(tester);
-      await reach(tester, find.text('Analyse room photos'));
-      await tester.tap(find.text('Analyse room photos'));
+      await reach(tester, find.text('Analyse photos with AI'));
+      await tester.tap(find.text('Analyse photos with AI'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send photos for analysis'));
       await tester.pumpAndSettle();

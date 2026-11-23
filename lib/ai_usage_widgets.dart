@@ -2,6 +2,62 @@ import 'package:material_ui/material_ui.dart';
 
 import 'ai_usage.dart';
 import 'store.dart';
+import 'context_help.dart';
+
+class AiUsageSummary extends StatelessWidget {
+  final AiUsage? usage;
+  final String operation;
+  final String? model;
+  const AiUsageSummary({
+    super.key,
+    this.usage,
+    required this.operation,
+    this.model,
+  });
+  @override
+  Widget build(BuildContext context) {
+    final value = usage;
+    final details = [
+      if (model != null) 'Model: $model',
+      if (value != null)
+        '${value.inputTokens} input tokens (prompt and photos) · ${value.outputTokens} output tokens',
+      if (value?.estimatedInputUsd != null)
+        'Prompt and photo input: ${AiUsage.money(value!.estimatedInputUsd!)}',
+      if (value?.estimatedOutputUsd != null)
+        'Result output: ${AiUsage.money(value!.estimatedOutputUsd!)}',
+      if (value?.estimatedUsd != null)
+        'Estimated request total: ${AiUsage.money(value!.estimatedUsd!)}',
+      if (value?.estimatedUsd != null)
+        'Standard USD rates checked ${value!.ratesDate}. This includes the input and output for this request, not only the text prompt.',
+      if (value?.estimatedUsd == null) 'A dollar estimate is unavailable for this result. Usage may not have been returned, or its model/pricing details are not supported. Older results cannot be priced retrospectively without their usage.',
+      'An estimate is not an invoice or remaining provider balance. Account credits, discounts, taxes, exchange rates and other requests can change your bill. The Settings image budget tracks image requests; analysis costs are shown separately here.',
+    ].join('\n\n');
+    return Tooltip(
+      message: details,
+      child: InkWell(
+        onTap: () => showContextHelp(
+          context,
+          title: '$operation cost',
+          message: details,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '$operation · ${value?.label ?? 'Cost unavailable for this saved result'}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+              const Icon(Icons.info_outline, size: 15),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class AiUsageCard extends StatelessWidget {
   final RenovisionStore store;

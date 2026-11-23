@@ -238,12 +238,15 @@ class GeminiInternet {
         'model': model,
         'provider': 'Gemini',
         'requestId': data['id'],
+        'usage': data['usage'] is Map
+            ? AiUsage.gemini(data['usage'] as Map).toMap()
+            : null,
       });
     } on AiFailure {
       rethrow;
     } on TimeoutException {
       throw const AiFailure(
-        'Gemini room analysis timed out. A charge may have occurred. Check usage before retrying; no automatic retry was sent.',
+        'Gemini photo analysis timed out. A charge may have occurred. Check usage before retrying; no automatic retry was sent.',
       );
     } catch (_) {
       throw const AiFailure(

@@ -7,6 +7,45 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Active follow-up and next acceptance pass — 23 November
 
+### Names, navigation, AI results and paint controls — after APK 1.0.18
+
+- [x] Suggest up to four room/space types while typing a name, including partial
+  words and common aliases. Suggestions are local, require explicit selection and
+  preserve custom names. The separate manual search/category controls remain.
+- [x] Use photo/space analysis wording for indoor and exterior work. Step 3 analyses
+  photos; step 4 creates images using saved observations and current choices.
+  Remove the repeated analysis card from step 4. Each paid operation still has
+  its own confirmation; moving forward does not send another analysis request.
+- [x] Keep one pinned generation/update/polish action in the workspace. Remove the
+  duplicate inside Update this design; preserve the selected 1/2/3 variation count.
+- [x] Back leaves one screen, without cycling Room/Style/Refine/Ideas or the main
+  tabs. In setup, only the bottom Back changes steps; the top/system Back saves
+  and leaves. Reopening setup keeps its parent workspace, selected image, completed
+  status and choices. Returning after reload refreshes the parent's saved choices.
+- [x] Add Rooms & spaces / Projects home under More tools for direct navigation.
+  Both save pending edits, including when Auto is off, and retain photos/versions.
+- [x] Reduce the header control to Auto, a green/grey switch and an information
+  icon. Hover/tap explains device drafts, photos/results/analysis, connected files,
+  portable Save/Save as and separate API-key storage. Saving semantics are unchanged.
+- [x] Show cost details with analysis results and AI designs: model, returned tokens,
+  input/output estimates where supported. Save usage with analysis/recipes. Unknown
+  models, incomplete usage and Gemini dollar amounts remain explicitly unpriced.
+  The existing Settings budget still tracks images, not analysis or provider balance.
+- [x] Populate Style for a selected design with its saved style/palette, plus clear
+  Partial/New design entry points. Precise corrections keep their narrow scope.
+- [x] Paint sensitivity stays in Select and updates existing automatic patches
+  without appending duplicates. Grow is available in Select and Finish, retains its
+  expanded state and keeps all five directions together. Add inline Undo/Redo for
+  the existing session history; preserve Add area and growth distance while editing.
+- [x] **414 tests pass** (110s), analysis clean (25.2s). All seven help captures pass,
+  followed by full H.264/timestamp/decode validation. Application source `e48ca6290f`;
+  no paid AI request or customer-data reset. Final 50s release web build passes;
+  actual isolated phone/desktop Chrome navigation checks and screenshot inspection
+  pass. Same localhost:7357 serves this source. Final icon-contrast follow-up adds
+  19 passing related checks; all seven recordings are recaptured and decoded.
+- [ ] Physical S21 acceptance in the next requested APK. Existing 1.0.18+19 and its
+  checksum remain unchanged; this batch is shared-source/Chrome work.
+
 ### Four-step setup access follow-up — after APK 1.0.18
 
 - [x] Check older room compatibility: missing setup status defaults to completed,

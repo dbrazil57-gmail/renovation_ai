@@ -1,5 +1,14 @@
 # RenoVision
 
+Latest source follow-up **`e48ca6290f`**: Back leaves the current screen without
+cycling workspace tabs. Setup's bottom Back changes steps; its top arrow saves
+and leaves setup. More tools offers Rooms & spaces and Projects home. Also adds
+room-name suggestions, photo/space wording, one pinned generation action,
+persistent paint controls with Undo/Redo, compact Auto + information, per-result
+AI cost details and a saved-look summary in Style. Analysis and generation remain
+separate confirmed requests. **414 tests pass**, analysis is clean, and all seven
+help recordings are refreshed and validated. This is not in the unchanged APK below.
+
 Source follow-up after APK 1.0.18: the workspace Room tab now has a labelled
 **4-step room setup** button. Guided room setup is also available inside setup,
 with a chooser for all four steps that saves existing choices. Older/completed/

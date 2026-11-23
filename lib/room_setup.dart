@@ -28,12 +28,14 @@ class RoomSetupScreen extends StatefulWidget {
   final String roomId;
   final Widget Function(String? designId) workspace;
   final WidgetBuilder? settingsBuilder;
+  final bool returnToWorkspace;
   const RoomSetupScreen({
     super.key,
     required this.store,
     required this.roomId,
     required this.workspace,
     this.settingsBuilder,
+    this.returnToWorkspace = false,
   });
   @override
   State<RoomSetupScreen> createState() => _RoomSetupScreenState();
@@ -125,7 +127,9 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
         await widget.store.documents.save(room.projectId);
       }
       if (!mounted) return;
-      if (finish) {
+      if (widget.returnToWorkspace) {
+        Navigator.pop(context, designId);
+      } else if (finish) {
         Navigator.pushReplacement<void, void>(
           context,
           MaterialPageRoute(
@@ -288,11 +292,18 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
     builder: (context, _) {
       final current = room;
       return SavedAppPage(
-        page: {'page': 'setup', 'projectId': room.projectId, 'roomId': room.id},
+        page: {
+          'page': 'setup',
+          'projectId': room.projectId,
+          'roomId': room.id,
+          'returnToWorkspace': widget.returnToWorkspace,
+        },
         child: PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, _) {
-            if (!didPop) leave();
+            if (!didPop && !busy) {
+              leave();
+            }
           },
           child: Scaffold(
             appBar: AppBar(
@@ -302,9 +313,9 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                 overflow: TextOverflow.ellipsis,
               ),
               bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(40),
+                preferredSize: const Size.fromHeight(32),
                 child: SizedBox(
-                  height: 40,
+                  height: 32,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 14),
                     child: Row(
@@ -349,7 +360,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                     ScreenTool.help(
                       context,
                       title: 'Room setup tools',
-                      message: 'Save keeps a complete project file. Guided room setup lets you choose any of the four steps without clearing your choices. Settings opens saving and AI options. Finish later saves your current step and is available under More tools on smaller screens. The bottom buttons also move through the steps.',
+                      message: 'Save keeps a complete project file. Guided room setup lets you choose any of the four steps without clearing your choices. Settings opens saving and AI options. The top arrow leaves setup and saves your progress; the bottom Back and Continue buttons move through the steps. Finish later also saves your current step and is available under More tools on smaller screens.',
                     ),
                   ],
                 ),
@@ -373,7 +384,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                       liveRegion: true,
                       child: Text(
                         analysing
-                            ? 'Analysing room photos…'
+                            ? 'Analysing photos…'
                             : generating
                             ? 'Generating design and saving the result…'
                             : saving
@@ -478,7 +489,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                         ),
                       ],
                     ],
-                    if (step == 2 || step == 3) ...[
+                    if (step == 2) ...[
                       if (!widget.store.ai.supportsAnalysis)
                         const Text(
                           'AI analysis is optional. Your room is saved; connect AI below or continue with a clearly labelled prepared brief.',
@@ -495,6 +506,19 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                       AiConnectionSettingsCard(ai: widget.store.ai),
                     ],
                     if (step == 3) ...[
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Create design images'),
+                        subtitle: Text(
+                          draft.analysis == null
+                              ? 'Photo analysis is optional. Generate from your photos and choices.'
+                              : 'Saved photo analysis is available. Review your choices, then generate images.',
+                        ),
+                        trailing: TextButton(
+                          onPressed: busy ? null : () => move(2),
+                          child: const Text('Review analysis'),
+                        ),
+                      ),
                       ExpansionTile(
                         title: const Text('Preview final prompt'),
                         children: [SelectableText(previewPrompt())],
@@ -558,9 +582,7 @@ class _RoomSetupScreenState extends State<RoomSetupScreen> {
                           FilledButton(
                             onPressed: busy ? null : () => move(step + 1),
                             child: Text(
-                              step == 2
-                                  ? 'Choose redesign options'
-                                  : 'Continue',
+                              step == 2 ? 'Continue to generation' : 'Continue',
                             ),
                           ),
                         if (step == 3)

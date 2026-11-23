@@ -8,6 +8,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image/image.dart' as img;
 
 import 'package:renovision_ai/room_analysis.dart';
+import 'package:renovision_ai/ai_usage.dart';
 
 /// Local development only. Binds to loopback, accepts local browser origins,
 /// requires a random pairing code, and never logs keys, prompts or image bytes.
@@ -355,6 +356,15 @@ Use the supplied user requirements to write one specific photorealistic renovati
         'provider': 'OpenAI',
         'model': analysisModel,
         'requestId': upstream.headers['x-request-id'],
+        'usage': data['usage'] is Map
+            ? AiUsage.openAiAnalysis(
+                data['usage'] as Map,
+                analysisModel,
+                serviceTier: data['service_tier'] is String
+                    ? data['service_tier'] as String
+                    : null,
+              ).toMap()
+            : null,
       });
     } on FormatException {
       await _reply(response, 502, {'error': 'Invalid provider analysis.'});

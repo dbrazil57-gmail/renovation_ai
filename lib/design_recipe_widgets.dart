@@ -5,6 +5,7 @@ import 'design_styles.dart';
 import 'design_palettes.dart';
 import 'ai_model_choices.dart';
 import 'local_paint.dart';
+import 'ai_usage_widgets.dart';
 
 Future<bool?> showDesignRecipe(BuildContext context, DesignVersion design) {
   final saved = design.recipe?.toMap();
@@ -72,8 +73,13 @@ Future<bool?> showDesignRecipe(BuildContext context, DesignVersion design) {
               Text('Keep: ${saved['protectedFeatures'] ?? ''}'),
               if (design.recipe!.analysis != null)
                 ExpansionTile(
-                  title: const Text('Saved room analysis'),
+                  title: const Text('Saved photo analysis'),
                   children: [
+                    AiUsageSummary(
+                      operation: 'Analysis',
+                      usage: design.recipe!.analysis!.result.usage,
+                      model: design.recipe!.analysis!.result.model,
+                    ),
                     SelectableText(
                       design.recipe!.analysis!.result.observations,
                     ),

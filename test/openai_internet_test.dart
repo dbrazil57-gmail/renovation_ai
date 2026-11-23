@@ -120,6 +120,11 @@ void main() {
         return http.Response(
           jsonEncode({
             'status': 'completed',
+            'usage': {
+              'input_tokens': 1000,
+              'output_tokens': 100,
+              'input_tokens_details': {'cached_tokens': 200},
+            },
             'output': [
               {
                 'type': 'message',
@@ -157,6 +162,8 @@ void main() {
         onProgress: phases.add,
       );
       expect(analysis.requestId, 'analysis-test');
+      expect(analysis.usage!.estimatedUsd, closeTo(.000132, .000000001));
+      expect(analysis.usage!.estimatedInputUsd, closeTo(.000082, .000000001));
       expect(analysis.observations, contains('window'));
       expect(phases, [AiStage.preparing, AiStage.waiting, AiStage.reading]);
       phases.clear();

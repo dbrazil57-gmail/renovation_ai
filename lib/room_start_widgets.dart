@@ -61,6 +61,65 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
   RoomStarter? starter;
   String? error;
   String query = '', category = '';
+  bool nameEdited = false;
+
+  List<String> get nameSuggestions {
+    if (!nameEdited) return const [];
+    final words = RegExp(r'[a-z]+')
+        .allMatches(name.text.toLowerCase())
+        .map((match) => match.group(0)!)
+        .where(
+          (word) =>
+              word.length >= 3 &&
+              !const {
+                'room',
+                'rooms',
+                'the',
+                'new',
+                'floor',
+                'area',
+                'space',
+                'upstairs',
+                'downstairs',
+                'ground',
+                'first',
+                'second',
+              }.contains(word),
+        )
+        .toList();
+    const aliases = {
+      'exterior': 'outside facade elevation frontage',
+      'bathroom': 'washroom',
+      'bedroom': 'bed',
+      'family': 'lounge',
+      'media': 'cinema theatre theater',
+      'patio': 'alfresco',
+      'verandah': 'veranda porch',
+      'utility': 'mudroom',
+    };
+    final matches = <(String, int)>[];
+    for (final entry in roomTypes.entries) {
+      final terms = RegExp(r'[a-z]+')
+          .allMatches(
+            '${entry.key} ${entry.value} ${aliases[entry.key] ?? ''}'
+                .toLowerCase(),
+          )
+          .map((match) => match.group(0)!)
+          .toSet();
+      var score = 0;
+      for (final word in words) {
+        if (terms.contains(word)) {
+          score += 3;
+        } else if (terms.any((term) => term.startsWith(word))) {
+          score++;
+        }
+      }
+      if (score > 0) matches.add((entry.key, score));
+    }
+    matches.sort((a, b) => b.$2.compareTo(a.$2));
+    return matches.take(4).map((match) => match.$1).toList();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -135,6 +194,10 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
                 border: const OutlineInputBorder(),
               ),
               onSubmitted: (_) => submit(),
+              onChanged: (_) => setState(() {
+                nameEdited = true;
+                error = null;
+              }),
             ),
             const SizedBox(height: 10),
             TextField(
@@ -150,6 +213,26 @@ class _RoomStartDialogState extends State<RoomStartDialog> {
               onChanged: (value) =>
                   setState(() => query = value.toLowerCase().trim()),
             ),
+            if (nameSuggestions.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              const Text(
+                'Suggested from your name',
+                style: TextStyle(fontSize: 12),
+              ),
+              Wrap(
+                spacing: 6,
+                runSpacing: 2,
+                children: [
+                  for (final id in nameSuggestions)
+                    ChoiceChip(
+                      key: ValueKey('suggest-room-type-$id'),
+                      label: Text(roomTypes[id]!),
+                      selected: type == id,
+                      onSelected: (_) => select(id),
+                    ),
+                ],
+              ),
+            ],
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
               initialValue: category,

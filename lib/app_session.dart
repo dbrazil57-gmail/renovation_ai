@@ -12,6 +12,7 @@ class AppPageSession extends NavigatorObserver {
   final List<Map<String, dynamic>> initialPages;
   final _routes = <Route<dynamic>>[];
   final _pages = <Route<dynamic>, Map<String, dynamic>>{};
+  final _onReturn = <Route<dynamic>, void Function(Map<String, dynamic>)>{};
   Future<void> _writes = Future.value();
   String? _last;
 
@@ -26,12 +27,24 @@ class AppPageSession extends NavigatorObserver {
     }
   }
 
-  void register(Route<dynamic> route, Map<String, dynamic> page) {
+  void register(
+    Route<dynamic> route,
+    Map<String, dynamic> page, {
+    void Function(Map<String, dynamic>)? onReturn,
+  }) {
     _pages[route] = Map.unmodifiable(page);
+    if (onReturn == null) {
+      _onReturn.remove(route);
+    } else {
+      _onReturn[route] = onReturn;
+    }
     _remember();
   }
 
-  void forget(Route<dynamic> route) => _pages.remove(route);
+  void forget(Route<dynamic> route) {
+    _pages.remove(route);
+    _onReturn.remove(route);
+  }
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
@@ -41,22 +54,30 @@ class AppPageSession extends NavigatorObserver {
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    final leaving = _pages[route];
     _routes.remove(route);
-    _pages.remove(route);
+    forget(route);
     _remember();
+    if (leaving != null && previousRoute != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_routes.contains(previousRoute)) {
+          _onReturn[previousRoute]?.call(leaving);
+        }
+      });
+    }
   }
 
   @override
   void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
     _routes.remove(route);
-    _pages.remove(route);
+    forget(route);
     _remember();
   }
 
   @override
   void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
     final index = oldRoute == null ? -1 : _routes.indexOf(oldRoute);
-    if (oldRoute != null) _pages.remove(oldRoute);
+    if (oldRoute != null) forget(oldRoute);
     if (index >= 0) {
       if (newRoute == null) {
         _routes.removeAt(index);
@@ -90,6 +111,14 @@ class AppPageSession extends NavigatorObserver {
   }
 
   Future<void> flush() => _writes;
+
+  Route<dynamic>? projectRoute(String projectId) => _routes.reversed
+      .where(
+        (route) =>
+            _pages[route]?['page'] == 'project' &&
+            _pages[route]?['projectId'] == projectId,
+      )
+      .firstOrNull;
 }
 
 class AppPageSessionScope extends InheritedWidget {
@@ -112,7 +141,13 @@ class AppPageSessionScope extends InheritedWidget {
 class SavedAppPage extends StatefulWidget {
   final Map<String, dynamic> page;
   final Widget child;
-  const SavedAppPage({super.key, required this.page, required this.child});
+  final void Function(Map<String, dynamic>)? onReturn;
+  const SavedAppPage({
+    super.key,
+    required this.page,
+    required this.child,
+    this.onReturn,
+  });
   @override
   State<SavedAppPage> createState() => _SavedAppPageState();
 }
@@ -143,7 +178,9 @@ class _SavedAppPageState extends State<SavedAppPage> {
     scheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scheduled = false;
-      if (mounted) session?.register(route!, widget.page);
+      if (mounted) {
+        session?.register(route!, widget.page, onReturn: widget.onReturn);
+      }
     });
   }
 

@@ -4,6 +4,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/foundation.dart' show listEquals, kIsWeb;
 
 import 'ai_service.dart';
+import 'ai_usage.dart';
+import 'ai_usage_widgets.dart';
 import 'models.dart';
 import 'store.dart';
 import 'ai_activity.dart';
@@ -1266,6 +1268,15 @@ class _AiEditCardState extends State<AiEditCard>
                     design.title,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
+                  AiUsageSummary(
+                    operation: 'Design',
+                    model: design.aiModel,
+                    usage: design.recipe?.toMap()['usage'] is Map
+                        ? AiUsage.fromMap(
+                            design.recipe!.toMap()['usage'] as Map,
+                          )
+                        : null,
+                  ),
                   ExpandableImage(
                     bytes: widget.store.imageFor(design.imageId)!,
                     title: design.title,
@@ -1330,7 +1341,7 @@ class AiTestJourneyCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              '1. Connect AI and choose a model.\n2. Analyse room photos and review the proposed prompt.\n3. Generate, compare and approve a design.\n4. Select that design to refine it.',
+              '1. Connect AI and choose a model.\n2. Analyse photos and review the proposed prompt.\n3. Generate, compare and approve a design.\n4. Select that design to refine it.',
             ),
             const SizedBox(height: 8),
             OutlinedButton.icon(

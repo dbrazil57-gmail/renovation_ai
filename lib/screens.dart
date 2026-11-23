@@ -19,6 +19,7 @@ import 'ai_service.dart';
 import 'project_transfer_widgets.dart';
 import 'room_photos.dart';
 import 'colour_palette_widgets.dart';
+import 'design_palettes.dart';
 import 'room_draft.dart';
 import 'design_style_widgets.dart';
 import 'design_styles.dart';
@@ -45,6 +46,7 @@ import 'live_design_screen.dart';
 import 'app_appearance_widgets.dart';
 import 'storage_privacy_widgets.dart';
 import 'design_recipe_widgets.dart';
+import 'design_recipe.dart';
 import 'feedback_widgets.dart';
 import 'feedback_storage.dart';
 import 'local_paint_screen.dart';
@@ -61,8 +63,12 @@ import 'brief_readiness_widgets.dart';
 import 'design_mode_widgets.dart';
 import 'app_session.dart';
 
-Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
-    room.setupComplete
+Widget roomEntry(
+  RenovisionStore store,
+  RenovationRoom room, {
+  bool forceSetup = false,
+  bool returnToWorkspace = false,
+}) => room.setupComplete && !forceSetup
     ? WorkspaceScreen(store: store, roomId: room.id)
     : RoomSetupScreen(
         store: store,
@@ -73,6 +79,7 @@ Widget roomEntry(RenovisionStore store, RenovationRoom room) =>
           initialDesignId: designId,
         ),
         settingsBuilder: (_) => settingsPage(store),
+        returnToWorkspace: returnToWorkspace,
       );
 
 Future<void> startRoomWithPhotos(
@@ -312,14 +319,16 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   late int selected = widget.initialTab;
 
+  void selectTab(int next) => setState(() {
+    if (next == selected) return;
+    selected = next;
+  });
+
   @override
   Widget build(BuildContext context) {
     final tabs = [
       ProjectsTab(store: widget.store),
-      ExploreTab(
-        store: widget.store,
-        openProjects: () => setState(() => selected = 0),
-      ),
+      ExploreTab(store: widget.store, openProjects: () => selectTab(0)),
       LibraryTab(store: widget.store),
     ];
     return SavedAppPage(
@@ -380,7 +389,7 @@ class _AppShellState extends State<AppShell> {
         bottomNavigationBar: NavigationBar(
           height: MediaQuery.textScalerOf(context).scale(12) > 16 ? 80 : 64,
           selectedIndex: selected,
-          onDestinationSelected: (i) => setState(() => selected = i),
+          onDestinationSelected: selectTab,
           destinations: const [
             NavigationDestination(
               icon: Icon(Icons.folder_outlined),
@@ -676,9 +685,9 @@ class ProjectScreen extends StatelessWidget {
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(40),
+          preferredSize: const Size.fromHeight(32),
           child: SizedBox(
-            height: 40,
+            height: 32,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               child: Row(children: [AutosaveSwitch(store: store)]),
@@ -1402,13 +1411,17 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   int focusRevealRevision = 0;
   final instructionAnchor = GlobalKey();
 
+  void _visitSection(FocusSection next) {
+    focusSection = next;
+  }
+
   void _improveBrief(BriefTarget target) {
     setState(() {
-      focusSection = switch (target) {
+      _visitSection(switch (target) {
         BriefTarget.room => FocusSection.room,
         BriefTarget.style || BriefTarget.palette => FocusSection.style,
         BriefTarget.refine => FocusSection.refine,
-      };
+      });
       focusRevealRevision++;
     });
     if (target == BriefTarget.refine) {
@@ -1454,7 +1467,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     if ((precise && draft.correction.text.trim().isEmpty) ||
         (!precise && !draft.fullRenovation && !draft.hasRequestedChanges)) {
       setState(
-        () => focusSection = precise ? FocusSection.refine : FocusSection.style,
+        () => _visitSection(precise ? FocusSection.refine : FocusSection.style),
       );
       notice(
         context,
@@ -1468,9 +1481,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     await generation.generate(briefReviewed: briefReviewed);
     if (!mounted) return;
     if (generation.needsAttention) {
-      setState(() => focusSection = FocusSection.refine);
+      setState(() => _visitSection(FocusSection.refine));
     } else if (widget.store.designsFor(widget.roomId).length > previousCount) {
-      setState(() => focusSection = FocusSection.ideas);
+      setState(() => _visitSection(FocusSection.ideas));
     }
   }
 
@@ -1497,7 +1510,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
           ),
         if (editingRoom && !widget.store.ai.activity.active)
           TextButton(
-            onPressed: () => setState(() => focusSection = FocusSection.refine),
+            onPressed: () => setState(() => _visitSection(FocusSection.refine)),
             child: const Text('Review pending result'),
           )
         else
@@ -1528,6 +1541,74 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       ],
     ),
   );
+
+  Widget _selectedDesignLook(RenovationRoom room) {
+    final saved = widget.store
+        .designsFor(room.id)
+        .where((design) => design.id == selectedId)
+        .firstOrNull
+        ?.recipe
+        ?.toMap();
+    final styles = saved?['designStyleIds'] is List
+        ? (saved!['designStyleIds'] as List).whereType<String>().toList()
+        : draft.styleIds.toList();
+    final palette = paletteById(
+      saved?['colourPaletteId'] as String? ?? room.colourPaletteId,
+    );
+    final customStyle =
+        (saved?['otherStyle'] as String? ?? draft.otherStyle.text).trim();
+    final styleNames = [
+      for (final id in styles) designStyles[id] ?? id,
+      if (customStyle.isNotEmpty) customStyle,
+    ];
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              saved == null
+                  ? 'Current room look'
+                  : 'Look saved with this design',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Style: ${styleNames.isEmpty ? 'No saved preference' : styleNames.join(', ')}',
+            ),
+            Text('Palette: ${palette?.name ?? 'No saved preference'}'),
+            if (palette != null) ...[
+              const SizedBox(height: 8),
+              SizedBox(
+                width: 220,
+                child: PaletteSwatches(palette: palette, height: 12),
+              ),
+            ],
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                OutlinedButton(
+                  onPressed: aiPending
+                      ? null
+                      : () => draft.setDesignMode(RoomDesignMode.partial),
+                  child: const Text('Change selected items'),
+                ),
+                FilledButton.tonal(
+                  onPressed: aiPending
+                      ? null
+                      : () => draft.setDesignMode(RoomDesignMode.newDesign),
+                  child: const Text('New design style'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   RoomSaveControls _savingControls({
     bool compact = false,
@@ -1600,21 +1681,44 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     if (aiPending || !await draft.save() || !mounted) return;
     final current = widget.store.roomById(widget.roomId)!;
     try {
-      await widget.store.updateRoom(
-        current.copyWith(setupStep: 0, setupComplete: false),
-      );
+      await widget.store.updateRoom(current.copyWith(setupStep: 0));
       if (!mounted) return;
-      Navigator.pushReplacement(
+      final generated = await Navigator.push<String?>(
         context,
-        MaterialPageRoute(
-          builder: (_) =>
-              roomEntry(widget.store, widget.store.roomById(widget.roomId)!),
+        MaterialPageRoute<String?>(
+          builder: (_) => roomEntry(
+            widget.store,
+            widget.store.roomById(widget.roomId)!,
+            forceSetup: true,
+            returnToWorkspace: true,
+          ),
         ),
       );
+      if (!mounted) return;
+      if (AppPageSessionScope.maybeOf(context) == null) {
+        await _reloadSetupChoices();
+      }
+      if (generated != null &&
+          mounted &&
+          !widget.store.isDesignDeleted(generated)) {
+        _selectDesign(generated, clearUpdate: true);
+      }
     } catch (_) {
       if (mounted) {
         notice(context, 'Could not open guided setup. Your room is retained.');
       }
+    }
+  }
+
+  Future<void> _reloadSetupChoices() async {
+    if (!mounted) return;
+    final saved = widget.store.roomById(widget.roomId);
+    if (saved == null || saved.deleted) return;
+    if (!await draft.applyRecipe(DesignRecipe(saved.toMap())) && mounted) {
+      notice(
+        context,
+        'Setup choices are retained. Retry saving before generating.',
+      );
     }
   }
 
@@ -1760,7 +1864,41 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
 
   Future<void> _saveAndClose() async {
     if (aiPending) return;
-    if (await _save() && !draft.dirty && mounted) Navigator.maybePop(context);
+    if (await _save() && !draft.dirty && mounted) Navigator.pop(context);
+  }
+
+  Future<void> _goToProject({bool home = false}) async {
+    if (aiPending ||
+        widget.store.ai.activity.active ||
+        !await _save() ||
+        !mounted) {
+      return;
+    }
+    final navigator = Navigator.of(context);
+    if (home) {
+      navigator.pushAndRemoveUntil(
+        MaterialPageRoute<void>(builder: (_) => AppShell(store: widget.store)),
+        (_) => false,
+      );
+    } else {
+      final room = widget.store.roomById(widget.roomId);
+      final project = room == null
+          ? null
+          : widget.store.projectById(room.projectId);
+      if (project == null || project.deleted || project.archived) return;
+      final previous = AppPageSessionScope.maybeOf(context)
+          ?.projectRoute(project.id);
+      if (previous != null) {
+        navigator.popUntil((route) => route == previous);
+      } else {
+        navigator.pushReplacement(
+          MaterialPageRoute<void>(
+            builder: (_) =>
+                ProjectScreen(store: widget.store, project: project),
+          ),
+        );
+      }
+    }
   }
 
   void _selectDesign(String? id, {bool clearUpdate = false}) {
@@ -1773,7 +1911,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     setState(() {
       selectedId = id;
       restoredSupportingIds = null;
-      if (id != null) focusSection = FocusSection.refine;
+      if (id != null) _visitSection(FocusSection.refine);
     });
     widget.onDesignSelected?.call(id);
   }
@@ -1838,7 +1976,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       }
       if (starter.styleId.isNotEmpty) draft.setStyle(starter.styleId, true);
       await draft.save();
-      if (mounted) setState(() => focusSection = FocusSection.style);
+      if (mounted) setState(() => _visitSection(FocusSection.style));
     } catch (_) {
       if (mounted) {
         notice(
@@ -1888,7 +2026,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
           : room.primaryId;
       includeRoomContext = design.supportingImageIds.isNotEmpty;
       restoredSupportingIds = [...design.supportingImageIds];
-      focusSection = refine ? FocusSection.refine : FocusSection.style;
+      _visitSection(refine ? FocusSection.refine : FocusSection.style);
     });
     final saved = await draft.applyRecipe(design.recipe!, refine: refine);
     if (!mounted) return;
@@ -1969,10 +2107,15 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(status, style: Theme.of(context).textTheme.bodySmall),
-                if (design.recipe?.toMap()['usage'] case final Map usage)
-                  Text(
-                    AiUsage.fromMap(usage).label,
-                    style: Theme.of(context).textTheme.bodySmall,
+                if (design.aiProvider != null)
+                  AiUsageSummary(
+                    operation: 'Design',
+                    model: design.aiModel,
+                    usage: design.recipe?.toMap()['usage'] is Map
+                        ? AiUsage.fromMap(
+                            design.recipe!.toMap()['usage'] as Map,
+                          )
+                        : null,
                   ),
                 Text(
                   '$source · $created',
@@ -2410,7 +2553,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     draft.setPrecisionConceptCount(1);
     draft.setUseAiPrompt(false);
     setState(() {
-      focusSection = FocusSection.refine;
+      _visitSection(FocusSection.refine);
       focusRevealRevision++;
     });
     final saved = await draft.save();
@@ -2437,6 +2580,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       }
       final source = _activeImage(room);
       return SavedAppPage(
+        onReturn: (page) {
+          if (page['page'] == 'setup') _reloadSetupChoices();
+        },
         page: {
           'page': 'workspace',
           'projectId': room.projectId,
@@ -2457,7 +2603,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
               notice(
                 context,
                 analysingRoom
-                    ? 'Room analysis is running. Wait for it to finish so the result can be saved.'
+                    ? 'Photo analysis is running. Wait for it to finish so the result can be saved.'
                     : 'An AI design is running or waiting to save. Keep this room open and save the result before leaving.',
               );
               return;
@@ -2493,9 +2639,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 overflow: TextOverflow.ellipsis,
               ),
               bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(40),
+                preferredSize: const Size.fromHeight(32),
                 child: SizedBox(
-                  height: 40,
+                  height: 32,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 14),
                     child: Row(
@@ -2532,6 +2678,20 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                       label: 'Rename room',
                       onPressed: _renameRoom,
                     ),
+                    ScreenTool(
+                      ScreenAction.projectRooms,
+                      label: 'Rooms & spaces',
+                      menuOnly: true,
+                      onPressed: aiPending ? null : () => _goToProject(),
+                    ),
+                    ScreenTool(
+                      ScreenAction.projectsHome,
+                      label: 'Projects home',
+                      menuOnly: true,
+                      onPressed: aiPending
+                          ? null
+                          : () => _goToProject(home: true),
+                    ),
                     ScreenTool.help(
                       context,
                       title: 'Room tools',
@@ -2548,7 +2708,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
             body: FocusWorkspace(
               selected: focusSection,
               revealRevision: focusRevealRevision,
-              onSelected: (section) => setState(() => focusSection = section),
+              onSelected: (section) => setState(() => _visitSection(section)),
               imageBuilder: (height) => source == null
                   ? const Center(
                       child: Icon(
@@ -2609,7 +2769,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                       ? null
                       : () {
                           draft.setPrecise(true);
-                          setState(() => focusSection = FocusSection.refine);
+                          setState(() => _visitSection(FocusSection.refine));
                         },
                   icon: const Icon(Icons.auto_fix_high_outlined),
                 ),
@@ -2642,7 +2802,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                     onTap: () => setState(() {
                       selectedId = design.id;
                       widget.onDesignSelected?.call(design.id);
-                      focusSection = FocusSection.refine;
+                      _visitSection(FocusSection.refine);
                     }),
                   ),
               ],
@@ -2798,7 +2958,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                     store: widget.store,
                     draft: draft,
                     onContinue: () =>
-                        setState(() => focusSection = FocusSection.refine),
+                        setState(() => _visitSection(FocusSection.refine)),
                     buildRequest: () => _aiRequest(
                       widget.store.roomById(widget.roomId)!,
                       forAnalysis: true,
@@ -2833,9 +2993,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                     const Text(
                       'This update keeps the selected design. Describe the colour or fitting to change in Refine. Choose Partial or New design for a wider renovation.',
                     ),
+                    _selectedDesignLook(room),
                     TextButton(
                       onPressed: () =>
-                          setState(() => focusSection = FocusSection.refine),
+                          setState(() => _visitSection(FocusSection.refine)),
                       child: const Text('Update selected image'),
                     ),
                   ] else ...[
@@ -2890,23 +3051,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                               ),
                             ),
                             const SizedBox(height: 6),
-                            FilledButton.tonalIcon(
-                              onPressed: aiPending
-                                  ? null
-                                  : () async {
-                                      draft.setPrecise(true);
-                                      draft.setPrecisionConceptCount(1);
-                                      await _generateFromWorkspace(
-                                        briefReviewed: true,
-                                      );
-                                    },
-                              icon: const Icon(Icons.tune),
-                              label: Text(
-                                polishingFinishes
-                                    ? 'Polish with AI'
-                                    : 'Review & generate change',
-                              ),
-                            ),
                             Text(
                               polishingFinishes
                                   ? 'Review these finish instructions, then choose Polish with AI. AI starts only after the sending confirmation.'
@@ -3094,7 +3238,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                                 ),
                                 TextButton(
                                   onPressed: () => setState(
-                                    () => focusSection = FocusSection.refine,
+                                    () => _visitSection(FocusSection.refine),
                                   ),
                                   child: const Text('Review my design brief'),
                                 ),

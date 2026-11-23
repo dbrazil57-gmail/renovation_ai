@@ -210,12 +210,42 @@ void main() {
         expect(after.approvedDesignId, version.id);
         expect(store.imageFor(after.originalId), orderedEquals(original));
         expect(store.designsFor(room.id).single.id, version.id);
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        expect(find.byType(WorkspaceScreen), findsOneWidget);
+        expect(find.text('4-step room setup'), findsOneWidget);
+        expect(store.roomById(room.id)!.instructions, before.instructions);
         expect(analyses, 0);
         expect(edits, 0);
         expect(tester.takeException(), isNull);
       },
     );
   }
+
+  testWidgets(
+    'footer Back changes setup steps while system Back saves and leaves the screen',
+    (tester) async {
+      await show(tester);
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Your renovation goal (optional)'),
+        'Keep the exterior brick',
+      );
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      expect(find.text('Step 3 of 4 · Analyse and review'), findsOneWidget);
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Back'));
+      await tester.pumpAndSettle();
+      expect(find.text('Step 2 of 4 · Design direction'), findsOneWidget);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.text('Start setup'), findsOneWidget);
+      expect(store.roomById(room.id)!.instructions, 'Keep the exterior brick');
+      expect(analyses, 0);
+      expect(edits, 0);
+    },
+  );
 
   testWidgets(
     'finish later saves the goal and setup stage and reopening resumes it',
@@ -266,17 +296,25 @@ void main() {
       );
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
-      await reach(tester, find.text('Analyse room photos'));
-      await tester.tap(find.text('Analyse room photos'));
+      await reach(tester, find.text('Analyse photos with AI'));
+      await tester.tap(find.text('Analyse photos with AI'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send photos for analysis'));
       await tester.pumpAndSettle();
       expect(store.roomById(room.id)!.useAiPrompt, true);
-      await tester.tap(find.text('Choose redesign options'));
+      await tester.tap(find.text('Continue to generation'));
       await tester.pumpAndSettle();
+      await reach(tester, find.text('Create design images'));
+      expect(find.text('Analyse photos with AI'), findsNothing);
+      expect(find.text('Analyse again'), findsNothing);
+      expect(find.text('Create design images'), findsOneWidget);
+      expect(analyses, 1);
+      expect(edits, 0);
       await reach(tester, find.text('Generate AI design'));
       await tester.tap(find.text('Generate AI design'));
       await tester.pumpAndSettle();
+      expect(analyses, 1);
+      expect(edits, 0);
       await tester.tap(find.text('Send to OpenAI'));
       await tester.pumpAndSettle();
       expect(analyses, 1);

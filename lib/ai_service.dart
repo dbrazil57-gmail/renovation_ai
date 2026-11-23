@@ -686,7 +686,7 @@ class AiService extends ChangeNotifier {
         return RoomAnalysisResult.fromMap(data);
       } on FormatException {
         throw const AiFailure(
-          'No complete room analysis was returned. Your previous analysis remains available; no automatic retry was made.',
+          'No complete photo analysis was returned. Your previous analysis remains available; no automatic retry was made.',
         );
       }
     } on AiFailure {
@@ -697,7 +697,7 @@ class AiService extends ChangeNotifier {
         notifyListeners();
       }
       throw const AiFailure(
-        'Room analysis was interrupted or could not be read. A charge may have occurred; check usage before retrying.',
+        'Photo analysis was interrupted or could not be read. A charge may have occurred; check usage before retrying.',
       );
     } finally {
       client.close();

@@ -266,11 +266,11 @@ void main() {
       await tester.tap(find.text('Grow selected area'));
       await quiet(tester);
       await Scrollable.ensureVisible(
-        tester.element(find.text('Extend selection edge')),
+        tester.element(find.byTooltip('Extend selection all sides')),
         alignment: .5,
       );
       await quiet(tester);
-      await tester.tap(find.text('Extend selection edge'));
+      await tester.tap(find.byTooltip('Extend selection all sides'));
       await quiet(tester);
       expect(
         saved!.surfaces.single.marks.single.region!.bits,

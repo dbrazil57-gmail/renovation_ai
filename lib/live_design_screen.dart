@@ -13,6 +13,7 @@ import 'design_styles.dart';
 import 'exit_guard.dart';
 import 'models.dart';
 import 'room_analysis.dart';
+import 'ai_usage_widgets.dart';
 import 'room_camera.dart';
 import 'room_draft.dart';
 import 'room_features.dart';
@@ -447,7 +448,7 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
       );
       widget.store.ai.activity.begin(
         roomId: roomId!,
-        operation: 'Live room analysis',
+        operation: 'Live photo analysis',
       );
       started = true;
       analysisAttempted = true;
@@ -477,7 +478,7 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
         );
         setState(
           () => message = saved
-              ? 'Room analysed. Confirm the room type and choose a direction below.'
+              ? 'Space analysed. Confirm the type and choose a direction below.'
               : 'Analysis received. Retry saving it; no new AI analysis is needed.',
         );
       }
@@ -874,6 +875,11 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
               enabled: !busy,
               maxLines: 2,
               decoration: const InputDecoration(labelText: 'Must keep'),
+            ),
+            AiUsageSummary(
+              operation: 'Analysis',
+              usage: draft!.analysis!.result.usage,
+              model: draft!.analysis!.result.model,
             ),
             ExpansionTile(
               title: const Text('AI observations & questions'),

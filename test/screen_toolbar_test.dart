@@ -67,7 +67,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Autosave'), findsOneWidget);
+      expect(find.text('Auto'), findsOneWidget);
       expect(find.textContaining('Autosave on ·'), findsNothing);
       final autosave = find.byKey(const ValueKey('visible-autosave-switch'));
       expect(tester.widget<Switch>(autosave).value, isTrue);
@@ -82,6 +82,15 @@ void main() {
       await tester.tap(autosave);
       await tester.pumpAndSettle();
       expect(store.autosaveEnabled, isTrue);
+      await tester.tap(find.byKey(const ValueKey('autosave-info')));
+      await tester.pumpAndSettle();
+      expect(find.text('Autosave'), findsOneWidget);
+      expect(
+        find.textContaining('Imported photos, completed designs'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Close'));
+      await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     });
   }

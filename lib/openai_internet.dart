@@ -221,7 +221,7 @@ class OpenAiInternet {
           if (part is! Map) continue;
           if (part['type'] == 'refusal') {
             throw const AiFailure(
-              'OpenAI did not return a room analysis. No design image was generated.',
+              'OpenAI did not return a photo analysis. No design image was generated.',
             );
           }
           if (part['type'] == 'output_text' && part['text'] is String) {
@@ -234,14 +234,24 @@ class OpenAiInternet {
       );
       return RoomAnalysisResult.fromMap({
         ...result,
+        'provider': 'OpenAI',
         'model': model,
         'requestId': upstream.headers['x-request-id'],
+        'usage': data['usage'] is Map
+            ? AiUsage.openAiAnalysis(
+                data['usage'] as Map,
+                model,
+                serviceTier: data['service_tier'] is String
+                    ? data['service_tier'] as String
+                    : null,
+              ).toMap()
+            : null,
       });
     } on AiFailure {
       rethrow;
     } on TimeoutException {
       throw const AiFailure(
-        'OpenAI room analysis timed out. A charge may have occurred. Check usage before retrying; no automatic retry was sent.',
+        'OpenAI photo analysis timed out. A charge may have occurred. Check usage before retrying; no automatic retry was sent.',
       );
     } catch (_) {
       throw const AiFailure(

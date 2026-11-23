@@ -1,5 +1,36 @@
 # Product and research reference
 
+## Per-result AI cost estimates — 23 November
+
+The owner requested costs beside analysis and generated images, rather than only
+the Settings image total. Results now retain numeric provider usage and show model,
+input/output tokens and an approximate request cost where the billing inputs are
+known. Analysis input includes text and photos; output is the analysis response.
+Image estimates include the returned text/image input split and image output.
+
+Standard synchronous USD rates checked against official OpenAI model pages on
+23 November 2026, per million tokens (input / cached input / output):
+
+- [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna): $0.10 / $0.01 / $0.50.
+- [GPT-4.1 mini](https://developers.openai.com/api/docs/models/gpt-4.1-mini): $0.40 / $0.10 / $1.60.
+- [GPT-4o mini](https://developers.openai.com/api/docs/models/gpt-4o-mini): $0.15 / $0.075 / $0.60.
+
+The existing supported GPT Image 2.6 Sunburst/Flare calculation uses $5 text input,
+$8 image input and $30 output per million tokens; see the
+[image generation guide](https://developers.openai.com/api/docs/guides/image-generation)
+and [pricing reference](https://developers.openai.com/api/docs/pricing). Incomplete
+modality counts or cached image input remain unpriced, rather than applying an
+incorrect formula. Unknown analysis models and nonstandard tiers also stay unpriced.
+
+Gemini usage is retained but dollar estimates are not supplied until its returned
+billable usage can be mapped reliably to the selected model's
+[official pricing](https://ai.google.dev/gemini-api/docs/pricing). Missing old usage
+cannot be reconstructed from an image alone. Settings continues to track image
+costs only, deduplicated by provider request ID; analysis costs are shown per result.
+These are dated estimates, not invoices, account balances or enforceable spending
+caps. Taxes, exchange rates, discounts and failed/interrupted requests are outside
+the tracked totals. No real provider request or owner key was used for verification.
+
 ## Language decision — 23 November
 
 The owner first considered translated UI and AI text, then chose **English for

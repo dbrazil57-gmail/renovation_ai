@@ -11,6 +11,14 @@ import 'store.dart';
 import 'context_help.dart';
 import 'screen_toolbar.dart';
 
+const autosaveExplanation =
+    'Auto saves room instructions and design choices on this device after a short pause. '
+    'A connected project file is also updated when it supports automatic writes.\n\n'
+    'Imported photos, completed designs and saved analysis are stored when added. '
+    'Turning Auto off stops automatic saves of unfinished room choices; Back still saves pending edits before leaving.\n\n'
+    'Use Save project or Save project as for a complete portable file containing rooms, photos, designs and choices. '
+    'Reconnect that file after restarting where required. API keys and app settings save separately on this device; project files exclude keys.';
+
 class AutosaveSwitch extends StatelessWidget {
   final RenovisionStore store;
   final bool enabled;
@@ -22,40 +30,73 @@ class AutosaveSwitch extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Autosave',
+          'Auto',
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 11,
             color:
                 Theme.of(context).appBarTheme.foregroundColor ??
                 Theme.of(context).colorScheme.onSurface,
           ),
         ),
-        const SizedBox(width: 4),
-        Switch.adaptive(
-          key: const ValueKey('visible-autosave-switch'),
-          activeTrackColor: const Color(0xFF2E7D32),
-          activeThumbColor: Colors.white,
-          inactiveTrackColor: const Color(0xFF757575),
-          inactiveThumbColor: Colors.white,
-          value: store.autosaveEnabled,
-          onChanged: !enabled
-              ? null
-              : (value) async {
-                  try {
-                    await store.setAutosaveEnabled(value);
-                  } catch (_) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          persist: false,
-                          content: Text('Autosave setting could not be saved.'),
-                          duration: Duration(seconds: 4),
-                          showCloseIcon: true,
-                        ),
-                      );
-                    }
-                  }
-                },
+        const SizedBox(width: 2),
+        Tooltip(
+          message: 'Autosave',
+          child: SizedBox(
+            width: 40,
+            height: 28,
+            child: FittedBox(
+              child: Switch.adaptive(
+                key: const ValueKey('visible-autosave-switch'),
+                activeTrackColor: const Color(0xFF2E7D32),
+                activeThumbColor: Colors.white,
+                inactiveTrackColor: const Color(0xFF757575),
+                inactiveThumbColor: Colors.white,
+                value: store.autosaveEnabled,
+                onChanged: !enabled
+                    ? null
+                    : (value) async {
+                        try {
+                          await store.setAutosaveEnabled(value);
+                        } catch (_) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                persist: false,
+                                content: Text(
+                                  'Autosave setting could not be saved.',
+                                ),
+                                duration: Duration(seconds: 4),
+                                showCloseIcon: true,
+                              ),
+                            );
+                          }
+                        }
+                      },
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 26,
+          height: 32,
+          child: IconButton(
+            key: const ValueKey('autosave-info'),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints.tightFor(width: 26, height: 32),
+            tooltip: autosaveExplanation,
+            icon: Icon(
+              Icons.info_outline,
+              size: 15,
+              color:
+                  Theme.of(context).appBarTheme.foregroundColor ??
+                  Theme.of(context).colorScheme.onSurface,
+            ),
+            onPressed: () => showContextHelp(
+              context,
+              title: 'Autosave',
+              message: autosaveExplanation,
+            ),
+          ),
         ),
       ],
     ),

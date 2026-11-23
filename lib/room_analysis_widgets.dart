@@ -7,6 +7,7 @@ import 'room_draft.dart';
 import 'store.dart';
 import 'ai_activity.dart';
 import 'context_help.dart';
+import 'ai_usage_widgets.dart';
 
 class RoomAnalysisCard extends StatefulWidget {
   final RenovisionStore store;
@@ -80,7 +81,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: const Text('Analyse these room photos?'),
+          title: const Text('Analyse these photos?'),
           content: SizedBox(
             width: 470,
             child: SingleChildScrollView(
@@ -110,7 +111,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'These photos and your room preferences will be sent to $providerLabel. ${widget.store.ai.isTester ? 'This uses one owner-funded analysis allowance; the test service forwards the inputs to OpenAI.' : 'API charges apply.'} The AI will describe the room, flag uncertainties and draft a prompt. It will not generate a design image in this step. Originals stay saved in the app.',
+                    'These photos and your space preferences will be sent to $providerLabel. ${widget.store.ai.isTester ? 'This uses one owner-funded analysis allowance; the test service forwards the inputs to OpenAI.' : 'API charges apply.'} The AI will describe the space, flag uncertainties and draft a prompt. It will not generate a design image in this step. Originals stay saved in the app.',
                   ),
                   const SizedBox(height: 8),
                   const Text(
@@ -144,7 +145,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
       if (widget.store.ai.activity.active) return;
       widget.store.ai.activity.begin(
         roomId: request.roomId,
-        operation: 'Room analysis',
+        operation: 'Photo analysis',
       );
       activityStarted = true;
       await WidgetsBinding.instance.endOfFrame;
@@ -257,7 +258,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const HelpHeading(
-                  title: 'Understand this room',
+                  title: 'Understand this space',
                   message: 'Analysis describes what is visible now. The design plan suggests what it could become using these photos, your style, palette, scope and Keep choices. Questions help refine the plan; no image is generated until you confirm Generate.',
                 ),
                 const SizedBox(height: 6),
@@ -306,6 +307,12 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                     child: const Text('Connect AI'),
                   ),
                 ],
+                if (analysis != null)
+                  AiUsageSummary(
+                    operation: 'Analysis',
+                    usage: analysis.result.usage,
+                    model: analysis.result.model,
+                  ),
                 const SizedBox(height: 8),
                 FilledButton.icon(
                   onPressed:
@@ -318,9 +325,9 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                   icon: const Icon(Icons.image_search),
                   label: Text(
                     busy
-                        ? 'Analysing room…'
+                        ? 'Analysing photos…'
                         : analysis == null
-                        ? 'Analyse room photos'
+                        ? 'Analyse photos with AI'
                         : 'Analyse again',
                   ),
                 ),
@@ -328,7 +335,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                   const SizedBox(height: 8),
                   const LinearProgressIndicator(),
                   const Text(
-                    'Waiting for room analysis. No design image is being generated.',
+                    'Waiting for photo analysis. No design image is being generated.',
                   ),
                 ],
                 if (message != null)
@@ -343,7 +350,7 @@ class _RoomAnalysisCardState extends State<RoomAnalysisCard>
                         : () async {
                             widget.store.ai.activity.begin(
                               roomId: widget.draft.roomId,
-                              operation: 'Room analysis',
+                              operation: 'Photo analysis',
                             );
                             widget.store.ai.activity.update(AiStage.saving);
                             final saved = await widget.draft.save();

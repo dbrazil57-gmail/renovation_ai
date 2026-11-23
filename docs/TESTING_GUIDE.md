@@ -1,5 +1,73 @@
 # Testing and storage reference
 
+## Names, navigation, costs and paint acceptance — after APK 1.0.18
+
+Application source **`e48ca6290f`**. **414 tests pass** (110s), static analysis clean
+(25.2s). Seven help captures and all standard MP4 codec,
+timestamps and full decodes pass. Current installed APK remains 1.0.18+19.
+
+1. Start a room/space and type a custom name such as Upstairs bathr or Rear balcony.
+   Suggested types appear beneath search. Choose one: the custom name stays. Type
+   alone must not select a different type or make an AI request. Manual search and
+   category selection still work, including names with no recognised type words.
+2. For an exterior, check Understand this space / Analyse photos with AI. In setup,
+   step 3 analysis saves observations and a proposed plan. Step 4 has Create design
+   images and Review analysis, without another Analyse button. Opening generation
+   then Cancel makes no image request; Send confirms the selected image count.
+   Do not count analysis and generation as duplicate requests: they do different work.
+3. On a selected design, check there is one pinned Review & generate change action.
+   Enter a narrow update and choose 1/2/3 variations; the single action respects that
+   count and reviews the chosen image/instruction. Polish also has one pinned action.
+4. Visit Room → Style → Refine → Ideas. One Back leaves the workspace for its
+   previous screen, without cycling tabs. Settings/viewer/editing tools return to
+   the same workspace. Refresh and repeat. More tools → Rooms & spaces opens the
+   project; Projects home opens the project list. Pending edits save first even
+   with Auto off. These shortcuts do not remove projects or designs.
+5. Reopen four-step setup from an existing workspace. The bottom Back changes
+   steps; the top arrow/system Back saves and returns to the workspace immediately.
+   Refresh setup, edit the goal,
+   return and inspect the workspace field: the latest saved goal remains. Earlier
+   photos/versions, approval and pending edits must not be cleared or overwritten.
+6. In Colours & tiles, automatically select a surface, then Adjust surface boundary.
+   Change sensitivity repeatedly: Select and its slider stay open. Added automatic
+   patches remain separate, with no duplicate patch added by changing sensitivity.
+   Grow selected area works in Select and Finish; change its distance, tap Right,
+   then Left/Up/Down or All sides. Controls remain expanded. Inline Undo/Redo reverses
+   the latest change, using the same session history as the toolbar. Add area stays
+   selected when scrolling between these controls in Select. Each arrow tap applies
+   the current distance; the slider itself sets the distance for the next tap.
+7. Check the compact Auto switch and tap its information icon (hover on desktop).
+   Confirm the explanation distinguishes automatic room drafts from saved photos,
+   analysis and designs, separate device keys/settings and portable project files.
+   Turning Auto off must not delete existing work; leaving saves pending choices.
+8. After a real, explicitly confirmed analysis/design, inspect its cost line and
+   information: model, input/output tokens and supported USD estimates. For a
+   disconnected fixture or old result, expect unavailable rather than zero.
+   Gemini retains usage without a dollar estimate. Settings image budget excludes
+   analysis and does not read a provider balance. No paid check was run automatically.
+9. Select a saved design and open Style: its saved style/palette is visible in
+   Precision mode. Change selected items opens Partial; New design style opens
+   broader choices. A focused correction keeps the chosen image as its source.
+
+Logs: `output/page-back-final-tests.log`, `page-back-final-analysis.log`,
+`page-back-tests.log`, `last-feedback-controls-tests.log`,
+`page-back-help-capture.log` and `page-back-help-encoding.log`.
+No real API key or paid provider call was used.
+Physical phone Back/touch/file/camera acceptance follows the next requested APK.
+
+Final release web build passes (50s). Actual isolated Chrome acceptance at 390×844
+and 1280×900 passes: reopen setup, refresh step 2, top Back returns to the workspace,
+Settings returns to Ideas, project shortcuts work and one workspace Back leaves
+for Rooms and spaces after visiting multiple tabs. Name suggestions appear while
+typing. Style, page return and suggestion screenshots were inspected; Auto's
+information icon now uses the header foreground colour. After that small contrast
+fix, 19 related tests pass and all seven help videos are recaptured/decoded.
+The normal localhost:7357 serves source `e48ca6290f`; its profile/data are untouched.
+Evidence: `output/page-back-web-build.log`, `page-back-phone-browser.log`,
+`page-back-desktop-browser.log`, `page-back-contrast-tests.log`,
+`name-back-flow-style.png`, `name-back-flow-page-back.png`,
+`name-back-flow-name-suggestions.png` and `name-back-flow-desktop-style.png`.
+
 ## Four-step setup access — source after APK 1.0.18
 
 Source `7f94718c8f`; the installed/published APK remains 1.0.18+19 (`e0ef2fa1ee`).

@@ -40,6 +40,167 @@ void main() {
   final photo = img.encodePng(
     img.Image(width: 100, height: 70)..clear(img.ColorRgb8(180, 170, 150)),
   );
+  testWidgets(
+    'boundary adjustment and growth stay open, preserve added patches, and undo each direction',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final image = img.Image(width: 100, height: 70);
+      for (final pixel in image) {
+        final tone = pixel.x == 49 || pixel.x == 50 ? 30 : 180;
+        pixel
+          ..r = tone
+          ..g = tone
+          ..b = tone;
+      }
+      final bytes = img.encodePng(image);
+      final initial = LocalPaintRecipe(
+        width: 100,
+        height: 70,
+        surfaces: [
+          PaintSurface(
+            name: 'Wall with two patches',
+            marks: [
+              for (final point in const [
+                PaintPoint(.25, .5),
+                PaintPoint(.75, .5),
+              ])
+                PaintMark(
+                  PaintMarkKind.region,
+                  [point],
+                  region: selectWallRegion(WallSelectionInput(bytes, point))
+                      .region,
+                ),
+            ],
+          ),
+        ],
+      );
+      LocalPaintRecipe? saved;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: LocalPaintScreen(
+            source: bytes,
+            before: bytes,
+            initial: initial,
+            initialPanel: 1,
+            saveDraft: (recipe) async {
+              saved = recipe;
+            },
+            saveVersion: (_, _) async {},
+          ),
+        ),
+      );
+      await ready(
+        tester,
+        () => find.byKey(const ValueKey('paint-canvas')).evaluate().isNotEmpty,
+      );
+      await settlePaint(tester);
+      Future<void> reach(Finder target) async {
+        final scrollable = find
+            .byWidgetPredicate(
+              (widget) =>
+                  widget is Scrollable &&
+                  widget.axisDirection == AxisDirection.down,
+            )
+            .first;
+        tester.state<ScrollableState>(scrollable).position.jumpTo(0);
+        await tester.pump();
+        await tester.scrollUntilVisible(
+          target,
+          100,
+          scrollable: find
+              .byWidgetPredicate(
+                (widget) =>
+                    widget is Scrollable &&
+                    widget.axisDirection == AxisDirection.down,
+              )
+              .first,
+        );
+        await tester.ensureVisible(target);
+        await settlePaint(tester);
+      }
+
+      await reach(find.text('Adjust surface boundary'));
+      await tester.tap(find.text('Adjust surface boundary'));
+      await tester.pumpAndSettle();
+      final sensitivity = find.byKey(const ValueKey('surface-sensitivity'));
+      await reach(sensitivity);
+      tester.widget<Slider>(sensitivity).onChanged!(34);
+      tester.widget<Slider>(sensitivity).onChangeEnd!(34);
+      await ready(
+        tester,
+        () => saved?.surfaces.single.marks.last.region?.sensitivity == 34,
+      );
+      await settlePaint(tester);
+      expect(sensitivity, findsOneWidget);
+      expect(saved!.surfaces.single.marks, hasLength(2));
+      final addArea = find.widgetWithText(
+        SwitchListTile,
+        'Add area to this surface',
+      );
+      await reach(addArea);
+      tester.widget<SwitchListTile>(addArea).onChanged!(true);
+      await tester.pumpAndSettle();
+      await reach(find.text('Grow selected area'));
+      await tester.tap(find.text('Grow selected area'));
+      await tester.pumpAndSettle();
+      final distance = find.byKey(const ValueKey('edge-distance'));
+      await reach(distance);
+      tester.widget<Slider>(distance).onChanged!(3);
+      await tester.pumpAndSettle();
+      expect(distance, findsOneWidget);
+      final before = List<int>.of(
+        saved!.surfaces.single.marks.first.region!.bits,
+      );
+      await reach(find.byTooltip('Extend selection right'));
+      await tester.tap(find.byTooltip('Extend selection right'));
+      await settlePaint(tester);
+      expect(
+        saved!.surfaces.single.marks.first.region!.bits,
+        isNot(orderedEquals(before)),
+      );
+      final afterRight = List<int>.of(
+        saved!.surfaces.single.marks.last.region!.bits,
+      );
+      await reach(find.byTooltip('Extend selection left'));
+      await tester.tap(find.byTooltip('Extend selection left'));
+      await settlePaint(tester);
+      expect(
+        saved!.surfaces.single.marks.last.region!.bits,
+        isNot(orderedEquals(afterRight)),
+      );
+      final afterLeft = List<int>.of(
+        saved!.surfaces.single.marks.last.region!.bits,
+      );
+      await reach(find.byKey(const ValueKey('boundary-undo')));
+      await tester.tap(find.byKey(const ValueKey('boundary-undo')));
+      await settlePaint(tester);
+      expect(
+        saved!.surfaces.single.marks.last.region!.bits,
+        orderedEquals(afterRight),
+      );
+      await tester.tap(find.byKey(const ValueKey('boundary-redo')));
+      await settlePaint(tester);
+      expect(
+        saved!.surfaces.single.marks.last.region!.bits,
+        orderedEquals(afterLeft),
+      );
+      expect(distance, findsOneWidget);
+      await reach(addArea);
+      expect(tester.widget<SwitchListTile>(addArea).value, isTrue);
+      await tester.tap(find.text('2 Finish'));
+      await tester.pumpAndSettle();
+      await reach(distance);
+      expect(tester.widget<Slider>(distance).value, 3);
+      await tester.tap(find.text('1 Select area'));
+      await tester.pumpAndSettle();
+      await reach(distance);
+      expect(distance, findsOneWidget);
+      await reach(addArea);
+      expect(tester.widget<SwitchListTile>(addArea).value, isTrue);
+      expect(tester.takeException(), isNull);
+    },
+  );
   test('directional growth extends right and down without shifting or widening other edges', () {
     final bytes = Uint8List(7);
     final index = 3 * 7 + 3;
@@ -162,7 +323,12 @@ void main() {
         findsNothing,
       );
       expect(find.textContaining('Precision: apply only'), findsOneWidget);
-      await tester.tap(find.text('New design'));
+      await tester.tap(find.byKey(const ValueKey('focus-section-style')));
+      await tester.pumpAndSettle();
+      expect(find.text('Current room look'), findsOneWidget);
+      expect(find.text('Style: No saved preference'), findsOneWidget);
+      await tester.ensureVisible(find.text('New design style'));
+      await tester.tap(find.text('New design style'));
       await tester.pumpAndSettle();
       final original = find.widgetWithText(TextField, 'What should change?');
       await ensureFocusVisible(tester, original);

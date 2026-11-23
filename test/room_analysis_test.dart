@@ -140,7 +140,7 @@ void main() {
   }
 
   Future<void> analyse(WidgetTester tester) async {
-    await tester.tap(find.text('Analyse room photos'));
+    await tester.tap(find.text('Analyse photos with AI'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Send photos for analysis'));
     await tester.pumpAndSettle();
@@ -179,7 +179,7 @@ void main() {
       await showCard(tester, draft);
       expect(find.textContaining('not analysed yet'), findsOneWidget);
       expect(analyses, 0);
-      await tester.tap(find.text('Analyse room photos'));
+      await tester.tap(find.text('Analyse photos with AI'));
       await tester.pumpAndSettle();
       expect(find.textContaining('API charges apply'), findsOneWidget);
       await tester.tap(find.text('Cancel'));
@@ -288,7 +288,7 @@ void main() {
       final draft = draftForTest();
       await showCard(tester, draft);
       gate = Completer<void>();
-      await tester.tap(find.text('Analyse room photos'));
+      await tester.tap(find.text('Analyse photos with AI'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send photos for analysis'));
       await tester.pump();
@@ -368,14 +368,14 @@ void main() {
       await tester.pumpAndSettle();
       await revealFocusControl(
         tester,
-        find.text('Analyse room photos'),
+        find.text('Analyse photos with AI'),
         250,
         scrollable: find.byType(Scrollable).first,
       );
       gate = Completer<void>();
-      await ensureFocusVisible(tester, find.text('Analyse room photos'));
+      await ensureFocusVisible(tester, find.text('Analyse photos with AI'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Analyse room photos'));
+      await tester.tap(find.text('Analyse photos with AI'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send photos for analysis'));
       await tester.pump(const Duration(milliseconds: 300));
@@ -764,7 +764,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      final analyseButton = find.text('Analyse room photos');
+      final analyseButton = find.text('Analyse photos with AI');
       await revealFocusControl(
         tester,
         analyseButton,

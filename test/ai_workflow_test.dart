@@ -236,6 +236,7 @@ void main() {
       FocusManager.instance.primaryFocus?.unfocus();
       await tester.pumpAndSettle();
       final apply = find.text('Review & generate change').first;
+      expect(find.text('Review & generate change'), findsOneWidget);
       await Scrollable.ensureVisible(tester.element(apply), alignment: .5);
       await tester.pumpAndSettle();
       await tester.tap(apply);

@@ -395,7 +395,7 @@ void main() {
       'Continue to photo analysis and prompt review.',
     );
     await recording.tap(
-      find.text('Analyse room photos'),
+      find.text('Analyse photos with AI'),
       'Review before sending photos to your provider.',
     );
     await recording.tap(
@@ -408,7 +408,7 @@ void main() {
     );
     await recording.frame(1200);
     await recording.tap(
-      find.text('Choose redesign options'),
+      find.text('Continue to generation'),
       'Choose design options. Each real AI request may be billed.',
     );
     await recording.tap(

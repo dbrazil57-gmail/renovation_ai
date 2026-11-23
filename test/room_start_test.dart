@@ -13,6 +13,56 @@ import 'package:renovision_ai/store.dart';
 import 'support/memory_box.dart';
 
 void main() {
+  testWidgets(
+    'typing a space name suggests types without changing its custom name or selecting automatically',
+    (tester) async {
+      RoomStartChoice? choice;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () async {
+                  choice = await showDialog<RoomStartChoice>(
+                    context: context,
+                    builder: (_) => const RoomStartDialog(),
+                  );
+                },
+                child: const Text('Start'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Start'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const ValueKey('room-name')),
+        'Upstairs bathr',
+      );
+      await tester.pumpAndSettle();
+      final suggested = find.byKey(
+        const ValueKey('suggest-room-type-bathroom'),
+      );
+      expect(tester.widget<ChoiceChip>(suggested).selected, isFalse);
+      await tester.ensureVisible(suggested);
+      await tester.tap(suggested);
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<TextField>(find.byKey(const ValueKey('room-name')))
+            .controller!
+            .text,
+        'Upstairs bathr',
+      );
+      await tester.tap(find.text('Continue to photos'));
+      await tester.pumpAndSettle();
+      expect(choice!.name, 'Upstairs bathr');
+      expect(choice!.roomTypeId, 'bathroom');
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   test('home catalogue is reachable by category and subtype controls avoid unrelated items', () {
     final grouped = roomCategories.values.expand((ids) => ids).toList();
     expect(grouped.toSet(), roomTypes.keys.toSet());

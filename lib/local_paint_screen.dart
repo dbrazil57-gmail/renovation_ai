@@ -65,6 +65,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
   bool fourCornerOutline = false;
   List<PaintPoint> outlineCorners = [];
   int edgePixels = 4;
+  final expandedBoundaries = <int>{};
   double sensitivity = 28;
   String? error;
   Timer? previewTimer, draftTimer;
@@ -231,7 +232,10 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
     );
   }
 
-  Future<void> selectWall(PaintPoint seed) async {
+  Future<void> selectWall(
+    PaintPoint seed, {
+    bool adjustExisting = false,
+  }) async {
     if (busy || selectingWall || prepared == null) return;
     setState(() => selectingWall = true);
     try {
@@ -240,17 +244,45 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         WallSelectionInput(prepared!.preview, seed, sensitivity: sensitivity),
       );
       if (!mounted) return;
+      final marks = <PaintMark>[];
+      if (adjustExisting) {
+        var first = true;
+        for (final mark in wall.marks) {
+          if (mark.region == null) {
+            marks.add(mark);
+          } else {
+            final adjusted = first
+                ? result
+                : await compute(
+                    selectWallRegion,
+                    WallSelectionInput(
+                      prepared!.preview,
+                      mark.points.single,
+                      sensitivity: sensitivity,
+                    ),
+                  );
+            first = false;
+            marks.add(
+              PaintMark(
+                mark.kind,
+                mark.points,
+                width: mark.width,
+                region: adjusted.region,
+              ),
+            );
+          }
+        }
+        if (!mounted) return;
+      } else {
+        if (addArea) marks.addAll(wall.marks);
+        marks.add(
+          PaintMark(PaintMarkKind.region, [seed], region: result.region),
+        );
+      }
       polygonIndex = null;
-      changeWall(
-        wall.copyWith(
-          marks: [
-            if (addArea) ...wall.marks,
-            PaintMark(PaintMarkKind.region, [seed], region: result.region),
-          ],
-        ),
-      );
+      changeWall(wall.copyWith(marks: marks));
       setState(() {
-        panel = 1;
+        if (!adjustExisting) panel = 1;
         showSelection = true;
       });
       if (result.pixels / (result.region.width * result.region.height) > .65) {
@@ -473,7 +505,6 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         ],
       ),
     );
-    setState(() => showSelection = false);
   }
 
   void addCorner(PaintPoint point) {
@@ -929,6 +960,7 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
         ),
         Text('Selection sensitivity ${sensitivity.round()}'),
         Slider(
+          key: const ValueKey('surface-sensitivity'),
           min: 8,
           max: 64,
           divisions: 28,
@@ -938,7 +970,9 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
             final region = wall.marks
                 .where((m) => m.region != null)
                 .firstOrNull;
-            if (region != null) unawaited(selectWall(region.points.single));
+            if (region != null) {
+              unawaited(selectWall(region.points.single, adjustExisting: true));
+            }
           },
         ),
       ],
@@ -1169,13 +1203,21 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                 : 'Outline full tiled surface',
           ),
         ),
-      if (panel == 1 && wall.marks.any((m) => m.region != null))
+      if (wall.marks.any((m) => m.region != null))
         ExpansionTile(
           key: PageStorageKey('surface-boundary-$selected'),
           maintainState: true,
+          initiallyExpanded: expandedBoundaries.contains(selected),
+          onExpansionChanged: (expanded) {
+            if (expanded) {
+              expandedBoundaries.add(selected);
+            } else {
+              expandedBoundaries.remove(selected);
+            }
+          },
           title: const Text('Grow selected area'),
           children: [
-            Text('Grow boundary by $edgePixels selection pixels'),
+            Text('Grow boundary by $edgePixels selection pixels per tap'),
             Slider(
               key: const ValueKey('edge-distance'),
               min: 1,
@@ -1197,10 +1239,10 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                   onPressed: () => extendEdge(up: true),
                   icon: const Icon(Icons.arrow_upward),
                 ),
-                TextButton.icon(
+                IconButton(
+                  tooltip: 'Extend selection all sides',
                   onPressed: () => extendEdge(all: true),
                   icon: const Icon(Icons.open_in_full),
-                  label: const Text('Extend selection edge'),
                 ),
                 IconButton(
                   tooltip: 'Extend selection down',
@@ -1214,8 +1256,25 @@ class _LocalPaintScreenState extends State<LocalPaintScreen>
                 ),
               ],
             ),
+            Wrap(
+              spacing: 8,
+              children: [
+                TextButton.icon(
+                  key: const ValueKey('boundary-undo'),
+                  onPressed: undo.isEmpty ? null : () => history(true),
+                  icon: const Icon(Icons.undo),
+                  label: const Text('Undo'),
+                ),
+                TextButton.icon(
+                  key: const ValueKey('boundary-redo'),
+                  onPressed: redo.isEmpty ? null : () => history(false),
+                  icon: const Icon(Icons.redo),
+                  label: const Text('Redo'),
+                ),
+              ],
+            ),
             const Text(
-              'All sides or one direction. Check the boundary; Undo reverses growth.',
+              'Tap any direction, then another as needed. Undo reverses the latest selection or finish change.',
             ),
           ],
         ),

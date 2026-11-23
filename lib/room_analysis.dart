@@ -1,4 +1,5 @@
 import 'room_features.dart';
+import 'ai_usage.dart';
 
 /// The vision response is kept separate from the user's editable prompt.
 class RoomAnalysisResult {
@@ -8,6 +9,7 @@ class RoomAnalysisResult {
   final String model;
   final String provider;
   final String? requestId;
+  final AiUsage? usage;
   const RoomAnalysisResult({
     required this.observations,
     required this.questions,
@@ -15,6 +17,7 @@ class RoomAnalysisResult {
     required this.model,
     this.provider = 'OpenAI',
     this.requestId,
+    this.usage,
   });
 
   static Map<String, dynamic> validateOutput(dynamic value) {
@@ -38,6 +41,9 @@ class RoomAnalysisResult {
 
   factory RoomAnalysisResult.fromMap(Map<dynamic, dynamic> value) {
     validateOutput(value);
+    if (value['usage'] != null && value['usage'] is! Map) {
+      throw const FormatException('Invalid analysis usage');
+    }
     if (value['model'] is! String ||
         (value['model'] as String).isEmpty ||
         (value['requestId'] != null && value['requestId'] is! String)) {
@@ -52,6 +58,9 @@ class RoomAnalysisResult {
           ? value['provider'] as String
           : 'OpenAI',
       requestId: value['requestId'] as String?,
+      usage: value['usage'] == null
+          ? null
+          : AiUsage.fromMap(value['usage'] as Map),
     );
   }
 
@@ -62,6 +71,7 @@ class RoomAnalysisResult {
     'model': model,
     'provider': provider,
     'requestId': requestId,
+    if (usage != null) 'usage': usage!.toMap(),
   };
 }
 
