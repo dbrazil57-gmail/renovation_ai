@@ -1,6 +1,20 @@
 # RenoVision
 
-Current Chrome source **`62350daf12`** adds a visible Home icon in the project rooms
+Latest test APK: **1.0.19+20**, source **`61e0807e2e`**.
+[Download APK 1.0.19](output/mobile-test/renovision-test-1.0.19.apk) and install over
+the existing app. Package, signing certificate, icon and data paths are unchanged.
+**435 tests pass**, analysis clean, APK signature/assets/private-file/16KB checks
+pass. Chrome serves the matching source at localhost:7357.
+
+Includes all completed post-1.0.18 changes and **Settings → Storage cleanup**.
+Choose an archive, save an offline backup or explicitly skip, then type its name
+to permanently remove its local data. Browser downloads require confirmation that
+the file is saved. Active projects, shared images, keys/settings and external files
+are kept. Development folder cleanup removed 19 disposable folders (~0.83 GB).
+See [APK 1.0.19 acceptance](docs/TESTING_GUIDE.md#requested-apk-1019-acceptance).
+Older source-only/unchanged-APK statements below are historical and superseded.
+
+Earlier Home source **`62350daf12`** adds a visible Home icon in the project rooms
 list, four-step setup and workspace. It returns directly to Projects after saving
 pending work, and stays visible beside Save/setup/Settings on phones. Workspace
 remains available at every setup step; unfinished rooms show their saved step in
@@ -25,7 +39,7 @@ Live rooms retain their work. Source `7f94718c8f`: 22 related tests pass, analys
 is clean, web build and actual phone-sized Chrome navigation/reload checks pass.
 Same http://localhost:7357/. This follow-up is not yet in the unchanged APK below.
 
-Latest requested Android test build: **1.0.18+19**, source **`e0ef2fa1ee`**.
+Previous Android test build: **1.0.18+19**, source **`e0ef2fa1ee`**.
 [Download the APK](output/mobile-test/renovision-test-1.0.18.apk) and install over
 the existing RenoVision app, keeping its data. The olive-and-cream icon and signing
 identity are unchanged. **401 tests pass**, static analysis is clean and the release

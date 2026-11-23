@@ -62,6 +62,7 @@ import 'brief_readiness.dart';
 import 'brief_readiness_widgets.dart';
 import 'design_mode_widgets.dart';
 import 'app_session.dart';
+import 'archive_cleanup_widgets.dart';
 
 Widget roomEntry(
   RenovisionStore store,
@@ -1350,6 +1351,7 @@ class SettingsTab extends StatelessWidget {
         AiUsageCard(store: store),
         HomeCoverSettingsCard(store: store),
         StoragePrivacyCard(store: store),
+        ArchiveCleanupSettingsCard(store: store),
         FeedbackCard(drafts: LocalFeedbackDrafts(store.records)),
         AppAppearanceSettingsCard(store: store),
         Text('Save and restore', style: Theme.of(context).textTheme.titleLarge),

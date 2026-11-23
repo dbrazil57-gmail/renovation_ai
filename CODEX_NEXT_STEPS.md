@@ -7,6 +7,29 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Active follow-up and next acceptance pass — 23 November
 
+### Requested APK 1.0.19, archive cleanup and folder cleanup
+
+- [x] Build **1.0.19+20**, source `61e0807e2e`, with all completed post-1.0.18 changes.
+  Preserve app ID, signing certificate, icon, local-data paths and older named APKs.
+- [x] Settings → Storage cleanup removes one chosen archive after a backup offer
+  or explicit skip and typed-name confirmation. Failed/cancelled export retains it;
+  browser downloads require acknowledgement. Backup files reopen as active projects.
+- [x] Protect active projects, shared images, keys/settings, external files, current
+  AI work and stale previews/editors. Include deleted room/design history in the
+  selected removal; attempt local rollback on ordinary storage failures.
+- [x] **435 tests pass** (140s), analysis clean (30.6s), APK build passes (84.3s).
+  Signature/assets/private-file/16KB checks pass. Native read-only API 37 update from
+  1.0.18 retains photos/designs and selected-image/Style restart state; Home/setup
+  and Storage cleanup open. Chrome uses the same source. No key/paid AI used.
+- [x] Actual isolated Chrome verifies archive cleanup, backup offer, explicit skip,
+  typed confirmation and Cancel retaining the fixture archive. Screenshots inspected.
+- [x] Remove 19 closed disposable profile/raw-frame folders (~0.83 GB), preserving
+  owner data, assets/source, all original document backups and nine older named APKs.
+  No owner archive is actually deleted. Record the manifest under ignored output.
+- [ ] Owner S21 acceptance: update in place, retained work/keys, Home/Back/setup,
+  paint, camera/files/share, real AI and archive backup/cancel/permanent deletion
+  using a disposable project first. Actual 16KB-runtime testing remains separate.
+
 ### Visible Projects home — source after APK 1.0.18
 
 - [x] Promote Projects home to a visible Home icon in the rooms list, setup and

@@ -1,5 +1,67 @@
 # Testing and storage reference
 
+## Requested APK 1.0.19 acceptance
+
+Requested 23 November 2026, Australia/Sydney. **1.0.19+20**, source **`61e0807e2e`**.
+Install `output/mobile-test/renovision-test-1.0.19.apk` over the existing app, retaining
+its data. Same package/signature and olive/cream icon. All completed post-1.0.18
+changes are included; older unchanged-APK notes below are superseded. Matching
+Chrome source: http://localhost:7357/.
+
+Release evidence:
+
+- **435 tests pass** (140s), analysis clean (30.6s), APK build passes (84.3s).
+  Archive/backup/shared-image/rollback tests pass. The feedback test now waits for
+  Settings scrolling to settle before tapping the existing draft.
+- Signature matches 1.0.18; metadata, optional camera/no microphone, public asset
+  hashes, private-file exclusion, share-provider and 64-bit ELF/ZIP 16KB checks pass.
+  All nine older named APKs retain their hashes. Alignment is checked statically;
+  this is not a claim of testing on a 16KB runtime.
+- Native read-only API 37 emulator: update from 1.0.18 without uninstalling; retain
+  sample originals/designs and selected image/Style after restart. Home works from
+  workspace/setup; Settings opens Storage cleanup. Screenshots inspected. No key/AI.
+  This native smoke used the functional 1.0.19 candidate before the final button
+  foreground-colour correction. After that isolated adjustment, 16 archive/Settings
+  tests pass; final static analysis is clean (30.6s), APK build passes (84.3s), and
+  signature/assets/private-file/16KB checks pass again. The final Chrome build
+  passes (56.0s); physical S21 acceptance of the final package remains required.
+- Actual isolated 390×844 Chrome: archive the offline practice fixture; Settings
+  opens Storage cleanup, offers backup before deletion and permits explicit skip
+  followed by typed-name confirmation. Cancel keeps the archive. Screenshots
+  inspected. Log: `output/release19-cleanup-browser.log`; screenshots
+  `release19-flow-backup-offer.png` and `release19-flow-confirmed-name.png`.
+- APK size **86,046,587 bytes**. SHA256:
+  `7B4EBB7A8C7F8C963E079F1E70CE1001E7ED3D68A2F35F622DEFFF4EF54EA122`.
+  Separate checksum: `output/mobile-test/renovision-test-1.0.19.apk.sha256`.
+
+Physical S21 test order:
+
+1. Update in place. Open prior projects/photos/designs and check remembered AI
+   connection/key. Keep a complete portable project file for independent recovery.
+2. Test Home from rooms/setup/workspace, previous-screen Back and Workspace from
+   any setup step. Reopen unfinished/completed rooms, then restart the app.
+3. Check compact Auto + help, Style, one pinned generation action and paint
+   sensitivity/growth/Undo. Real AI appearance remains a manual paid test; cost
+   estimates are not provider balances. Check camera/gallery/Live, share and Help.
+4. Create and archive a disposable test project. Settings → Storage cleanup → its
+   delete icon offers Save offline backup first / Continue without a backup.
+   Cancel the dialog/file chooser first: the archive must remain.
+5. Save and check an offline backup file. Confirm the exact project name and delete
+   only the test archive, then reopen its backup to recover rooms/photos/designs.
+   Browser downloads need a saved-file acknowledgement. Other projects, keys and
+   existing exported/cloud files must remain. Local deletion is not a secure wipe.
+
+Logs: `output/release19-final-tests.log`, `release19-analysis.log`,
+`archive-cleanup-tests.log`, `release19-web-build.log`, and
+`output/mobile-test/build-1.0.19.log`, `verification-1.0.19.log`, `smoke-1.0.19.log`.
+Native screenshots: `rv19-updated-workspace.png`, `rv19-style-restored.png`,
+`rv19-guided-home.png` and `rv19-cleanup.png`.
+
+Folder cleanup removes 19 closed disposable test-profile/raw-frame directories
+(~0.83 GB). No source/assets, saved owner projects, keys, original document backups
+or older APKs removed. Manifest/summary are under ignored output. No owner archive
+was purged during development.
+
 ## Visible Home acceptance — source after APK 1.0.18
 
 Source **`62350daf12`**. 39 related checks pass (28s), analysis clean (32.2s).

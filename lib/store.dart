@@ -17,6 +17,7 @@ import 'project_documents.dart';
 import 'room_starters.dart';
 import 'app_appearance.dart';
 import 'wording_region.dart';
+import 'archive_cleanup.dart';
 
 /// Stage 1 local-only prototype storage. Photos are kept in a dedicated box.
 /// For production-scale image libraries, move large originals to app-private
@@ -28,6 +29,7 @@ class RenovisionStore extends ChangeNotifier {
   final AppFiles files;
   late final ProjectDocuments documents;
   int _sequence = 0;
+  final _purgingProjects = <String>{};
   bool _restoringAi = false;
   Future<void> _aiSettingsQueue = Future.value();
   late final ValueNotifier<AppThemeChoice> appearance;
@@ -292,7 +294,7 @@ class RenovisionStore extends ChangeNotifier {
     bool delete = false,
     required String confirmation,
   }) async {
-    if (ai.activity.active) {
+    if (ai.activity.active || _purgingProjects.contains(id)) {
       throw StateError('Wait for the AI request to finish.');
     }
     final current = projectById(id);
@@ -311,6 +313,7 @@ class RenovisionStore extends ChangeNotifier {
   }
 
   Future<void> restoreProject(String id) async {
+    if (_purgingProjects.contains(id)) throw StateError('Cleanup is running.');
     final current = projectById(id);
     if (current == null) throw StateError('Project unavailable.');
     await records.put('project:$id', {
@@ -319,6 +322,70 @@ class RenovisionStore extends ChangeNotifier {
       'deleted': false,
     });
     notifyListeners();
+  }
+
+  ArchiveRemovalPlan archiveRemovalPlan(String id) =>
+      ArchiveRemovalPlan.inspect(records, photos, id);
+
+  Future<void> purgeArchivedProject(
+    String id, {
+    required String confirmation,
+    required String revision,
+  }) async {
+    if (ai.activity.active || _purgingProjects.isNotEmpty) {
+      throw StateError('Wait for the current operation to finish.');
+    }
+    var plan = archiveRemovalPlan(id);
+    if (confirmation.trim() != plan.project.name) {
+      throw ArgumentError(
+        'Type the project name to confirm permanent deletion.',
+      );
+    }
+    if (revision != plan.revision) {
+      throw StateError('The archive changed. Review it again.');
+    }
+    _purgingProjects.add(id);
+    try {
+      await documents.flushAndDetach(id);
+      plan = archiveRemovalPlan(id);
+      if (revision != plan.revision) {
+        throw StateError('The archive changed. Review it again.');
+      }
+      try {
+        for (final key in plan.records.keys) {
+          await records.delete(key);
+        }
+        for (final key in plan.images.keys) {
+          await photos.delete(key);
+        }
+      } catch (_) {
+        // Restore snapshots on an ordinary write failure. Active projects and
+        // exported files were never deletion targets. Keep project metadata last.
+        var recovered = true;
+        for (final entry in plan.images.entries) {
+          try {
+            await photos.put(entry.key, entry.value);
+          } catch (_) {
+            recovered = false;
+          }
+        }
+        for (final entry in plan.records.entries.toList().reversed) {
+          try {
+            await records.put(entry.key, entry.value);
+          } catch (_) {
+            recovered = false;
+          }
+        }
+        throw StateError(
+          recovered
+              ? 'Cleanup failed; the local archive was restored. Check storage and retry.'
+              : 'Cleanup was interrupted and recovery is incomplete. Restore your offline backup.',
+        );
+      }
+    } finally {
+      _purgingProjects.remove(id);
+      notifyListeners();
+    }
   }
 
   List<RenovationRoom> roomsFor(
@@ -740,6 +807,10 @@ class RenovisionStore extends ChangeNotifier {
     bool automaticLiveName = false,
   }) async {
     _validatePalette(colourPaletteId);
+    if (_purgingProjects.contains(projectId) ||
+        projectById(projectId) == null) {
+      throw StateError('The project is unavailable.');
+    }
     if (roomTypeId.isNotEmpty && !roomTypes.containsKey(roomTypeId)) {
       throw ArgumentError('Choose an available room type.');
     }
@@ -910,6 +981,10 @@ class RenovisionStore extends ChangeNotifier {
   }
 
   Future<void> updateRoom(RenovationRoom room) async {
+    if (_purgingProjects.contains(room.projectId) ||
+        projectById(room.projectId) == null) {
+      throw StateError('The project is unavailable.');
+    }
     final saved = records.get('room:${room.id}');
     if (saved is Map && saved['deleted'] == true && !room.deleted) {
       throw StateError('This room was deleted. Restore it from Deleted rooms.');
@@ -960,6 +1035,12 @@ class RenovisionStore extends ChangeNotifier {
     String? providerRequestId,
     List<String> supportingImageIds = const [],
   }) async {
+    final owningRoom = roomById(roomId);
+    if (owningRoom == null ||
+        _purgingProjects.contains(owningRoom.projectId) ||
+        projectById(owningRoom.projectId) == null) {
+      throw StateError('The project is unavailable.');
+    }
     if (paintRecipe != null) {
       final room = roomById(roomId);
       if (room == null ||

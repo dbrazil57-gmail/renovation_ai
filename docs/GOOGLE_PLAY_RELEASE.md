@@ -1,5 +1,12 @@
 # RenoVision — Google Play release guide
 
+Latest requested test package: **1.0.19+20**, source **`61e0807e2e`**. Includes all
+completed source changes and Settings → Storage cleanup, offering offline backup
+before exact-name permanent archive deletion. 435 tests, analysis and APK metadata/
+signature/assets/private-file/16KB checks pass; native emulator update retains work.
+Physical S21 acceptance is next. See [APK 1.0.19 tests](TESTING_GUIDE.md#requested-apk-1019-acceptance).
+This supersedes older latest-package statements below; public release gates remain.
+
 Updated 23 November 2026, Australia/Sydney. This is the requested release plan,
 not evidence of store approval. Google Play/Android is the first public target.
 Accept the app on the owner's Samsung S21, then finish iPhone parity so friends

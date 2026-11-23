@@ -281,6 +281,7 @@ void main() {
     await tester.tap(find.byTooltip('Settings'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Feedback and ideas'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Feedback and ideas'));
     await tester.pumpAndSettle();
     expect(find.text('Crop issue + suggestion'), findsOneWidget);

@@ -1,5 +1,27 @@
 # Renovision feature status
 
+## Current test package — 1.0.19+20
+
+Source **`61e0807e2e`**, 23 November 2026. Includes all completed post-1.0.18 Home,
+optional setup, Back, room suggestions, persistent paint/Undo, Style and cost-result
+improvements. Chrome matches this source. Name/icon/package/signing identity remain.
+
+Settings → Storage cleanup permanently removes one chosen archived/deleted project.
+First offer an offline backup or explicit skip, then require the exact name.
+Cancelled/failed saves keep the archive; browser downloads need a saved-file check.
+Delete the selected archive's rooms, deleted history and own images. Keep images
+referenced by other projects, active work, keys/settings and external files.
+Ordinary write failures attempt rollback. This is logical deletion, not a claim of
+forensic secure erasure. No owner archive was actually purged during development.
+
+435 full-suite tests pass (140s), analysis clean (30.6s), release APK build passes
+(84.3s). Signature matches 1.0.18; public assets, private-file exclusion and 64-bit
+ELF/ZIP 16KB alignment pass. Native read-only API 37 update retains sample work and
+selected image/Style after restart; Home/setup and Storage cleanup open. Physical
+S21/provider-quality and actual 16KB-runtime acceptance remain. No paid AI used.
+19 disposable test-output folders removed (~0.83 GB); owner data, original document
+backups and older named APKs preserved. Earlier notes below are historical.
+
 ## Room entry and optional setup — current Chrome follow-up
 
 Current source **`62350daf12`** includes a visible Home icon in the project rooms
