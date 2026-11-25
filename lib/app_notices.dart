@@ -4,7 +4,8 @@ import 'package:material_ui/material_ui.dart';
 
 /// Notices occupy the banner slot and push content; they never cover Generate
 /// or navigation at the bottom. Replace stale messages instead of queueing them.
-void showAppNotice(BuildContext context, String message) {
+ScaffoldFeatureController<MaterialBanner, MaterialBannerClosedReason>
+showAppNotice(BuildContext context, String message) {
   final messenger = ScaffoldMessenger.of(context);
   messenger.removeCurrentSnackBar();
   messenger.removeCurrentMaterialBanner();
@@ -21,6 +22,7 @@ void showAppNotice(BuildContext context, String message) {
       ],
     ),
   );
+  return handle;
 }
 
 class _TimedNotice extends StatefulWidget {

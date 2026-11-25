@@ -1445,6 +1445,37 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   FocusSection focusSection = FocusSection.room;
   int focusRevealRevision = 0;
   final instructionAnchor = GlobalKey();
+  ScaffoldFeatureController<MaterialBanner, MaterialBannerClosedReason>?
+  requestValidationNotice;
+
+  String? get requestValidationError {
+    if ((precise || updatingDesign) && draft.correction.text.trim().isEmpty) {
+      return 'Describe the specific correction in Refine before generating.';
+    }
+    if (!precise &&
+        !updatingDesign &&
+        !draft.fullRenovation &&
+        !draft.hasRequestedChanges) {
+      return 'Select the items to update, or describe your partial renovation in Refine.';
+    }
+    return null;
+  }
+
+  void _clearRequestValidationNotice() {
+    final previous = requestValidationNotice;
+    requestValidationNotice = null;
+    previous?.close();
+  }
+
+  void _showRequestValidationNotice(String message) {
+    final banner = showAppNotice(context, message);
+    requestValidationNotice = banner;
+    banner.closed.then((_) {
+      if (identical(requestValidationNotice, banner)) {
+        requestValidationNotice = null;
+      }
+    });
+  }
 
   void _visitSection(FocusSection next) {
     focusSection = next;
@@ -1499,24 +1530,17 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       await _openSettings();
       return;
     }
-    if (((precise || updatingDesign) && draft.correction.text.trim().isEmpty) ||
-        (!precise &&
-            !updatingDesign &&
-            !draft.fullRenovation &&
-            !draft.hasRequestedChanges)) {
+    final validationError = requestValidationError;
+    if (validationError != null) {
       setState(
         () => _visitSection(
           precise || updatingDesign ? FocusSection.refine : FocusSection.style,
         ),
       );
-      notice(
-        context,
-        precise || updatingDesign
-            ? 'Describe the specific correction in Refine before generating.'
-            : 'Select the items to update, or describe your partial renovation in Refine.',
-      );
+      _showRequestValidationNotice(validationError);
       return;
     }
+    _clearRequestValidationNotice();
     final previousCount = widget.store.designsFor(widget.roomId).length;
     await generation.generate(briefReviewed: briefReviewed);
     if (!mounted) return;
@@ -1826,9 +1850,15 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
             : RoomDesignMode.partial,
       );
     } else {
-      draft.setPrecise(false);
+      draft.setDesignMode(RoomDesignMode.newDesign);
     }
-    if (widget.initialMode != null) draft.setDesignMode(widget.initialMode!);
+    final emptyOriginalPartial =
+        selectedId == null &&
+        widget.initialMode == RoomDesignMode.partial &&
+        !draft.hasRequestedChanges;
+    if (widget.initialMode != null && !emptyOriginalPartial) {
+      draft.setDesignMode(widget.initialMode!);
+    }
     focusSection =
         widget.initialSection ??
         (selectedId == null ? FocusSection.room : FocusSection.refine);
@@ -1911,9 +1941,14 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     return saved;
   }
 
-  void _updateExitGuard() => pageExitGuard.setPending(
-    draft.dirty || aiPending || widget.store.documents.pending,
-  );
+  void _updateExitGuard() {
+    pageExitGuard.setPending(
+      draft.dirty || aiPending || widget.store.documents.pending,
+    );
+    if (requestValidationNotice != null && requestValidationError == null) {
+      _clearRequestValidationNotice();
+    }
+  }
 
   Future<void> _saveAndClose() async {
     if (aiPending) return;
@@ -1955,6 +1990,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   }
 
   void _selectDesign(String? id, {bool clearUpdate = false}) {
+    _clearRequestValidationNotice();
     final previousPolish = polishingFinishes;
     final selected = widget.store
         .designsFor(widget.roomId)
@@ -2922,19 +2958,18 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                           DropdownButtonFormField<String>(
                             key: ValueKey(selectedId ?? selectedPhotoId),
                             initialValue:
-                                selectedId ??
-                                (selectedPhotoId == room.originalId
-                                    ? null
-                                    : 'photo:$selectedPhotoId'),
+                                selectedId ?? 'photo:$selectedPhotoId',
                             isExpanded: true,
                             decoration: const InputDecoration(
                               labelText: 'Working from',
                               border: OutlineInputBorder(),
                             ),
                             items: [
-                              const DropdownMenuItem<String>(
-                                value: null,
-                                child: Text('Original photograph — locked'),
+                              DropdownMenuItem<String>(
+                                value: 'photo:${room.originalId}',
+                                child: const Text(
+                                  'Original photograph — locked',
+                                ),
                               ),
                               ...room.additionalPhotoIds.map(
                                 (id) => DropdownMenuItem<String>(
@@ -2955,12 +2990,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                               ),
                             ],
                             onChanged: (id) {
-                              if (id == null || id.startsWith('photo:')) {
+                              if (id == null) return;
+                              if (id.startsWith('photo:')) {
                                 _selectDesign(null);
                                 setState(
-                                  () => selectedPhotoId = id == null
-                                      ? room.originalId
-                                      : id.substring(6),
+                                  () => selectedPhotoId = id.substring(6),
                                 );
                               } else {
                                 _selectDesign(id);

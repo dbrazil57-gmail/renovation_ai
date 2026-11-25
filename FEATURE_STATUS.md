@@ -1,5 +1,19 @@
 # Renovision feature status
 
+## Original-photo mode follow-up — 25 November 2026
+
+Current Chrome source **`9ee802e36f`**, superseding the IDs below. Analysis clean,
+web build passes and actual isolated Chrome confirms generated/original switching.
+
+Original-photo entry now starts New design instead of inheriting an empty Partial
+edit from a generated result. Empty legacy original/Partial sessions are recovered;
+explicit scoped partial work is retained on refresh. Original and other angles
+use the same photo-selection path. Both AI actions validate the current source,
+and outdated request banners clear on source/mode changes without clearing unrelated
+save warnings. Generated images retain their Partial default. Existing data stays.
+83 relevant checks pass across selection/generation/navigation suites. No paid AI
+or new APK was used; owner Chrome/phone acceptance remains separate.
+
 ## Conditional image-strip follow-up — 25 November 2026
 
 Current Chrome source **`82ff9af022`**, superseding the IDs below. Web build passes

@@ -1,5 +1,12 @@
 # RenoVision
 
+Latest fix: original-photo entry returns to New design; generated designs retain
+their Partial default. Original and other photo angles share the same selection
+path, and stale request warnings clear. Both Send to AI and Brief → Proceed use
+the current source. Existing photos/briefs/designs remain saved. APK unchanged.
+Current Chrome: **`9ee802e36f`** at http://localhost:7357/, superseding older IDs
+below. 83 relevant checks pass; analysis and web build pass.
+
 Latest workspace follow-up: keep the normal single-image size; show the thumbnail
 strip when more than one room photo/design exists. Include original/photos/designs
 and bring the selected thumbnail into view. Double-tap the divider for the updated

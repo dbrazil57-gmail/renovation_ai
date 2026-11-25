@@ -1,5 +1,20 @@
 # Testing and storage reference
 
+## Original photos and AI-send validation
+
+Refresh the updated Chrome at localhost:7357 without clearing storage. Select a
+generated result, then Original. It should select New design. Switch to another
+photo angle and back through Working from; both photos should behave consistently.
+Try Send to AI and Brief → Proceed: each should open the provider/photo confirmation
+using the selected photo. Cancel there to test without making a paid request.
+
+For a stale-warning check, choose Partial with no requested changes, then Generate.
+Switch photo or choose New design while the warning is visible. The obsolete
+request warning should clear. Ordinary save warnings should not be dismissed by
+this fix. Generated-image updates still require a next-change instruction.
+Reloading an empty legacy Partial session on an original now recovers New design;
+an explicitly scoped original-photo partial renovation can still be restored.
+
 ## Resizing the workspace
 
 Default image-strip check: a room with one photo shows its preview without a

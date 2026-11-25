@@ -148,7 +148,7 @@ const designWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Refine a selected design',
-      'Select the saved version you like. Refine opens Partial and Update this design. Describe only the change in that field and choose Send to AI. Confirm sending to create another AI version; it does not approve or overwrite the selected image. Saved settings in history can also load a version’s recorded choices.',
+      'Select the saved version you like. Refine opens Partial and Update this design. Selecting an original room photo returns to New design and its room brief. Describe only the next change to a generated design in Update this design, then choose Send to AI. Confirming creates another version; it does not approve or overwrite the selected image. Saved settings in history can also load a version’s recorded choices.',
       'Change only the benchtop to pale stone. Keep the chosen cabinetry, flooring and layout.',
       note: 'Precise prompts and markup guide the AI; they do not guarantee unchanged pixels outside the edit.',
     ),

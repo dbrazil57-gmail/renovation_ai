@@ -7,6 +7,25 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Active follow-up and next acceptance pass — 25 November
 
+### Original-photo selection and stale validation
+
+- [x] Opening an original photo defaults to New design, rather than inheriting
+  the automatic Partial mode saved while editing a generated result. Empty legacy
+  Partial sessions on originals recover to New design. Explicitly restored scoped
+  partial renovations remain available; saved generated results still default Partial.
+- [x] Original and other photo angles use explicit photo selections in Working
+  from. Verify Original → other angle → Original and the generated-thumbnail path.
+- [x] Send to AI and Brief → Proceed share current-source validation. Clear an
+  obsolete request banner on source/mode changes or valid input; keep unrelated
+  save warnings. Existing room briefs, photos, design versions and approvals stay.
+- [x] 83 relevant selection/generation/scope/navigation/history tests pass across
+  three targeted suites (28, 42 and 18 executions, with five shared tests).
+  Seven help recordings/MP4 checks pass. No real key, paid AI or APK build used.
+- [x] Chrome source **`9ee802e36f`** at the same localhost:7357 address. Static
+  analysis clean (28.3s), web build passes (54.1s). Actual isolated Chrome verifies
+  generated → Original → generated → Original switches Partial/New design correctly.
+- [ ] Owner retest on the updated Chrome, then the next requested APK.
+
 ### Conditional image strip
 
 - [x] Keep the normal automatic single-image sizing with no redundant thumbnail
