@@ -1,5 +1,47 @@
 # Renovision feature status
 
+## Current release and conversation audit — 25 November 2026
+
+Requested APK **1.0.20+21** packages source **`454c2f8dcf`**, matching current
+Chrome application code. [APK](output/mobile-test/renovision-test-1.0.20.apk);
+[acceptance steps](docs/TESTING_GUIDE.md#requested-apk-1020-acceptance).
+Package/certificate/icon/data paths match 1.0.19; public assets, private-file
+exclusion and ELF/ZIP 16KB alignment pass. Size 86,229,579 bytes; SHA256
+`70E4241274D58B84301AF739337F5F1798F2027B69BF616765846EA377FDCD98`.
+Full suite 468 tests, clean analysis and release builds pass. Existing older
+named APKs remain intact. Physical S21/real-provider acceptance is still separate.
+
+The native API 37 emulator update from 1.0.19 retained its sample photos/designs.
+Empty Partial/Precise review actions stay disabled without an override; selected
+concept/Style survives restart; Home/setup and archive cleanup open. Screenshots
+checked using the offline sample, without owner data/keys or paid AI requests.
+
+The [current outstanding-request audit](CODEX_NEXT_STEPS.md#current-outstanding-request-audit--after-1020-packaging)
+supersedes older chronological unchecked items. It separates implemented controls
+needing phone/quality acceptance, incomplete document/precision/surface/export/
+performance work, and later camera/platform/business/release milestones. Imported
+tile textures/manual perspective, English-region choices, analysis-result costs,
+saved keys and archive cleanup are implemented. Translation remains deferred by
+the owner's English-for-now decision. Hosted services are not deployed.
+
+## Required-change readiness — 25 November 2026
+
+Current Chrome source **`454c2f8dcf`**, superseding IDs below. All 468 tests pass,
+analysis clean and web build passes. The relevant design demo is refreshed and
+its MP4 validated. No real key/paid AI or APK build was used for these checks.
+
+New design retains its brief percentage and optional incomplete-profile override;
+it needs a source photo but can leave optional design details to AI. Partial and
+Precise correction now show Changes/Correction readiness instead of a percentage.
+They offer no Proceed-anyway checkbox. Sending stays disabled until a change is
+present, and becomes disabled again if that change is cleared. Precise mode also
+rejects a whole-room "All" instruction. Original-photo partial work can use update
+selections or text; a selected generated design requires its own next-change text.
+Old styles, palette and room-wide goals do not unlock a generated-image update.
+The review dialog and final generation guard enforce the same minimum inputs.
+Connection setup and actual provider/photo/paid-request confirmation are retained.
+Reviewing an edit does not mark the New design profile reviewed. Data is retained.
+
 ## Original-photo mode follow-up — 25 November 2026
 
 Current Chrome source **`9ee802e36f`**, superseding the IDs below. Analysis clean,
@@ -764,7 +806,7 @@ provider quality, physical-camera behaviour or durable storage on every device.
 | Guided start | Photos → Direction → Analyse/review → Final options; Finish later resumes | Room identification is not a structured AI result that automatically fills the room selector |
 | Photo entry | Phone camera, gallery/multiple-photo import, embedded live preview, primary view and additional angles | Up to six original room views; reference images have no separate inspiration/material/sketch role |
 | Room scope | Whole-room defaults coordinate surfaces, fittings/appliances, lighting and loose-clutter removal; optional room-specific Keep/Replace and precise correction | Fixed uncertain fittings need explicit instructions; AI compliance is not guaranteed |
-| Local paint/material editing | Tap or outline wall/floor/splashback; reusable paint/tile layers, square/rectangular/brick patterns, grout/size/angle, swatches/custom hex/coverage; persistent delete one/all, undo/redo, compare, source-bound drafts and lossless PNG versions; plain/protected copies; optional one-polish AI handoff | Heuristic boundaries need review; approximate 2D tile patterns, no semantic planes, measured scale, imported textures/wallpaper, perspective mapping or cabinetry tool; preview up to 1000px, source up to 24MP; phone latency acceptance pending |
+| Local paint/material editing | Tap/outline wall, floor or splashback; reusable masks/layers, patterns, imported tile samples, reviewed four-corner perspective, separate tile/grout swatches/custom hex, size/angle/coverage, delete one/all, undo/redo, compare, source-bound drafts and lossless PNG versions; plain/protected copies; reviewed AI polish | Heuristic boundaries need review; no semantic planes/measured scale, dedicated wallpaper workflow or cabinetry tool; preview up to 1000px, source up to 24MP; phone latency/edge acceptance pending |
 | AI analysis | Confirmed working photo plus context angles; fuller visible inventory/questions/editable brief; matching observations automatically inform New design across preference changes; optional AI-written brief stays reviewable | Different working image/view set needs fresh facts; optional AI-written brief still uses strict context freshness; no verified geometry, automatic quality critique or segmentation |
 | Prompt preparation | Offline deterministic fallback, AI-written prompt option, preview/copy, current requirements/protected features, correct working/supporting-image roles | Copying text does not attach photos or automatically return external results |
 | In-app AI | OpenAI/Gemini direct HTTPS with separate personal keys and saved model choices; curated image recommendations; optional OpenAI laptop relay; confirmation, progress stages/elapsed time, storage-only result retry | Gemini live account/image quality acceptance pending; no Claude/Bedrock adapter, in-flight paid-job cancellation, actual billed-cost meter or automatic output critique |
@@ -775,7 +817,7 @@ provider quality, physical-camera behaviour or durable storage on every device.
 | Design deletion | Recoverable deletion, undo/restore, protected baseline handling | No permanent purge or comprehensive photo/storage manager |
 | Camera renovation | Embedded preview/capture, saved-view comparison, manually aligned opacity/slider overlay | A flat image for a matching viewpoint; no camera-pose/depth tracking |
 | Live design | Consent → one automatic reference capture/analysis → Room/style/Palette/Brief → confirmed generation → saved preview over camera → Continue to refine | Model latency remains; no continuous room scan, instant video transformation, moving-view redesign or composite/video export |
-| Autosave | Debounced drafts, compact status, menu shortcut, manual save, save on normal exit, pending-request guards | Process termination can interrupt pending writes; no journaled crash/corruption recovery |
+| Autosave | Debounced drafts, compact visible Auto slider/tap help, manual save, save on normal exit, pending-request guards; connected Chrome working-file writes during the session | Process termination can interrupt pending writes; no journaled crash/corruption recovery or durable external-file linkage across restarts |
 | Project files | Portable rooms/photos/designs/choices/history/recipes; Open preserves IDs, resumes unchanged matching work and offers Keep local / Open file as copy for conflicts; Restore copy is independent | Browser linkage is session-only; Android does not retain an overwrite destination; no divergent-revision merge |
 | Appearance/help | Focus Canvas B, pinned preview and Room/Style/Refine/Ideas controls, desktop split view, contextual toolbars, compact text, tap/hover help with eight offline guides/seven recorded app workflows, stock/user-selectable home cover, five saved app themes | Native video/phone accessibility acceptance remains; demo AI/camera/file pickers are simulated; themes are separate from renovation palettes |
 | Storage/privacy | Actual local storage/origin details, diagnostics; optional password-protected portable backup; Android encrypted API-key storage | Local photo/metadata database is not encrypted by the app; OS backup policy needs an explicit decision |
@@ -819,8 +861,9 @@ analysis can still need review. Exact paid request replay is not implemented.
 Local paint is implemented in 1.0.14: reusable manual selections and colour trials
 without regenerating the room. Its full-frame PNG compositor preserves pixels
 outside the selected area in the oriented source frame. It does not remove objects
-or infer missing geometry. Local tile patterns now share these saved masks;
-wallpaper/imported textures and plane perspective remain later work. Existing
+or infer missing geometry. Local tile patterns, imported samples and reviewed
+four-corner perspective share these masks. Dedicated wallpaper and semantic planes
+remain later work. Existing
 AI prompt palettes and text analysis are not image-edit masks.
 
 The OpenAI edit request contains images and a prompt, with no mask.

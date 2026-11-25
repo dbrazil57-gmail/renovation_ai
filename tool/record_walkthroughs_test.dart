@@ -450,7 +450,7 @@ void main() {
     await recording.text(
       find.byKey(const ValueKey('selected-design-update')),
       'Change only the tap to brushed brass',
-      'Describe just the update. The original renovation brief remains saved.',
+      'Add a change to enable Send to AI. Partial and precise edits need a request; the original brief stays saved.',
     );
     FocusManager.instance.primaryFocus?.unfocus();
     await recording.quiet();

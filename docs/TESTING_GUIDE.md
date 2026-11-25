@@ -1,5 +1,51 @@
 # Testing and storage reference
 
+## Requested APK 1.0.20 acceptance
+
+Install `output/mobile-test/renovision-test-1.0.20.apk` over the existing app;
+do not uninstall or clear storage. Version 1.0.20+21 uses source `454c2f8dcf`
+and includes all completed changes since 1.0.19. The older notes below describe
+earlier deliveries; this build includes the Gemini and workspace follow-ups.
+
+1. Reopen an existing project and check rooms, photos, saved designs and the saved
+   provider connection remain. Check the visible Home/setup/Rooms destinations.
+2. Select a generated design: Partial is the default. Clear its next-change text.
+   Send to AI should be disabled; the status shows Add changes to continue.
+   Its review has no percentage or Proceed-anyway checkbox. A style/palette alone
+   must not enable sending. Add a change, then clear it and check both states.
+3. Repeat with Precise correction: a focused request enables sending; whitespace
+   or "All" does not. New design on Original keeps the percentage and optional
+   incomplete-profile override. No source photo must still block generation.
+4. Switch Original, another photo angle and a saved design. Originals default to
+   New design; generated images default Partial. The strip shows multiple images.
+   Drag the divider up/down, double-tap to reset, then rotate and reopen the app.
+5. With a valid request, the pinned Send to AI is available on Room, Style, Refine
+   and Ideas and opens provider/photo confirmation. Cancel to avoid paid usage.
+   If testing Gemini generation, explicitly confirm a single paid request, check
+   its result and Settings > AI diagnostics. Failed requests must not auto-retry.
+6. Restart and check the selected image, drafts, images, keys and layout remain.
+   Check the refreshed design help clip. Real S21 layout, camera and real-provider
+   behaviour remain owner acceptance even when automated/emulator checks pass.
+
+## Required changes before sending
+
+Refresh the updated Chrome without clearing storage. On a saved generated design,
+Partial should show Add changes to continue and a disabled Send to AI. Open its
+readiness status: there should be no percent or Proceed checkbox, and its Send
+action should also be disabled. Old room instructions, style and palette must not
+enable it. Type a next change: both actions enable. Clear it: they disable again.
+
+Repeat with Precise correction. It needs a focused written correction; whitespace
+and "All" are insufficient. No incomplete-brief override is offered. On an original
+photo, Partial can instead use selected update items or a written request.
+
+Choose New design: its brief percentage returns. With a photo, optional incomplete
+details can still proceed. With no photo, the incomplete-brief checkbox is disabled.
+Sending a valid request always opens the separate provider/photo confirmation;
+Cancel there avoids a paid request. No original or saved design should be replaced.
+These rules supersede older instructions to click an empty-edit send button and
+wait for a validation banner.
+
 ## Original photos and AI-send validation
 
 Refresh the updated Chrome at localhost:7357 without clearing storage. Select a

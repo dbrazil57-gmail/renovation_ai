@@ -667,6 +667,17 @@ class _AiEditCardState extends State<AiEditCard>
   bool duplicate = false;
   final received = <DesignVersion>[];
   bool get precise => widget.draft?.preciseEdit ?? false;
+  BriefReadiness? get inputReadiness {
+    final draft = widget.draft;
+    if (draft == null) return null;
+    final room = widget.store.roomById(draft.roomId);
+    return draft.briefReadiness(
+      imageAvailable:
+          room != null &&
+          widget.store.imageFor(room.primaryId)?.isNotEmpty == true,
+    );
+  }
+
   int get count => widget.singleConcept
       ? 1
       : precise
@@ -768,6 +779,10 @@ class _AiEditCardState extends State<AiEditCard>
     final readiness = widget.draft?.briefReadiness(
       imageAvailable: captured.image.isNotEmpty,
     );
+    if (readiness != null && !readiness.canProceed) {
+      setState(() => message = readiness.blockingReason);
+      return;
+    }
     final showGuidance =
         !briefReviewed &&
         (readiness?.needsReminder(
@@ -925,6 +940,7 @@ class _AiEditCardState extends State<AiEditCard>
       if (connectionRevision != widget.store.ai.connectionRevision) return;
       if ((showGuidance || briefReviewed) &&
           readiness != null &&
+          readiness.isNewDesign &&
           readiness.percentage >= BriefReadiness.reminderThreshold) {
         try {
           await widget.store.rememberBriefReview(
@@ -1101,6 +1117,7 @@ class _AiEditCardState extends State<AiEditCard>
         widget.store,
         widget.store.ai,
         widget.store.ai.activity,
+        ?widget.draft,
       ]),
       builder: (context, _) => Card(
         child: Padding(
@@ -1227,7 +1244,8 @@ class _AiEditCardState extends State<AiEditCard>
                       !widget.enabled ||
                           busy ||
                           !widget.store.ai.connected ||
-                          widget.store.ai.activity.active
+                          widget.store.ai.activity.active ||
+                          inputReadiness?.canProceed == false
                       ? null
                       : _generate,
                   icon: const Icon(Icons.auto_awesome),
@@ -1242,6 +1260,9 @@ class _AiEditCardState extends State<AiEditCard>
                                   : 'Generate AI design'),
                   ),
                 ),
+              if (widget.showGenerateButton &&
+                  inputReadiness?.canProceed == false)
+                Text(inputReadiness!.blockingReason!),
               if (pending != null) ...[
                 ExpandableImage(
                   bytes: pending!.image,

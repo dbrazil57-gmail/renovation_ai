@@ -271,6 +271,18 @@ void main() {
         await reach(tester, action, up: label == 'Generate AI design');
         await tester.tap(action);
         await tester.pumpAndSettle();
+        if (label == 'Generate AI design') {
+          expect(
+            tester
+                .widget<FilledButton>(
+                  find.byKey(const ValueKey('workspace-generate')),
+                )
+                .onPressed,
+            isNull,
+          );
+          expect(find.byType(AlertDialog), findsNothing);
+          continue;
+        }
         expect(find.text('Check the design request'), findsOneWidget);
         expect(find.textContaining('is a whole-room request'), findsOneWidget);
         expect(edits, 0);

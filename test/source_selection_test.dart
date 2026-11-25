@@ -167,7 +167,15 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('workspace-generate')));
       await tester.pumpAndSettle();
-      expect(find.text(partialWarning), findsOneWidget);
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.byKey(const ValueKey('workspace-generate')),
+            )
+            .onPressed,
+        isNull,
+      );
+      expect(find.text('Add changes to continue'), findsOneWidget);
       expect(find.text('Send to OpenAI'), findsNothing);
       Future<void> choosePhoto(String title) async {
         await tester.tap(find.byKey(const ValueKey('focus-section-room')));
@@ -204,11 +212,14 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('workspace-generate')));
       await tester.pumpAndSettle();
       expect(
-        find.text(
-          'Describe the specific correction in Refine before generating.',
-        ),
-        findsOneWidget,
+        tester
+            .widget<FilledButton>(
+              find.byKey(const ValueKey('workspace-generate')),
+            )
+            .onPressed,
+        isNull,
       );
+      expect(find.text('Add changes to continue'), findsOneWidget);
       final originalThumbnail = find.byWidgetPredicate(
         (w) => w is FocusVersionThumbnail && w.title == 'Original',
       );
@@ -229,7 +240,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('workspace-generate')));
       await tester.pumpAndSettle();
-      expect(find.text(partialWarning), findsOneWidget);
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.byKey(const ValueKey('workspace-generate')),
+            )
+            .onPressed,
+        isNull,
+      );
       await ensureFocusVisible(tester, find.text('New design'));
       await tester.tap(find.text('New design'));
       await tester.pumpAndSettle();
@@ -266,7 +284,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('workspace-generate')));
       await tester.pumpAndSettle();
-      expect(find.text(partialWarning), findsOneWidget);
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.byKey(const ValueKey('workspace-generate')),
+            )
+            .onPressed,
+        isNull,
+      );
       notice(
         tester.element(find.byType(WorkspaceScreen)),
         'Fixture project save warning',

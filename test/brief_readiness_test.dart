@@ -48,7 +48,8 @@ void main() {
   );
 
   test('coverage increases with useful input; defaults allow a basic concept and clear styling can complete it', () {
-    expect(assess(full: false, known: false).percentage, 40);
+    expect(assess(full: false, known: false).canProceed, false);
+    expect(assess(full: false, known: false).isNewDesign, false);
     expect(assess().percentage, 65);
     expect(assess(instruction: 'Replace the ceiling fitting').percentage, 75);
     expect(assess(style: true).percentage, 80);
@@ -230,6 +231,44 @@ void main() {
     );
 
     testWidgets(
+      'reviewing and sending a Partial update does not mark the New design profile reviewed',
+      (tester) async {
+        final design = await store.createDesign(
+          roomId: room.id,
+          image: store.imageFor(room.originalId)!,
+          title: 'Chosen design',
+          prompt: 'Historical brief',
+        );
+        await store.approveBaseline(room.id, designId: design.id);
+        await show(tester);
+        final update = find.byKey(const ValueKey('selected-design-update'));
+        await ensureFocusVisible(tester, update);
+        await tester.enterText(update, 'Replace only the tap');
+        FocusManager.instance.primaryFocus?.unfocus();
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(const ValueKey('brief-readiness-indicator')),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Review changes'), findsOneWidget);
+        expect(
+          find.byKey(const ValueKey('brief-proceed-checkbox')),
+          findsNothing,
+        );
+        await tester.tap(find.byKey(const ValueKey('brief-review-primary')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Send to OpenAI'));
+        await tester.pumpAndSettle();
+        expect(imageRequests, 1);
+        expect(store.designsFor(room.id), hasLength(2));
+        expect(store.briefGuidanceReviewed(room.id, precise: false), false);
+        expect(store.briefGuidanceReviewed(room.id, precise: true), false);
+        expect(store.roomById(room.id)!.approvedDesignId, design.id);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
       'low brief stays visible on every tab and Refine returns to visible inputs without an API request',
       (tester) async {
         await show(tester);
@@ -256,7 +295,15 @@ void main() {
         await ensureFocusVisible(tester, find.text('Precise correction'));
         await tester.tap(find.text('Precise correction'));
         await tester.pumpAndSettle();
-        expectScore(60);
+        expect(find.text('Add a specific correction'), findsOneWidget);
+        expect(
+          tester
+              .widget<FilledButton>(
+                find.byKey(const ValueKey('workspace-generate')),
+              )
+              .onPressed,
+          isNull,
+        );
         await generate(tester);
         expect(find.byType(AlertDialog), findsNothing);
         expect(imageRequests, 0);

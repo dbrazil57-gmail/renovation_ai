@@ -17,7 +17,7 @@ class BriefReadinessIndicator extends StatelessWidget {
       key: const ValueKey('brief-readiness-indicator'),
       onPressed: onReview,
       icon: const Icon(Icons.info_outline, size: 16),
-      label: Text('Brief ${readiness.percentage}% complete'),
+      label: Text(readiness.label),
     ),
   );
 }
@@ -33,15 +33,15 @@ class BriefReadinessGuidance extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Brief ${readiness.percentage}% complete',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          Text(readiness.label, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 6),
-          LinearProgressIndicator(value: readiness.percentage / 100),
+          if (readiness.isNewDesign)
+            LinearProgressIndicator(value: readiness.percentage / 100),
           const SizedBox(height: 8),
           Text(
-            readiness.missing.isEmpty
+            !readiness.canProceed
+                ? readiness.blockingReason!
+                : readiness.missing.isEmpty
                 ? 'Your brief includes the key inputs. Review the request below.'
                 : 'More direction could help. You can refine the brief or proceed with the current choices.',
           ),
@@ -52,7 +52,7 @@ class BriefReadinessGuidance extends StatelessWidget {
             ),
           const SizedBox(height: 6),
           Text(
-            BriefReadiness.explanation,
+            readiness.description,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
@@ -67,13 +67,13 @@ Future<BriefReviewAction?> reviewBrief(
   BuildContext context,
   BriefReadiness readiness,
 ) {
-  final complete = readiness.percentage == 100;
+  final complete = readiness.isNewDesign && readiness.percentage == 100;
   var proceed = complete;
   return showDialog<BriefReviewAction>(
     context: context,
     builder: (dialogContext) => StatefulBuilder(
       builder: (context, updateDialog) => AlertDialog(
-        title: Text('Brief ${readiness.percentage}% complete'),
+        title: Text(readiness.reviewTitle),
         content: SizedBox(
           width: 440,
           child: SingleChildScrollView(
@@ -81,7 +81,7 @@ Future<BriefReviewAction?> reviewBrief(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(BriefReadiness.explanation),
+                Text(readiness.description),
                 const SizedBox(height: 8),
                 for (final check in readiness.checks)
                   ListTile(
@@ -93,13 +93,16 @@ Future<BriefReviewAction?> reviewBrief(
                           : Icons.radio_button_unchecked,
                     ),
                     title: Text(
-                      '${check.label} · ${check.points}/${check.possible}',
+                      readiness.isNewDesign
+                          ? '${check.label} · ${check.points}/${check.possible}'
+                          : check.label,
                     ),
                     subtitle: check.complete ? null : Text(check.suggestion),
                   ),
-                const Text(
-                  'A narrow precise correction uses its own checklist; style and palette are not required. Reviewed reminders stop repeating at 75% or more for this room and mode. Paid-request confirmation still applies.',
-                ),
+                if (readiness.isNewDesign)
+                  const Text(
+                    'Optional design choices can be left to AI. Reviewed reminders stop repeating at 75% or more for a new design. Sending confirmation still applies.',
+                  ),
               ],
             ),
           ),
@@ -109,12 +112,13 @@ Future<BriefReviewAction?> reviewBrief(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (!complete)
+              if (readiness.isNewDesign && !complete)
                 CheckboxListTile(
                   key: const ValueKey('brief-proceed-checkbox'),
                   value: proceed,
-                  onChanged: (value) =>
-                      updateDialog(() => proceed = value ?? false),
+                  onChanged: !readiness.canProceed
+                      ? null
+                      : (value) => updateDialog(() => proceed = value ?? false),
                   contentPadding: EdgeInsets.zero,
                   controlAffinity: ListTileControlAffinity.leading,
                   title: const Text('Proceed with the current brief'),
@@ -127,16 +131,33 @@ Future<BriefReviewAction?> reviewBrief(
                     onPressed: () => Navigator.pop(dialogContext),
                     child: const Text('Close'),
                   ),
+                  if (!readiness.isNewDesign && !readiness.canProceed)
+                    TextButton(
+                      onPressed: () => Navigator.pop(
+                        dialogContext,
+                        BriefReviewAction.refine,
+                      ),
+                      child: Text(
+                        readiness.blockingCheck?.target == BriefTarget.room
+                            ? 'Choose image'
+                            : readiness.precise
+                            ? 'Add correction'
+                            : 'Add changes',
+                      ),
+                    ),
                   FilledButton(
                     key: const ValueKey('brief-review-primary'),
-                    onPressed: () => Navigator.pop(
-                      dialogContext,
-                      proceed
-                          ? BriefReviewAction.proceed
-                          : BriefReviewAction.refine,
-                    ),
+                    onPressed: !readiness.isNewDesign && !readiness.canProceed
+                        ? null
+                        : () => Navigator.pop(
+                            dialogContext,
+                            !readiness.isNewDesign ||
+                                    (proceed && readiness.canProceed)
+                                ? BriefReviewAction.proceed
+                                : BriefReviewAction.refine,
+                          ),
                     child: Text(
-                      complete
+                      !readiness.isNewDesign || complete
                           ? 'Send to AI'
                           : proceed
                           ? 'Proceed'

@@ -270,6 +270,7 @@ void main() {
       addTearDown(draft.dispose);
       draft.setConceptCount(3);
       draft.setPrecise(true);
+      draft.correction.text = 'Change only the handles';
       expect(draft.precisionConceptCount, 1);
       await tester.pumpWidget(
         MaterialApp(

@@ -7,6 +7,148 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Active follow-up and next acceptance pass — 25 November
 
+### Requested APK 1.0.20 and verified current batch
+
+- [x] Package all completed shared-source work as **1.0.20+21**, source
+  **`454c2f8dcf`**. APK build passes (259.7s); signature matches 1.0.19, app ID,
+  data paths and approved A icon stay unchanged. Public assets/private-file
+  exclusion and 64-bit ELF/ZIP 16KB alignment pass. All 468 tests and analysis pass.
+- [x] Provide `output/mobile-test/renovision-test-1.0.20.apk`, 86,229,579 bytes,
+  SHA256 `70E4241274D58B84301AF739337F5F1798F2027B69BF616765846EA377FDCD98`,
+  with its checksum file and latest convenience copy. Preserve older named APKs.
+- [x] Native API 37 test-emulator update from 1.0.19 retains sample photos/designs.
+  Partial/Precise empty reviews have disabled Send and no override. Selected
+  concept/Style survives restart; workspace/setup Home and Storage cleanup open.
+  Screenshots checked. No owner key/data, real phone or paid AI was used.
+- [x] Audit the supplied prompt history against source and consolidate actual
+  remaining work below. Update existing docs rather than add another Markdown file.
+- [x] Requested cleanup removes 59 closed disposable test-browser profiles and two
+  obsolete intermediate APKs, freeing 2,437.4 MiB. Verify all ten older named APK
+  checksums; retain customer data, recovery folders, document backups, evidence
+  and current web build. Existing .gitignore covers local projects/keys/output.
+- [ ] Owner accept [APK 1.0.20](docs/TESTING_GUIDE.md#requested-apk-1020-acceptance)
+  on S21; automated/emulator checks do not prove real-provider quality or phone
+  camera/gallery/system-picker behaviour.
+
+### Current outstanding-request audit — after 1.0.20 packaging
+
+This is the current assessment of the supplied conversation against the actual
+source. Lower dated sections are historical: their unchecked items are not a
+second current task list. Source `454c2f8dcf` contains the completed changes.
+APK 1.0.20 acceptance is listed in the [testing guide](docs/TESTING_GUIDE.md#requested-apk-1020-acceptance).
+
+**Implemented; phone/real-model acceptance remains**
+
+- [x] Projects/rooms, multiple photos and multi-view AI analysis; matching photo
+  observations are reused when preferences change. Separate editable design
+  proposal, reusable version recipes and optional reuse of another room's look.
+- [x] 42 room/space types including outdoors; 23 styles including cultural
+  influences; 12 palettes; compact controls, whole-room/individual scopes,
+  New/Partial/Precise, selected-design next-change field and one pinned AI action.
+- [x] Persistent separate OpenAI/Gemini keys; direct mobile HTTPS; model presets,
+  safe local diagnostics/progress and confirmed single/two/three design requests.
+- [x] Visible compact Auto slider; Save/Open/Save as and independent restore-copy;
+  archive/delete confirmation and backup-first permanent archive cleanup.
+- [x] Crop handles/annotation tools, image zoom/landscape/compare, saved design
+  deletion, image Save/share; local paint and floor/wall/splashback tiles with
+  independent tile/grout colours, custom grout, imported material samples,
+  reviewed four-corner perspective, reusable surface masks and undo/redo.
+- [x] Review and send AI polish at the bottom, reviewed prompt before provider
+  confirmation, clean design plus guide image, saved local-preview recovery.
+- [x] Four-step setup access for existing rooms, typed Live names, camera/gallery,
+  still capture > analysis > generation > camera overlay, chosen Focus Canvas
+  appearance, icon A/themes, home/navigation/refresh recovery and offline sample.
+- [x] AU/NZ/UK/US English and per-analysis/per-image usage/cost details where known.
+  Seven short recorded UI help clips exist; the design clip reflects this change.
+- [ ] **S21 acceptance:** install the new APK over the old app; check retained work
+  and keys, blank-edit disabled states, original/generated switching, divider/
+  strip, keyboard/landscape/enlarged text, native Save/Open/share, camera overlay,
+  help playback and an explicitly confirmed real Gemini/OpenAI request if desired.
+- [ ] **Design-quality benchmark:** compare the same kitchen/office input across
+  models and quality settings, one versus three genuinely different schemes,
+  updated main lights/appliances, partial edits and finish polish. Store timings,
+  usage and visual assessments. Prompt diversity is implemented; semantic
+  similarity scoring, automatic output critique and quality ranking are not.
+
+**Incomplete implementation, in recommended order**
+
+- [ ] **Document continuity/recovery:** persist Android document URI access and
+  browser file handles across restarts, reconnect safely after permission loss,
+  and improve interrupted-write recovery. Local autosave works; external-file
+  linkage is session-based. Open handles conflicts; merging divergent edits is
+  not implemented. Never silently replace either revision.
+- [ ] **Controlled AI edits:** persist editable crop/annotation geometry, send
+  supported masks and composite results or detect changes outside the allowed
+  area. Current AI precision relies on images/text; it does not lock pixels.
+  Local paint composition does preserve unselected pixels, separately from AI.
+- [ ] **Surface tools:** improve semantic edge/plane selection and difficult
+  boundaries; add a dedicated wallpaper/repeat/offset workflow and evaluate
+  cabinetry finish tools. Imported tile samples and manually reviewed perspective
+  already work; neither is an automatic 3D/semantic surface reconstruction.
+- [ ] **Larger-project performance:** measure startup, route first paint, preview/
+  export, thumbnails, API preparation/upload/wait/save and memory on Chrome/S21.
+  Eager photo storage/loading and browser image work still need measured limits.
+- [ ] **Library/references/export:** optional structured room-type suggestion
+  with confirmation; broader illustrated room/style examples; typed inspiration,
+  material, sketch and plan references; better secondary-photo/storage management;
+  image rotation and saved before/after/camera-overlay composite exports.
+- [ ] **Current visual polish:** review image/baseline information duplication,
+  Style choice density, history/manual-handoff hierarchy and accessibility on the
+  actual S21. Draggable panels, selected-look summary and conditional strip exist.
+- [ ] **Usage completeness:** Gemini dollar estimates, combined analysis/research/
+  image totals and any true funded allowance/balance service. Existing estimates
+  cover known returned usage; the manually entered budget is not provider credit.
+  In-flight paid-job cancellation/recovery remains limited; never auto-resend.
+
+**Later milestones / owner-service prerequisites**
+
+- [ ] **Tracked camera renovation:** moving-view spatial alignment, pose/depth/
+  occlusion and consistent scene rendering. The existing still-image overlay is
+  implemented; instantaneous video redesign and spatial scanning are not.
+- [ ] **Support and public release:** choose hosting/support destination, deliver
+  feedback and AI-output reports with a receipt/review process, publish privacy/
+  legal materials, decide OS backup/deletion policy and production signing/ID,
+  prepare store materials/access/testing. Tester-credit client/gateway code is
+  prepared but not hosted/funded. Billing/subscriptions/accounts/cloud sync are
+  not implemented; BYO-key private testing works without an app account.
+- [ ] **Apple/native desktop:** iOS Keychain, project files, image export/share,
+  identity/signing and Mac/Xcode/device testing; native Windows file/share/key
+  adapters, packaging and acceptance. Chrome uses the shared current source.
+- [ ] **Launch help:** record final real-phone end-to-end footage after UI
+  acceptance; current short clips use real app controls with simulated AI/camera.
+  Compare actual Australian Android offers before finalising own pricing; previous
+  competitor research is dated and is not a live checkout/paid-value benchmark.
+
+Foreign-language UI/AI translation is deferred by the owner's later **English for
+now** choice. Extra providers are optional after current-model comparison; no
+Claude/Bedrock image adapter exists. Full photo/database encryption, accounts,
+subscriptions and an optional paid desktop companion remain product decisions.
+The approved olive/cream A icon is installed; public name/logo clearance remains.
+
+### Required changes and mode-specific review
+
+- [x] Keep Brief % and the optional Proceed checkbox for New design only. Missing
+  style/palette/goal choices can be left to AI; a source image is required.
+- [x] Partial and Precise correction show a change/correction readiness checklist,
+  with no percentage or Proceed-anyway checkbox. Empty or whitespace-only requests
+  disable sending and the review dialog's send action. Whole-room "All" requests
+  are also blocked in precision mode.
+- [x] Original-photo partial renovations can use selected update items or written
+  changes. A selected generated design needs its own next-change instruction;
+  saved styles, palette, old scope and original room goals do not satisfy it.
+- [x] Recheck mandatory inputs when generating even if a brief was already reviewed.
+  Apply the same rules to setup and workspace actions. Keep Connect AI available
+  for configuring a connection. A valid edit still requires provider confirmation.
+- [x] Edit review does not mark the New design profile reviewed. Preserve all saved
+  instructions, originals and versions. Refresh the relevant design walkthrough.
+- [x] Chrome source **`454c2f8dcf`**, web build passes (49.5s). Full suite **468
+  tests pass** (112s), analysis clean (46.7s). The refreshed design walkthrough
+  and MP4 validation pass; no real key or paid AI used. Included in APK 1.0.20.
+- [x] Actual isolated Chrome confirms disabled empty-edit review actions, no edit
+  override checkboxes, and the New design profile on Original. Screenshots checked;
+  owner browser data and credentials were not used.
+- [ ] Owner accept the new disabled/readiness states on Chrome and the next APK.
+
 ### Original-photo selection and stale validation
 
 - [x] Opening an original photo defaults to New design, rather than inheriting

@@ -1,5 +1,30 @@
 # RenoVision
 
+Current test release, **25 November 2026**: **1.0.20+21**, shared source
+**`454c2f8dcf`**. [Download APK 1.0.20](output/mobile-test/renovision-test-1.0.20.apk)
+and install over the existing app. App identity, signing certificate, icon and data
+paths are preserved. Older dated package/source-only notes below are historical.
+
+Includes the latest Gemini transport/diagnostics, pinned sending, draggable image
+divider, conditional thumbnail strip, original/generated mode switching and
+disabled empty Partial/Precise edits without a brief override checkbox. New design
+retains its brief percentage. Existing project work and keys are retained.
+All **468 tests pass**, static analysis is clean, Chrome/release APK builds and
+signature/assets/private-file/16KB alignment checks pass. Emulator update retains
+sample work and verifies disabled edit reviews, restart and navigation. Same
+Chrome source is served at http://localhost:7357/. Real phone/model acceptance
+remains separate.
+
+See [mobile test steps](docs/TESTING_GUIDE.md#requested-apk-1020-acceptance) and the
+[current outstanding-request audit](CODEX_NEXT_STEPS.md#current-outstanding-request-audit--after-1020-packaging).
+
+Latest readiness change: Brief % applies to New design. Partial/Precise show
+change readiness, with sending disabled until a real change is supplied and no
+Proceed-anyway checkbox. Source photos remain required; New design can leave
+optional style/goal choices to AI. Included in APK 1.0.20 above.
+Current Chrome: **`454c2f8dcf`** at http://localhost:7357/, superseding older IDs
+below. **468 tests pass**; analysis and web build pass.
+
 Latest fix: original-photo entry returns to New design; generated designs retain
 their Partial default. Original and other photo angles share the same selection
 path, and stale request warnings clear. Both Send to AI and Brief → Proceed use

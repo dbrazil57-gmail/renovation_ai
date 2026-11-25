@@ -1448,18 +1448,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   ScaffoldFeatureController<MaterialBanner, MaterialBannerClosedReason>?
   requestValidationNotice;
 
-  String? get requestValidationError {
-    if ((precise || updatingDesign) && draft.correction.text.trim().isEmpty) {
-      return 'Describe the specific correction in Refine before generating.';
-    }
-    if (!precise &&
-        !updatingDesign &&
-        !draft.fullRenovation &&
-        !draft.hasRequestedChanges) {
-      return 'Select the items to update, or describe your partial renovation in Refine.';
-    }
-    return null;
-  }
+  BriefReadiness get currentReadiness => draft.briefReadiness(
+    imageAvailable:
+        _activeImage(widget.store.roomById(widget.roomId)!)?.isNotEmpty == true,
+  );
+  String? get requestValidationError => currentReadiness.blockingReason;
 
   void _clearRequestValidationNotice() {
     final previous = requestValidationNotice;
@@ -1512,9 +1505,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   Future<void> _reviewBrief() async {
     final room = widget.store.roomById(widget.roomId);
     if (room == null) return;
-    final readiness = draft.briefReadiness(
-      imageAvailable: _activeImage(room) != null,
-    );
+    final readiness = currentReadiness;
     final action = await reviewBrief(context, readiness);
     if (!mounted) return;
     if (action == BriefReviewAction.refine) {
@@ -1534,7 +1525,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     if (validationError != null) {
       setState(
         () => _visitSection(
-          precise || updatingDesign ? FocusSection.refine : FocusSection.style,
+          currentReadiness.blockingCheck?.target == BriefTarget.room
+              ? FocusSection.room
+              : FocusSection.refine,
         ),
       );
       _showRequestValidationNotice(validationError);
@@ -1558,10 +1551,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         BriefReadinessIndicator(
-          readiness: draft.briefReadiness(
-            imageAvailable:
-                _activeImage(widget.store.roomById(widget.roomId)!) != null,
-          ),
+          readiness: currentReadiness,
           onReview: _reviewBrief,
         ),
         if (draft.state != DraftSaveState.saved)
@@ -1580,7 +1570,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
         else
           FilledButton.icon(
             key: const ValueKey('workspace-generate'),
-            onPressed: aiPending || widget.store.ai.activity.active
+            onPressed:
+                aiPending ||
+                    widget.store.ai.activity.active ||
+                    (widget.store.ai.connected && !currentReadiness.canProceed)
                 ? null
                 : _generateFromWorkspace,
             icon: const Icon(Icons.auto_awesome),

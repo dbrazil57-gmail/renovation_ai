@@ -1,16 +1,15 @@
 # RenoVision — Google Play release guide
 
-25 November source follow-up: Gemini request compatibility, local diagnostics,
-Partial image-selection defaults and the fixed send action are verified in Chrome
-but are **not included in APK 1.0.19** below. Live Gemini acceptance and another
-explicitly requested APK test remain before release.
-
-Latest requested test package: **1.0.19+20**, source **`61e0807e2e`**. Includes all
-completed source changes and Settings → Storage cleanup, offering offline backup
-before exact-name permanent archive deletion. 435 tests, analysis and APK metadata/
-signature/assets/private-file/16KB checks pass; native emulator update retains work.
-Physical S21 acceptance is next. See [APK 1.0.19 tests](TESTING_GUIDE.md#requested-apk-1019-acceptance).
-This supersedes older latest-package statements below; public release gates remain.
+Latest requested test package, **25 November 2026**: **1.0.20+21**, source
+**`454c2f8dcf`**. Includes Gemini request compatibility/diagnostics, the pinned
+send action, draggable divider/conditional image strip, original/generated mode
+selection and required-change readiness without a Partial/Precise brief override.
+468 tests, analysis and APK signature/assets/private-file/16KB checks pass; native
+emulator update from 1.0.19 retains sample work and verifies disabled empty edits.
+Physical S21/real-provider acceptance is next. See [APK 1.0.20 tests](TESTING_GUIDE.md#requested-apk-1020-acceptance)
+and the [current request audit](../CODEX_NEXT_STEPS.md#current-outstanding-request-audit--after-1020-packaging).
+This supersedes older package/source-only statements below. Public release gates,
+hosting/support, production identity/signing, store testing and iOS parity remain.
 
 Updated 23 November 2026, Australia/Sydney. This is the requested release plan,
 not evidence of store approval. Google Play/Android is the first public target.

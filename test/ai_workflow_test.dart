@@ -170,11 +170,15 @@ void main() {
       await tester.pumpAndSettle();
       expect(edits, 0);
       expect(
-        find.textContaining('“All” is a whole-room request'),
-        findsOneWidget,
+        tester
+            .widget<FilledButton>(
+              find.byKey(const ValueKey('workspace-generate')),
+            )
+            .onPressed,
+        isNull,
       );
-      await tester.tap(find.text('OK'));
-      await tester.pumpAndSettle();
+      expect(find.text('Add a specific correction'), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
       await revealFocusControl(
         tester,
         find.text('Use New design'),
