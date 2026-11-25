@@ -1,5 +1,10 @@
 # RenoVision — Google Play release guide
 
+25 November source follow-up: Gemini request compatibility, local diagnostics,
+Partial image-selection defaults and the fixed send action are verified in Chrome
+but are **not included in APK 1.0.19** below. Live Gemini acceptance and another
+explicitly requested APK test remain before release.
+
 Latest requested test package: **1.0.19+20**, source **`61e0807e2e`**. Includes all
 completed source changes and Settings → Storage cleanup, offering offline backup
 before exact-name permanent archive deletion. 435 tests, analysis and APK metadata/

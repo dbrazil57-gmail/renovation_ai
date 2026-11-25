@@ -40,6 +40,12 @@ class RoomDraft extends ChangeNotifier {
   int conceptCount;
   int precisionConceptCount;
   bool compareStyles;
+  // Workspace context only; the original renovation brief stays saved.
+  bool updatingSelectedDesign = false;
+  bool get usesUpdateBrief =>
+      updatingSelectedDesign && designMode != RoomDesignMode.newDesign;
+  TextEditingController get activeInstructions =>
+      preciseEdit || usesUpdateBrief ? correction : changes;
   DraftSaveState state = DraftSaveState.saved;
   Timer? _timer;
   int _revision = 0;
@@ -110,9 +116,11 @@ class RoomDraft extends ChangeNotifier {
       BriefReadiness.assess(
         imageAvailable: imageAvailable,
         precise: preciseEdit,
-        instruction: preciseEdit ? correction.text : changes.text,
+        instruction: activeInstructions.text,
         fullRoom: fullRenovation,
-        selectedChanges: hasRequestedChanges,
+        selectedChanges: usesUpdateBrief
+            ? correction.text.trim().isNotEmpty
+            : hasRequestedChanges,
         roomTypeKnown: roomTypeId.isNotEmpty || effectiveRoomType != 'other',
         styleDefined:
             styleIds.any(designStyles.containsKey) ||

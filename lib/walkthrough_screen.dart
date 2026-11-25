@@ -42,11 +42,22 @@ class AppWalkthroughsScreen extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Card(child:ListTile(leading:const Icon(Icons.auto_awesome_motion_outlined),
-                title:const Text('Try the kitchen sample flow'),
-                subtitle:const Text('Real before/after, saved brief and later ideas · offline replay'),
-                trailing:const Icon(Icons.play_circle_outline),
-                onTap:()=>Navigator.push(context,MaterialPageRoute<void>(builder:(_)=>const SampleFlowScreen())))),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.auto_awesome_motion_outlined),
+                  title: const Text('Try the kitchen sample flow'),
+                  subtitle: const Text(
+                    'Real before/after, saved brief and later ideas · offline replay',
+                  ),
+                  trailing: const Icon(Icons.play_circle_outline),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (_) => const SampleFlowScreen(),
+                    ),
+                  ),
+                ),
+              ),
               ClipRRect(
                 borderRadius: BorderRadius.circular(14),
                 child: Image.asset(

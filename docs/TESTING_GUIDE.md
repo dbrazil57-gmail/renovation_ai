@@ -1,5 +1,32 @@
 # Testing and storage reference
 
+## Gemini and workspace follow-up 25 November 2026
+
+Use updated Chrome at **http://localhost:7357/** in the same normal profile.
+Do not clear storage or paste a key into chat. APK 1.0.19 lacks this source
+follow-up; another APK is built only when requested.
+
+1. Settings → AI connection and models: connect the Gemini developer key and
+   review the model. Listing models is not a generation/access test.
+2. Visit Room / Style / Refine / Ideas. The fixed bottom action stays available
+   while scrolling. At 100%, it opens provider/photo confirmation without a
+   readiness tick. Cancel sends nothing. Lower coverage can proceed or refine.
+3. Analyse a room, then confirm one design using Nano Banana 2.1. Repeat using
+   Nano Banana Pro with the same photo/brief. These are paid requests. Failures
+   must not cause an automatic retry or fallback.
+4. Select a generated thumbnail/history entry: Partial is selected. Describe the
+   next change in Update this design and send it. The child uses this image and
+   retains the original photo, old brief and approved baseline. New design and
+   Precise correction remain available. Refresh preserves a chosen mode; another
+   image selection defaults to Partial again. Finish polish stays precise.
+5. If Gemini fails, Settings → AI diagnostics → Copy diagnostics. The report has
+   time, operation, model, resolution, timing, HTTP status and safe error category.
+   Restart retains it; Clear log removes it. No keys, photos, prompts, raw errors
+   or project names should appear, and project exports must omit the log.
+
+Automated checks use synthetic keys, local projects and mocked responses. Real
+Gemini billing/access/quality and physical phone layout remain owner acceptance.
+
 ## Requested APK 1.0.19 acceptance
 
 Requested 23 November 2026, Australia/Sydney. **1.0.19+20**, source **`61e0807e2e`**.

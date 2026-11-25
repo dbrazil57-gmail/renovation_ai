@@ -52,6 +52,15 @@ String roomTemplatePrompt(
   bool conciseDesignDirection = false,
 }) {
   final precise = draft.preciseEdit;
+  if (draft.usesUpdateBrief && !precise) {
+    return 'Use the attached selected design as the approved visual baseline.\n'
+        'PARTIAL RENOVATION: Apply this next update: ${draft.correction.text.trim()}.\n'
+        '${draft.protected.text.trim().isEmpty ? '' : 'MUST RETAIN: ${draft.protected.text.trim()}.\n'}'
+        'Coordinate the requested change across the affected items only. Keep all other finishes, appliances, furnishings, lighting, walls, openings, room layout and camera viewpoint as shown in this selected design. '
+        'Do not reapply the original renovation brief or old room-wide replacement choices. '
+        'Supporting original room photos are spatial context only; never use them to undo the approved design. '
+        'Produce one photorealistic updated design. This is visual inspiration, not a measured construction plan.';
+  }
   if (precise) {
     return 'Use the attached selected photograph as the source.\n'
         'PRECISION EDIT: Apply only this focused update: ${draft.correction.text.trim()}.\n'

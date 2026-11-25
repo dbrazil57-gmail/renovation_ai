@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -43,7 +45,7 @@ void main() {
     requests = [];
     payloads = [];
     googleStatus = 200;
-    state = 'completed';
+    state = 'STOP';
     imageOutput = true;
     available = [...geminiRoomImageModels, ...geminiAnalysisModels];
     googleVault = Vault();
@@ -73,7 +75,7 @@ void main() {
         expect(request.url.host, 'generativelanguage.googleapis.com');
         expect(request.headers['x-goog-api-key'], googleKey);
         expect(request.headers.containsKey('Authorization'), isFalse);
-        expect(request.headers['Api-Revision'], '2026-05-20');
+        expect(request.headers.containsKey('Api-Revision'), isFalse);
         if (googleStatus != 200) {
           return http.Response('private upstream $googleKey', googleStatus);
         }
@@ -88,45 +90,47 @@ void main() {
             200,
           );
         }
-        expect(request.url.path, '/v1beta/interactions');
+        expect(request.url.path, endsWith(':generateContent'));
         final payload = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
         payloads.add(payload);
-        expect(payload['store'], isFalse);
+        expect(payload.containsKey('store'), isFalse);
         expect(utf8.decode(bytes), isNot(contains(googleKey)));
-        final rendering = payload['response_format']['type'] == 'image';
+        final rendering = payload['generationConfig']['imageConfig'] != null;
         return http.Response(
           jsonEncode({
-            'object': 'interaction',
-            'id': rendering ? 'google-image' : 'google-analysis',
-            'status': state,
-            'steps': [
+            'responseId': rendering ? 'google-image' : 'google-analysis',
+            'usageMetadata': {
+              'promptTokenCount': 120,
+              'candidatesTokenCount': 300,
+            },
+            'candidates': [
               {
-                'type': 'thought',
-                'content': [
-                  {
-                    'type': 'image',
-                    'data': base64Encode(photo),
-                    'mime_type': 'image/png',
-                  },
-                ],
-              },
-              {
-                'type': 'model_output',
-                'content': [
-                  if (rendering && imageOutput)
+                'finishReason': state,
+                'content': {
+                  'role': 'model',
+                  'parts': [
                     {
-                      'type': 'image',
-                      'data': base64Encode(generated),
-                      'mime_type': 'image/png',
-                    }
-                  else
-                    {
-                      'type': 'text',
-                      'text': rendering
-                          ? 'No image supplied'
-                          : jsonEncode(analysis()),
+                      'thought': true,
+                      'inlineData': {
+                        'data': base64Encode(photo),
+                        'mimeType': 'image/png',
+                      },
                     },
-                ],
+                    if (rendering && imageOutput)
+                      {
+                        'inlineData': {
+                          'data': base64Encode(generated),
+                          'mimeType': 'image/png',
+                        },
+                      }
+                    else
+                      {
+                        'text': rendering
+                            ? 'No image supplied'
+                            : jsonEncode(analysis()),
+                      },
+                  ],
+                },
               },
             ],
           }),
@@ -189,14 +193,17 @@ void main() {
     expect(RoomAnalysisResult.fromMap(legacy).provider, 'OpenAI');
     expect(result.requestId, 'google-analysis');
     final body = payloads.single;
-    expect(body['system_instruction'], roomAnalysisInstructions);
-    expect(body['response_format']['schema'], roomAnalysisSchema);
-    final images = (body['input'] as List).where(
-      (item) => item['type'] == 'image',
+    expect(
+      body['systemInstruction']['parts'][0]['text'],
+      roomAnalysisInstructions,
     );
+    expect(body['generationConfig']['responseJsonSchema'], roomAnalysisSchema);
+    final images = (body['contents'][0]['parts'] as List)
+        .map((item) => item['inlineData'])
+        .whereType<Map>();
     expect(images, hasLength(2));
     for (final image in images) {
-      expect(image['mime_type'], 'image/png');
+      expect(image['mimeType'], 'image/png');
       expect(
         img.decodePng(base64Decode(image['data'] as String))!.exif.isEmpty,
         isTrue,
@@ -223,12 +230,14 @@ void main() {
       expect(result.quality, quality);
       expect(result.requestId, 'google-image');
       final body = payloads.last;
-      expect(body['response_format']['image_size'], size);
-      final parts = body['input'] as List;
+      expect(body['generationConfig']['imageConfig']['imageSize'], size);
+      final parts = body['contents'][0]['parts'] as List;
       expect(parts[1]['text'], startsWith('Image 1: working view'));
       expect(parts[3]['text'], 'Image 2: supporting room angle.');
-      expect(base64Decode(parts[2]['data'] as String), photo);
-      expect(base64Decode(parts[4]['data'] as String), generated);
+      expect(base64Decode(parts[2]['inlineData']['data'] as String), photo);
+      expect(base64Decode(parts[4]['inlineData']['data'] as String), generated);
+      expect(result.usage!.inputTokens, 120);
+      expect(result.usage!.outputTokens, 300);
     }
   });
 
@@ -324,6 +333,111 @@ void main() {
     expect(ai.model, geminiRoomImageModels.last);
   });
 
+  test('both curated image models use the matching generateContent model endpoint without fallback', () async {
+    await connectGoogle();
+    for (final model in geminiRoomImageModels) {
+      final before = requests.length;
+      final result = await ai.edit(
+        image: photo,
+        prompt: 'Redesign',
+        imageModel: model,
+        imageQuality: 'high',
+      );
+      expect(requests.length, before + 1);
+      expect(requests.last.url.path, '/v1beta/models/$model:generateContent');
+      expect(result.model, model);
+      expect(result.image, generated);
+    }
+  });
+
+  test('safe diagnostics persist failures and exclude keys, instructions, images and provider response text', () async {
+    final records = MemoryBox(), photos = MemoryBox();
+    final sessionAi = AiService(
+      clientFactory: ai.clientFactory,
+      geminiKeyStore: googleVault,
+    );
+    final store = RenovisionStore(
+      records: records,
+      photos: photos,
+      ai: sessionAi,
+    );
+    await sessionAi.connectDirect(
+      apiKey: googleKey,
+      provider: AiProvider.gemini,
+    );
+    googleStatus = 400;
+    await expectLater(
+      sessionAi.edit(image: photo, prompt: 'PRIVATE ROOM INSTRUCTIONS'),
+      throwsA(isA<AiFailure>()),
+    );
+    await Future<void>.delayed(Duration.zero);
+    final report = sessionAi.diagnostics.report;
+    expect(report, contains('"http": 400'));
+    expect(report, contains('"problem": "options"'));
+    expect(report, contains('generateContent'));
+    for (final secret in [
+      googleKey,
+      openaiKey,
+      'PRIVATE ROOM INSTRUCTIONS',
+      'private upstream',
+      base64Encode(photo),
+    ]) {
+      expect(report, isNot(contains(secret)));
+    }
+    final saved = records.get('settings:ai_diagnostics');
+    expect(saved, hasLength(2));
+    final next = RenovisionStore(records: records, photos: photos);
+    expect(next.ai.diagnostics.entries.first['http'], 400);
+    next.ai.diagnostics.clear();
+    await Future<void>.delayed(Duration.zero);
+    expect(records.get('settings:ai_diagnostics'), isEmpty);
+    next.dispose();
+    store.dispose();
+  });
+
+  test('structured Google errors distinguish credentials, billing and unavailable model without echoing details', () async {
+    for (final (status, reason, problem) in [
+      (400, 'API_KEY_INVALID', AiProblem.credentials),
+      (403, 'BILLING_DISABLED', AiProblem.billing),
+      (404, 'NOT_FOUND', AiProblem.model),
+    ]) {
+      var calls = 0;
+      final transport = GeminiInternet(
+        () => Wire((request, bytes) async {
+          calls++;
+          return http.Response(
+            jsonEncode({
+              'error': {
+                'status': reason,
+                'message': 'PRIVATE $googleKey',
+                'details': [
+                  {'reason': reason},
+                ],
+              },
+            }),
+            status,
+          );
+        }),
+      );
+      await expectLater(
+        transport.edit(
+          key: googleKey,
+          prompt: 'Private prompt',
+          model: geminiRoomImageModels.first,
+          quality: 'medium',
+          sources: [photo],
+        ),
+        throwsA(
+          isA<AiFailure>()
+              .having((e) => e.problem, 'problem', problem)
+              .having((e) => e.statusCode, 'http', status)
+              .having((e) => e.message, 'message', isNot(contains(googleKey))),
+        ),
+      );
+      expect(calls, 1);
+    }
+  });
+
   test(
     'provider errors are sanitised; redirects and retries never forward keys',
     () async {
@@ -347,12 +461,12 @@ void main() {
     'incomplete or text-only response is not mistaken for a final image',
     () async {
       await connectGoogle();
-      state = 'in_progress';
+      state = 'MAX_TOKENS';
       await expectLater(
         ai.edit(image: photo, prompt: 'Redesign'),
         throwsA(isA<AiFailure>()),
       );
-      state = 'completed';
+      state = 'STOP';
       imageOutput = false;
       await expectLater(
         ai.edit(image: photo, prompt: 'Redesign'),
@@ -604,7 +718,7 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.text('Generate AI design'));
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       expect(find.text('Send to Gemini'), findsOneWidget);
       await tester.runAsync(() => ai.connectDirect(apiKey: openaiKey));

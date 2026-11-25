@@ -16,6 +16,7 @@ import 'models.dart';
 import 'store.dart';
 import 'ai_widgets.dart';
 import 'ai_service.dart';
+import 'ai_diagnostics_widgets.dart';
 import 'project_transfer_widgets.dart';
 import 'room_photos.dart';
 import 'colour_palette_widgets.dart';
@@ -130,7 +131,6 @@ Future<void> startRoomWithPhotos(
               store: store,
               roomId: roomId,
               initialDesignId: designId,
-              startInPrecision: true,
             ),
           ),
         ),
@@ -810,7 +810,6 @@ class ProjectScreen extends StatelessWidget {
                             store: store,
                             roomId: roomId,
                             initialDesignId: designId,
-                            startInPrecision: true,
                           ),
                         ),
                       ),
@@ -1346,6 +1345,7 @@ class SettingsTab extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         AiConnectionSettingsCard(ai: store.ai),
+        AiDiagnosticsCard(diagnostics: store.ai.diagnostics),
         ?roomSaving,
         WordingRegionSettings(store: store),
         AiUsageCard(store: store),
@@ -1425,9 +1425,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
   bool editingRoom = false;
   bool get aiPending => analysingRoom || editingRoom;
   late final PageExitGuard pageExitGuard;
-  TextEditingController get changes =>
-      precise ? draft.correction : draft.changes;
-  bool get hasEffectiveChanges => precise
+  TextEditingController get changes => draft.activeInstructions;
+  bool get updatingDesign => draft.usesUpdateBrief;
+  bool get hasEffectiveChanges => precise || updatingDesign
       ? draft.correction.text.trim().isNotEmpty
       : draft.hasRequestedChanges;
   TextEditingController get protected => draft.protected;
@@ -1499,14 +1499,19 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       await _openSettings();
       return;
     }
-    if ((precise && draft.correction.text.trim().isEmpty) ||
-        (!precise && !draft.fullRenovation && !draft.hasRequestedChanges)) {
+    if (((precise || updatingDesign) && draft.correction.text.trim().isEmpty) ||
+        (!precise &&
+            !updatingDesign &&
+            !draft.fullRenovation &&
+            !draft.hasRequestedChanges)) {
       setState(
-        () => _visitSection(precise ? FocusSection.refine : FocusSection.style),
+        () => _visitSection(
+          precise || updatingDesign ? FocusSection.refine : FocusSection.style,
+        ),
       );
       notice(
         context,
-        precise
+        precise || updatingDesign
             ? 'Describe the specific correction in Refine before generating.'
             : 'Select the items to update, or describe your partial renovation in Refine.',
       );
@@ -1565,12 +1570,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                                 ? draft.precisionConceptCount
                                 : draft.conceptCount) >
                             1
-                  ? 'Generate ${precise ? draft.precisionConceptCount : draft.conceptCount} ${precise ? 'variations' : 'design ideas'}'
+                  ? 'Send to AI · ${precise ? draft.precisionConceptCount : draft.conceptCount} ideas'
                   : polishingFinishes && precise
                   ? 'Polish with AI'
-                  : precise && selectedId != null
-                  ? 'Review & generate change'
-                  : 'Generate AI design',
+                  : 'Send to AI',
             ),
           ),
       ],
@@ -1809,7 +1812,22 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
         : widget.initialDesignId ?? room.approvedDesignId;
     // A selected design is the new baseline: subsequent requests are updates,
     // rather than another run of its original whole-room renovation brief.
-    draft.setPrecise(selectedId != null || widget.startInPrecision);
+    draft.updatingSelectedDesign = selectedId != null;
+    if (widget.startInPrecision) {
+      draft.setDesignMode(RoomDesignMode.precise);
+    } else if (selectedId != null) {
+      final selected = widget.store
+          .designsFor(room.id)
+          .where((d) => d.id == selectedId)
+          .firstOrNull;
+      draft.setDesignMode(
+        selected?.paintRecipe != null
+            ? RoomDesignMode.precise
+            : RoomDesignMode.partial,
+      );
+    } else {
+      draft.setPrecise(false);
+    }
     if (widget.initialMode != null) draft.setDesignMode(widget.initialMode!);
     focusSection =
         widget.initialSection ??
@@ -1938,7 +1956,18 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
 
   void _selectDesign(String? id, {bool clearUpdate = false}) {
     final previousPolish = polishingFinishes;
-    draft.setPrecise(id != null);
+    final selected = widget.store
+        .designsFor(widget.roomId)
+        .where((d) => d.id == id)
+        .firstOrNull;
+    draft.updatingSelectedDesign = id != null;
+    draft.setDesignMode(
+      id == null
+          ? RoomDesignMode.newDesign
+          : selected?.paintRecipe != null
+          ? RoomDesignMode.precise
+          : RoomDesignMode.partial,
+    );
     if (id != null) draft.setPrecisionConceptCount(1);
     if (clearUpdate || (previousPolish && id != selectedId)) {
       draft.correction.clear();
@@ -2056,6 +2085,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     }
     setState(() {
       selectedId = parent?.id;
+      draft.updatingSelectedDesign = selectedId != null;
       selectedPhotoId = room.photoIds.contains(source)
           ? source
           : room.primaryId;
@@ -2256,7 +2286,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
               store: widget.store,
               roomId: roomId,
               initialDesignId: designId,
-              startInPrecision: true,
             ),
           ),
           workspace: (photo, onSelected) => WorkspaceScreen(
@@ -2351,7 +2380,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
     }
     final supporting = {
       if (finishPolish) guideId: widget.store.imageFor(guideId)!,
-      if (!precise && includeRoomContext && room.photoIds.length > 1)
+      if (!precise &&
+          !updatingDesign &&
+          includeRoomContext &&
+          room.photoIds.length > 1)
         for (final id in (restoredSupportingIds ?? room.photoIds).where(
           (id) => id != sourceId,
         ))
@@ -2378,12 +2410,15 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       instructions: hasEffectiveChanges
           ? [
               changes.text,
-              if (!precise) draft.scopePrompt,
+              if (!precise && !updatingDesign) draft.scopePrompt,
             ].where((s) => s.trim().isNotEmpty).join('\n')
           : '',
       precise: precise,
+      scopedUpdate: updatingDesign,
       title: precise
           ? (polishingFinishes ? 'AI finish polish' : 'AI precision edit')
+          : updatingDesign
+          ? 'AI partial update'
           : 'AI renovation concept',
     );
   }
@@ -2611,6 +2646,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
       final versions = widget.store.designsFor(room.id);
       if (selectedId != null && !versions.any((v) => v.id == selectedId)) {
         selectedId = room.approvedDesignId;
+        draft.updatingSelectedDesign = selectedId != null;
         selectedPhotoId = room.originalId;
       }
       final source = _activeImage(room);
@@ -2735,9 +2771,22 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 ),
               ],
             ),
-            bottomNavigationBar: AiActivityStrip(
-              activity: widget.store.ai.activity,
-              roomId: room.id,
+            bottomNavigationBar: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: _generationFooter(),
+                  ),
+                  AiActivityStrip(
+                    activity: widget.store.ai.activity,
+                    roomId: room.id,
+                    safeArea: false,
+                  ),
+                ],
+              ),
             ),
             body: FocusWorkspace(
               selected: focusSection,
@@ -2823,24 +2872,22 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   title: 'Original',
                   selected:
                       selectedId == null && selectedPhotoId == room.originalId,
-                  onTap: () => setState(() {
-                    selectedId = null;
-                    selectedPhotoId = room.originalId;
-                  }),
+                  onTap: () {
+                    _selectDesign(null);
+                    setState(() {
+                      selectedPhotoId = room.originalId;
+                    });
+                  },
                 ),
                 for (final design in versions)
                   FocusVersionThumbnail(
                     image: widget.store.imageFor(design.imageId),
                     title: design.title,
                     selected: selectedId == design.id,
-                    onTap: () => setState(() {
-                      selectedId = design.id;
-                      widget.onDesignSelected?.call(design.id);
-                      _visitSection(FocusSection.refine);
-                    }),
+                    onTap: () => _selectDesign(design.id),
                   ),
               ],
-              footer: _generationFooter(),
+              footer: const SizedBox.shrink(),
               sections: {
                 FocusSection.room: [
                   Align(
@@ -2892,17 +2939,18 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                                 ),
                               ),
                             ],
-                            onChanged: (id) => setState(() {
+                            onChanged: (id) {
                               if (id == null || id.startsWith('photo:')) {
-                                selectedId = null;
-                                selectedPhotoId = id == null
-                                    ? room.originalId
-                                    : id.substring(6);
+                                _selectDesign(null);
+                                setState(
+                                  () => selectedPhotoId = id == null
+                                      ? room.originalId
+                                      : id.substring(6),
+                                );
                               } else {
-                                selectedId = id;
+                                _selectDesign(id);
                               }
-                              widget.onDesignSelected?.call(selectedId);
-                            }),
+                            },
                           ),
                           const SizedBox(height: 14),
                           Wrap(
@@ -2964,10 +3012,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                                         (selectedId != null ||
                                             selectedPhotoId == room.originalId)
                                     ? null
-                                    : () => setState(() {
-                                        selectedId = room.approvedDesignId;
-                                        selectedPhotoId = room.originalId;
-                                      }),
+                                    : () {
+                                        _selectDesign(room.approvedDesignId);
+                                        setState(() {
+                                          selectedPhotoId = room.originalId;
+                                        });
+                                      },
                                 child: const Text(
                                   'Return to approved baseline',
                                 ),
@@ -3009,11 +3059,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                     selectedPhotoId: selectedId == null
                         ? selectedPhotoId
                         : null,
-                    onView: (id) => setState(() {
-                      selectedId = null;
-                      selectedPhotoId = id;
-                      restoredSupportingIds = null;
-                    }),
+                    onView: (id) {
+                      _selectDesign(null);
+                      setState(() {
+                        selectedPhotoId = id;
+                        restoredSupportingIds = null;
+                      });
+                    },
                     includeContext: includeRoomContext,
                     onContextChanged: (value) => setState(() {
                       includeRoomContext = value;
@@ -3023,9 +3075,9 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   const SizedBox(height: 14),
                 ],
                 FocusSection.style: [
-                  if (precise) ...[
+                  if (precise || updatingDesign) ...[
                     const Text(
-                      'This update keeps the selected design. Describe the colour or fitting to change in Refine. Choose Partial or New design for a wider renovation.',
+                      'This update keeps the selected design. Describe your next changes in Refine. Choose New design style for a fresh room concept.',
                     ),
                     _selectedDesignLook(room),
                     TextButton(
@@ -3050,7 +3102,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                 ],
                 FocusSection.refine: [
                   DesignModeControls(draft: draft, enabled: !aiPending),
-                  if (selectedId != null && precise)
+                  if (selectedId != null && (precise || updatingDesign))
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(10),
@@ -3069,12 +3121,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                               child: TextField(
                                 key: const ValueKey('selected-design-update'),
                                 controller: draft.correction,
-                                onChanged: (_) {
-                                  if (!precise) {
-                                    draft.setPrecise(true);
-                                    draft.setPrecisionConceptCount(1);
-                                  }
-                                },
                                 minLines: 1,
                                 maxLines: 4,
                                 decoration: const InputDecoration(
@@ -3111,12 +3157,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                       'This is a broad renovation request. Choose New design to coordinate the selected changes; use Precise correction for a specific detail.',
                     ),
                     TextButton(
-                      onPressed: () => draft.setPrecise(false),
+                      onPressed: () =>
+                          draft.setDesignMode(RoomDesignMode.newDesign),
                       child: const Text('Use New design'),
                     ),
                   ],
                   const SizedBox(height: 12),
-                  if (!precise || selectedId == null)
+                  if ((!precise && !updatingDesign) || selectedId == null)
                     KeyedSubtree(
                       key: instructionAnchor,
                       child: TextField(

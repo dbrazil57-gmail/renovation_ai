@@ -1,3 +1,5 @@
+import 'support/focus_navigation.dart';
+
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -367,8 +369,8 @@ void main() {
       expect(find.text('Create design images'), findsOneWidget);
       expect(analyses, 1);
       expect(edits, 0);
-      await reach(tester, find.text('Generate AI design'));
-      await tester.tap(find.text('Generate AI design'));
+      await reach(tester, aiGenerateAction());
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       expect(analyses, 1);
       expect(edits, 0);

@@ -32,6 +32,7 @@ class RenovisionStore extends ChangeNotifier {
   final _purgingProjects = <String>{};
   bool _restoringAi = false;
   Future<void> _aiSettingsQueue = Future.value();
+  Future<void> _diagnosticQueue = Future.value();
   late final ValueNotifier<AppThemeChoice> appearance;
   WordingRegion get wordingRegion =>
       WordingRegion.values
@@ -73,6 +74,21 @@ class RenovisionStore extends ChangeNotifier {
     );
     addListener(documents.changed);
     this.ai.addListener(_rememberAiConnection);
+    this.ai.diagnostics.restore(records.get('settings:ai_diagnostics'));
+    this.ai.diagnostics.addListener(_rememberDiagnostics);
+  }
+
+  void _rememberDiagnostics() {
+    final snapshot = ai.diagnostics.entries.reversed.toList();
+    _diagnosticQueue = _diagnosticQueue
+        .catchError((_) {})
+        .then((_) async {
+          await records.put('settings:ai_diagnostics', snapshot);
+          await records.flush();
+        })
+        .catchError((_) {
+          /* Diagnostic storage cannot fail an AI result. */
+        });
   }
 
   void _rememberAiConnection() {
@@ -106,6 +122,7 @@ class RenovisionStore extends ChangeNotifier {
   @override
   void dispose() {
     appearance.dispose();
+    ai.diagnostics.removeListener(_rememberDiagnostics);
     ai.removeListener(_rememberAiConnection);
     removeListener(documents.changed);
     documents.dispose();

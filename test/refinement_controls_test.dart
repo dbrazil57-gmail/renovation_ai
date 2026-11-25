@@ -5,6 +5,7 @@ import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
 import 'package:renovision_ai/ai_service.dart';
 import 'package:renovision_ai/design_recipe.dart';
+import 'package:renovision_ai/focus_workspace.dart';
 import 'package:renovision_ai/local_paint.dart';
 import 'package:renovision_ai/local_paint_screen.dart';
 import 'package:renovision_ai/project_look_widgets.dart';
@@ -322,7 +323,15 @@ void main() {
         find.widgetWithText(TextField, 'What should change?'),
         findsNothing,
       );
-      expect(find.textContaining('Precision: apply only'), findsOneWidget);
+      expect(find.textContaining('Partial: update only'), findsOneWidget);
+      expect(
+        tester
+            .widget<SegmentedButton<RoomDesignMode>>(
+              find.byKey(const ValueKey('design-edit-mode')),
+            )
+            .selected,
+        {RoomDesignMode.partial},
+      );
       await tester.tap(find.byKey(const ValueKey('focus-section-style')));
       await tester.pumpAndSettle();
       expect(find.text('Current room look'), findsOneWidget);
@@ -340,6 +349,93 @@ void main() {
         find.byKey(const ValueKey('selected-design-update')),
         findsNothing,
       );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  test('partial update of a chosen design uses only the next request and does not reapply its broad original brief', () async {
+    final store = RenovisionStore(records: MemoryBox(), photos: MemoryBox());
+    addTearDown(store.dispose);
+    final project = await store.createProject('Fixture home');
+    final room = await store.createRoom(
+      projectId: project.id,
+      name: 'Kitchen',
+      originalImage: photo,
+    );
+    final draft = RoomDraft(store, room);
+    addTearDown(draft.dispose);
+    draft.changes.text = 'Replace every cupboard and floor';
+    draft.correction.text = 'Add glass fronts only to the two upper doors';
+    draft.updatingSelectedDesign = true;
+    draft.setDesignMode(RoomDesignMode.partial);
+    final prompt = roomTemplatePrompt(room, draft);
+    expect(prompt, contains('PARTIAL RENOVATION'));
+    expect(prompt, contains(draft.correction.text));
+    expect(prompt, isNot(contains(draft.changes.text)));
+    expect(prompt, contains('Keep all other finishes'));
+    draft.setDesignMode(RoomDesignMode.newDesign);
+    expect(roomTemplatePrompt(room, draft), contains(draft.changes.text));
+  });
+
+  testWidgets(
+    'thumbnail selection changes New design to Partial each time; a restored explicit mode is respected',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1100, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final store = RenovisionStore(records: MemoryBox(), photos: MemoryBox());
+      addTearDown(store.dispose);
+      final project = await store.createProject('Fixture home');
+      final room = await store.createRoom(
+        projectId: project.id,
+        name: 'Kitchen',
+        originalImage: photo,
+      );
+      final design = await store.createDesign(
+        roomId: room.id,
+        image: photo,
+        title: 'AI fixture',
+        prompt: 'Saved original brief',
+        aiProvider: 'Gemini',
+        aiModel: 'gemini-3-pro-image',
+      );
+      final selections = <String?>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WorkspaceScreen(
+            store: store,
+            roomId: room.id,
+            initialDesignId: design.id,
+            initialMode: RoomDesignMode.newDesign,
+            onDesignSelected: selections.add,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final mode = find.byKey(const ValueKey('design-edit-mode'));
+      expect(tester.widget<SegmentedButton<RoomDesignMode>>(mode).selected, {
+        RoomDesignMode.newDesign,
+      });
+      for (var i = 0; i < 2; i++) {
+        final thumbnail = find.byWidgetPredicate(
+          (w) => w is FocusVersionThumbnail && w.title == 'AI fixture',
+        );
+        await tester.tap(thumbnail);
+        await tester.pumpAndSettle();
+        expect(tester.widget<SegmentedButton<RoomDesignMode>>(mode).selected, {
+          RoomDesignMode.partial,
+        });
+        expect(
+          find.byKey(const ValueKey('selected-design-update')),
+          findsOneWidget,
+        );
+        if (i == 0) {
+          await ensureFocusVisible(tester, find.text('New design'));
+          await tester.tap(find.text('New design'));
+          await tester.pumpAndSettle();
+        }
+      }
+      expect(selections, [design.id, design.id]);
+      expect(store.imageFor(room.originalId), photo);
       expect(tester.takeException(), isNull);
     },
   );

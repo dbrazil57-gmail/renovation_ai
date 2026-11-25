@@ -1,5 +1,14 @@
 # RenoVision
 
+Source / Chrome follow-up, **25 November 2026**: saved design selection opens
+Partial; **Send to AI** stays on every workspace tab; 100% briefs need no extra
+proceed tick. Gemini uses documented generateContent requests. **Settings → AI
+diagnostics** keeps safe local model/status/timing logs. Live account access still
+needs an owner test. The APK below is unchanged.
+Chrome build **`6c6c28f662`** is served at **http://localhost:7357/**. Full suite
+442 tests and final 30 targeted checks pass; analysis and actual Chrome checks pass.
+See [current acceptance steps](docs/TESTING_GUIDE.md#gemini-and-workspace-follow-up-25-november-2026).
+
 Latest test APK: **1.0.19+20**, source **`61e0807e2e`**.
 [Download APK 1.0.19](output/mobile-test/renovision-test-1.0.19.apk) and install over
 the existing app. Package, signing certificate, icon and data paths are unchanged.

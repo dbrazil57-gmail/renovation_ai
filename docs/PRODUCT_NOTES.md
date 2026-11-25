@@ -740,13 +740,18 @@ Official model guidance checked 20 November:
   supports image understanding, not image generation/editing. It could later write
   observations/briefs alongside an image renderer, with its own credentials.
 
-The direct Gemini adapter follows the current [Interactions API](https://aistudio.google.com/docs/interactions-overview)
-and [REST schema](https://aistudio.google.com/api-reference/interactions-api/create-interaction)
-with revision 2026-05-20, store=false, metadata-free photo copies and no automatic
-retry. Model-list checks send no photos and do not prove billable image access.
+Updated 25 November: the Gemini adapter now uses the documented
+[generateContent image-edit format](https://aistudio.google.com/docs/image-generation?generate-content=true)
+and [structured output](https://aistudio.google.com/docs/structured-output?generate-content=true),
+with metadata-free photo copies and no automatic retry. It makes single-turn
+requests without provider conversation IDs. Provider retention terms still apply.
+Model-list checks send no photos and do not prove billable image access.
 Nano Banana 2.1/2K is the starting preset; Quick ideas uses 1K, Final detail uses
 available Pro/4K. These are documented capability-based starting choices, not a
-comparative room-design benchmark. Real Gemini acceptance awaits a Google key.
+comparative room-design benchmark. The owner now has a Google key; actual access,
+quality and the previous generic model/option rejection need the next live test.
+Settings → AI diagnostics retains safe local status/model/timing categories;
+raw provider errors, keys, prompts and photos are excluded.
 
 ### Model-comparison shortlist
 

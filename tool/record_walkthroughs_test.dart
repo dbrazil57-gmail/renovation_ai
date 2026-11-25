@@ -439,7 +439,7 @@ void main() {
     FocusManager.instance.primaryFocus?.unfocus();
     await recording.quiet();
     await recording.tap(
-      find.text('Review & generate change').first,
+      find.byKey(const ValueKey('workspace-generate')),
       'Review this narrow correction before paying for a request.',
     );
     await recording.tap(

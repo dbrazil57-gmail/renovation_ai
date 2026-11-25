@@ -265,12 +265,11 @@ void main() {
       );
       await showRoom(tester);
       for (final label in ['Copy AI prompt', 'Generate AI design']) {
-        await reach(
-          tester,
-          find.text(label),
-          up: label == 'Generate AI design',
-        );
-        await tester.tap(find.text(label));
+        final action = label == 'Generate AI design'
+            ? aiGenerateAction()
+            : find.text(label);
+        await reach(tester, action, up: label == 'Generate AI design');
+        await tester.tap(action);
         await tester.pumpAndSettle();
         expect(find.text('Check the design request'), findsOneWidget);
         expect(find.textContaining('is a whole-room request'), findsOneWidget);
@@ -310,8 +309,8 @@ void main() {
       await reach(tester, correction);
       await tester.enterText(correction, 'Remove only the cupboard handles');
       await tester.pump(const Duration(milliseconds: 700));
-      await reach(tester, find.text('Generate AI design'));
-      await tester.tap(find.text('Generate AI design'));
+      await reach(tester, aiGenerateAction());
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       expect(find.text('Send this edit to OpenAI?'), findsOneWidget);
       await tester.tap(find.text('Send to OpenAI'));
@@ -378,8 +377,8 @@ void main() {
       await openAdvanced(tester);
       await reach(tester, find.text('Replace flooring'));
       await tester.tap(find.text('Replace flooring'));
-      await reach(tester, find.text('Generate AI design'));
-      await tester.tap(find.text('Generate AI design'));
+      await reach(tester, aiGenerateAction());
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       expect(find.text('Send this edit to OpenAI?'), findsOneWidget);
       await tester.tap(find.text('Send to OpenAI'));

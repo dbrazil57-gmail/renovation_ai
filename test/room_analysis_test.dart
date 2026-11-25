@@ -707,7 +707,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Generate AI design'));
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send to OpenAI'));
       await tester.pumpAndSettle();
@@ -743,7 +743,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Generate AI design'));
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send to OpenAI'));
       await tester.pumpAndSettle();
@@ -787,8 +787,8 @@ void main() {
       );
       await tester.pumpAndSettle();
       // Connected AI controls are expanded by default.
-      await ensureFocusVisible(tester, find.text('Generate AI design'));
-      await tester.tap(find.text('Generate AI design'));
+      await ensureFocusVisible(tester, aiGenerateAction());
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       expect(find.text('Send this edit to OpenAI?'), findsOneWidget);
       await tester.tap(find.text('Send to OpenAI'));
@@ -808,8 +808,8 @@ void main() {
       await ensureFocusVisible(tester, find.text('New design'));
       await tester.tap(find.text('New design'));
       await tester.pumpAndSettle();
-      await ensureFocusVisible(tester, find.text('Generate AI design'));
-      await tester.tap(find.text('Generate AI design'));
+      await ensureFocusVisible(tester, aiGenerateAction());
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       expect(find.text('Send this edit to OpenAI?'), findsOneWidget);
       await tester.tap(find.text('Send to OpenAI'));

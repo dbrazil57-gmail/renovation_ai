@@ -95,10 +95,12 @@ class AiUsage {
   factory AiUsage.gemini(Map raw) {
     int n(Object? v) => v is num && v.isFinite && v >= 0 ? v.toInt() : 0;
     return AiUsage(
-      inputTokens: n(raw['total_input_tokens']),
+      inputTokens: n(raw['promptTokenCount'] ?? raw['total_input_tokens']),
       textTokens: 0,
       imageTokens: 0,
-      outputTokens: n(raw['total_output_tokens']),
+      outputTokens: n(
+        raw['candidatesTokenCount'] ?? raw['total_output_tokens'],
+      ),
     );
   }
   factory AiUsage.fromMap(Map map) {

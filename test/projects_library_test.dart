@@ -510,10 +510,17 @@ void main() {
               .favourite,
           isTrue,
         );
-        final strip = find.byWidgetPredicate(
-          (widget) => widget is FocusVersionThumbnail && widget.title == title,
+        // The compact camera viewport hides its strip to keep the pinned AI
+        // action reachable. The same versions remain in Ideas and the model.
+        final canvas = tester.widget<FocusWorkspace>(
+          find.byType(FocusWorkspace),
         );
-        expect(strip, findsOneWidget);
+        expect(
+          canvas.thumbnails.whereType<FocusVersionThumbnail>().where(
+            (widget) => widget.title == title,
+          ),
+          hasLength(1),
+        );
         expect(tester.takeException(), isNull);
       },
     );

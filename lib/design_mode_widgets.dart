@@ -47,7 +47,10 @@ class DesignModeControls extends StatelessWidget {
           const SizedBox(height: 6),
           Text(switch (draft.designMode) {
             RoomDesignMode.newDesign => 'Full design: coordinate all usual room updates, within your layout and Keep choices.',
-            RoomDesignMode.partial => 'Partial: update only the items you choose in Style and your written requests. Everything else stays.',
+            RoomDesignMode.partial =>
+              draft.usesUpdateBrief
+                  ? 'Partial: update only your next requested changes to this design. Everything else stays.'
+                  : 'Partial: update only the items you choose in Style and your written requests. Everything else stays.',
             RoomDesignMode.precise => 'Precision: apply only your next change to this image. The original renovation brief, style and palette are not reapplied.',
           }, style: Theme.of(context).textTheme.bodySmall),
         ],

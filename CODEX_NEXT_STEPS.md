@@ -1,11 +1,46 @@
 # Renovision next steps
 
 Current task list after the full code/conversation/design audit, updated through
-23 November 2026 (Australia/Sydney). This supersedes older chronological lists.
+25 November 2026 (Australia/Sydney). This supersedes older chronological lists.
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
-## Active follow-up and next acceptance pass — 23 November
+## Active follow-up and next acceptance pass — 25 November
+
+### APK feedback: selected images, Gemini and the send action
+
+- [x] Saved generated design selection opens Partial and a next-update field.
+  Thumbnail, working-image dropdown, history and baseline selection share the
+  same selection path. Refresh retains an explicitly saved mode. Local finish
+  previews and explicit precision tools keep their focused correction path.
+- [x] A selected-design Partial update uses the chosen image and next request;
+  do not replay the old whole-room brief, replacement choices or original context
+  photos. Preserve the original brief, photos and approved baseline.
+- [x] Pin Send to AI below Room / Style / Refine / Ideas above the phone safe
+  area. At 100%, open the provider/photo confirmation directly; the checklist
+  needs no extra proceed tick. Incomplete briefs can still proceed or refine.
+- [x] Gemini uses documented single-turn generateContent: ordered metadata-free
+  images, model-specific URL, resolution, structured analysis, final-image parsing
+  and returned token counts. Retain both Nano Banana models, keys and choices.
+  No automatic retry, provider fallback or paid probe. Supersede older Interactions notes.
+- [x] Settings → AI diagnostics keeps 40 local operation/model/timing/status/error
+  records with copy/clear and restart persistence. No keys, headers, photos,
+  prompts, raw errors or project names; excluded from portable project files.
+- [x] Chrome source **`6c6c28f662`** serves at the same localhost:7357 address.
+  Full suite **442 tests pass** (103s); final 30 targeted tests include the added
+  thumbnail-mode regression. Analysis clean (22.1s), web build passes (51.2s), all
+  seven offline walkthrough recordings and standard MP4 validations pass. Actual
+  isolated phone/desktop Chrome verifies Partial selection, pinned action on all
+  tabs and diagnostics. Inspect screenshots. No owner data/key or paid AI used.
+- [ ] Owner test updated Chrome at http://localhost:7357/ using the Gemini key:
+  analysis, one image from each model, Partial update and logs after failures.
+  The old error discarded provider details; its exact cause is unconfirmed.
+  Mocked responses do not prove live account access or image quality.
+- [ ] Package in another APK only when requested. Latest APK remains 1.0.19+20.
+
+Google references checked 25 November:
+[image editing](https://aistudio.google.com/docs/image-generation?generate-content=true)
+and [structured analysis](https://aistudio.google.com/docs/structured-output?generate-content=true).
 
 ### Requested APK 1.0.19, archive cleanup and folder cleanup
 

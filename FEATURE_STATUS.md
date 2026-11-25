@@ -1,5 +1,30 @@
 # Renovision feature status
 
+## Source / Chrome follow-up — 25 November 2026
+
+Saved design selection defaults to Partial with a separate next-update field,
+keeping the chosen image as the source and the original whole-room brief saved.
+Explicitly restored modes and finish-polish precision are retained. Send to AI
+is pinned outside scrolling controls on all four tabs, above the phone safe area.
+A 100% brief needs no extra proceed checkbox; provider/photo/paid-request
+confirmation remains. Lower coverage can still proceed.
+
+Gemini uses documented generateContent for image edits and structured analysis.
+Both curated models remain available when account-listed. Safe error categories
+distinguish credentials, permission, billing, quota, model, options, blocked content,
+timeout and unreadable responses where the available response allows. Settings →
+AI diagnostics retains 40 local operation/model/status/timing records with copy,
+clear and restart persistence. Keys, prompts, photos, raw errors and project names
+are excluded, as are diagnostics from project files. No automatic retries/fallbacks.
+Live Gemini access/quality still needs the owner's test; the earlier generic
+failure's exact cause is unknown. APK 1.0.19 is unchanged.
+
+Verified source **`6c6c28f662`** at localhost:7357. Full suite 442 tests passes;
+final 30 targeted tests cover the additional thumbnail-selection regression.
+Analysis clean; release web and seven refreshed offline help recordings/MP4
+checks pass. Actual isolated phone/desktop Chrome confirms Partial selection,
+the fixed action on every tab and diagnostics. No real key or paid AI call used.
+
 ## Current test package — 1.0.19+20
 
 Source **`61e0807e2e`**, 23 November 2026. Includes all completed post-1.0.18 Home,

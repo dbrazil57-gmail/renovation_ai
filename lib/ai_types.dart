@@ -2,9 +2,29 @@ import 'dart:typed_data';
 
 import 'ai_usage.dart';
 
+enum AiProblem {
+  credentials,
+  permission,
+  billing,
+  quota,
+  model,
+  options,
+  blocked,
+  timeout,
+  network,
+  invalidResponse,
+  unknown,
+}
+
 class AiFailure implements Exception {
   final String message;
-  const AiFailure(this.message);
+  final AiProblem problem;
+  final int? statusCode;
+  const AiFailure(
+    this.message, {
+    this.problem = AiProblem.unknown,
+    this.statusCode,
+  });
   @override
   String toString() => message;
 }

@@ -45,7 +45,7 @@ const photoWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Generate, choose and refine',
-      'In Finalise and generate, choose one, two or three concepts and review the confirmation. Select a saved result to refine or compare.',
+      'In Finalise and generate, choose one, two or three concepts and review the confirmation. In the workspace, Send to AI stays at the bottom of every tab. Select a saved result to refine or compare.',
       'Try two coordinated design ideas. Select your favourite, then ask for a lighter benchtop.',
       note: 'Each concept is a separate paid request. Originals stay saved; generated images become new versions.',
     ),
@@ -138,7 +138,7 @@ const designWalkthrough = AppWalkthrough(
     WalkthroughStep(
       'Give the room a clear direction',
       'Choose New design for a coordinated renovation. Add a style, palette and any features to keep. Analyse your photos and review the drafted prompt.',
-      'A modern kitchen with charcoal cupboards and pale stone. Keep the walls, window and layout. Partial instead changes only selected items; Precision uses only the next update on the chosen image.',
+      'A modern kitchen with charcoal cupboards and pale stone. Keep the walls, window and layout. Selecting a saved design opens Partial with its own next-update field. Precision is available for one narrow correction; New design starts a fresh concept.',
     ),
     WalkthroughStep(
       'Ask for different ideas',
@@ -148,7 +148,7 @@ const designWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Refine a selected design',
-      'Select the saved version you like. Refine opens Update this design. Describe only the change in that field and choose Review & generate change. Confirm sending to create another AI version; it does not approve or overwrite the selected image. Saved settings in history can also load a version’s recorded choices.',
+      'Select the saved version you like. Refine opens Partial and Update this design. Describe only the change in that field and choose Send to AI. Confirm sending to create another AI version; it does not approve or overwrite the selected image. Saved settings in history can also load a version’s recorded choices.',
       'Change only the benchtop to pale stone. Keep the chosen cabinetry, flooring and layout.',
       note: 'Precise prompts and markup guide the AI; they do not guarantee unchanged pixels outside the edit.',
     ),

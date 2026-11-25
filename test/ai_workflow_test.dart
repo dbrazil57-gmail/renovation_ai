@@ -129,7 +129,7 @@ void main() {
     final workspace = find.byKey(const ValueKey('workspace-generate'));
     final button = workspace.evaluate().isNotEmpty
         ? workspace
-        : find.text('Generate AI design');
+        : aiGenerateAction();
     await ensureFocusVisible(tester, button);
     await tester.pumpAndSettle();
     await tester.tap(button);
@@ -160,13 +160,13 @@ void main() {
       await tester.pumpAndSettle();
       await revealFocusControl(
         tester,
-        find.text('Generate AI design'),
+        aiGenerateAction(),
         350,
         scrollable: find.byType(Scrollable).first,
       );
-      await ensureFocusVisible(tester, find.text('Generate AI design'));
+      await ensureFocusVisible(tester, aiGenerateAction());
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Generate AI design'));
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       expect(edits, 0);
       expect(
@@ -187,7 +187,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 700));
       await revealFocusControl(
         tester,
-        find.text('Generate AI design'),
+        aiGenerateAction(),
         350,
         scrollable: find.byType(Scrollable).first,
       );
@@ -235,8 +235,8 @@ void main() {
       await tester.enterText(update, 'Change only the tap to brushed brass');
       FocusManager.instance.primaryFocus?.unfocus();
       await tester.pumpAndSettle();
-      final apply = find.text('Review & generate change').first;
-      expect(find.text('Review & generate change'), findsOneWidget);
+      final apply = find.byKey(const ValueKey('workspace-generate')).first;
+      expect(find.byKey(const ValueKey('workspace-generate')), findsOneWidget);
       await Scrollable.ensureVisible(tester.element(apply), alignment: .5);
       await tester.pumpAndSettle();
       await tester.tap(apply);
@@ -291,7 +291,7 @@ void main() {
       expect(ai.model, 'test-alternate-model');
       expect(edits, 0);
       await showCard(tester);
-      await tester.tap(find.text('Generate AI design'));
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       expect(
         find.descendant(
@@ -363,13 +363,13 @@ void main() {
       await tester.pumpAndSettle();
       await revealFocusControl(
         tester,
-        find.text('Generate AI design'),
+        aiGenerateAction(),
         350,
         scrollable: find.byType(Scrollable).first,
       );
-      await ensureFocusVisible(tester, find.text('Generate AI design'));
+      await ensureFocusVisible(tester, aiGenerateAction());
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Generate AI design'));
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       await tester.tap(find.text('Send to OpenAI'));
       await tester.pump();
@@ -779,7 +779,7 @@ void main() {
     'cancel or empty precision instruction makes no generation call',
     (tester) async {
       await showCard(tester);
-      await tester.tap(find.text('Generate AI design'));
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       expect(edits, 0);
       await tester.tap(find.text('Cancel'));
@@ -787,7 +787,7 @@ void main() {
       expect(edits, 0);
       await tester.pumpWidget(const SizedBox());
       await showCard(tester, instructions: '');
-      await tester.tap(find.text('Generate AI design'));
+      await tester.tap(aiGenerateAction());
       await tester.pumpAndSettle();
       expect(edits, 0);
       expect(

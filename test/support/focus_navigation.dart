@@ -2,6 +2,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:renovision_ai/focus_workspace.dart';
 
+/// Workspace has the pinned send action; standalone generation cards keep
+/// their existing label. Both lead to the provider/photo confirmation.
+Finder aiGenerateAction() => find.byWidgetPredicate(
+  (widget) =>
+      widget is Text &&
+      (widget.data == 'Send to AI' || widget.data == 'Generate AI design'),
+);
+
 Future<void> _openAnalysisDetails(WidgetTester tester, Finder target) async {
   if (target.evaluate().isNotEmpty) return;
   final details = find.widgetWithText(

@@ -183,6 +183,53 @@ void main() {
     }
 
     testWidgets(
+      '100 percent offers Send to AI directly on every tab and on checklist without a proceed tick',
+      (tester) async {
+        await store.updateRoom(
+          room.copyWith(
+            designStyleIds: ['modern'],
+            colourPaletteId: 'sage_oak',
+          ),
+        );
+        await show(tester);
+        expectScore(100);
+        for (final tab in FocusSection.values) {
+          await tester.tap(find.byKey(ValueKey('focus-section-${tab.name}')));
+          await tester.pumpAndSettle();
+          final action = find.byKey(const ValueKey('workspace-generate'));
+          expect(action.hitTestable(), findsOneWidget);
+          expect(
+            find.descendant(of: action, matching: find.text('Send to AI')),
+            findsOneWidget,
+          );
+          await tester.tap(action);
+          await tester.pumpAndSettle();
+          expect(find.text('Send to OpenAI'), findsOneWidget);
+          expect(
+            find.byKey(const ValueKey('brief-proceed-checkbox')),
+            findsNothing,
+          );
+          await tester.tap(find.text('Cancel'));
+          await tester.pumpAndSettle();
+        }
+        await tester.tap(
+          find.byKey(const ValueKey('brief-readiness-indicator')),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('brief-proceed-checkbox')),
+          findsNothing,
+        );
+        await tester.tap(find.byKey(const ValueKey('brief-review-primary')));
+        await tester.pumpAndSettle();
+        expect(find.text('Send to OpenAI'), findsOneWidget);
+        expect(imageRequests, 0);
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
+      },
+    );
+
+    testWidgets(
       'low brief stays visible on every tab and Refine returns to visible inputs without an API request',
       (tester) async {
         await show(tester);

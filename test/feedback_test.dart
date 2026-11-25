@@ -280,7 +280,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Settings'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Feedback and ideas'));
+    await tester.scrollUntilVisible(
+      find.text('Feedback and ideas'),
+      150,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Feedback and ideas'));
     await tester.pumpAndSettle();

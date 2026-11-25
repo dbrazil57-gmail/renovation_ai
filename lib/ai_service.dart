@@ -14,6 +14,7 @@ import 'gemini_internet.dart';
 import 'ai_model_choices.dart';
 import 'tester_access.dart';
 import 'ai_photo_preparation.dart' show internetPhotos;
+import 'ai_diagnostics.dart';
 import 'design_references.dart';
 export 'ai_model_choices.dart' show AiProvider;
 
@@ -21,6 +22,40 @@ export 'ai_model_choices.dart' show AiProvider;
 /// stay in the platform vault/session memory, never project/photo records.
 class AiService extends ChangeNotifier {
   final AiActivity activity = AiActivity();
+  final AiDiagnostics diagnostics = AiDiagnostics();
+
+  Future<T> _logged<T>(
+    AiOperation operation,
+    AiProvider provider,
+    String? model,
+    String? quality,
+    Future<T> Function() action,
+  ) async {
+    final clock = Stopwatch()..start();
+    try {
+      final result = await action();
+      diagnostics.record(
+        operation: operation,
+        provider: provider,
+        model: model,
+        quality: quality,
+        elapsed: clock.elapsed,
+      );
+      return result;
+    } catch (error) {
+      diagnostics.record(
+        operation: operation,
+        provider: provider,
+        model: model,
+        quality: quality,
+        elapsed: clock.elapsed,
+        ok: false,
+        failure: error is AiFailure ? error : null,
+      );
+      rethrow;
+    }
+  }
+
   final http.Client Function() clientFactory;
   final SecretStore keyStore;
   final SecretStore geminiKeyStore;
@@ -251,6 +286,17 @@ class AiService extends ChangeNotifier {
   Future<void> connectDirect({
     required String apiKey,
     AiProvider provider = AiProvider.openai,
+  }) => _logged(
+    AiOperation.connection,
+    provider,
+    null,
+    null,
+    () => _connectDirect(apiKey: apiKey, provider: provider),
+  );
+
+  Future<void> _connectDirect({
+    required String apiKey,
+    AiProvider provider = AiProvider.openai,
   }) async {
     if (activity.active) {
       throw const AiFailure('Wait for the current AI request to finish.');
@@ -338,6 +384,7 @@ class AiService extends ChangeNotifier {
   @override
   void dispose() {
     activity.dispose();
+    diagnostics.dispose();
     super.dispose();
   }
 
@@ -503,6 +550,28 @@ class AiService extends ChangeNotifier {
     String? imageModel,
     String? imageQuality,
     void Function(AiStage)? onProgress,
+  }) => _logged(
+    AiOperation.design,
+    provider,
+    imageModel ?? model,
+    imageQuality ?? quality,
+    () => _edit(
+      image: image,
+      prompt: prompt,
+      supportingImages: supportingImages,
+      imageModel: imageModel,
+      imageQuality: imageQuality,
+      onProgress: onProgress,
+    ),
+  );
+
+  Future<AiResult> _edit({
+    required Uint8List image,
+    required String prompt,
+    List<Uint8List> supportingImages = const [],
+    String? imageModel,
+    String? imageQuality,
+    void Function(AiStage)? onProgress,
   }) async {
     if (!connected) {
       throw const AiFailure('Connect AI in Settings first.');
@@ -619,6 +688,24 @@ class AiService extends ChangeNotifier {
   }
 
   Future<RoomAnalysisResult> analyse({
+    required Uint8List image,
+    required String context,
+    List<Uint8List> supportingImages = const [],
+    void Function(AiStage)? onProgress,
+  }) => _logged(
+    AiOperation.analysis,
+    provider,
+    analysisModel,
+    null,
+    () => _analyse(
+      image: image,
+      context: context,
+      supportingImages: supportingImages,
+      onProgress: onProgress,
+    ),
+  );
+
+  Future<RoomAnalysisResult> _analyse({
     required Uint8List image,
     required String context,
     List<Uint8List> supportingImages = const [],

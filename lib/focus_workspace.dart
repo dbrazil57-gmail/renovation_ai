@@ -182,7 +182,9 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
       final preferredCanvasHeight = bounds.maxHeight < 520
           ? (bounds.maxHeight * .28).clamp(48.0, 105.0)
           : (bounds.maxHeight * .52).clamp(150.0, 440.0);
-      final minimumImage = bounds.maxHeight.clamp(0.0, 48.0);
+      // Reserve the image toolbar's actual height even with large text and a
+      // keyboard. The fixed send bar must not squeeze this below its controls.
+      final minimumImage = bounds.maxHeight.clamp(0.0, 80.0);
       final minimumControls =
           200 + MediaQuery.textScalerOf(context).scale(14) * 6;
       final maximumCanvas = (bounds.maxHeight - minimumControls).clamp(

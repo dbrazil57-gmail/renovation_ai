@@ -537,6 +537,7 @@ class AiEditRequest {
   final String title;
   final String instructions;
   final bool precise;
+  final bool scopedUpdate;
   final Map<String, Uint8List> supportingImages;
   final bool finishPolish;
   final List<String> styleIds;
@@ -551,6 +552,7 @@ class AiEditRequest {
     required this.title,
     required this.instructions,
     required this.precise,
+    this.scopedUpdate = false,
     this.supportingImages = const {},
     this.finishPolish = false,
     this.styleIds = const [],
@@ -577,6 +579,7 @@ class AiEditRequest {
     title: total == 1 ? title : '$title · ${index + 1}/$total ${concept.label}',
     instructions: instructions,
     precise: precise,
+    scopedUpdate: scopedUpdate,
   );
 }
 
@@ -697,7 +700,7 @@ class _AiEditCardState extends State<AiEditCard>
       captured = widget.buildRequest();
       final plans = planDesignConcepts(
         prompt: captured.prompt,
-        precise: captured.precise,
+        precise: captured.precise || captured.scopedUpdate,
         count: count,
         styleIds: captured.styleIds,
         compareStyles: compare,
@@ -792,7 +795,7 @@ class _AiEditCardState extends State<AiEditCard>
                 ? 'Review AI finish polish'
                 : requests.length == 1
                 ? 'Send this edit to $providerLabel?'
-                : captured.precise
+                : captured.precise || captured.scopedUpdate
                 ? 'Generate ${requests.length} correction variations?'
                 : 'Generate ${requests.length} design concepts?',
           ),
@@ -864,7 +867,7 @@ class _AiEditCardState extends State<AiEditCard>
                   const SizedBox(height: 12),
                   if (requests.length > 1)
                     Text(
-                      captured.precise
+                      captured.precise || captured.scopedUpdate
                           ? 'Each variation applies the same specific correction to the same starting image. Variation is limited to choices your instruction leaves open; unrelated features stay protected. Each result saves before the next paid request. Stop after this image prevents further requests; the current request may still be billed.'
                           : 'Each option starts from the same room but requests a distinct renovation scheme, not accessory changes. Your Keep choices and layout restrictions still apply. Each result saves before the next request. Stop after this image prevents further requests; the current request may still be billed.',
                     ),

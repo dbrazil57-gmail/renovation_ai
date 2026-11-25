@@ -67,7 +67,8 @@ Future<BriefReviewAction?> reviewBrief(
   BuildContext context,
   BriefReadiness readiness,
 ) {
-  var proceed = false;
+  final complete = readiness.percentage == 100;
+  var proceed = complete;
   return showDialog<BriefReviewAction>(
     context: context,
     builder: (dialogContext) => StatefulBuilder(
@@ -108,15 +109,16 @@ Future<BriefReviewAction?> reviewBrief(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CheckboxListTile(
-                key: const ValueKey('brief-proceed-checkbox'),
-                value: proceed,
-                onChanged: (value) =>
-                    updateDialog(() => proceed = value ?? false),
-                contentPadding: EdgeInsets.zero,
-                controlAffinity: ListTileControlAffinity.leading,
-                title: const Text('Proceed with the current brief'),
-              ),
+              if (!complete)
+                CheckboxListTile(
+                  key: const ValueKey('brief-proceed-checkbox'),
+                  value: proceed,
+                  onChanged: (value) =>
+                      updateDialog(() => proceed = value ?? false),
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: const Text('Proceed with the current brief'),
+                ),
               Wrap(
                 alignment: WrapAlignment.end,
                 spacing: 8,
@@ -133,7 +135,13 @@ Future<BriefReviewAction?> reviewBrief(
                           ? BriefReviewAction.proceed
                           : BriefReviewAction.refine,
                     ),
-                    child: Text(proceed ? 'Proceed' : 'Refine brief'),
+                    child: Text(
+                      complete
+                          ? 'Send to AI'
+                          : proceed
+                          ? 'Proceed'
+                          : 'Refine brief',
+                    ),
                   ),
                 ],
               ),
