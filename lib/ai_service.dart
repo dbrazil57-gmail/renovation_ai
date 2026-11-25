@@ -43,15 +43,20 @@ class AiService extends ChangeNotifier {
       );
       return result;
     } catch (error) {
-      diagnostics.record(
-        operation: operation,
-        provider: provider,
-        model: model,
-        quality: quality,
-        elapsed: clock.elapsed,
-        ok: false,
-        failure: error is AiFailure ? error : null,
-      );
+      // A rejected key in Settings is validation feedback, not a failed design.
+      if (operation != AiOperation.connection ||
+          error is! AiFailure ||
+          error.problem != AiProblem.credentials) {
+        diagnostics.record(
+          operation: operation,
+          provider: provider,
+          model: model,
+          quality: quality,
+          elapsed: clock.elapsed,
+          ok: false,
+          failure: error is AiFailure ? error : null,
+        );
+      }
       rethrow;
     }
   }
@@ -307,6 +312,7 @@ class AiService extends ChangeNotifier {
         RegExp(r'[\s\x00-\x1f]').hasMatch(key)) {
       throw AiFailure(
         'Enter your ${provider.label} developer API key without spaces.',
+        problem: AiProblem.credentials,
       );
     }
     final available = provider == AiProvider.openai

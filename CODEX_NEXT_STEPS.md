@@ -7,6 +7,30 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Active follow-up and next acceptance pass — 25 November
 
+### Adjustable image / options workspace
+
+- [x] Drag the divider up/down on phones, or left/right on wide screens, to
+  share space between the photo and Room / Style / Refine / Ideas controls.
+  Keep tabs and the fixed AI action reachable at both drag limits.
+- [x] Double-tap the divider to reset. Remember portrait/wide layout separately
+  on this device, retaining drafts, tab scroll positions and image selection.
+  Temporary keyboard/viewport changes do not overwrite the saved preference.
+  The layout is excluded from project files and AI instructions.
+- [x] Source **`1035df3de0`**: full suite **449 tests pass** (123s), plus four
+  resize checks after the final handle-contrast adjustment. Static analysis clean.
+  All seven offline help recordings and MP4 checks pass; the design demo shows
+  resizing. Actual isolated Chrome verifies phone/desktop dragging, switching
+  tabs, refresh persistence and separate layouts. Inspect both phone screenshots.
+  No paid requests, owner-data changes or APK build performed.
+- [x] Owner's diagnostic report confirms one successful Chrome Gemini connection
+  and a Nano Banana 2.1 / 2K image generation (42.414s). Owner confirms the two
+  OpenAI failures were a Gemini key entered in the OpenAI field. Rejected/invalid
+  connection keys now show settings validation without diagnostic entries. Future
+  OpenAI HTTP failures carry safe category/status metadata; existing unknown entries
+  remain until Clear log, without guessing their category retrospectively.
+- [ ] Owner test resized workspace on Chrome, then the next requested APK.
+  The currently installed 1.0.19 still lacks the new Gemini transport and divider.
+
 ### APK feedback: selected images, Gemini and the send action
 
 - [x] Saved generated design selection opens Partial and a next-update field.
@@ -32,8 +56,9 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
   seven offline walkthrough recordings and standard MP4 validations pass. Actual
   isolated phone/desktop Chrome verifies Partial selection, pinned action on all
   tabs and diagnostics. Inspect screenshots. No owner data/key or paid AI used.
-- [ ] Owner test updated Chrome at http://localhost:7357/ using the Gemini key:
-  analysis, one image from each model, Partial update and logs after failures.
+- [ ] Complete owner testing at http://localhost:7357/: Gemini analysis, Nano
+  Banana Pro, Partial updates and logs after failures. Nano Banana 2.1 generation
+  is now owner-confirmed working in Chrome.
   The old error discarded provider details; its exact cause is unconfirmed.
   Mocked responses do not prove live account access or image quality.
 - [ ] Package in another APK only when requested. Latest APK remains 1.0.19+20.

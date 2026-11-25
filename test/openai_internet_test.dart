@@ -49,6 +49,33 @@ class Wire extends http.BaseClient {
 }
 
 void main() {
+  test('OpenAI HTTP failures carry a safe diagnostic category without retaining the response body', () {
+    final transport = OpenAiInternet(
+      () => throw StateError('No request expected'),
+    );
+    for (final (status, problem) in [
+      (401, AiProblem.credentials),
+      (403, AiProblem.permission),
+      (429, AiProblem.quota),
+      (400, AiProblem.options),
+      (404, AiProblem.model),
+    ]) {
+      expect(
+        () =>
+            transport.response(http.Response('PRIVATE KEY AND PROMPT', status)),
+        throwsA(
+          isA<AiFailure>()
+              .having((error) => error.statusCode, 'HTTP status', status)
+              .having((error) => error.problem, 'category', problem)
+              .having(
+                (error) => error.message,
+                'message',
+                isNot(contains('PRIVATE')),
+              ),
+        ),
+      );
+    }
+  });
   TestWidgetsFlutterBinding.ensureInitialized();
   const key = 'synthetic-unit-test-secret';
   final photo = img.encodePng(img.Image(width: 40, height: 30));
@@ -146,6 +173,30 @@ void main() {
         );
       }),
     );
+  });
+
+  test('rejected keys remain settings feedback and do not add failed diagnostic entries', () async {
+    status = 401;
+    await expectLater(
+      ai.connectDirect(apiKey: key),
+      throwsA(
+        isA<AiFailure>().having(
+          (e) => e.problem,
+          'validation',
+          AiProblem.credentials,
+        ),
+      ),
+    );
+    expect(ai.diagnostics.entries, isEmpty);
+    await expectLater(
+      ai.connectDirect(apiKey: 'bad key with spaces'),
+      throwsA(isA<AiFailure>()),
+    );
+    expect(ai.diagnostics.entries, isEmpty);
+    status = 429;
+    await expectLater(ai.connectDirect(apiKey: key), throwsA(isA<AiFailure>()));
+    expect(ai.diagnostics.entries.single['problem'], 'quota');
+    expect(ai.diagnostics.entries.single['http'], 429);
   });
   tearDown(() => ai.dispose());
 

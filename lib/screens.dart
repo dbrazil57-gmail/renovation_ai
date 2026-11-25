@@ -2765,7 +2765,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                     ScreenTool.help(
                       context,
                       title: 'Room tools',
-                      message: 'The Home icon returns to Projects after saving pending room choices. Save writes a project file. Guided setup walks through room choices. Room settings holds saving and AI options. Rooms & spaces and other extra tools are under More tools.',
+                      message: 'Drag the divider between the image and options to resize the workspace. Double-tap it to reset. On wide screens, drag left or right. The Home icon returns to Projects after saving pending room choices. Save writes a project file. Guided setup walks through room choices. Room settings holds saving and AI options. Rooms & spaces and other extra tools are under More tools.',
                     ),
                   ],
                 ),
@@ -2789,6 +2789,19 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
               ),
             ),
             body: FocusWorkspace(
+              initialLayout: widget.store.workspaceLayout,
+              onLayoutChanged: (layout) async {
+                try {
+                  await widget.store.setWorkspaceLayout(layout);
+                } catch (_) {
+                  if (context.mounted) {
+                    notice(
+                      context,
+                      'The view was resized, but its layout could not be remembered. Your project is retained.',
+                    );
+                  }
+                }
+              },
               selected: focusSection,
               revealRevision: focusRevealRevision,
               onSelected: (section) => setState(() => _visitSection(section)),

@@ -431,6 +431,22 @@ void main() {
       find.text('Refine'),
       'Select a design to reveal its own focused update field.',
     );
+    recording.caption.value =
+        'Drag the divider up to give your options more space.';
+    await tester.drag(
+      find.byKey(const ValueKey('workspace-resize-handle')),
+      const Offset(0, -90),
+    );
+    await recording.quiet();
+    await recording.frame(1200);
+    recording.caption.value =
+        'Drag down for a larger image. The AI action stays at the bottom.';
+    await tester.drag(
+      find.byKey(const ValueKey('workspace-resize-handle')),
+      const Offset(0, 70),
+    );
+    await recording.quiet();
+    await recording.frame(1200);
     await recording.text(
       find.byKey(const ValueKey('selected-design-update')),
       'Change only the tap to brushed brass',

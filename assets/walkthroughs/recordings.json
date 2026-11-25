@@ -5,11 +5,11 @@
     "design": {
       "id": "design",
       "file": "design.mp4",
-      "durationMs": 31500,
+      "durationMs": 33900,
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 1229213
+      "bytes": 1289253
     },
     "capture": {
       "id": "capture",
@@ -27,7 +27,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 604053
+      "bytes": 625755
     },
     "paint": {
       "id": "paint",
@@ -36,7 +36,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 1063390
+      "bytes": 1066825
     },
     "library": {
       "id": "library",
@@ -45,7 +45,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 543774
+      "bytes": 535405
     },
     "models": {
       "id": "models",
@@ -63,7 +63,7 @@
       "width": 390,
       "height": 780,
       "mime": "video/mp4",
-      "bytes": 442568
+      "bytes": 434872
     }
   }
 }

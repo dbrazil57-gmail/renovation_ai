@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:material_ui/material_ui.dart';
 
 import 'app_appearance.dart';
+import 'workspace_layout.dart';
 
 enum FocusSection { room, style, refine, ideas }
 
@@ -17,6 +18,8 @@ class FocusWorkspace extends StatefulWidget {
   final Map<FocusSection, List<Widget>> sections;
   final Widget footer;
   final int revealRevision;
+  final WorkspaceLayout initialLayout;
+  final ValueChanged<WorkspaceLayout>? onLayoutChanged;
   const FocusWorkspace({
     super.key,
     required this.selected,
@@ -27,6 +30,8 @@ class FocusWorkspace extends StatefulWidget {
     required this.sections,
     required this.footer,
     this.revealRevision = 0,
+    this.initialLayout = const WorkspaceLayout(),
+    this.onLayoutChanged,
   });
 
   @override
@@ -36,6 +41,24 @@ class FocusWorkspace extends StatefulWidget {
 class _FocusWorkspaceState extends State<FocusWorkspace> {
   final scroll = ScrollController();
   final offsets = <FocusSection, double>{};
+  late WorkspaceLayout layout = widget.initialLayout;
+  double? dragExtent;
+
+  void resizeImage(
+    double extent, {
+    required bool wide,
+    required double available,
+    required double minimum,
+    required double maximum,
+  }) {
+    if (available <= 0 || maximum <= minimum) return;
+    setState(
+      () => layout = layout.resize(
+        extent.clamp(minimum, maximum) / available,
+        wide: wide,
+      ),
+    );
+  }
 
   @override
   void didUpdateWidget(FocusWorkspace oldWidget) {
@@ -179,22 +202,58 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
     builder: (context, bounds) {
       final desktop = bounds.maxWidth >= 900 && bounds.maxHeight >= 420;
       final panel = controls(context);
+      final handleSize = desktop ? 24.0 : 28.0;
+      final available =
+          ((desktop ? bounds.maxWidth : bounds.maxHeight) - handleSize).clamp(
+            0.0,
+            double.infinity,
+          );
+      final minimumControls = desktop
+          ? 320 + MediaQuery.textScalerOf(context).scale(14) * 2
+          : 100 + MediaQuery.textScalerOf(context).scale(14) * 3;
+      // With the keyboard open, give the controls priority. Do not overwrite
+      // the saved split when the viewport temporarily becomes smaller.
+      final minimumImage = desktop
+          ? 240.0
+          : available < minimumControls + 112
+          ? 0.0
+          : 112.0;
+      final maximumImage = !desktop && minimumImage == 0
+          ? 0.0
+          : (available - minimumControls).clamp(minimumImage, available);
       final preferredCanvasHeight = bounds.maxHeight < 520
           ? (bounds.maxHeight * .28).clamp(48.0, 105.0)
           : (bounds.maxHeight * .52).clamp(150.0, 440.0);
-      // Reserve the image toolbar's actual height even with large text and a
-      // keyboard. The fixed send bar must not squeeze this below its controls.
-      final minimumImage = bounds.maxHeight.clamp(0.0, 80.0);
-      final minimumControls =
-          200 + MediaQuery.textScalerOf(context).scale(14) * 6;
-      final maximumCanvas = (bounds.maxHeight - minimumControls).clamp(
-        minimumImage,
-        bounds.maxHeight,
-      );
-      final canvasHeight = preferredCanvasHeight.clamp(
-        minimumImage,
-        maximumCanvas,
-      );
+      final defaultExtent = desktop
+          ? available - (bounds.maxWidth * .4).clamp(350.0, 510.0)
+          : preferredCanvasHeight.clamp(
+              minimumImage,
+              (available - 200 - MediaQuery.textScalerOf(context).scale(14) * 6)
+                  .clamp(minimumImage, available),
+            );
+      final savedFraction = desktop
+          ? layout.wideImageFraction
+          : layout.portraitImageFraction;
+      final imageExtent =
+          (savedFraction == null ? defaultExtent : savedFraction * available)
+              .clamp(minimumImage, maximumImage);
+      final canResize = maximumImage > minimumImage;
+      void adjust(double delta) {
+        resizeImage(
+          imageExtent + delta,
+          wide: desktop,
+          available: available,
+          minimum: minimumImage,
+          maximum: maximumImage,
+        );
+        widget.onLayoutChanged?.call(layout);
+      }
+
+      void reset() {
+        setState(() => layout = const WorkspaceLayout());
+        widget.onLayoutChanged?.call(layout);
+      }
+
       return ColoredBox(
         color: AppAppearance.of(context).canvas,
         child: Flex(
@@ -202,13 +261,122 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
-              width: desktop
-                  ? bounds.maxWidth - (bounds.maxWidth * .4).clamp(350.0, 510.0)
-                  : bounds.maxWidth,
-              height: desktop ? bounds.maxHeight : canvasHeight,
-              child: canvas(compact: !desktop && canvasHeight < 180),
+              key: const ValueKey('workspace-image-pane'),
+              width: desktop ? imageExtent : bounds.maxWidth,
+              height: desktop ? bounds.maxHeight : imageExtent,
+              child: imageExtent < 112
+                  ? const SizedBox.shrink()
+                  : canvas(
+                      compact:
+                          !desktop &&
+                          imageExtent <
+                              172 +
+                                  MediaQuery.textScalerOf(context).scale(12) *
+                                      2.6,
+                    ),
             ),
-            Expanded(child: panel),
+            Semantics(
+              label: 'Image and options divider',
+              hint: desktop
+                  ? 'Drag left or right to resize. Double-tap to reset.'
+                  : 'Drag up for more options, down for a larger image. Double-tap to reset.',
+              value:
+                  '${available == 0 ? 0 : (imageExtent / available * 100).round()}% image area',
+              increasedValue: canResize
+                  ? '${((imageExtent + 40).clamp(minimumImage, maximumImage) / available * 100).round()}% image area'
+                  : null,
+              decreasedValue: canResize
+                  ? '${((imageExtent - 40).clamp(minimumImage, maximumImage) / available * 100).round()}% image area'
+                  : null,
+              onIncrease: canResize ? () => adjust(40) : null,
+              onDecrease: canResize ? () => adjust(-40) : null,
+              onTap: reset,
+              child: MouseRegion(
+                cursor: canResize
+                    ? (desktop
+                          ? SystemMouseCursors.resizeLeftRight
+                          : SystemMouseCursors.resizeUpDown)
+                    : SystemMouseCursors.basic,
+                child: Tooltip(
+                  message:
+                      'Drag to resize image and options. Double-tap to reset.',
+                  child: GestureDetector(
+                    key: const ValueKey('workspace-resize-handle'),
+                    behavior: HitTestBehavior.opaque,
+                    onDoubleTap: reset,
+                    onVerticalDragStart: desktop || !canResize
+                        ? null
+                        : (_) => dragExtent = imageExtent,
+                    onVerticalDragUpdate: desktop || !canResize
+                        ? null
+                        : (details) {
+                            dragExtent =
+                                (dragExtent ?? imageExtent) + details.delta.dy;
+                            resizeImage(
+                              dragExtent!,
+                              wide: false,
+                              available: available,
+                              minimum: minimumImage,
+                              maximum: maximumImage,
+                            );
+                          },
+                    onVerticalDragEnd: desktop || !canResize
+                        ? null
+                        : (_) {
+                            dragExtent = null;
+                            widget.onLayoutChanged?.call(layout);
+                          },
+                    onHorizontalDragStart: !desktop || !canResize
+                        ? null
+                        : (_) => dragExtent = imageExtent,
+                    onHorizontalDragUpdate: !desktop || !canResize
+                        ? null
+                        : (details) {
+                            dragExtent =
+                                (dragExtent ?? imageExtent) + details.delta.dx;
+                            resizeImage(
+                              dragExtent!,
+                              wide: true,
+                              available: available,
+                              minimum: minimumImage,
+                              maximum: maximumImage,
+                            );
+                          },
+                    onHorizontalDragEnd: !desktop || !canResize
+                        ? null
+                        : (_) {
+                            dragExtent = null;
+                            widget.onLayoutChanged?.call(layout);
+                          },
+                    child: SizedBox(
+                      width: desktop ? handleSize : double.infinity,
+                      height: desktop ? double.infinity : handleSize,
+                      child: Center(
+                        child: Container(
+                          width: desktop ? 4 : 44,
+                          height: desktop ? 44 : 4,
+                          decoration: BoxDecoration(
+                            color:
+                                ThemeData.estimateBrightnessForColor(
+                                      AppAppearance.of(context).canvas,
+                                    ) ==
+                                    Brightness.dark
+                                ? Colors.white70
+                                : AppAppearance.of(context).ink
+                                      .withValues(alpha: .6),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              key: const ValueKey('workspace-options-pane'),
+              child: panel,
+            ),
           ],
         ),
       );

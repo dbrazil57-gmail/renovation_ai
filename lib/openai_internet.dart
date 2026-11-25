@@ -24,15 +24,27 @@ class OpenAiInternet {
 
   Map<String, dynamic> response(http.Response value) {
     if (value.statusCode != 200) {
-      throw AiFailure(switch (value.statusCode) {
-        401 => 'OpenAI rejected the API key. Replace it in AI settings.',
-        403 => 'This API key does not have permission for the requested OpenAI service.',
-        429 => 'OpenAI reported a usage, credit or rate limit. Check your API account before retrying.',
-        400 || 404 => 'OpenAI rejected the requested model or options. Check model access and your selected settings.',
-        >= 300 && < 400 => 'OpenAI returned a redirect. The key was not forwarded to another address.',
-        _ =>
-          'OpenAI could not complete the request (HTTP ${value.statusCode}). No automatic retry was sent.',
-      });
+      throw AiFailure(
+        switch (value.statusCode) {
+          401 => 'OpenAI rejected the API key. Replace it in AI settings.',
+          403 => 'This API key does not have permission for the requested OpenAI service.',
+          429 => 'OpenAI reported a usage, credit or rate limit. Check your API account before retrying.',
+          400 || 404 => 'OpenAI rejected the requested model or options. Check model access and your selected settings.',
+          >= 300 && < 400 => 'OpenAI returned a redirect. The key was not forwarded to another address.',
+          _ =>
+            'OpenAI could not complete the request (HTTP ${value.statusCode}). No automatic retry was sent.',
+        },
+        statusCode: value.statusCode,
+        problem: switch (value.statusCode) {
+          401 => AiProblem.credentials,
+          402 => AiProblem.billing,
+          403 => AiProblem.permission,
+          429 => AiProblem.quota,
+          400 => AiProblem.options,
+          404 => AiProblem.model,
+          _ => AiProblem.unknown,
+        },
+      );
     }
     final decoded = jsonDecode(value.body);
     if (decoded is! Map<String, dynamic>) {
@@ -63,6 +75,7 @@ class OpenAiInternet {
     } catch (_) {
       throw const AiFailure(
         'Could not check the key with OpenAI over HTTPS. Check the internet connection and try again.',
+        problem: AiProblem.network,
       );
     } finally {
       client.close();

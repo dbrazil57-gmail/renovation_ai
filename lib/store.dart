@@ -18,6 +18,7 @@ import 'room_starters.dart';
 import 'app_appearance.dart';
 import 'wording_region.dart';
 import 'archive_cleanup.dart';
+import 'workspace_layout.dart';
 
 /// Stage 1 local-only prototype storage. Photos are kept in a dedicated box.
 /// For production-scale image libraries, move large originals to app-private
@@ -34,6 +35,13 @@ class RenovisionStore extends ChangeNotifier {
   Future<void> _aiSettingsQueue = Future.value();
   Future<void> _diagnosticQueue = Future.value();
   late final ValueNotifier<AppThemeChoice> appearance;
+  WorkspaceLayout get workspaceLayout =>
+      WorkspaceLayout.fromMap(records.get('settings:workspace_layout'));
+  Future<void> setWorkspaceLayout(WorkspaceLayout layout) async {
+    await records.put('settings:workspace_layout', layout.toMap());
+    await records.flush();
+  }
+
   WordingRegion get wordingRegion =>
       WordingRegion.values
           .where((r) => r.name == records.get('settings:wording_region'))

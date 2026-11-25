@@ -1,5 +1,25 @@
 # Renovision feature status
 
+## Adjustable workspace follow-up — 25 November 2026
+
+Current Chrome source **`1035df3de0`**, superseding the Chrome IDs below. All 449
+tests pass, with four resize checks repeated after making the handle brighter.
+Analysis clean. Seven help videos refreshed/validated; actual isolated Chrome
+checks phone/desktop dragging and refresh persistence using sample data.
+
+The image/options divider now drags up/down on phones and left/right on wide
+desktop windows. Give the settings more space or enlarge the image while keeping
+the AI action fixed. Double-tap to reset. Portrait and wide layouts are remembered
+separately on this device, excluded from project files, and clamped for smaller
+windows/keyboard without losing the preferred layout. Drafts and tabs remain mounted.
+
+The owner's Chrome log confirms Gemini connected and Nano Banana 2.1 / 2K returned
+a design in 42.414s. That proves this model/request worked in Chrome, not the old
+installed APK or Nano Banana Pro. The owner confirms the two OpenAI failures were
+a Gemini key entered under OpenAI. Invalid/rejected connection keys now appear as
+settings feedback without diagnostic entries. Other OpenAI HTTP failures retain
+safe status/category metadata; Clear log removes the older unknown entries.
+
 ## Source / Chrome follow-up — 25 November 2026
 
 Saved design selection defaults to Partial with a separate next-update field,

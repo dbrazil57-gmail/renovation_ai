@@ -1,5 +1,23 @@
 # Testing and storage reference
 
+## Resizing the workspace
+
+At localhost:7357, refresh the existing tab after the updated build is ready.
+Drag the divider above Room / Style / Refine / Ideas upward to see more options,
+then downward to enlarge the image. On wide desktop windows the split is vertical:
+drag left for more options or right for a larger image. Double-tap to reset.
+
+Check both limits with enlarged text: tabs and the bottom AI action must remain
+reachable. Enter a draft, resize and switch tabs: text/selection/scroll positions
+must stay. Reopen the workspace to check the remembered layout; temporarily rotate
+or open the keyboard, then return. Portrait and wide preferences are separate and
+do not travel in project exports. Use a disposable project for acceptance tests.
+
+In AI Settings, malformed or rejected connection keys should display a validation
+message without adding a failed diagnostic entry. Quota, network, model and paid
+generation failures remain useful diagnostic events. Existing historical entries
+can be removed with Clear log. Keep all keys private.
+
 ## Gemini and workspace follow-up 25 November 2026
 
 Use updated Chrome at **http://localhost:7357/** in the same normal profile.

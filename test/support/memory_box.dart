@@ -20,4 +20,7 @@ class MemoryBox extends Fake implements Box<dynamic> {
   Future<void> delete(dynamic key) async {
     entries.remove(key);
   }
+
+  @override
+  Future<void> flush() async {}
 }

@@ -1,5 +1,14 @@
 # RenoVision
 
+Workspace follow-up, **25 November**: drag the divider up/down on phones or
+left/right on wide screens to resize the image and controls. Double-tap to reset;
+the device remembers portrait/wide layouts. The owner confirmed Gemini Nano
+Banana 2.1 / 2K generation in Chrome. APK 1.0.19 remains unchanged and still needs
+the new Gemini source in a future requested build.
+Current Chrome build: **`1035df3de0`**, superseding the IDs below. **449 tests pass**;
+analysis and isolated browser checks pass. Wrong-key connection validation stays
+out of diagnostics. Refresh the same http://localhost:7357/ tab to test.
+
 Source / Chrome follow-up, **25 November 2026**: saved design selection opens
 Partial; **Send to AI** stays on every workspace tab; 100% briefs need no extra
 proceed tick. Gemini uses documented generateContent requests. **Settings → AI
