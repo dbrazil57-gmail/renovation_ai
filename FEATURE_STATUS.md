@@ -1,5 +1,17 @@
 # Renovision feature status
 
+## Conditional image-strip follow-up — 25 November 2026
+
+Current Chrome source **`82ff9af022`**, superseding the IDs below. Web build passes
+(49s); seven offline walkthroughs are refreshed and their MP4 checks pass.
+
+One image keeps the normal automatic size without a redundant strip. Multiple
+images add a horizontal strip showing the original, other room photos and saved
+designs, keeping space for the preview where the viewport allows. The selected
+thumbnail scrolls into view. Manual sizing stays saved; double-tapping the divider
+restores the updated automatic layout. Short keyboard/compact views still favour
+the controls. 47 relevant checks pass and analysis is clean. APK remains unchanged.
+
 ## Adjustable workspace follow-up — 25 November 2026
 
 Current Chrome source **`1035df3de0`**, superseding the Chrome IDs below. All 449

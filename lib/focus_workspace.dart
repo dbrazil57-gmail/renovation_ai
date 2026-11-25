@@ -43,6 +43,28 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
   final offsets = <FocusSection, double>{};
   late WorkspaceLayout layout = widget.initialLayout;
   double? dragExtent;
+  final selectedThumbnail = GlobalKey();
+  bool stripVisible = false;
+  bool revealQueued = false;
+  double get thumbnailStripHeight =>
+      60 + MediaQuery.textScalerOf(context).scale(12) * 2.6;
+
+  int selectedIndex(FocusWorkspace workspace) =>
+      workspace.thumbnails.indexWhere(
+        (thumbnail) => thumbnail is FocusVersionThumbnail && thumbnail.selected,
+      );
+
+  void revealSelectedThumbnail() {
+    if (revealQueued) return;
+    revealQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      revealQueued = false;
+      final target = selectedThumbnail.currentContext;
+      if (mounted && stripVisible && target != null) {
+        Scrollable.ensureVisible(target, alignment: .5);
+      }
+    });
+  }
 
   void resizeImage(
     double extent, {
@@ -63,6 +85,10 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
   @override
   void didUpdateWidget(FocusWorkspace oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (selectedIndex(oldWidget) != selectedIndex(widget) ||
+        oldWidget.thumbnails.length != widget.thumbnails.length) {
+      revealSelectedThumbnail();
+    }
     final reveal = oldWidget.revealRevision != widget.revealRevision;
     if (oldWidget.selected != widget.selected || reveal) {
       if (scroll.hasClients) offsets[oldWidget.selected] = scroll.offset;
@@ -110,12 +136,22 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
               ),
             ),
           ),
-          if (!compact && widget.thumbnails.isNotEmpty)
+          if (!compact && widget.thumbnails.length > 1)
             SizedBox(
-              height: 60 + MediaQuery.textScalerOf(context).scale(12) * 2.6,
+              key: const ValueKey('workspace-image-strip'),
+              height: thumbnailStripHeight,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: Row(children: widget.thumbnails),
+                child: Row(
+                  children: [
+                    for (final thumbnail in widget.thumbnails)
+                      if (thumbnail is FocusVersionThumbnail &&
+                          thumbnail.selected)
+                        KeyedSubtree(key: selectedThumbnail, child: thumbnail)
+                      else
+                        thumbnail,
+                  ],
+                ),
               ),
             ),
         ],
@@ -224,19 +260,30 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
       final preferredCanvasHeight = bounds.maxHeight < 520
           ? (bounds.maxHeight * .28).clamp(48.0, 105.0)
           : (bounds.maxHeight * .52).clamp(150.0, 440.0);
+      // Keep the usual single-image preview size. Give extra photos/designs
+      // their own strip, rather than taking its height out of that preview.
+      final previewExtent = preferredCanvasHeight.clamp(
+        minimumImage,
+        (available - 200 - MediaQuery.textScalerOf(context).scale(14) * 6)
+            .clamp(minimumImage, available),
+      );
       final defaultExtent = desktop
           ? available - (bounds.maxWidth * .4).clamp(350.0, 510.0)
-          : preferredCanvasHeight.clamp(
-              minimumImage,
-              (available - 200 - MediaQuery.textScalerOf(context).scale(14) * 6)
-                  .clamp(minimumImage, available),
-            );
+          : previewExtent +
+                (widget.thumbnails.length > 1 ? thumbnailStripHeight : 0);
       final savedFraction = desktop
           ? layout.wideImageFraction
           : layout.portraitImageFraction;
       final imageExtent =
           (savedFraction == null ? defaultExtent : savedFraction * available)
               .clamp(minimumImage, maximumImage);
+      final showStrip =
+          widget.thumbnails.length > 1 &&
+          (desktop || imageExtent >= 112 + thumbnailStripHeight);
+      if (showStrip && !stripVisible) {
+        revealSelectedThumbnail();
+      }
+      stripVisible = showStrip;
       final canResize = maximumImage > minimumImage;
       void adjust(double delta) {
         resizeImage(
@@ -266,14 +313,7 @@ class _FocusWorkspaceState extends State<FocusWorkspace> {
               height: desktop ? bounds.maxHeight : imageExtent,
               child: imageExtent < 112
                   ? const SizedBox.shrink()
-                  : canvas(
-                      compact:
-                          !desktop &&
-                          imageExtent <
-                              172 +
-                                  MediaQuery.textScalerOf(context).scale(12) *
-                                      2.6,
-                    ),
+                  : canvas(compact: !showStrip),
             ),
             Semantics(
               label: 'Image and options divider',

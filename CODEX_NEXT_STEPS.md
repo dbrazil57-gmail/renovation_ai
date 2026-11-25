@@ -7,6 +7,23 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Active follow-up and next acceptance pass — 25 November
 
+### Conditional image strip
+
+- [x] Keep the normal automatic single-image sizing with no redundant thumbnail
+  row. When more than one photo/design exists, add a horizontal strip containing
+  the original, other room photos and saved designs, with room for the preview.
+- [x] Bring the selected thumbnail into view when opening/selecting a design or
+  revealing the strip again. Preserve drafts, selection, manual layout and data.
+  A manually compact view can still hide the strip; double-tap resets to automatic.
+- [x] 47 relevant gallery/resize/navigation/history checks pass; static analysis
+  clean. Test defaults at 320, 390, 800 and 1280px, single-to-multiple images,
+  an older selected design, drag/reset and refresh. No paid AI or APK build.
+- [x] Chrome source **`82ff9af022`**, web build passes (49s). Refresh seven
+  offline help recordings/MP4s. Confirm the same localhost:7357 serves this build.
+  Actual isolated Chrome confirms the default strip at phone, short-window and
+  wide sizes; screenshots inspected. Use only the disposable offline sample.
+- [ ] Owner accept the updated default on Chrome, then the next requested APK.
+
 ### Adjustable image / options workspace
 
 - [x] Drag the divider up/down on phones, or left/right on wide screens, to
@@ -28,7 +45,8 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
   connection keys now show settings validation without diagnostic entries. Future
   OpenAI HTTP failures carry safe category/status metadata; existing unknown entries
   remain until Clear log, without guessing their category retrospectively.
-- [ ] Owner test resized workspace on Chrome, then the next requested APK.
+- [x] Owner reports the Chrome divider works.
+- [ ] Accept on the next requested APK.
   The currently installed 1.0.19 still lacks the new Gemini transport and divider.
 
 ### APK feedback: selected images, Gemini and the send action

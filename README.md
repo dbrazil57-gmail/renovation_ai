@@ -1,5 +1,12 @@
 # RenoVision
 
+Latest workspace follow-up: keep the normal single-image size; show the thumbnail
+strip when more than one room photo/design exists. Include original/photos/designs
+and bring the selected thumbnail into view. Double-tap the divider for the updated
+automatic view if a compact size is already saved. APK 1.0.19 is unchanged.
+Current Chrome: **`82ff9af022`** at http://localhost:7357/, superseding older IDs
+below. 47 relevant checks pass; static analysis is clean.
+
 Workspace follow-up, **25 November**: drag the divider up/down on phones or
 left/right on wide screens to resize the image and controls. Double-tap to reset;
 the device remembers portrait/wide layouts. The owner confirmed Gemini Nano

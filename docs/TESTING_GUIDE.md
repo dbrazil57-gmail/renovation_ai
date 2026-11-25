@@ -2,6 +2,14 @@
 
 ## Resizing the workspace
 
+Default image-strip check: a room with one photo shows its preview without a
+thumbnail row. Add a second room photo or import a saved design: the horizontal
+strip should appear with original, room photos and generated versions. The preview
+keeps its normal size where there is room; controls and AI action remain reachable.
+Open an older saved design and check its selected thumbnail scrolls into view.
+If a manual compact layout was saved, double-tap the divider to use the updated
+default. Dragging up may still hide the strip deliberately. No AI call is needed.
+
 At localhost:7357, refresh the existing tab after the updated build is ready.
 Drag the divider above Room / Style / Refine / Ideas upward to see more options,
 then downward to enlarge the image. On wide desktop windows the split is vertical:

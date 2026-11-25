@@ -137,7 +137,7 @@ const designWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Give the room a clear direction',
-      'Choose New design for a coordinated renovation. Add a style, palette and any features to keep. Analyse your photos and review the drafted prompt. Drag the divider above the tabs up for more options, or down to enlarge the image. Double-tap it to reset.',
+      'Choose New design for a coordinated renovation. Add a style, palette and any features to keep. Analyse your photos and review the drafted prompt. When there is more than one room image, use the thumbnail strip to switch between photos and designs. Drag the divider above the tabs up for more options, or down to enlarge the image. Double-tap it to reset.',
       'A modern kitchen with charcoal cupboards and pale stone. Keep the walls, window and layout. Selecting a saved design opens Partial with its own next-update field. Precision is available for one narrow correction; New design starts a fresh concept.',
     ),
     WalkthroughStep(

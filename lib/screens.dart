@@ -2880,18 +2880,20 @@ class _WorkspaceScreenState extends State<WorkspaceScreen>
                   ),
               ],
               thumbnails: [
-                FocusVersionThumbnail(
-                  image: widget.store.imageFor(room.originalId),
-                  title: 'Original',
-                  selected:
-                      selectedId == null && selectedPhotoId == room.originalId,
-                  onTap: () {
-                    _selectDesign(null);
-                    setState(() {
-                      selectedPhotoId = room.originalId;
-                    });
-                  },
-                ),
+                for (final (index, photoId) in room.photoIds.indexed)
+                  FocusVersionThumbnail(
+                    image: widget.store.imageFor(photoId),
+                    title: photoId == room.originalId
+                        ? 'Original'
+                        : 'Room photo ${index + 1}',
+                    selected: selectedId == null && selectedPhotoId == photoId,
+                    onTap: () {
+                      _selectDesign(null);
+                      setState(() {
+                        selectedPhotoId = photoId;
+                      });
+                    },
+                  ),
                 for (final design in versions)
                   FocusVersionThumbnail(
                     image: widget.store.imageFor(design.imageId),

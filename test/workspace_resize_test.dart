@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
+import 'package:renovision_ai/focus_workspace.dart';
+import 'package:renovision_ai/main.dart' show buildRenovisionTheme;
 import 'package:renovision_ai/screens.dart';
 import 'package:renovision_ai/store.dart';
 import 'package:renovision_ai/workspace_layout.dart';
@@ -10,6 +12,148 @@ import 'package:renovision_ai/workspace_layout.dart';
 import 'support/memory_box.dart';
 
 void main() {
+  testWidgets(
+    'keep the single-image default and add a separate strip when another design exists',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final store = RenovisionStore(records: MemoryBox(), photos: MemoryBox());
+      addTearDown(store.dispose);
+      final project = await store.createProject('Conditional gallery');
+      final photo = img.encodePng(img.Image(width: 40, height: 30));
+      final room = await store.createRoom(
+        projectId: project.id,
+        name: 'Kitchen',
+        originalImage: photo,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: buildRenovisionTheme(),
+          home: WorkspaceScreen(store: store, roomId: room.id),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final pane = find.byKey(const ValueKey('workspace-image-pane'));
+      final strip = find.byKey(const ValueKey('workspace-image-strip'));
+      final singleHeight = tester.getSize(pane).height;
+      expect(strip, findsNothing);
+      await store.createDesign(
+        roomId: room.id,
+        image: photo,
+        title: 'New option',
+        prompt: 'Fixture',
+      );
+      await tester.pumpAndSettle();
+      expect(strip, findsOneWidget);
+      expect(
+        tester.getSize(pane).height - tester.getSize(strip).height,
+        closeTo(singleHeight, .01),
+      );
+      final handle = find.byKey(const ValueKey('workspace-resize-handle'));
+      await tester.drag(handle, const Offset(0, -500));
+      await tester.pumpAndSettle();
+      expect(strip, findsNothing);
+      await tester.tap(handle);
+      await tester.pump(const Duration(milliseconds: 60));
+      await tester.tap(handle);
+      await tester.pumpAndSettle();
+      expect(strip, findsOneWidget);
+      expect(
+        tester.getSize(pane).height - tester.getSize(strip).height,
+        closeTo(singleHeight, .01),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  for (final size in [
+    const Size(320, 640),
+    const Size(390, 700),
+    const Size(390, 844),
+    const Size(800, 600),
+    const Size(1280, 900),
+  ]) {
+    testWidgets(
+      'automatic layout at $size shows the selected preview and other room images',
+      (tester) async {
+        await tester.binding.setSurfaceSize(size);
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final store = RenovisionStore(
+          records: MemoryBox(),
+          photos: MemoryBox(),
+        );
+        addTearDown(store.dispose);
+        final project = await store.createProject('Gallery fixture');
+        final photo = img.encodePng(img.Image(width: 40, height: 30));
+        final room = await store.createRoom(
+          projectId: project.id,
+          name: 'Kitchen',
+          originalImage: photo,
+        );
+        await store.addRoomPhotos(room.id, [photo]);
+        String? firstDesign;
+        for (var i = 0; i < 7; i++) {
+          final design = await store.createDesign(
+            roomId: room.id,
+            image: photo,
+            title: 'Design idea $i',
+            prompt: 'Fixture',
+          );
+          firstDesign ??= design.id;
+        }
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: buildRenovisionTheme(),
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(size: size),
+              child: child!,
+            ),
+            home: WorkspaceScreen(
+              store: store,
+              roomId: room.id,
+              initialDesignId: firstDesign,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final strip = find.byKey(const ValueKey('workspace-image-strip'));
+        expect(strip, findsOneWidget);
+        expect(tester.getSize(strip).height, greaterThan(60));
+        final selected = find.byWidgetPredicate(
+          (w) => w is FocusVersionThumbnail && w.selected,
+        );
+        expect(
+          selected.hitTestable(),
+          findsOneWidget,
+          reason: 'The selected older design should scroll into view.',
+        );
+        final viewport = tester.getRect(strip);
+        final selectedBounds = tester.getRect(selected);
+        expect(selectedBounds.left, greaterThanOrEqualTo(viewport.left - 1));
+        expect(selectedBounds.right, lessThanOrEqualTo(viewport.right + 1));
+        expect(
+          find.widgetWithText(FocusVersionThumbnail, 'Original'),
+          findsOneWidget,
+        );
+        expect(
+          find.widgetWithText(FocusVersionThumbnail, 'Room photo 2'),
+          findsOneWidget,
+        );
+        expect(
+          find.byTooltip('Open image full screen').hitTestable(),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('workspace-generate')).hitTestable(),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+        expect(store.designsFor(room.id), hasLength(7));
+        expect(store.workspaceLayout.toMap(), isEmpty);
+      },
+    );
+  }
+
   for (final size in [const Size(390, 844), const Size(1280, 900)]) {
     testWidgets(
       'dragging divider at $size resizes both panes, preserves drafts and tabs, and resets',
