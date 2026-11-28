@@ -1,5 +1,99 @@
 # Product and research reference
 
+## Distribution and BYO-key pricing — researched 28 November 2026
+
+Owner wants a modest paid launch, alternatives to Play's tester recruitment,
+and time/usage-limited evaluation. These are **researched options and proposed
+prices**, not selected products or implemented payment/trial controls. Private
+APK 1.0.20, owner projects and provider connections are unchanged.
+
+| Distribution route | Current position and tradeoff |
+| --- | --- |
+| Direct signed APK + website checkout | No Play production-test gate. Users allow installation from the chosen source; we supply download/update/support. Payment onboarding and Android verification are separate. Small invited beta candidate, with less discovery and installation trust than a store. |
+| Hosted HTTPS web app | No store closed test. Shared Flutter web source exists; public hosting, mobile camera/storage and project portability need acceptance. Current localhost is not a public service. |
+| Samsung Galaxy Store | Own commercial-seller verification/app certification, including free apps; not Google's 12-tester gate. Samsung audience. Samsung Checkout retains 20% of net app/IAP proceeds and 15% for subscriptions, before customary deductions/custom agreements. |
+| Google Play | New personal accounts created after 13 November 2023 still need 12 testers continuously opted in for 14 days, then production-access review. Internal distribution exists before production access. Keep as a later broad-reach route. |
+
+Sources: [Android distribution](https://developer.android.com/distribute/marketing-tools/alternative-distribution),
+[Play testing](https://support.google.com/googleplay/android-developer/answer/14151465),
+[Samsung seller setup](https://developer.samsung.com/galaxy-store/prepare.html),
+[Samsung revenue share](https://developer.samsung.com/sdp/news/en/2025/03/13/new-revenue-share-model-for-galaxy-store).
+
+Direct APK is not permanently registration-free. Current
+[Android guidance](https://developer.android.com/developer-verification/guides/distributor-resources)
+says verification began in selected stores/regions on 30 September 2026 and
+expands globally across sources in 2027; its latest timeline starts participating
+stores in January and other stores by March. Limited distribution is up to 20
+devices; unregistered installs have a separate advanced flow. Full-distribution
+console setup has identity checks and a US$25 fee:
+[official console guide](https://developer.android.com/developer-verification/guides/pdf-guides/adc-guide.pdf).
+Recheck the exact Australian install path before public sale. Amazon's Android-
+phone Appstore ended support on 20 August 2025; Fire devices are separate.
+[Amazon announcement](https://developer.amazon.com/apps-and-games/blogs/2025/02/upcoming-changes-to-amazon-appstore-for-android-devices-and-coins-program).
+
+| Comparison | Published offer checked; not an Australian Android checkout quote |
+| --- | --- |
+| DecAI | US iOS description: US$6.99/week, US$59.99/year or US$129.99 lifetime. Web separately advertises generation quotas/credit packs. [US iOS](https://apps.apple.com/us/app/ai-home-design-interior-decai/id6502747597), [web](https://decai.ai/). |
+| Remodel AI | US iOS catalogue includes monthly US$6.99–9.99 and yearly US$39.99–89.99 plus weekly offers; multiple entries do not establish the offer shown to a particular buyer. FAQ: limited trial renders then subscription. [US iOS](https://apps.apple.com/us/app/remodel-ai-home-design/id6446040791), [FAQ](https://remodelai.app/faqs/). |
+| Renovate AI | Website yearly promotion: $5/$10/$33 per month equivalent, billed yearly, with differing usage levels. Actual currency, total, tax and Android offer need checkout confirmation. [Pricing](https://studio.renovateai.app/pricing). |
+| EasyRender | Explicit BYO fal.ai key; advertised $6.99/month, $59/year, $159 one-time, plus direct provider bills. Website dollar currency not independently confirmed at checkout. Evidence of an existing flat tool fee + BYO model, not tested success/quality. [Official site](https://easyrender.app/). |
+| RoomScape AI | Appostar UK describes direct-provider BYO-key Chrome extension with rooms/history/compare; in testing and listing pending. Close workflow, not evidence of released adoption/revenue. [Official page](https://www.appostar.co.uk/roomscape.html). |
+
+Play developer listings identify DecAI / COOL SUMMER LIMITED in Hong Kong,
+Renovate AI / TRIAL AND ERROR INC in Boston, US, and Remodel AI / ReImage AI Inc
+in Nevada, US. Publisher addresses do not establish founders' nationality,
+customer locations, model training data or processing location.
+[DecAI](https://play.google.com/store/apps/details?hl=en_US&id=ai.interior.design.home.renovation.app),
+[Renovate](https://play.google.com/store/apps/details?hl=en_CA&id=app.renovateai),
+[Remodel](https://play.google.com/store/apps/details?id=ai.reimage.remodel).
+Indie BYO room redesign also exists: this
+[re-do.ai creator's Reddit post](https://www.reddit.com/r/vibecoding/comments/1q1v2cc/i_created_redoai_to_reimagine_your_house_and/)
+advertises two credits or a personal key. It is a creator claim, not verified
+revenue/geography. Reddit can provide feedback/recruitment; it is not app
+distribution, checkout or entitlement infrastructure. No outreach was sent.
+
+Proposed simple evaluation: seven free days, one project/two rooms, starting on
+first real project use. Then choose **one** paid experiment: A$9.99 once for the
+current major-version Standard BYO tools, or A$4.99 for a 90-day design pass
+with explicit renewal/no automatic recurring charge. Owner has not approved
+these prices/limits. Charge for tools/workflow; user pays their API provider
+separately. No normal AI subscription/login or app licence implies API credit.
+Do not add duplicate per-image charges as though we supplied their BYO usage.
+Nontechnical key setup is a real adoption hurdle; keep the offline sample.
+
+On expiry, retain originals, designs, viewing and backup/export; disable new
+paid work and offer renewal/unlock. Do not blur/delete/confiscate saved results.
+Room/time limits suit evaluation; future owner-funded AI needs separately capped
+credits. Avoid many tiers and $1 micropayments initially because fixed checkout
+fees/support weigh heavily on tiny payments. All prices are unvalidated proposals.
+
+Needed implementation: software entitlements separate from AI keys/TesterAllowance;
+redeem/restore activation, device policy, authoritative expiry, bounded offline
+grace, refund/revocation handling and checks across setup/workspace/camera/polish.
+An emailed activation licence can avoid mandatory app accounts. Minimal licensing
+data can be hosted while photos still go directly to providers. Local-clock or
+reinstall counters alone are weak controls; no licensing scheme is tamper-proof.
+
+Gumroad candidate: direct-link fee 10% + US$0.50, Discover 30%, no monthly platform
+fee. Software keys/purchase/subscription status are supported; enforcement remains
+our implementation. Seller identity/payout onboarding is still needed.
+[Pricing](https://gumroad.com/pricing),
+[licensing API](https://gumroad.com/help/article/76-license-keys).
+Keep direct and store checkout compliant with their own channel/regional rules:
+[Play payments](https://support.google.com/googleplay/android-developer/answer/9858738),
+[current fee programmes](https://support.google.com/googleplay/android-developer/answer/112622).
+Do not start new Lemon Squeezy onboarding: its official docs say new sign-ups are
+closed and the service winds down 31 March 2027.
+[Official FAQ](https://docs.lemonsqueezy.com/migration/faq).
+
+Next decision: one-off unlock versus expiring pass, trial limits and checkout/
+hosting/support choices. Before paid beta, finish production signing/update path,
+privacy/support destinations and real feedback delivery. Demonstrate an honest
+kitchen before/after/refinement and saved-project workflow to invited Android DIY
+renovators comfortable with API keys. Community outreach requires checking each
+group's promotion rules; early genuine users can later help meet Play testing.
+No account, payment, website, deployment, public post or customer service activated.
+
 ## Per-result AI cost estimates — 23 November
 
 The owner requested costs beside analysis and generated images, rather than only

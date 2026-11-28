@@ -5,6 +5,19 @@ Current task list after the full code/conversation/design audit, updated through
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 [current capabilities and limits](FEATURE_STATUS.md) are recorded separately.
 
+## Commercial planning — 28 November 2026
+
+- [x] Check current Play/direct APK/web/Galaxy distribution, verification changes,
+  competitor offers/publisher countries and comparable BYO-key products. Record
+  sources and proposed trial/licensing in [product notes](docs/PRODUCT_NOTES.md#distribution-and-byo-key-pricing--researched-28-november-2026).
+- [ ] Owner choose paid model (suggested experiment: A$9.99 current-version unlock
+  or A$4.99/90-day pass) and trial scope. No prices/terms accepted or coded yet.
+- [ ] Implement software licence/trial activation, expiry/restore/refund/device
+  handling and bounded offline validation separately from provider keys/tester AI
+  allowance. Retain viewing/export of existing work after expiry; no retroactive blur.
+- [ ] Select checkout, support and hosting; finish public signing/update/privacy/
+  feedback requirements before paid distribution. No external service activated.
+
 ## Active follow-up and next acceptance pass — 25 November
 
 ### Requested APK 1.0.20 and verified current batch
