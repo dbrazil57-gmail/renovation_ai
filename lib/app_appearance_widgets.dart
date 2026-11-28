@@ -46,7 +46,9 @@ class _AppAppearanceSettingsCardState extends State<AppAppearanceSettingsCard> {
         childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Preview a theme. Room-design palettes stay separate.'),
+          const Text(
+            'RenoImagineAI green matches the logo. Choose another theme any time. Room-design palettes stay separate.',
+          ),
           const SizedBox(height: 6),
           Wrap(
             spacing: 6,

@@ -1,6 +1,14 @@
 import 'package:material_ui/material_ui.dart';
 
 enum AppThemeChoice {
+  brandGreen(
+    'RenoImagineAI green',
+    0xFF24695D,
+    0xFF173034,
+    0xFFEFF6F3,
+    0xFFFBFEFC,
+    0xFF193A34,
+  ),
   warmOlive(
     'Warm olive',
     0xFF706B3E,
@@ -37,6 +45,20 @@ enum AppThemeChoice {
 
   final String label;
   final int accent, canvas, paper, panel, ink;
+
+  static AppThemeChoice fromSaved(Object? value) {
+    final saved = value is Map ? value : const {};
+    final selected = values
+        .where((choice) => choice.name == saved['theme'])
+        .firstOrNull;
+    // Adopt the approved brand in place of the legacy default. An explicit
+    // choice made in the new picker, including olive, remains the user's choice.
+    if (selected == warmOlive && saved['brandThemeVersion'] != 1) {
+      return brandGreen;
+    }
+    return selected ?? brandGreen;
+  }
+
   const AppThemeChoice(
     this.label,
     this.accent,
@@ -67,7 +89,7 @@ class AppAppearance extends ThemeExtension<AppAppearance> {
 
   static AppAppearance of(BuildContext context) =>
       Theme.of(context).extension<AppAppearance>() ??
-      AppThemeChoice.warmOlive.colours;
+      AppThemeChoice.brandGreen.colours;
 
   @override
   AppAppearance copyWith({

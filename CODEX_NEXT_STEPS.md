@@ -1,5 +1,22 @@
 # RenoImagineAI next steps
 
+## Logo-matched app theme - 28 November 2026
+
+- [x] Add RenoImagineAI green as the sixth appearance and the default: logo dark
+  teal shell, mint highlights, pale green surfaces and contrasting green buttons.
+  Keep icon 06/name/taglines unchanged and do not alter room-design palettes.
+- [x] Adopt the brand for legacy/default olive while preserving alternative saved
+  themes. An explicitly reselected olive stays selected after reopening.
+- [x] All 499 regression tests pass, including theme retention and readable
+  contrast checks. Static analysis and release web build pass; inspect actual
+  phone/desktop Projects/workspace captures. Chrome `7b0e7be2d5` uses the same
+  localhost:7357/profile. No APK requested or built.
+- [ ] Owner review the colours in Chrome; select Settings > App appearance >
+  RenoImagineAI green if a previously selected alternative is still active.
+- [ ] Once the visual trial is accepted, refresh Help/store media with the chosen
+  palette before the next requested APK/store capture. Current recorded clips
+  retain the preceding appearance; the Help player itself uses the new theme.
+
 ## Australian design options - 28 November 2026
 
 - [x] Research current Australian design directions and local climate/planting

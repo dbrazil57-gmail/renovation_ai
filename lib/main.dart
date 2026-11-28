@@ -256,15 +256,40 @@ class _RenovisionAppState extends State<RenovisionApp> {
 }
 
 ThemeData buildRenovisionTheme({
-  AppThemeChoice choice = AppThemeChoice.warmOlive,
+  AppThemeChoice choice = AppThemeChoice.brandGreen,
 }) {
   final colours = choice.colours;
+  final seeded = ColorScheme.fromSeed(
+    seedColor: colours.accent,
+    brightness: Brightness.light,
+  );
+  final scheme = choice == AppThemeChoice.brandGreen
+      ? seeded.copyWith(
+          primary: colours.accent,
+          onPrimary: Colors.white,
+          primaryContainer: const Color(0xFFC4EFE2),
+          onPrimaryContainer: brandDarkTeal,
+          secondary: const Color(0xFF2F6B5F),
+          onSecondary: Colors.white,
+          secondaryContainer: brandMint,
+          onSecondaryContainer: brandDarkTeal,
+          tertiary: const Color(0xFF3C6A59),
+          onTertiary: Colors.white,
+          tertiaryContainer: const Color(0xFFD0EADD),
+          onTertiaryContainer: const Color(0xFF10382A),
+          surface: colours.panel,
+          onSurface: colours.ink,
+          surfaceContainerLow: colours.paper,
+          surfaceContainer: const Color(0xFFE5F0EA),
+          surfaceContainerHigh: const Color(0xFFDCECE5),
+          surfaceContainerHighest: const Color(0xFFD3E5DC),
+          outline: const Color(0xFF647E75),
+          outlineVariant: const Color(0xFFBDCEC7),
+        )
+      : seeded;
   final base = ThemeData(
     useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: colours.accent,
-      brightness: Brightness.light,
-    ),
+    colorScheme: scheme,
     extensions: [colours],
     scaffoldBackgroundColor: colours.paper,
     snackBarTheme: const SnackBarThemeData(showCloseIcon: true),

@@ -1,5 +1,20 @@
 # RenoImagineAI feature status
 
+## Logo-matched app colours - 28 November 2026
+
+RenoImagineAI green joins the five existing themes and becomes the default. The
+shell matches the icon's dark teal (#173034); mint (#91DFCC) highlights, pale
+green-tinted surfaces and darker green buttons coordinate the shared app UI.
+Text on mint is dark, with white labels reserved for sufficiently dark buttons.
+Existing alternate theme selections survive; legacy olive adopts the new default,
+and choosing olive again persists. Appearance remains a device setting, separate
+from room palettes, project files and AI keys. Icon/name/taglines stay unchanged.
+Chrome source **`7b0e7be2d5`** includes the trial at the same localhost:7357.
+All **499 tests pass**; analysis, all-theme text/button contrast and release web
+build pass. Phone and wide-screen widget previews were visually inspected.
+Current installed APK and recorded Help/store media retain their previous
+appearance until the approved palette is packaged/refreshed.
+
 ## Australian design context - 28 November 2026
 
 Five Australian style influences join the existing 23 (28 total): Contemporary,

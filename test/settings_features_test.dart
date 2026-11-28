@@ -38,11 +38,27 @@ class LocatedBox extends MemoryBox {
 }
 
 void main() {
+  test('brand default adopts legacy olive while explicit alternatives remain restorable', () async {
+    final records = AppearanceRecords(), photos = MemoryBox();
+    await records.put('settings:appearance', {'theme': 'warmOlive'});
+    final store = RenovisionStore(records: records, photos: photos);
+    expect(store.appearance.value, AppThemeChoice.brandGreen);
+    await store.setAppTheme(AppThemeChoice.warmOlive);
+    store.dispose();
+    final reopened = RenovisionStore(records: records, photos: photos);
+    expect(reopened.appearance.value, AppThemeChoice.warmOlive);
+    reopened.dispose();
+    expect(
+      AppThemeChoice.fromSaved({'theme': 'forestGreen'}),
+      AppThemeChoice.forestGreen,
+    );
+    expect(AppThemeChoice.fromSaved(null), AppThemeChoice.brandGreen);
+  });
   test('appearance persists, falls back safely and never marks project files dirty or changes room choices', () async {
     final records = AppearanceRecords(), photos = MemoryBox();
     await records.put('settings:appearance', {'theme': 'unknown-legacy-theme'});
     final store = RenovisionStore(records: records, photos: photos);
-    expect(store.appearance.value, AppThemeChoice.warmOlive);
+    expect(store.appearance.value, AppThemeChoice.brandGreen);
     final project = await store.createProject('Existing home');
     final room = await store.createRoom(
       projectId: project.id,
@@ -156,7 +172,7 @@ void main() {
       await tester.ensureVisible(choice);
       await tester.tap(choice);
       await tester.pumpAndSettle();
-      expect(store.appearance.value, AppThemeChoice.warmOlive);
+      expect(store.appearance.value, AppThemeChoice.brandGreen);
       expect(find.textContaining('Theme could not be saved'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },

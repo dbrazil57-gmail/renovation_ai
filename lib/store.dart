@@ -56,7 +56,10 @@ class RenovisionStore extends ChangeNotifier {
   }
 
   Future<void> setAppTheme(AppThemeChoice choice) async {
-    await records.put('settings:appearance', {'theme': choice.name});
+    await records.put('settings:appearance', {
+      'theme': choice.name,
+      'brandThemeVersion': 1,
+    });
     // Device appearance is not a project edit or a portable-file revision.
     appearance.value = choice;
   }
@@ -80,16 +83,7 @@ class RenovisionStore extends ChangeNotifier {
             }
           };
     final savedAppearance = records.get('settings:appearance');
-    appearance = ValueNotifier(
-      AppThemeChoice.values
-              .where(
-                (choice) =>
-                    choice.name ==
-                    (savedAppearance is Map ? savedAppearance['theme'] : null),
-              )
-              .firstOrNull ??
-          AppThemeChoice.warmOlive,
-    );
+    appearance = ValueNotifier(AppThemeChoice.fromSaved(savedAppearance));
     documents = ProjectDocuments(
       encode: (id) => backupFor(id).encode(),
       autosave: () => autosaveEnabled,

@@ -1,5 +1,22 @@
 # Product and research reference
 
+## Logo-matched app theme - 28 November
+
+Owner asks to try the logo green throughout the app, or adjust the logo to match
+the existing app. Prefer applying the approved dark-teal/mint identity throughout
+the app while retaining the approved 06 camera/home icon, name and taglines.
+Use dark teal #173034 for headers/workspace, rich green #24695D for white-labelled
+actions, mint #91DFCC for supporting selected states with dark labels, and pale
+green-tinted paper/cards. Keep semantic error colours and neutral image-viewer
+backgrounds appropriate to their functions. The five other appearance options
+remain available; room design palettes are independent.
+
+The old olive default adopts the brand on startup. An alternative saved theme
+remains explicit; reselecting any theme writes a small appearance-version marker,
+so choosing olive again is respected on future restarts. No automatic record
+rewrite, project/image migration, API-key change or public release is required.
+This is a visual trial, subject to the owner's Chrome review before another APK.
+
 ## Australian design and landscape context - 28 November
 
 Owner wants Australian room/outdoor options as part of the Australian-designed

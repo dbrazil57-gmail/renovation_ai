@@ -1,5 +1,33 @@
 # Testing and storage reference
 
+## Logo-matched green theme - 28 November 2026
+
+Chrome source **`7b0e7be2d5`**: **499 tests pass**, static analysis and release web
+build pass. Existing all-theme checks verify body text and white button labels
+have at least 4.5:1 contrast. Persistence checks cover legacy olive adopting the
+brand, explicitly reselected olive and saved alternative themes surviving restart,
+failed saves retaining the current theme, enlarged mobile text and no project-file
+dirtying or room-palette changes. Real widget captures of Projects/workspace at
+390 x 844 and 1280 x 900 were visually inspected under ignored
+`output/design-review/brand-green/`, using synthetic sample data and no paid AI.
+
+Refresh the same normal Chrome tab/profile at http://localhost:7357/. The new
+default replaces legacy olive. If an alternative was selected previously, choose
+Settings > App appearance > RenoImagineAI green. Existing five themes remain.
+
+1. Inspect Projects, room setup, workspace, Style/Refine tabs, send/review dialogs
+   and Settings: dark teal shell, pale green surfaces and green/mint controls
+   should coordinate with icon 06. White action text must remain readable; mint
+   selected controls use dark text. Photo contents/palettes must be unchanged.
+2. Switch to olive, leave Settings and reopen/reload. It should stay olive. Repeat
+   with another theme, then select RenoImagineAI green again. No project data or
+   room palette should change, and device appearance must not dirty a project file.
+3. Keep normal keyboard/portrait/landscape checks. Fullscreen photo/camera views
+   may retain neutral black backgrounds to support image viewing.
+
+No APK is built for this visual trial. Installed phone colours update only with
+the next requested APK; screenshots use disposable local sample data.
+
 ## Australian design options - 28 November 2026
 
 Use the same normal Chrome profile at http://localhost:7357/. No APK was requested

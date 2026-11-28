@@ -1,5 +1,15 @@
 # RenoImagineAI
 
+Logo-matched theme, **28 November 2026**: **RenoImagineAI green** uses the icon's
+dark teal for headers/workspace, mint selected states, pale green-tinted surfaces
+and darker green action buttons with readable white labels. It replaces the old
+olive default. Settings > App appearance keeps all six themes; choosing olive
+again is retained on restart. Existing alternative colour choices are preserved.
+Room-design palettes, photos, project data and AI connections are unchanged.
+Chrome **`7b0e7be2d5`** at http://localhost:7357/ includes this visual trial.
+All **499 tests pass**; analysis, readable-contrast checks and the release web
+build pass. Actual phone/desktop widget previews were inspected with sample data.
+
 Australian design update, **28 November 2026**: Style now has an **Australian
 styles** shortcut with Contemporary, Coastal, Bushland retreat, Heritage and
 Tropical Australian influences. The optional **Australian setting** panel adds a
@@ -8,7 +18,7 @@ analysis and new-design briefs. Choices save with each room and design recipe,
 including portable projects. Existing rooms stay global until selected; focused
 saved-design updates/precision do not reapply this broader context. See the
 [acceptance steps](docs/TESTING_GUIDE.md#australian-design-options---28-november-2026).
-Chrome build **`2180356fa6`** is ready at http://localhost:7357/. **498 tests pass**,
+That Australian-options Chrome build was **`2180356fa6`**. Its **498 tests passed**,
 including seven new Australian-setting checks; static analysis and release web
 build pass. Actual model/native-planting quality needs the owner's normal AI test.
 
