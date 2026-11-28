@@ -1,5 +1,16 @@
 # RenoImagineAI next steps
 
+## Softer app and logo palette review - 28 November 2026
+
+- [x] Owner identifies bright mint as the problem and allows logo recolouring.
+  Keep RenoImagineAI, icon 06 geometry and both taglines.
+- [x] Prepare four sample UI/logo alternatives: A Eucalyptus & stone,
+  B Navy & limestone, C Charcoal & bronze, D Clay & ivory. Use native vectors
+  and actual app body/workspace widgets with disposable sample data.
+- [ ] Owner choose a palette; apply it to app/theme and brand assets, then verify
+  contrast, saved appearance, Chrome and refreshed Help/store media as appropriate.
+  Current Chrome stays on the previous green trial; no APK requested here.
+
 ## Logo-matched app theme - 28 November 2026
 
 - [x] Add RenoImagineAI green as the sixth appearance and the default: logo dark

@@ -1,5 +1,22 @@
 # Product and research reference
 
+## Softer palette review - 28 November
+
+Owner says the mint in the green trial is too bright and explicitly permits
+changing the logo colour. Keep the approved RenoImagineAI name, icon 06 geometry
+and taglines. Prepare four softer app + logo comparisons before another palette
+is applied: A Eucalyptus & stone (muted green/warm neutrals), B Navy & limestone,
+C Charcoal & bronze, D Clay & ivory. Use neutral pages/cards and restrained colour
+for buttons/selection; each logo uses a matching muted accent instead of mint.
+
+Local native-vector/widget previews are under ignored
+`output/design-review/muted-palette-options/`: a four-way Projects comparison and
+individual Projects/workspace captures, using disposable sample data. No AI call,
+owner-data access, source-theme change or APK is needed for this design review.
+Current Chrome remains the previous green trial until the owner chooses. A is
+the suggested continuation of the Australian natural direction; no choice is
+approved yet. Refresh Help/store media only after a palette is settled.
+
 ## Logo-matched app theme - 28 November
 
 Owner asks to try the logo green throughout the app, or adjust the logo to match
