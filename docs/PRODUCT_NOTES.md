@@ -1,5 +1,69 @@
 # Product and research reference
 
+## Discovery, delivery and one-app trials — 28 November clarification
+
+Owner prioritises people finding the app and asks which sites combine hosting,
+payment and automated access. Recommendation: Google Play as the main general-
+Android discovery route, Apple after native parity, Samsung as an optional
+additional Samsung-focused channel. If Play recruitment delays launch, a Payhip
+or Gumroad page can deliver a direct APK for early users. A hosted sales page is
+not equivalent to a mobile-store audience and does not guarantee discovery/sales.
+No final distribution selection or developer/seller account registration yet.
+
+Store-managed route: Google/Apple/Samsung host platform builds and provide
+checkout, purchase history and entitlement APIs. Integrate the relevant billing/
+restore/verification code; no manually emailed seller licence is normally needed.
+Store-provided subscription trial offers can renew into paid subscriptions, so
+do not describe them as no-card/no-renewal tester access. A free limited app with
+an explicit one-off upgrade is another design; its evaluation controls still
+need implementation. Google also documents non-auto-renewing prepaid plans;
+Apple describes non-subscription time trials with a zero-priced trial IAP.
+[Play subscriptions](https://developer.android.com/google/play/billing/subscriptions),
+[Play purchase verification](https://developer.android.com/google/play/billing/security),
+[Apple subscriptions](https://developer.apple.com/app-store/subscriptions/),
+[Apple review/payment/trial rules](https://developer.apple.com/app-store/review/guidelines/),
+[Samsung IAP](https://developer.samsung.com/iap/overview.html).
+Use each store's permitted purchase mechanism for that build; an external licence
+screen is not a universal substitute for store billing, especially Apple's 3.1.1.
+The earlier private/public signed-licence proposal is an option for independent
+activation, not a requirement to run our own key issuer on every store.
+
+Direct storefront route: Payhip hosts software files and download pages and
+supports automatic delivery of either generated software codes or a list supplied
+by the seller. No owner needs to be awake to email codes individually. Its current
+list limit is 10,000 short keys/100 characters each; these are redemption codes,
+not necessarily a full signed entitlement document. Its documentation warns that
+sales can continue without delivering a key if a supplied list runs out; use
+automatic generation or constrain inventory. Expiry/room limits/recovery remain
+our application/licensing-service responsibility. Keep its product secret off
+public APKs and use a supported server/public-app integration.
+[Payhip delivery](https://payhip.com/features/sell-digital-downloads),
+[Payhip licence options](https://help.payhip.com/article/317-software-license-keys-new).
+Gumroad automatically issues software keys in receipt/download pages but does
+not import a seller's own list of keys. Its API exposes purchase state; app
+enforcement remains ours. [Gumroad licensing](https://gumroad.com/help/article/76-license-keys).
+Both can host the current approximately 86 MB Android package; published free
+Gumroad file allowance is 250 MB and Payhip's per-file allowance is 5 GB.
+[Gumroad limits](https://gumroad.com/help/article/289-file-size-limits-on-gumroad).
+
+Recommend one installed app per platform: trial/free state > purchase/redeem >
+Standard state, retaining all projects/photos/choices. Two storefront offers can
+deliver the same direct APK with different entitlements; they do not require two
+app identities. Android and iOS remain different builds of the shared source.
+Multiple stores are possible later but need channel billing, update/signing and
+purchase-restore acceptance; do not assume one store's receipt unlocks another.
+
+Distinguish a permanently free sample/viewer from an expiring evaluation. The
+sample can work without activation. A timed/room-limited trial still needs a
+remembered eligibility/expiry record even if it is a separate free download;
+separating APKs does not solve reinstall abuse. Store offer eligibility or a
+verified direct-trial record provides the appropriate foundation. Subscription
+free trials may convert into a charge; beta invitations can stay no-card/no-charge.
+BYO API costs remain separate from software download/trial access.
+
+This is research/planning only. No new billing library, app restriction, store
+listing, licence generation, payment service, separate free APK or deployment.
+
 ## Signed access, hosted checkout and repeat trials — 28 November refinement
 
 Owner accepts activation-code direction, wants hosted transaction handling with

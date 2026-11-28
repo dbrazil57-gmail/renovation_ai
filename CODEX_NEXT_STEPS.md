@@ -7,6 +7,13 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Commercial planning — 28 November 2026
 
+- [x] Clarify discovery-first store selection, direct storefront automatic APK/
+  code delivery, and one installed app with trial/Standard states. Store builds
+  can use store purchases rather than separately emailed licence codes; direct
+  storefronts still need in-app enforcement. [Current clarification](docs/PRODUCT_NOTES.md#discovery-delivery-and-one-app-trials--28-november-clarification).
+- [ ] Choose first delivery channel before adding its purchase adapter. Keep
+  shared entitlements, channel-specific billing/restore and no-card tester access
+  distinct from auto-renewing subscription trial offers. No separate free app needed.
 - [x] Clarify signed licences (server private signing key/app public verification
   key), authoritative expiry and hosted checkout with minimal retained data.
   Record verified-email trial recovery, optional marketing consent and Android
