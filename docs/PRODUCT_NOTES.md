@@ -1,5 +1,19 @@
 # Product and research reference
 
+## Header logo size comparison - 28 November
+
+Owner asks to try 72px and 96px artwork from the brand sheet. Render both beside
+the current 44px header mark, using the selected Eucalyptus & stone palette and
+disposable sample app body. The vector has enough blank padding to trim around
+the symbol: centring/cropping the empty margin allows both alternatives inside
+the existing 52px toolbar without reducing photo/workspace height. Icon 06
+geometry and native launcher assets remain unchanged.
+
+Previews are under ignored `output/design-review/logo-sizes-72-96/`, including a
+three-way comparison and individual phone captures. Suggest 72px for balance;
+96px is the more prominent alternative. No source/Chrome header change is made
+before the owner chooses a size. Current Chrome remains source 366507ba86.
+
 ## Selected eucalyptus palette and Australian-style clarification - 28 November
 
 Owner chooses A Eucalyptus & stone and notes it suits an Australian-designed app.

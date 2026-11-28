@@ -1,5 +1,13 @@
 # RenoImagineAI next steps
 
+## Header logo sizes - 28 November 2026
+
+- [x] Preview current 44px against 72px and 96px artwork in the Eucalyptus & stone
+  header, using native widgets/vectors and disposable sample data. Trim blank
+  padding so the alternatives keep the existing 52px toolbar and photo space.
+- [ ] Owner choose 72px or 96px; then apply the header treatment and verify narrow
+  layouts. Current source/Chrome remains unchanged during comparison; no APK.
+
 ## Eucalyptus & stone and global Australian style - 28 November 2026
 
 - [x] Owner selects Eucalyptus & stone, says mint was too bright and permits logo
