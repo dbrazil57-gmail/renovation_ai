@@ -9,7 +9,21 @@ mobile-marketplace preference, subject to commercial-seller approval and a finis
 review-ready app. Google Play remains the main broader Android target; Apple
 follows native parity. This refines the earlier Samsung-as-extra recommendation.
 If store approval delays launch, Payhip/Gumroad can deliver an early direct APK.
-No final distribution selection or developer/seller account registration yet.
+Working direction is now Samsung first, subject to commercial-seller eligibility
+and review; no developer/seller account has been registered. Samsung sales do not
+create Payhip sales or a Gumroad account balance: their discovery thresholds
+concern transactions on their own platforms. Those storefronts are optional,
+not a required next stage after earning a certain amount on Samsung.
+
+A Samsung-only launch can handle discovery, delivery, updates and purchases with
+Samsung IAP integration. Keep the customer journey in that channel; do not use its
+listing simply to redirect buyers elsewhere. Samsung's metadata rules prohibit
+promotion of other app stores/mobile platforms.
+[Samsung distribution guide](https://developer.samsung.com/galaxy-store/distribution-guide.html?lang=en).
+Expand only for a concrete audience need: other Android brands through Play or
+iPhone users through Apple; direct/desktop sales if requested later. Galaxy Store
+runs on Samsung Android phones/tablets, so Samsung alone will not cover those
+other device audiences. A marketplace presence is not a guarantee of downloads.
 
 Payhip and Gumroad are general digital-product storefronts, not specialist phone
 app stores. Their own discovery is conditional: Payhip requires at least US$10 in

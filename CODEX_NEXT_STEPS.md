@@ -7,6 +7,13 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Commercial planning — 28 November 2026
 
+- [x] Working launch direction: Samsung first, subject to seller eligibility and
+  app approval. Payhip/Gumroad are optional independent channels; Samsung sales
+  do not accrue to their internal discovery thresholds. No need to redirect
+  Samsung customers to a second seller or expand after an arbitrary sales total.
+- [ ] Check Samsung commercial-seller eligibility, final signing/update/data
+  migration and review requirements; plan Samsung IAP purchase/restore/trial
+  integration for the first store build. No seller account or submission started.
 - [x] Refine discovery recommendation: Payhip/Gumroad are generic storefronts with
   prior-sale discovery gates; Samsung Galaxy Store is a first mobile-store
   candidate for no sign-up/annual fee, subject to commercial approval. Keep Play
@@ -16,7 +23,7 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
   code delivery, and one installed app with trial/Standard states. Store builds
   can use store purchases rather than separately emailed licence codes; direct
   storefronts still need in-app enforcement. [Current clarification](docs/PRODUCT_NOTES.md#discovery-delivery-and-one-app-trials--28-november-clarification).
-- [ ] Choose first delivery channel before adding its purchase adapter. Keep
+- [ ] Confirm Samsung seller eligibility before adding its purchase adapter. Keep
   shared entitlements, channel-specific billing/restore and no-card tester access
   distinct from auto-renewing subscription trial offers. No separate free app needed.
 - [x] Clarify signed licences (server private signing key/app public verification
