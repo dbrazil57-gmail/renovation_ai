@@ -2,6 +2,7 @@
 
 Current brand, **28 November 2026**: owner selected **RenoImagineAI**, the numbered
 **06 camera/house** logo concept, dark teal/mint/white and **Snap. Imagine. Renovate.**
+The secondary brand line is **Australian designed. Globally inspired.**
 Public app/platform names, vector/launcher assets and current Help/listing material
 now use this brand. This is the same app: package IDs, Hive/vault names, project
 formats and existing settings stay compatible. New Gallery exports use

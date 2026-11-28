@@ -2,4 +2,4 @@
 /// their existing identifiers so updating the name cannot orphan saved work.
 const appName = 'RenoImagineAI';
 const appTagline = 'Snap. Imagine. Renovate.';
-const appDescription = 'AI-powered home transformation';
+const appDescription = 'Australian designed. Globally inspired.';

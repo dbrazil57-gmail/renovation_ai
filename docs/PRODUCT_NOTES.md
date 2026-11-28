@@ -6,8 +6,11 @@ Owner chooses **RenoImagineAI** (one word, exact capitalisation). After initiall
 considering a house/image/sparkle and a later checkmark, the owner likes numbered
 02/03/05 and leans to **06 because it contains a camera**. Apply 06 as the working
 camera/home identity, using dark teal, mint and white. Working tagline:
-**Snap. Imagine. Renovate.** Keep just the symbol in launcher icons and use the
-wordmark/tagline in larger material. Do not repeat the unverified 10/10 ratings
+**Snap. Imagine. Renovate.** The owner then confirms name + icon 06, with the
+secondary line **Australian designed. Globally inspired.**, replacing the generic
+AI-powered home transformation line in the brand preview/promotional material.
+Keep just the symbol in launcher icons and use the wordmark/taglines in larger
+material. Do not repeat the unverified 10/10 ratings
 shown on a supplied comparison sheet as measured user evidence.
 
 The reference is recreated as scalable vector geometry in the existing brand
@@ -38,7 +41,7 @@ private reviewer notes. Its offline generation recipe is
 work are in the [release guide](GOOGLE_PLAY_RELEASE.md#samsung-listing-pack---28-november).
 It is clearly labelled sample/draft: historical external AI images and simulated
 Help transactions are not represented as a newly recorded paid in-app generation.
-The initial pack preceded name approval; refresh it with RenoImagineAI. No
+The initial pack preceded name approval; the current pack uses RenoImagineAI. No
 publication, video upload or spend was made. The screenshot supplied is a Samsung Developer
 profile page, separate from commercial seller verification.
 

@@ -33,7 +33,8 @@ been sent. Samsung-first remains conditional on eligibility; its lack of a
 publishing fee does not mean personal-profile registration alone is sufficient.
 
 Owner selected **RenoImagineAI** and the numbered **06 camera/house** logo concept,
-with the working tagline **Snap. Imagine. Renovate.** This supersedes the rejected
+with **Snap. Imagine. Renovate.** and **Australian designed. Globally inspired.**
+as the approved brand text. This supersedes the rejected
 RenoCue suggestion. Name approval does not establish trade-mark/domain clearance
 or Samsung eligibility. Keep the app identity/storage compatible during rebranding.
 
@@ -46,11 +47,13 @@ Retire pre-name drafts from submission; new sample drafts remain subject to fina
 phone capture/release acceptance before upload.
 [Samsung self-check](https://developer.samsung.com/galaxy-store/self-check-list-galaxy.html?lang=en).
 
-Latest branded local draft: `output/samsung-listing-draft/draft-1795857327399029/`,
+Latest branded local draft: `output/samsung-listing-draft/draft-1795857598547053/`,
 including `renoimagineai-samsung-draft.zip`. It contains the title, public copy,
 reviewer notes, camera/home icon, five sample UI screenshots, a 32-second silent
 trailer and provenance. The older pre-name draft remains available locally but
 must not be used for submission. This pack is a review draft, not an upload.
+The closing scene includes both approved brand lines; the previous branded draft
+is retained locally as history.
 
 Samsung registration assets, checked against the
 [Content Publish reference](https://developer.samsung.com/galaxy-store/galaxy-store-developer-api/content-publish-api/reference.html):

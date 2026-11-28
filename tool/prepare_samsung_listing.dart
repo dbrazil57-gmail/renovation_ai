@@ -159,8 +159,10 @@ Future<void> main() async {
       photo: true,
       start: 0,
       seconds: 4,
-      heading: 'Snap. Imagine.\nRenovate.',
-      body: 'Bring your own AI key.\nProvider usage costs extra.',
+      heading: appTagline.replaceFirst('Imagine. ', 'Imagine.\n'),
+      body:
+          '${appDescription.replaceFirst('. ', '.\n')}\n\n'
+          'Bring your own AI key.\nProvider usage costs extra.',
     ),
   ];
   final storyboard = StringBuffer(

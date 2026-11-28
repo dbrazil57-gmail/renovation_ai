@@ -4,7 +4,8 @@
 
 - [x] Owner chooses exact name **RenoImagineAI** and favours numbered concept
   **06 camera + home** after comparing other options. Use the working tagline
-  **Snap. Imagine. Renovate.**; earlier first-logo default is superseded.
+  **Snap. Imagine. Renovate.** and secondary line **Australian designed. Globally
+  inspired.**; earlier first-logo default is superseded.
 - [x] Update public app/feedback/export/help wording, Android/iOS/macOS/Windows/
   Linux labels and web metadata. Preserve internal package/bundle IDs, Hive boxes,
   vaults, method channels, licence audience and `.renovision` formats.

@@ -2,6 +2,12 @@
 
 ## RenoImagineAI branding - 28 November 2026
 
+Wording follow-up: owner confirms icon 06/name and the lines **Snap. Imagine.
+Renovate.** / **Australian designed. Globally inspired.** Brand preview export
+and targeted Dart analysis pass; the Samsung draft was regenerated and fully
+decode-checked. This changes promotional text only; existing Chrome UI, launcher
+geometry, Help recordings and APK are unchanged from the branding batch below.
+
 Source **`2cf9a5920a`** updates the public name, camera/home icon, platform
 metadata, sharing/feedback wording and new Android Gallery folder. App IDs,
 signing configuration, Hive/vault identifiers, licence audience, portable project

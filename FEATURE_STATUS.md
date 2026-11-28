@@ -3,7 +3,8 @@
 ## Approved branding - 28 November 2026
 
 Owner selected **RenoImagineAI**, numbered **06 camera/house** concept and the
-working tagline **Snap. Imagine. Renovate.** Public names and icon assets now use
+tagline **Snap. Imagine. Renovate.** and secondary line **Australian designed.
+Globally inspired.** Public names and icon assets now use
 this brand across the shared app/platform sources. Internal data/app identifiers
 and project formats remain unchanged. Gallery saves created after the next Android
 update go to `Pictures/RenoImagineAI`; the old folder is retained. Desktop/iOS
