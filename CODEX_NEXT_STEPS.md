@@ -7,6 +7,18 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Commercial planning — 28 November 2026
 
+- [x] Clarify signed licences (server private signing key/app public verification
+  key), authoritative expiry and hosted checkout with minimal retained data.
+  Record verified-email trial recovery, optional marketing consent and Android
+  IMEI/serial/device-recall limitations in the
+  [activation refinement](docs/PRODUCT_NOTES.md#signed-access-hosted-checkout-and-repeat-trials--28-november-refinement).
+- [ ] Confirm free tester duration/limits; suggested 30 days, one project/three
+  cumulative room creations, no card. Use server-held verified-email history and
+  invitations; reinstall must recover expiry rather than start a new trial.
+- [ ] Validate signature/expiry/clock rollback/offline grace, cumulative creation
+  counters, refund/revocation, activation recovery and device changes using mocked
+  checkout before real integration. No IMEI/serial collection or automatic
+  marketing enrolment; no unlimited or perfectly enforceable free-trial claim.
 - [x] Record the owner's low-overhead direction: no paid seller plan/sign-up fee,
   sales-based fees, modest BYO positioning and migration freedom. Check Gumroad,
   Payhip Free and Paddle alternatives; no sales platform or price chosen.

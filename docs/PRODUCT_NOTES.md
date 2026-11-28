@@ -1,5 +1,82 @@
 # Product and research reference
 
+## Signed access, hosted checkout and repeat trials — 28 November refinement
+
+Owner accepts activation-code direction, wants hosted transaction handling with
+minimal customer data, optional marketing email later, and free time/room-limited
+test access with controls against reinstalling repeatedly. The duration, limits,
+checkout provider and service hosting are still proposals; no paywall is shipped.
+
+Use a small licence service, not a required separate master phone app. Hosted
+checkout handles card entry and payment. A verified purchase event/lookup creates
+our access record; a tester invitation can create a free access record without
+any card. An opaque activation code is redeemed over HTTPS for a signed licence.
+The private **licence signing** key stays only on the service; the distributed
+app holds its verification public key. This is signature verification, not public-
+key decryption. It is separate from Android package signing and customer AI keys.
+Signed fields can include licence ID, product/app audience, trial/paid plan,
+issued/not-before/expiry timestamps, permitted project/room creations, activation
+binding, policy version and signing-key ID. Do not put unnecessary customer PII
+inside a readable signed token. [JWS](https://www.rfc-editor.org/rfc/rfc7515),
+[expiry claims](https://www.rfc-editor.org/rfc/rfc7519).
+
+The app verifies signature, issuer/audience/device binding and time/limits. Online
+activation/renewal checks authoritative time and refund/revocation status; signed
+tokens expire and have bounded offline grace, including clock-rollback handling.
+Renewal returns a new signed entitlement. Keep creation counters on the service
+across reinstalls and project deletion; deletion must not replenish a cumulative
+trial allowance. A phone-local clock/counter or a signed token alone cannot prove
+one trial per person, enforce revocation instantly offline or prevent modified
+clients. Retain access to viewing/exporting saved work after trial expiry.
+
+Suggested beta: individually issued **30-day tester access**, one project/three
+room creations, no payment card, with feedback/recovery options. This is a longer
+test invitation than the proposed public seven-day evaluation and covers a later
+Play closed-test period if applicable. Verify email using a one-time link/code;
+recover the same server-side trial/expiry after reinstall. Separate testers from
+paid licences and BYO API credentials. Free app access does not fund provider AI;
+the existing offline sample remains usable without an API key. Invitation-only
+issuance, per-email trial history, resend/rate limits and capped activations are
+proportionate first controls. New emails/multiple devices can still evade a
+per-email trial; do not claim perfect prevention or deny legitimate recovery.
+
+Do not request IMEI/serial permissions or add covert hardware fingerprinting.
+Android restricts non-resettable hardware IDs to privileged/carrier/device-owner
+use cases and recommends appropriately scoped identifiers.
+[Android guidance](https://developer.android.com/identity/user-data-ids).
+Ordinary installation IDs are resettable; optional scoped ANDROID_ID has device/
+user/signing-key and reset limits and is not proof of a unique person. No such ID
+is collected by the current app. [Android ID reference](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID).
+Play Integrity device recall can retain trial-abuse flags across reinstall/reset,
+but is currently an eligibility-limited beta requiring production Play Integrity/
+Play Billing usage and a Play-licensed account. It is not a ready control for a
+new direct-download beta. Recheck before any later integration.
+[Official device recall prerequisites](https://developer.android.com/google/play/integrity/device-recall).
+
+Use hosted checkout/merchant-of-record handling so RenoVision never receives or
+stores card numbers/CVV. The payment company still holds billing/transaction
+information; the seller may see order/contact details in its dashboard. Our
+allow-listed licensing record should keep only necessary purchase ID, product,
+access dates/status and recovery email or minimal verified identity reference.
+Do not persist entire payment webhook/API responses, which may contain extra
+customer fields. Owner need not host photo projects or AI keys for licensing.
+[Gumroad customer checkout](https://gumroad.com/help/article/282-how-do-purchases-work-for-my-customers),
+[Gumroad payment processing](https://gumroad.com/help/article/260-your-payout-settings-page).
+
+Marketing permission is separate from purchase, activation and testing. Offer an
+optional unticked email-updates checkbox, retain consent scope/time and honour
+withdrawal. Do not automatically add every buyer/tester to promotional mail;
+necessary receipt/recovery messages should remain factual. The customer email is
+still personal data even if encrypted. ACMA recommends express consent, recording
+it, sender identity and a working unsubscribe path.
+[ACMA marketing consent](https://www.acma.gov.au/avoid-sending-spam).
+
+Implementation sequence: provider-neutral entitlement model and mock-service
+tests; signed verification/activation/recovery UI; server/admin invitation and
+purchase verification; hosted checkout adapter; end-to-end expiry/reinstall/
+refund/device-change checks. Keep signing/checkout secrets off source, logs and
+APK. No account, key generation, backend deployment, email or payment was sent.
+
 ## Low-overhead selling, portable access and staging — 28 November follow-up
 
 Confirmed owner direction: a modest, personally useful BYO renovation tool;
