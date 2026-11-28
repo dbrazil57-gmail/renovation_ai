@@ -5,8 +5,9 @@
 - [x] Preview current 44px against 72px and 96px artwork in the Eucalyptus & stone
   header, using native widgets/vectors and disposable sample data. Trim blank
   padding so the alternatives keep the existing 52px toolbar and photo space.
-- [ ] Owner choose 72px or 96px; then apply the header treatment and verify narrow
-  layouts. Current source/Chrome remains unchanged during comparison; no APK.
+- [x] Owner confirms the current 44px logo after reviewing 72px and 96px.
+  Keep the existing adaptive 36px size on narrow screens and 52px toolbar.
+  No app/Chrome change, media refresh or APK is needed; comparison is closed.
 
 ## Eucalyptus & stone and global Australian style - 28 November 2026
 

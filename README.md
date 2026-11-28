@@ -2,8 +2,8 @@
 
 Current visual direction, **28 November 2026**: **Eucalyptus & stone** replaces
 the bright mint trial. Icon 06/wordmark use muted eucalyptus on forest green;
-the app uses warm stone backgrounds and restrained green controls. The header
-logo is larger while keeping the existing toolbar height. The name and both
+the app uses warm stone backgrounds and restrained green controls. The confirmed
+header logo stays at 44px (36px on narrow screens) in the 52px toolbar. The name and both
 taglines remain: Snap. Imagine. Renovate. / Australian designed. Globally inspired.
 
 Australian is now **one style alongside Japanese, Italian and other styles**,

@@ -10,9 +10,10 @@ the existing 52px toolbar without reducing photo/workspace height. Icon 06
 geometry and native launcher assets remain unchanged.
 
 Previews are under ignored `output/design-review/logo-sizes-72-96/`, including a
-three-way comparison and individual phone captures. Suggest 72px for balance;
-96px is the more prominent alternative. No source/Chrome header change is made
-before the owner chooses a size. Current Chrome remains source 366507ba86.
+three-way comparison and individual phone captures. After reviewing these, the
+owner chooses to keep the current 44px mark (36px on narrow screens) and existing
+52px toolbar. The larger alternatives remain previews only. Current source,
+Chrome 366507ba86 and media stay unchanged; the size comparison is closed.
 
 ## Selected eucalyptus palette and Australian-style clarification - 28 November
 
