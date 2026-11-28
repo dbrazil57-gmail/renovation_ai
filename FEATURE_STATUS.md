@@ -1,5 +1,25 @@
 # RenoImagineAI feature status
 
+## Eucalyptus & stone and global style choices - 28 November 2026
+
+Current selected palette: forest #243C34, muted eucalyptus #9BB29E, action green
+#476452 and warm stone #F5F2EB. Icon 06 and the wordmark share these colours;
+large mint surfaces are removed. Header mark is 44px, or 36px on narrow screens,
+without increasing toolbar height. Device theme ID remains brandGreen so the
+previous trial updates in place; other saved appearance choices remain valid.
+
+There are 24 selectable styles, including one Australian option beside Japanese,
+Italian and the other global influences. Australian styling never selects a
+property country or climate automatically. Native/climate guidance is an optional
+Australian-property setting. Five earlier Australian style IDs remain readable
+in saved rooms/recipes and can be removed from old selections; new pickers hide
+them. Existing data, project formats and room-design palettes are preserved.
+Source **`366507ba86`**: all **500 tests pass**, static analysis, Android
+Kotlin/resource compilation and release web build pass. Eight capture runs and
+six Help checks pass; all seven updated clips fully decode. Current Samsung draft
+has the new icon, screenshots, 32-second promo and Australian-designed/global-style
+copy. Chrome remains localhost:7357. No APK or paid AI acceptance was run.
+
 ## Logo-matched app colours - 28 November 2026
 
 RenoImagineAI green joins the five existing themes and becomes the default. The

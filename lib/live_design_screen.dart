@@ -823,7 +823,9 @@ class _LiveDesignScreenState extends State<LiveDesignScreen>
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                for (final style in designStyles.entries)
+                for (final style in selectableDesignStyles(
+                  existing: draft!.styleIds,
+                ))
                   DropdownMenuItem(
                     value: style.key,
                     child: Text(

@@ -1,12 +1,28 @@
 # RenoImagineAI
 
+Current visual direction, **28 November 2026**: **Eucalyptus & stone** replaces
+the bright mint trial. Icon 06/wordmark use muted eucalyptus on forest green;
+the app uses warm stone backgrounds and restrained green controls. The header
+logo is larger while keeping the existing toolbar height. The name and both
+taglines remain: Snap. Imagine. Renovate. / Australian designed. Globally inspired.
+
+Australian is now **one style alongside Japanese, Italian and other styles**,
+not a separate five-style category. It is available for homes anywhere and does
+not select a country/climate automatically. Optional Australian-property controls
+remain collapsed for users who need them, and previously saved settings/styles
+stay readable. Room-design palettes, projects, photos and provider keys are retained.
+Chrome source **`366507ba86`** serves this batch at http://localhost:7357/.
+All **500 tests pass**; static analysis, Android Kotlin/resource compilation and
+release web build pass. All seven Help clips/posters and the Samsung sample
+listing/demo pack are refreshed. No APK was requested or built.
+
 Logo-matched theme, **28 November 2026**: **RenoImagineAI green** uses the icon's
 dark teal for headers/workspace, mint selected states, pale green-tinted surfaces
 and darker green action buttons with readable white labels. It replaces the old
 olive default. Settings > App appearance keeps all six themes; choosing olive
 again is retained on restart. Existing alternative colour choices are preserved.
 Room-design palettes, photos, project data and AI connections are unchanged.
-Chrome **`7b0e7be2d5`** at http://localhost:7357/ includes this visual trial.
+The preceding mint trial used Chrome source **`7b0e7be2d5`**.
 All **499 tests pass**; analysis, readable-contrast checks and the release web
 build pass. Actual phone/desktop widget previews were inspected with sample data.
 

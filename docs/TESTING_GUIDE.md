@@ -1,5 +1,39 @@
 # Testing and storage reference
 
+## Eucalyptus palette and global Australian style - 28 November 2026
+
+Source **`366507ba86`**: all **500 regression tests pass**, including the corrected
+picker expectation of 24 selectable styles (historical IDs stay readable).
+Static analysis, Android Kotlin/resource compilation and release web build pass.
+Eight capture runs refresh seven Help clips plus phone/desktop widget previews;
+all seven MP4s fully decode, and six post-encoding Help tests pass. Brand exports
+and native-vector resources are refreshed. Logo text/button/body contrast is
+5.23:1 / 6.54:1 / 11.42:1. Existing APK checksum remains unchanged.
+
+Samsung draft media uses the same palette/current recorded widgets. Its 32-second
+1280 x 720 H.264 trailer decodes successfully; the 512px icon, five 390 x 780
+screenshots and contact sheet were inspected. Short/full/reviewer copy measures
+33 / 1,841 / 1,862 UTF-8 bytes. The ZIP contains the twelve top-level draft assets,
+not raw working frames. Current paths are in the release guide.
+
+Refresh the same http://localhost:7357/ profile. Default/previous brand-green
+selection now reads **Eucalyptus & stone**. If another theme is saved, choose it
+under Settings > App appearance. No new APK was requested.
+
+1. Check the softer icon/wordmark, larger header mark, warm stone cards/pages and
+   muted controls on phone/wide layouts. Narrow screens use a 36px mark; normal
+   screens use 44px without increasing the toolbar. Room images/palettes stay intact.
+2. Style has one Australian option in common choices, alongside global styles.
+   Selecting it alone must not activate an Australian property/climate or add the
+   AUSTRALIAN SETTING prompt section. Preview a brief for a non-Australian home.
+3. Australian property (optional) is collapsed. Only explicitly selecting a setting
+   adds local climate/native context. Existing enabled settings remain saved.
+4. Older Australian styles remain named in history/recipes; current old selections
+   have removable Saved style chips. New pickers should not offer five Australian
+   styles. Live view can still display an already-saved legacy selection.
+5. Reopen existing work and check original photos, designs, keys and appearance.
+   Switch another theme and return to Eucalyptus & stone; restart should retain it.
+
 ## Logo-matched green theme - 28 November 2026
 
 Chrome source **`7b0e7be2d5`**: **499 tests pass**, static analysis and release web

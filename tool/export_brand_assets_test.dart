@@ -62,7 +62,7 @@ void main() {
     );
     await text(
       'android/app/src/main/res/values/renovision_brand.xml',
-      '<resources><color name="renovision_icon_background">#173034</color></resources>',
+      '<resources><color name="renovision_icon_background">#${brandRgbHex(brandForestArgb)}</color></resources>',
     );
     for (final version in [26, 33]) {
       await text(
@@ -71,6 +71,14 @@ void main() {
       );
     }
     await write('web/favicon.png', await png(32, rounded: true));
+    final manifest =
+        jsonDecode(await File('web/manifest.json').readAsString()) as Map;
+    manifest['background_color'] = '#${brandRgbHex(brandForestArgb)}';
+    manifest['theme_color'] = '#${brandRgbHex(brandForestArgb)}';
+    await text(
+      'web/manifest.json',
+      const JsonEncoder.withIndent('    ').convert(manifest),
+    );
     await text('web/icons/renovision.svg', appBrandSvg());
     for (final size in [192, 512]) {
       await write('web/icons/Icon-$size.png', await png(size, rounded: true));
@@ -120,14 +128,14 @@ void main() {
     final canvas = ui.Canvas(recorder);
     canvas.drawRect(
       const Rect.fromLTWH(0, 0, 1200, 720),
-      Paint()..color = const Color(0xFFF1F5F2),
+      Paint()..color = const Color(brandPaperArgb),
     );
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         const Rect.fromLTWH(16, 16, 1168, 428),
         const Radius.circular(24),
       ),
-      Paint()..color = brandDarkTeal,
+      Paint()..color = brandForest,
     );
     canvas.save();
     canvas.translate(520, 34);
@@ -161,7 +169,7 @@ void main() {
           TextSpan(text: 'Reno'),
           TextSpan(
             text: 'Imagine',
-            style: TextStyle(color: brandMint),
+            style: TextStyle(color: brandEucalyptus),
           ),
           TextSpan(text: 'AI'),
         ],
@@ -174,13 +182,13 @@ void main() {
       const TextSpan(text: appDescription),
       346,
       size: 20,
-      colour: const Color(0xFFB6CFC9),
+      colour: const Color(0xFFC4CDBF),
     );
     label(
       const TextSpan(text: 'Camera + home symbol at app sizes'),
       468,
       size: 22,
-      colour: brandDarkTeal,
+      colour: brandForest,
     );
     for (final (x, size) in [
       (160.0, 28.0),
@@ -199,7 +207,7 @@ void main() {
           style: const TextStyle(
             fontFamily: 'BrandPreview',
             fontSize: 18,
-            color: brandDarkTeal,
+            color: brandForest,
           ),
         ),
         textDirection: TextDirection.ltr,

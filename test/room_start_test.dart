@@ -170,7 +170,12 @@ void main() {
           ),
         ),
       );
-      expect(find.byType(ChoiceChip), findsNWidgets(designStyles.length));
+      expect(
+        find.byType(ChoiceChip),
+        findsNWidgets(selectableDesignStyles().length),
+      );
+      expect(find.widgetWithText(ChoiceChip, 'Australian'), findsOneWidget);
+      expect(find.widgetWithText(ChoiceChip, 'Bushland retreat'), findsNothing);
       await tester.tap(find.text('Art Deco'));
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('Forest & cream'));

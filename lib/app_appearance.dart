@@ -1,13 +1,15 @@
 import 'package:material_ui/material_ui.dart';
 
+import 'app_brand.dart';
+
 enum AppThemeChoice {
   brandGreen(
-    'RenoImagineAI green',
-    0xFF24695D,
-    0xFF173034,
-    0xFFEFF6F3,
-    0xFFFBFEFC,
-    0xFF193A34,
+    'Eucalyptus & stone',
+    brandActionArgb,
+    brandForestArgb,
+    brandPaperArgb,
+    brandPanelArgb,
+    brandInkArgb,
   ),
   warmOlive(
     'Warm olive',

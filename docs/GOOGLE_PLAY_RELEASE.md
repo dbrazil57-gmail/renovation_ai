@@ -47,13 +47,18 @@ Retire pre-name drafts from submission; new sample drafts remain subject to fina
 phone capture/release acceptance before upload.
 [Samsung self-check](https://developer.samsung.com/galaxy-store/self-check-list-galaxy.html?lang=en).
 
-Latest branded local draft: `output/samsung-listing-draft/draft-1795857598547053/`,
+Latest branded local draft: `output/samsung-listing-draft/draft-1795864610029729/`,
 including `renoimagineai-samsung-draft.zip`. It contains the title, public copy,
 reviewer notes, camera/home icon, five sample UI screenshots, a 32-second silent
 trailer and provenance. The older pre-name draft remains available locally but
 must not be used for submission. This pack is a review draft, not an upload.
 The closing scene includes both approved brand lines; the previous branded draft
 is retained locally as history.
+This version uses Eucalyptus & stone, refreshed Help footage and icon 06. Public
+copy emphasises Australian-designed origin and worldwide style choices without
+assuming the property's country. It includes a full-decoded 32-second trailer,
+five current UI screenshots and a matching 512px icon. Full copy is 1,841 bytes;
+all media remains draft/sample pending final physical-device acceptance.
 
 Samsung registration assets, checked against the
 [Content Publish reference](https://developer.samsung.com/galaxy-store/galaxy-store-developer-api/content-publish-api/reference.html):
@@ -102,9 +107,14 @@ AI home design with your own key.
 FULL DESCRIPTION
 See renovation possibilities in your own space.
 
+Australian designed. Globally inspired.
+
 Start with photos from your gallery or camera. Choose a room or outdoor space,
 explore styles and colour palettes, and create visual ideas using your own
 OpenAI or Google Gemini developer API key.
+
+Choose Australian, Japanese, Italian and other design influences. A style choice
+does not set your property's country or climate.
 
 DESIGN FROM YOUR PHOTOS
 Use a primary photo and add other views for context. Review the AI's observations

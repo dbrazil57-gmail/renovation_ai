@@ -1,5 +1,26 @@
 # RenoImagineAI next steps
 
+## Eucalyptus & stone and global Australian style - 28 November 2026
+
+- [x] Owner selects Eucalyptus & stone, says mint was too bright and permits logo
+  recolouring. Apply palette A to app and icon 06; keep name and both taglines.
+- [x] Enlarge header mark to 44px (36px below 360px screen width), within the
+  existing 52px toolbar. Keep native launcher geometry/safe area unchanged.
+- [x] Simplify Australian influence to one style alongside Japanese/Italian etc.
+  Remove separate Australian category and country auto-selection. Keep five old
+  IDs readable only for saved rooms/history, with removable saved-selection chips.
+- [x] Keep climate/native controls optional for an Australian property, independent
+  of style. Existing saved context remains; new global rooms do not assume Australia.
+- [x] All 500 regression tests pass, with clean static analysis, Android
+  Kotlin/resource compilation and release web build `366507ba86`. Export all
+  platform icons, inspect mobile/desktop/brand previews, refresh seven Help clips
+  and their posters (full decode), pass eight capture runs and six Help checks.
+  Update Chrome at the same localhost:7357; no paid AI or new APK.
+- [x] Regenerate the Samsung draft with current colours, icon, five screenshots,
+  32-second trailer, copy/reviewer notes and ZIP. Inspect sample frames and decode
+  the video. Add Australian-designed/global-style copy; nothing is uploaded.
+- [ ] Owner review the final result in Chrome. No APK requested in this batch.
+
 ## Softer app and logo palette review - 28 November 2026
 
 - [x] Owner identifies bright mint as the problem and allows logo recolouring.
@@ -7,9 +28,8 @@
 - [x] Prepare four sample UI/logo alternatives: A Eucalyptus & stone,
   B Navy & limestone, C Charcoal & bronze, D Clay & ivory. Use native vectors
   and actual app body/workspace widgets with disposable sample data.
-- [ ] Owner choose a palette; apply it to app/theme and brand assets, then verify
-  contrast, saved appearance, Chrome and refreshed Help/store media as appropriate.
-  Current Chrome stays on the previous green trial; no APK requested here.
+- [x] Owner chooses A Eucalyptus & stone; superseded by the implementation batch
+  above. Other preview options remain saved locally for reference.
 
 ## Logo-matched app theme - 28 November 2026
 
@@ -22,11 +42,10 @@
   contrast checks. Static analysis and release web build pass; inspect actual
   phone/desktop Projects/workspace captures. Chrome `7b0e7be2d5` uses the same
   localhost:7357/profile. No APK requested or built.
-- [ ] Owner review the colours in Chrome; select Settings > App appearance >
-  RenoImagineAI green if a previously selected alternative is still active.
-- [ ] Once the visual trial is accepted, refresh Help/store media with the chosen
-  palette before the next requested APK/store capture. Current recorded clips
-  retain the preceding appearance; the Help player itself uses the new theme.
+- [x] Owner chooses Eucalyptus & stone instead of the mint trial. Select that name
+  in Settings > App appearance if another saved theme is active.
+- [x] Refresh Help/store media with the selected softer palette in the current
+  batch above. Actual final phone captures remain a store-release acceptance item.
 
 ## Australian design options - 28 November 2026
 

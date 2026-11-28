@@ -1,5 +1,28 @@
 # Product and research reference
 
+## Selected eucalyptus palette and Australian-style clarification - 28 November
+
+Owner chooses A Eucalyptus & stone and notes it suits an Australian-designed app.
+Apply it across app, vector/raster icons and current media. Keep RenoImagineAI,
+icon 06 geometry and both taglines. Larger in-app header mark uses existing toolbar
+space; source images, launcher safe areas and app/package identity are unchanged.
+
+Owner clarifies the Australian feature was intended as one national influence
+like Japanese/Italian, with worldwide users (including the US), rather than a
+large Australia-specific workflow. Replace the separate Australian style category
+with one selectable Australian style and no implicit country/planting selection.
+Use relaxed indoor/outdoor material character, timber/stone and muted natural
+tones as suggestions within the selected palette/scope. Respect the actual
+property's location/climate and locally appropriate planting. Australian-designed
+describes the app's origin; it does not locate every user's property in Australia.
+
+Keep earlier five style IDs and optional property settings for data/history
+compatibility. Hide old IDs in new pickers, show a removable saved-style chip if
+already selected and retain selected legacy values in the live dropdown. The
+collapsed Australian-property controls appear only for an Australian influence
+or existing enabled context, and explicitly require a user choice. This correction
+supersedes earlier automatic Australia/unspecified activation and 28-style UI.
+
 ## Softer palette review - 28 November
 
 Owner says the mint in the green trial is too bright and explicitly permits

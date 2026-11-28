@@ -342,11 +342,15 @@ class _AppShellState extends State<AppShell> {
       page: {'page': 'home', 'tab': selected},
       child: Scaffold(
         appBar: AppBar(
-          title: const Row(
+          title: Row(
             children: [
-              ExcludeSemantics(child: AppBrandMark()),
-              SizedBox(width: 10),
-              Expanded(child: AppBrandWordmark()),
+              ExcludeSemantics(
+                child: AppBrandMark(
+                  size: MediaQuery.sizeOf(context).width < 360 ? 36 : 44,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Expanded(child: AppBrandWordmark()),
             ],
           ),
           actions: [

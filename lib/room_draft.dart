@@ -240,11 +240,6 @@ class RoomDraft extends ChangeNotifier {
     styleIds = {...styleIds};
     id = canonicalStyleId(id);
     selected ? styleIds.add(id) : styleIds.remove(id);
-    if (selected &&
-        australianStyleIds.contains(id) &&
-        !australianSetting.enabled) {
-      australianSetting = australianSetting.copyWith(climateId: 'general');
-    }
     _changed();
   }
 

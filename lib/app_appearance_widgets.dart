@@ -47,7 +47,7 @@ class _AppAppearanceSettingsCardState extends State<AppAppearanceSettingsCard> {
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'RenoImagineAI green matches the logo. Choose another theme any time. Room-design palettes stay separate.',
+            'Eucalyptus & stone matches the logo. Choose another theme any time. Room-design palettes stay separate.',
           ),
           const SizedBox(height: 6),
           Wrap(

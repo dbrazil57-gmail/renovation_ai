@@ -556,7 +556,7 @@ class _InspirationGalleryState extends State<InspirationGallery> {
                 ),
                 items: [
                   const DropdownMenuItem(value: '', child: Text('All styles')),
-                  for (final entry in designStyles.entries)
+                  for (final entry in selectableDesignStyles())
                     DropdownMenuItem(
                       value: entry.key,
                       child: Text(entry.value),
@@ -676,7 +676,7 @@ class _DesignDirectionPickerState extends State<DesignDirectionPicker> {
           spacing: 8,
           runSpacing: 6,
           children: [
-            for (final entry in designStyles.entries)
+            for (final entry in selectableDesignStyles())
               ChoiceChip(
                 label: Text(entry.value),
                 selected: style == entry.key,

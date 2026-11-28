@@ -198,17 +198,17 @@ Future<void> main() async {
     final eyebrow = '${work.path}/eyebrow.txt';
     await File(eyebrow).writeAsString(appName);
     final panel = scene.photo
-        ? '[0:v]scale=700:520:force_original_aspect_ratio=decrease,pad=720:540:(ow-iw)/2:(oh-ih)/2:color=0xF1ECE3[panel];'
+        ? '[0:v]scale=700:520:force_original_aspect_ratio=decrease,pad=720:540:(ow-iw)/2:(oh-ih)/2:color=0x${brandRgbHex(brandPaperArgb)}[panel];'
         : '[0:v]scale=300:600[panel];';
     final overlay = scene.photo
         ? 'overlay=520:90:shortest=1'
         : 'overlay=860:48:shortest=1';
     final filter =
         '$panel[1:v][panel]$overlay,'
-        '${draw(eyebrow, bold, 17, '0x706B3E', 56, 76)},'
-        '${draw(heading, bold, scene.photo ? 43 : 52, '0x292A24', 56, 185)},'
+        '${draw(eyebrow, bold, 17, '0x${brandRgbHex(brandActionArgb)}', 56, 76)},'
+        '${draw(heading, bold, scene.photo ? 43 : 52, '0x${brandRgbHex(brandInkArgb)}', 56, 185)},'
         '${draw(body, font, scene.photo ? 23 : 26, '0x50524A', 58, 365)},'
-        'drawbox=x=56:y=552:w=120:h=5:color=0x706B3E:t=fill,'
+        'drawbox=x=56:y=552:w=120:h=5:color=0x${brandRgbHex(brandActionArgb)}:t=fill,'
         '${draw(label, font, 17, '0x50524A', 56, 676)},format=yuv420p[out]';
     final segment = '${work.path}/scene-$index.mp4';
     await _run(ffmpeg, [
@@ -230,7 +230,7 @@ Future<void> main() async {
       '-f',
       'lavfi',
       '-i',
-      'color=c=0xF1ECE3:s=1280x720:r=24',
+      'color=c=0x${brandRgbHex(brandPaperArgb)}:s=1280x720:r=24',
       '-filter_complex',
       filter,
       '-map',

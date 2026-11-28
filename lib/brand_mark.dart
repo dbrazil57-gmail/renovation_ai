@@ -4,8 +4,8 @@ import 'app_brand.dart';
 
 // Vector interpretation of the owner's 06 camera-and-house reference.
 // Shared geometry keeps launcher, web, desktop and in-app marks consistent.
-const brandDarkTeal = Color(0xFF173034);
-const brandMint = Color(0xFF91DFCC);
+const brandForest = Color(brandForestArgb);
+const brandEucalyptus = Color(brandEucalyptusArgb);
 const brandWhite = Color(0xFFF8FCFA);
 const _camera = <List<double>>[
   [0, 28, 40],
@@ -73,17 +73,17 @@ String _svgPath(List<List<double>> segments) => segments
 
 String appBrandSvg() =>
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">'
-    '<title>$appName</title><rect width="108" height="108" fill="#173034"/>'
+    '<title>$appName</title><rect width="108" height="108" fill="#${brandRgbHex(brandForestArgb)}"/>'
     '<g transform="translate(54 54) scale(.84) translate(-54 -54)" stroke-linecap="round" stroke-linejoin="round">'
     '<path d="${_svgPath(_camera)}" fill="none" stroke="#F8FCFA" stroke-width="3.2"/>'
-    '<path d="${_svgPath(_roof)} ${_svgPath(_walls)} ${_svgPath(_flash)}" fill="none" stroke="#91DFCC" stroke-width="2.8"/>'
+    '<path d="${_svgPath(_roof)} ${_svgPath(_walls)} ${_svgPath(_flash)}" fill="none" stroke="#${brandRgbHex(brandEucalyptusArgb)}" stroke-width="2.8"/>'
     '<path d="${_svgPath(_windows)}" fill="#F8FCFA"/></g></svg>';
 
 String appBrandAndroidVector() =>
     '<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">'
     '<group android:pivotX="54" android:pivotY="54" android:scaleX="0.84" android:scaleY="0.84">'
     '<path android:fillColor="@android:color/transparent" android:strokeColor="#F8FCFA" android:strokeWidth="3.2" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="${_svgPath(_camera)}"/>'
-    '<path android:fillColor="@android:color/transparent" android:strokeColor="#91DFCC" android:strokeWidth="2.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="${_svgPath(_roof)} ${_svgPath(_walls)} ${_svgPath(_flash)}"/>'
+    '<path android:fillColor="@android:color/transparent" android:strokeColor="#${brandRgbHex(brandEucalyptusArgb)}" android:strokeWidth="2.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="${_svgPath(_roof)} ${_svgPath(_walls)} ${_svgPath(_flash)}"/>'
     '<path android:fillColor="#F8FCFA" android:pathData="${_svgPath(_windows)}"/></group></vector>';
 
 class AppBrandMark extends StatelessWidget {
@@ -109,7 +109,7 @@ class AppBrandWordmark extends StatelessWidget {
         TextSpan(text: 'Reno'),
         TextSpan(
           text: 'Imagine',
-          style: TextStyle(color: brandMint),
+          style: TextStyle(color: brandEucalyptus),
         ),
         TextSpan(text: 'AI'),
       ],
@@ -144,7 +144,7 @@ class AppBrandMarkPainter extends CustomPainter {
     canvas.save();
     canvas.scale(size.width / 108, size.height / 108);
     const box = Rect.fromLTWH(0, 0, 108, 108);
-    final background = Paint()..color = brandDarkTeal;
+    final background = Paint()..color = brandForest;
     if (rounded) {
       canvas.drawRRect(
         RRect.fromRectAndRadius(box, const Radius.circular(24)),
@@ -164,7 +164,7 @@ class AppBrandMarkPainter extends CustomPainter {
       ..strokeJoin = StrokeJoin.round;
     canvas.drawPath(_path(_camera), line);
     line
-      ..color = brandMint
+      ..color = brandEucalyptus
       ..strokeWidth = 2.8;
     canvas.drawPath(_path(_roof), line);
     canvas.drawPath(_path(_walls), line);

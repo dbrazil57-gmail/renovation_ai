@@ -3,6 +3,7 @@ import 'package:image/image.dart' as img;
 import 'package:material_ui/material_ui.dart';
 import 'package:renovision_ai/australian_design.dart';
 import 'package:renovision_ai/design_recipe.dart';
+import 'package:renovision_ai/design_styles.dart';
 import 'package:renovision_ai/design_style_widgets.dart';
 import 'package:renovision_ai/models.dart';
 import 'package:renovision_ai/project_backup.dart';
@@ -42,7 +43,7 @@ void main() {
       final draft = RoomDraft(store, room);
       addTearDown(draft.dispose);
       draft.setStyle('australian_bushland', true);
-      expect(draft.australianSetting.climateId, 'general');
+      expect(draft.australianSetting.enabled, isFalse);
       draft.setAustralianSetting(
         draft.australianSetting.copyWith(
           climateId: 'mediterranean',
@@ -80,6 +81,30 @@ void main() {
         store.imageFor(room.originalId),
       );
       expect(restoredRoom.designStyleIds, contains('australian_bushland'));
+    },
+  );
+
+  test(
+    'Australian is one global style and never selects a property country',
+    () {
+      final choices = selectableDesignStyles().map((e) => e.key).toList();
+      expect(choices, containsAll(['australian', 'japanese', 'italian']));
+      expect(choices.any(legacyAustralianStyleIds.contains), isFalse);
+      final draft = RoomDraft(store, room);
+      addTearDown(draft.dispose);
+      draft.setStyle('australian', true);
+      draft.changes.text = 'Refresh this courtyard in California';
+      final prompt = roomTemplatePrompt(room, draft);
+      expect(prompt, contains('Australian-inspired'));
+      expect(prompt, contains('actual property location and climate'));
+      expect(prompt, contains('California'));
+      expect(prompt, isNot(contains('AUSTRALIAN SETTING')));
+      expect(prompt, isNot(contains('favour Australian native plants')));
+      expect(draft.australianSetting.enabled, isFalse);
+      final legacy = room.copyWith(designStyleIds: ['australian_bushland']);
+      expect(RenovationRoom.fromMap(legacy.toMap()).designStyleIds, [
+        'australian_bushland',
+      ]);
     },
   );
 
@@ -210,7 +235,7 @@ void main() {
   );
 
   for (final size in [const Size(320, 640), const Size(780, 390)]) {
-    testWidgets('Australian style shortcut and settings fit $size', (
+    testWidgets('Australian style and optional property settings fit $size', (
       tester,
     ) async {
       tester.view.physicalSize = size;
@@ -231,20 +256,22 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.byKey(const ValueKey('australian-styles')));
-      await tester.pumpAndSettle();
-      expect(
-        find.widgetWithText(FilterChip, 'Bushland retreat'),
-        findsOneWidget,
-      );
-      final style = find.widgetWithText(FilterChip, 'Australian contemporary');
+      expect(find.widgetWithText(FilterChip, 'Bushland retreat'), findsNothing);
+      final style = find.widgetWithText(FilterChip, 'Australian');
       await tester.ensureVisible(style);
       await tester.tap(style);
       await tester.pumpAndSettle();
-      expect(draft.styleIds, contains('australian_contemporary'));
-      final setting = find.text('Australian setting');
+      expect(draft.styleIds, contains('australian'));
+      expect(draft.australianSetting.enabled, isFalse);
+      final setting = find.text('Australian property (optional)');
       await tester.ensureVisible(setting);
       await tester.tap(setting);
+      await tester.pumpAndSettle();
+      final location = find.byType(DropdownButtonFormField<String>);
+      await tester.ensureVisible(location);
+      await tester.tap(location);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(australianClimates['general']!).last);
       await tester.pumpAndSettle();
       final native = find.widgetWithText(
         CheckboxListTile,

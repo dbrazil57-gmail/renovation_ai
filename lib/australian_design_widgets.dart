@@ -12,12 +12,12 @@ class AustralianDesignControls extends StatelessWidget {
   Widget build(BuildContext context) => ExpansionTile(
     key: const ValueKey('australian-setting-panel'),
     tilePadding: EdgeInsets.zero,
-    title: const Text('Australian setting'),
+    title: const Text('Australian property (optional)'),
     subtitle: Text(draft.australianSetting.label),
     children: [
       const HelpHeading(
         title: 'Local setting',
-        message: 'Optional context for analysis and new designs. Choose your climate and, if useful, a broad area or conditions such as coastal wind, sun or shade. No GPS or address is needed. Native to Australia does not mean suitable everywhere. This guides visual concepts; it is not a verified planting plan. Precise edits and updates to a saved design keep their focused change only.',
+        message: 'Only enable this location context for a property in Australia. Australian styling can be used anywhere and does not select a country. If useful, choose the actual climate and broad conditions such as coastal wind, sun or shade. No GPS or address is needed. Native to Australia does not mean suitable everywhere. This is visual guidance, not a verified planting plan. Focused corrections stay limited to their requested change.',
       ),
       const SizedBox(height: 8),
       DropdownButtonFormField<String>(

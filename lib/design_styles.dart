@@ -5,7 +5,7 @@ const commonStyleIds = [
   'minimalist',
   'scandinavian',
   'coastal',
-  'hamptons',
+  'australian',
   'industrial',
   'rustic',
   'japandi',
@@ -36,6 +36,8 @@ const designStyles = <String, String>{
   'italian': 'Italian',
   'moroccan': 'Moroccan',
   'indian': 'Indian',
+  'australian': 'Australian',
+  // Historical IDs remain readable in saved rooms/recipes, not new pickers.
   'australian_contemporary': 'Australian contemporary',
   'australian_coastal': 'Australian coastal',
   'australian_bushland': 'Bushland retreat',
@@ -43,13 +45,23 @@ const designStyles = <String, String>{
   'australian_tropical': 'Tropical Australian',
 };
 
-const australianStyleIds = {
+const legacyAustralianStyleIds = {
   'australian_contemporary',
   'australian_coastal',
   'australian_bushland',
   'australian_heritage',
   'australian_tropical',
 };
+
+const australianStyleIds = {'australian', ...legacyAustralianStyleIds};
+
+Iterable<MapEntry<String, String>> selectableDesignStyles({
+  Iterable<String> existing = const [],
+}) => designStyles.entries.where(
+  (entry) =>
+      !legacyAustralianStyleIds.contains(entry.key) ||
+      existing.contains(entry.key),
+);
 
 const regionalStyleIds = {
   'scandinavian',
@@ -64,6 +76,7 @@ const regionalStyleIds = {
 };
 
 const styleDesignCues = <String, String>{
+  'australian': 'Australian-inspired relaxed indoor/outdoor character, natural timber and stone, eucalyptus greens and earthy neutrals where the palette allows, tactile fabrics and understated practical detailing within the existing geometry. Adapt to the actual property location and climate; this style does not imply the home is in Australia. Where planting is authorised, use locally appropriate plants rather than assuming Australian natives suit every country or site',
   'australian_contemporary': 'Australian contemporary character with tactile timber, warm stone, restrained joinery and practical indoor/outdoor details within the existing geometry; no new openings',
   'australian_coastal': 'relaxed Australian coastal character with sun-washed neutrals, timber, woven textures and understated finishes; avoid nautical props and retain the real outlook',
   'australian_bushland': 'bushland-inspired gum-leaf, earthy and stone tones within the selected palette, textured timber and restrained natural materials; native planting only where authorised, never replace the outside view',
