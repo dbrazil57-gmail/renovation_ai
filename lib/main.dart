@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 import 'brand_mark.dart';
+import 'app_brand.dart';
 import 'screens.dart';
 import 'store.dart';
 import 'app_appearance.dart';
@@ -75,7 +76,7 @@ class _RenovisionStartupState extends State<RenovisionStartup> {
   Widget build(BuildContext context) {
     if (store != null) return RenovisionApp(store: store!);
     return MaterialApp(
-      title: 'RenoVision',
+      title: appName,
       theme: buildRenovisionTheme(),
       home: Scaffold(
         body: SafeArea(
@@ -87,7 +88,7 @@ class _RenovisionStartupState extends State<RenovisionStartup> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const RenoVisionMark(size: 48),
+                    const AppBrandMark(size: 48),
                     const SizedBox(height: 16),
                     Text(
                       failed
@@ -237,7 +238,7 @@ class _RenovisionAppState extends State<RenovisionApp> {
           child: ValueListenableBuilder<AppThemeChoice>(
             valueListenable: store.appearance,
             builder: (context, choice, _) => MaterialApp(
-              title: 'RenoVision',
+              title: appName,
               debugShowCheckedModeBanner: false,
               theme: buildRenovisionTheme(choice: choice),
               onGenerateRoute: (settings) => MaterialPageRoute<void>(

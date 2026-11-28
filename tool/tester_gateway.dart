@@ -291,6 +291,6 @@ Future<void> main() async {
   );
   server.listen(gateway.handle);
   stdout.writeln(
-    'RenoVision tester service listens on loopback behind a required HTTPS proxy. Single process; request allowances are not a dollar billing cap.',
+    'RenoImagineAI tester service listens on loopback behind a required HTTPS proxy. Single process; request allowances are not a dollar billing cap.',
   );
 }

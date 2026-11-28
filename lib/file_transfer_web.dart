@@ -83,7 +83,7 @@ class _WebFiles
                   'multiple': false,
                   'types': [
                     {
-                      'description': 'RenoVision project',
+                      'description': 'RenoImagineAI project',
                       'accept': {
                         'application/json': ['.json'],
                         'application/octet-stream': ['.renovision'],
@@ -137,7 +137,7 @@ class _WebFiles
                     {
                       'description': mimeType == 'image/png'
                           ? 'PNG image'
-                          : 'RenoVision project backup',
+                          : 'RenoImagineAI project backup',
                       'accept': {
                         mimeType: [
                           mimeType == 'image/png'

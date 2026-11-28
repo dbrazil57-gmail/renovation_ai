@@ -2,14 +2,14 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RenoVision local project recovery</title>
+<title>RenoImagineAI local project recovery</title>
 <style>
 body{font:16px/1.5 system-ui,sans-serif;max-width:680px;margin:8vh auto;padding:20px;color:#252821;background:#f6f5ef}
 main{background:white;border-radius:18px;padding:24px}h1{font-size:24px}button{font:inherit;background:#676c3c;color:white;border:0;border-radius:24px;padding:12px 20px;cursor:pointer}button:disabled{opacity:.5}#status{white-space:pre-wrap}
 </style>
 <main>
 <h1>Recover the projects saved in this browser</h1>
-<p>Keep the original RenoVision tab open. This page reads saved projects and photos from this same browser and address, then downloads a private recovery copy.</p>
+<p>Keep the original RenoImagineAI tab open. This page reads saved projects and photos from this same browser and address, then downloads a private recovery copy.</p>
 <p>It does not change saved data, use AI, read API settings or contact an external service. The recovery file is for restoring your data with assistance; it is not a normal Open project file.</p>
 <button id="download">Download recovery copy</button>
 <p id="status" role="status">Ready. Use the same browser and profile as the app.</p>
@@ -29,7 +29,7 @@ function pack(value){
 }
 async function readBox(name, include){
   const names=new Set((await indexedDB.databases()).map(item=>item.name));
-  if(!names.has(name))throw new Error('No RenoVision data found at this address/profile. Keep the app open and check that this page uses the same address.');
+  if(!names.has(name))throw new Error('No RenoImagineAI data found at this address/profile. Keep the app open and check that this page uses the same address.');
   return new Promise((resolve,reject)=>{
     const opening=indexedDB.open(name);
     opening.onupgradeneeded=()=>{opening.transaction.abort();reject(new Error('The saved database is unavailable.'));};
@@ -71,7 +71,7 @@ button.onclick=async()=>{
     }
     const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
     const url=URL.createObjectURL(blob), link=document.createElement('a');
-    link.href=url;link.download='RenoVision-browser-recovery.json';document.body.append(link);link.click();link.remove();
+    link.href=url;link.download='RenoImagineAI-browser-recovery.json';document.body.append(link);link.click();link.remove();
     setTimeout(()=>URL.revokeObjectURL(url),60000);
     status.textContent='Recovery download requested: '+projects+' project(s), '+Object.keys(photos).length+' stored image(s), '+Math.round(blob.size/1024/1024*10)/10+' MB. Check your Downloads/save location. Keep it private and keep the original app tab open.';
   }catch(error){status.textContent=error instanceof Error?error.message:'Recovery could not finish. Keep the original app tab open.';}

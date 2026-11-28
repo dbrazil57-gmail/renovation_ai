@@ -53,7 +53,7 @@ class _CreationExportControlsState extends State<CreationExportControls> {
       if (!mounted) return;
       final message = switch (result) {
         CreationExportResult.gallerySaved =>
-          'Saved to Gallery · Pictures/RenoVision.',
+          'Saved to Gallery · Pictures/RenoImagineAI.',
         CreationExportResult.fileSaved =>
           'Image saved to your chosen location.',
         CreationExportResult.downloadRequested =>

@@ -103,7 +103,7 @@ class ProjectBackup {
       if (root['format'] != 'renovision.project' ||
           ![1, 2].contains(root['version'])) {
         throw const BackupFailure(
-          'Choose a supported RenoVision project backup (.renovision.json).',
+          'Choose a supported RenoImagineAI project backup (.renovision.json).',
         );
       }
       final projectData = _map(root['project']);

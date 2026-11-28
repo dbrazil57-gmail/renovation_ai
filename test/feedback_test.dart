@@ -111,7 +111,7 @@ void main() {
       final uri = target.forReport(draft, report);
       expect(uri.scheme, 'mailto');
       expect(uri.queryParameters['body'], report);
-      expect(uri.queryParameters['subject'], 'RenoVision feature: A + B & C?');
+      expect(uri.queryParameters['subject'], 'RenoImagineAI feature: A + B & C?');
       final minimal = FeedbackDraft(
         title: draft.title,
         details: draft.details,

@@ -344,15 +344,9 @@ class _AppShellState extends State<AppShell> {
         appBar: AppBar(
           title: const Row(
             children: [
-              ExcludeSemantics(child: RenoVisionMark()),
+              ExcludeSemantics(child: AppBrandMark()),
               SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'RenoVision',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
+              Expanded(child: AppBrandWordmark()),
             ],
           ),
           actions: [

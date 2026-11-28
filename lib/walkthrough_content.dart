@@ -185,9 +185,9 @@ const toolsWalkthrough = AppWalkthrough(
     ),
     WalkthroughStep(
       'Save or share a creation',
-      'Open the image full screen, then choose Save image or Share creation. On modern Android, Save image adds a copy to Gallery under Pictures/RenoVision. Share creation opens your device share sheet.',
+      'Open the image full screen, then choose Save image or Share creation. On modern Android, Save image adds a copy to Gallery under Pictures/RenoImagineAI. Share creation opens your device share sheet.',
       'Save your favourite kitchen concept, then share the image with a friend.',
-      note: 'Chrome downloads a PNG or uses browser file sharing when available. Only the image is exported; use Save project to keep editable rooms, settings and history. Saving and sharing need no RenoVision account.',
+      note: 'Chrome downloads a PNG or uses browser file sharing when available. Only the image is exported; use Save project to keep editable rooms, settings and history. Saving and sharing need no RenoImagineAI account.',
     ),
     WalkthroughStep(
       'Keep or remove a version',

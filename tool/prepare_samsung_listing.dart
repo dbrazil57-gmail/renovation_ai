@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:renovision_ai/app_brand.dart';
 
 const _localBin =
     'output/dev-tools/ffmpeg/unpacked/ffmpeg-9.1-essentials_build/bin';
@@ -53,6 +54,7 @@ Future<void> main() async {
   ).readAsString()).replaceAll('\r\n', '\n');
   final copy = _section(guide, 'public');
   final short = copy.split('SHORT DESCRIPTION\n').last.split('\n').first;
+  final title = copy.split('APP TITLE\n').last.split('\n').first;
   final full = copy.split('FULL DESCRIPTION\n').last;
   final review = _section(guide, 'review');
   if (utf8.encode(short).length > 40 ||
@@ -73,7 +75,7 @@ Future<void> main() async {
     'listing-fields.json',
     const JsonEncoder.withIndent('  ').convert({
       'submissionReady': false,
-      'appTitle': '[APP NAME]',
+      'appTitle': title,
       'shortDescription': short,
       'longDescription': full,
       'defaultLanguageCode': 'ENG',
@@ -157,12 +159,12 @@ Future<void> main() async {
       photo: true,
       start: 0,
       seconds: 4,
-      heading: 'Your space.\nYour next idea.',
+      heading: 'Snap. Imagine.\nRenovate.',
       body: 'Bring your own AI key.\nProvider usage costs extra.',
     ),
   ];
   final storyboard = StringBuffer(
-    'DRAFT ONLY - final name and phone recording pending.\n'
+    '$appName - DRAFT ONLY: final phone recording/release acceptance pending.\n'
     '32-second silent concept trailer; no music, voice or live AI call.\n'
     'Kitchen result is a historical externally generated example; not a timed in-app result.\n'
     'UI excerpts are existing Help recordings with simulated AI/camera/file chooser.\n\n',
@@ -188,11 +190,11 @@ Future<void> main() async {
     await File(body).writeAsString(scene.body);
     await File(label).writeAsString(
       scene.photo
-          ? 'DRAFT SAMPLE  |  Historical external AI example  |  Final name pending'
+          ? 'DRAFT SAMPLE  |  Historical external AI example  |  $appName'
           : 'DRAFT SAMPLE  |  Recorded app UI; AI / camera / file picker simulated',
     );
     final eyebrow = '${work.path}/eyebrow.txt';
-    await File(eyebrow).writeAsString('HOME DESIGN PREVIEW');
+    await File(eyebrow).writeAsString(appName);
     final panel = scene.photo
         ? '[0:v]scale=700:520:force_original_aspect_ratio=decrease,pad=720:540:(ow-iw)/2:(oh-ih)/2:color=0xF1ECE3[panel];'
         : '[0:v]scale=300:600[panel];';
@@ -309,7 +311,7 @@ Future<void> main() async {
     const JsonEncoder.withIndent('  ').convert({
       'status': 'draft-not-for-upload',
       'preparedForDate': '28 November 2026, Australia/Sydney',
-      'appName': 'unconfirmed',
+      'appName': appName,
       'liveAiUsed': false,
       'submitted': false,
       'sources': [

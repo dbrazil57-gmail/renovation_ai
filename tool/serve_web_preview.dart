@@ -123,7 +123,7 @@ Future<void> main(List<String> arguments) async {
     );
   }
   await serveWebPreview(Directory('build/web'), port: port);
-  stdout.writeln('RenoVision desktop release preview: http://localhost:$port');
+  stdout.writeln('RenoImagineAI desktop release preview: http://localhost:$port');
   stdout.writeln(
     'Keep the same Chrome address/profile. Ctrl+C stops this server.',
   );

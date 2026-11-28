@@ -288,7 +288,7 @@ class _AiConnectionCardState extends State<AiConnectionCard> {
                       ? (kIsWeb
                             ? 'Your key is encrypted in private storage for this browser profile and app address. No login is needed. Reloading retains it; clearing site data removes it. Trusted code in this app can use it. Remove this provider key below to forget it. Keys are excluded from project/backup files.'
                             : 'The key is stored separately from project files. Saving or discarding a project does not remove it.')
-                      : 'Switching Room, Style, Refine, Ideas or Settings keeps this connection. Reloading or closing this browser page clears the session key, so you must enter it again. Save project does not save an API key. A browser password-manager Save / Don\'t save choice is separate from RenoVision.',
+                      : 'Switching Room, Style, Refine, Ideas or Settings keeps this connection. Reloading or closing this browser page clears the session key, so you must enter it again. Save project does not save an API key. A browser password-manager Save / Don\'t save choice is separate from RenoImagineAI.',
                 ),
               Text(
                 widget.ai.supportsAnalysis
@@ -1127,7 +1127,7 @@ class _AiEditCardState extends State<AiEditCard>
             children: [
               if (!widget.compact)
                 const HelpHeading(
-                  title: 'Generate inside RenoVision',
+                  title: 'Generate inside RenoImagineAI',
                   message: 'The image selected in Working from is sent as the reference. Select an original room photo for fresh alternatives, or a saved design for variations on it. AI variation is requested, not guaranteed.\n\nMultiple design ideas makes 2 or 3 separate paid image requests from the same starting image. Compare styles separately uses one selected style per image; an extra concept blends them. With comparison off, every concept blends the selected influences. Each result saves before the next request; you can stop after the current image.',
                 ),
               if (!widget.compact) const SizedBox(height: 8),

@@ -1,4 +1,4 @@
-# RenoVision — Google Play release guide
+# RenoImagineAI - store release guide
 
 ## Samsung individual-publisher eligibility - 28 November
 
@@ -32,18 +32,25 @@ business documentation and D-U-N-S verification do you require?" No message has
 been sent. Samsung-first remains conditional on eligibility; its lack of a
 publishing fee does not mean personal-profile registration alone is sufficient.
 
-Owner rejects RenoCue and wants a name clearly conveying AI and renovation.
-Current candidate ideas are RenoPreview AI, RenoImagine AI and RenoVisual AI.
-These are suggestions only, not availability/trade-mark clearance or a rebrand.
+Owner selected **RenoImagineAI** and the numbered **06 camera/house** logo concept,
+with the working tagline **Snap. Imagine. Renovate.** This supersedes the rejected
+RenoCue suggestion. Name approval does not establish trade-mark/domain clearance
+or Samsung eligibility. Keep the app identity/storage compatible during rebranding.
 
 ## Samsung listing pack - 28 November
 
 Prepare a store listing and promotional material separately from the in-app Help
-walkthroughs. Final app name is still undecided; **RenoCue has been rejected**.
-Keep `[APP NAME]` in copy until the name is confirmed and checked. The listing,
-installed app name/icon and final screenshots must match. Existing current-brand
-drafts are not upload-ready assets.
+walkthroughs. The confirmed name is **RenoImagineAI**, with the 06 camera/home
+identity. The listing, installed app name/icon and final screenshots must match.
+Retire pre-name drafts from submission; new sample drafts remain subject to final
+phone capture/release acceptance before upload.
 [Samsung self-check](https://developer.samsung.com/galaxy-store/self-check-list-galaxy.html?lang=en).
+
+Latest branded local draft: `output/samsung-listing-draft/draft-1795857327399029/`,
+including `renoimagineai-samsung-draft.zip`. It contains the title, public copy,
+reviewer notes, camera/home icon, five sample UI screenshots, a 32-second silent
+trailer and provenance. The older pre-name draft remains available locally but
+must not be used for submission. This pack is a review draft, not an upload.
 
 Samsung registration assets, checked against the
 [Content Publish reference](https://developer.samsung.com/galaxy-store/galaxy-store-developer-api/content-publish-api/reference.html):
@@ -78,13 +85,13 @@ personal account details from the screenshot are included in release materials.
 
 ### Public listing copy - draft
 
-Replace the name and approve final pricing/disclosures before submission. English
+Approve final pricing/disclosures and release details before submission. English
 is the current app language. The app's technical support URLs/legal owner remain
 separate pending fields, never fabricated in public copy.
 
 <!-- samsung-public-copy:start -->
 APP TITLE
-[APP NAME]
+RenoImagineAI
 
 SHORT DESCRIPTION
 AI home design with your own key.
@@ -134,7 +141,8 @@ Do not submit until the access/AI review instructions can actually be followed.
 
 <!-- samsung-review-copy:start -->
 DRAFT - COMPLETE BEFORE SUBMISSION
-App name, version/package and legal publisher: [confirm final values].
+App name: RenoImagineAI.
+Release version/package and legal publisher: [confirm final values].
 Support and privacy URL: [provide working public destinations].
 
 Offline demonstration:

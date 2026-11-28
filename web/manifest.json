@@ -1,11 +1,11 @@
 {
-    "name": "RenoVision",
-    "short_name": "RenoVision",
+    "name": "RenoImagineAI",
+    "short_name": "RenoImagineAI",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#39491C",
-    "theme_color": "#39491C",
-    "description": "Visualise room renovations from your own photos with RenoVision.",
+    "background_color": "#173034",
+    "theme_color": "#173034",
+    "description": "Visualise room renovations from your own photos with RenoImagineAI.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

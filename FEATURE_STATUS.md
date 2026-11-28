@@ -1,4 +1,22 @@
-# Renovision feature status
+# RenoImagineAI feature status
+
+## Approved branding - 28 November 2026
+
+Owner selected **RenoImagineAI**, numbered **06 camera/house** concept and the
+working tagline **Snap. Imagine. Renovate.** Public names and icon assets now use
+this brand across the shared app/platform sources. Internal data/app identifiers
+and project formats remain unchanged. Gallery saves created after the next Android
+update go to `Pictures/RenoImagineAI`; the old folder is retained. Desktop/iOS
+metadata/assets are updated in source, not claimed as newly packaged/native-tested.
+APK 1.0.20 remains the previous brand until another APK is requested.
+
+Chrome source **`2cf9a5920a`** at http://localhost:7357/ includes this branding.
+All 491 regression tests, six Help checks and seven recording runs pass; static
+analysis, Android Kotlin compilation and the release web build pass. All seven
+bundled Help clips were refreshed and decode-checked. The Samsung draft pack was
+regenerated with the new title and camera/home icon; final device footage remains
+release work. Existing appearance preferences are retained.
+
 
 ## Samsung access foundations - 28 November 2026
 

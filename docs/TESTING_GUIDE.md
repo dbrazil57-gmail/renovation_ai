@@ -1,5 +1,39 @@
 # Testing and storage reference
 
+## RenoImagineAI branding - 28 November 2026
+
+Source **`2cf9a5920a`** updates the public name, camera/home icon, platform
+metadata, sharing/feedback wording and new Android Gallery folder. App IDs,
+signing configuration, Hive/vault identifiers, licence audience, portable project
+formats, images and user appearance choices remain unchanged. APK 1.0.20 is
+unchanged; no APK packaging or installation was requested in this batch.
+
+Validation: **491 regression tests pass**, static analysis is clean, Android
+`:app:compileDebugKotlin` succeeds and the release web build uses bundled
+resources. Six Help tests, seven recording tests and the brand exporter pass.
+All seven refreshed MP4s were encoded and fully decode-checked. The branded
+32-second Samsung draft decodes successfully, with its camera/home icon and
+sample frames visually inspected. Its short/full/reviewer text measures
+33 / 1,669 / 1,862 UTF-8 bytes. The historical external kitchen result and
+simulated camera/AI/file chooser remain labelled as draft/sample footage.
+
+Manual acceptance:
+
+1. Refresh the existing http://localhost:7357/ tab in the same normal profile.
+   Confirm RenoImagineAI and the camera/home mark on the Projects page. A cached
+   browser-tab icon may need a normal tab close/reopen; never clear site data.
+2. Open existing rooms and check photos, designs, remembered provider keys,
+   autosave, layout and appearance choices remain. No paid AI call is needed.
+3. Open Help and play the sample workflow clips. Save/Open an existing project
+   file to check continuity; the `.renovision` file format is retained.
+4. At the next explicitly requested APK, update over the existing installation
+   and check the launcher name/icon plus Gallery export to Pictures/RenoImagineAI.
+   Existing Pictures/RenoVision images must remain. No uninstall/data reset.
+
+Desktop/iOS labels and icon assets are updated in shared source. Native desktop
+and iOS packaging/device acceptance have not been performed in this batch.
+
+
 ## Samsung draft media checks - 28 November 2026
 
 The standalone `tool/prepare_samsung_listing.dart` was executed using local

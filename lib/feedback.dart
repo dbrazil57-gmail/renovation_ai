@@ -39,7 +39,7 @@ class FeedbackDraft {
   bool get ready => title.trim().isNotEmpty && details.trim().isNotEmpty;
 
   String report({required String build, required String platform}) => [
-    'RenoVision feedback',
+    'RenoImagineAI feedback',
     'Type: ${kind == FeedbackKind.issue ? 'Issue' : 'Feature request'}',
     'Title: ${title.trim()}',
     '',
@@ -80,7 +80,7 @@ class FeedbackDestination {
   Uri forReport(FeedbackDraft draft, String report) => email
       ? uri.replace(
           query:
-              'subject=${Uri.encodeComponent('RenoVision ${draft.kind == FeedbackKind.issue ? 'issue' : 'feature'}: ${draft.title.trim()}')}&body=${Uri.encodeComponent(report)}',
+              'subject=${Uri.encodeComponent('RenoImagineAI ${draft.kind == FeedbackKind.issue ? 'issue' : 'feature'}: ${draft.title.trim()}')}&body=${Uri.encodeComponent(report)}',
         )
       : uri;
 }

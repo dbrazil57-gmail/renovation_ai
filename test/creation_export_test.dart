@@ -185,7 +185,7 @@ void main() {
       exports.release.complete(CreationExportResult.gallerySaved);
       await tester.pumpAndSettle();
       expect(
-        find.text('Saved to Gallery · Pictures/RenoVision.'),
+        find.text('Saved to Gallery · Pictures/RenoImagineAI.'),
         findsOneWidget,
       );
       await tester.tap(find.text('Share creation'));

@@ -65,7 +65,7 @@ class AppWalkthroughsScreen extends StatelessWidget {
                   height: 125,
                   fit: BoxFit.cover,
                   semanticLabel:
-                      'Recorded RenoVision workflow using sample data',
+                      'Recorded RenoImagineAI workflow using sample data',
                   cacheWidth: 960,
                   errorBuilder: (_, _, _) => const SizedBox(height: 125),
                 ),

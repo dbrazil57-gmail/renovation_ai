@@ -1,9 +1,24 @@
-# RenoVision
+# RenoImagineAI
+
+Current brand, **28 November 2026**: owner selected **RenoImagineAI**, the numbered
+**06 camera/house** logo concept, dark teal/mint/white and **Snap. Imagine. Renovate.**
+Public app/platform names, vector/launcher assets and current Help/listing material
+now use this brand. This is the same app: package IDs, Hive/vault names, project
+formats and existing settings stay compatible. New Gallery exports use
+`Pictures/RenoImagineAI`; existing `Pictures/RenoVision` images are retained.
+No new APK was requested; APK 1.0.20 below keeps its original branding until the
+next requested update. Older release/source statements below are historical.
 
 Samsung listing preparation now includes public copy, reviewer notes and an
 offline 32-second sample promo/screenshot pack. See the
 [existing release guide](docs/GOOGLE_PLAY_RELEASE.md#samsung-listing-pack---28-november).
-The final replacement name is still undecided; no app branding or APK changed.
+The draft has been regenerated with the approved name and icon. Final device
+footage and store acceptance remain outstanding; no new APK was built.
+
+Current Chrome source is **`2cf9a5920a`** at http://localhost:7357/. The 491-test
+regression suite, clean static analysis, six Help checks, seven recording runs,
+Android Kotlin compilation and release web build validate this branding batch.
+See the [branding acceptance steps](docs/TESTING_GUIDE.md#renoimagineai-branding---28-november-2026).
 
 Latest source work, **28 November 2026**: Samsung-first launch preparation and
 software-access foundations. Signed, installation-bound trial/Standard grants,
@@ -11,8 +26,8 @@ expiry/refresh checks and Settings > App access are implemented and tested with
 synthetic receipts. Private builds retain existing unrestricted software access.
 Samsung checkout, hosted verification, trial eligibility and device transfer are
 **not live**. APK 1.0.20 below is unchanged; no new APK was requested.
-Current private Chrome source is **`c58ff6c0f1`**, at http://localhost:7357/;
-older source IDs below refer to earlier batches.
+That earlier access-foundations source was **`c58ff6c0f1`**; the newer branding
+source above supersedes it at the same http://localhost:7357/ address.
 All **491 tests pass**; static analysis, Android Kotlin compilation and the
 release web build pass. The separate deprecated Chrome test runner stalled at
 startup; it is not counted as passed browser licence acceptance.

@@ -84,7 +84,7 @@ class AiService extends ChangeNotifier {
 
   int connectionRevision = 0;
   String get providerLabel =>
-      isTester ? 'RenoVision test credits' : provider.label;
+      isTester ? 'RenoImagineAI test credits' : provider.label;
   final Map<String, Map<String, dynamic>> _providerSettings = {};
   SecretStore storeFor(AiProvider choice) =>
       choice == AiProvider.openai ? keyStore : geminiKeyStore;
@@ -892,7 +892,7 @@ class AiService extends ChangeNotifier {
           !const ['low', 'medium', 'high'].contains(data['quality']) ||
           data['analysisModel'] is! String) {
         throw const AiFailure(
-          'This is not a supported RenoVision test service.',
+          'This is not a supported RenoImagineAI test service.',
         );
       }
       final balance = TesterAllowance.fromMap(data['credits']);

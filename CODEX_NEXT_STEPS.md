@@ -1,4 +1,25 @@
-# Renovision next steps
+# RenoImagineAI next steps
+
+## Approved brand - 28 November 2026
+
+- [x] Owner chooses exact name **RenoImagineAI** and favours numbered concept
+  **06 camera + home** after comparing other options. Use the working tagline
+  **Snap. Imagine. Renovate.**; earlier first-logo default is superseded.
+- [x] Update public app/feedback/export/help wording, Android/iOS/macOS/Windows/
+  Linux labels and web metadata. Preserve internal package/bundle IDs, Hive boxes,
+  vaults, method channels, licence audience and `.renovision` formats.
+- [x] Recreate the 06 reference as shared vector geometry; export web, Android
+  adaptive/monochrome/raster and desktop/iOS icon sizes. Create a labelled brand
+  preview with small-size samples. Keep existing appearance choices/settings.
+- [x] Finish regression/static/native checks, refresh all seven Help recordings
+  and the branded Samsung draft, and update Chrome at the same localhost address.
+  Source `2cf9a5920a`: 491 regression tests, six Help checks and seven recording
+  runs pass; analysis, Android Kotlin compile and release web build pass.
+- [ ] Physical S21 acceptance of name/icon needs the next explicitly requested
+  APK. APK 1.0.20 is unchanged; no install/uninstall or data reset authorised.
+- [ ] Store/domain/trade-mark clearance and Samsung individual/sole-trader
+  eligibility remain release work; approving a name is not seller approval.
+
 
 ## Individual publisher and naming clarification - 28 November 2026
 
@@ -12,8 +33,8 @@
   their legal name and accepted business documents. Do not promise individual
   approval or assume incorporation is required. Samsung-first is conditional.
 - [x] Record rejection of RenoCue: owner wants AI + renovation to be clear in the
-  name. Offer RenoPreview AI / RenoImagine AI / RenoVisual AI as unapproved ideas;
-  store/domain/trade-mark checks and final approval remain before any rebrand.
+  name. Earlier candidate suggestions are superseded by the approved exact name
+  RenoImagineAI above. Store/domain/trade-mark checks remain before release.
 
 
 ## Samsung listing and demo pack - 28 November 2026
@@ -33,7 +54,9 @@
 - [x] Clarify the owner's screenshot shows Samsung Developer personal/profile
   fields, not Seller Portal commercial verification. Do not put a provisional
   app name into legal business verification or store personal profile details.
-- [ ] Choose/check the final app name; no new name has been approved or installed.
+- [x] Choose the final app name: RenoImagineAI; implement the 06 camera/home
+  working brand in source and Chrome. Native installed branding awaits an APK.
+- [ ] Complete store/domain/trade-mark clearance before public release.
 - [ ] Capture final S21 screenshots and real workflow footage after branding and
   store-build acceptance. Existing Help/demo footage remains explicitly simulated.
 - [ ] Finalise support/privacy URLs, purchase/trial disclosures and limited live

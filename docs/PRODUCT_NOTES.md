@@ -1,5 +1,24 @@
 # Product and research reference
 
+## Approved name and logo - 28 November
+
+Owner chooses **RenoImagineAI** (one word, exact capitalisation). After initially
+considering a house/image/sparkle and a later checkmark, the owner likes numbered
+02/03/05 and leans to **06 because it contains a camera**. Apply 06 as the working
+camera/home identity, using dark teal, mint and white. Working tagline:
+**Snap. Imagine. Renovate.** Keep just the symbol in launcher icons and use the
+wordmark/tagline in larger material. Do not repeat the unverified 10/10 ratings
+shown on a supplied comparison sheet as measured user evidence.
+
+The reference is recreated as scalable vector geometry in the existing brand
+pipeline, not extracted from a compressed contact sheet. Existing app appearance
+choices and saved settings remain. The package ID, bundle IDs, record/vault names,
+method channels, activation audience and portable file formats keep their existing
+identifiers for compatibility. Old exported images and APKs are not renamed/moved.
+Current public UI/platform names and new Gallery output labels use RenoImagineAI.
+The store listing and sample promo can now use the confirmed name, while paid
+access, live reviewer acceptance and seller/name clearance still need completion.
+
 Samsung eligibility correction, 28 November: the detailed Seller Guide requires
 the corporate commercial request for this Australian Android-app scenario, even
 when starting from a personal account, with D-U-N-S on its normal path. Personal
@@ -7,8 +26,8 @@ Developer profile/name entry does not unlock publishing. Australian sole-trader
 acceptance under a legal name and any alternative documentation remain unconfirmed;
 the Samsung-first recommendation is conditional on that answer. See the
 [verified guide sources](GOOGLE_PLAY_RELEASE.md#samsung-individual-publisher-eligibility---28-november).
-RenoCue has been rejected; the replacement name must clearly convey renovation
-and AI. No new name is approved, installed or cleared for availability.
+RenoCue has been rejected; **RenoImagineAI is now approved** as recorded above.
+Availability and publisher approval remain separate checks.
 
 ## Samsung launch and advertising drafts - 28 November
 
@@ -19,8 +38,8 @@ private reviewer notes. Its offline generation recipe is
 work are in the [release guide](GOOGLE_PLAY_RELEASE.md#samsung-listing-pack---28-november).
 It is clearly labelled sample/draft: historical external AI images and simulated
 Help transactions are not represented as a newly recorded paid in-app generation.
-Final name remains undecided; no branding change, publication, video upload or
-spend was made. The screenshot supplied during preparation is a Samsung Developer
+The initial pack preceded name approval; refresh it with RenoImagineAI. No
+publication, video upload or spend was made. The screenshot supplied is a Samsung Developer
 profile page, separate from commercial seller verification.
 
 

@@ -41,9 +41,9 @@ class CreationExportBridge(private val activity: Activity) {
                 result.success("chooseFile")
                 return@setMethodCallHandler
             }
-            val name = (call.argument<String>("name") ?: "RenoVision.png")
+            val name = (call.argument<String>("name") ?: "RenoImagineAI.png")
                 .removeSuffix(".png").replace(Regex("[^a-zA-Z0-9_-]"), "-")
-                .take(60).ifBlank { "RenoVision" }
+                .take(60).ifBlank { "RenoImagineAI" }
             busy = true
             Thread {
                 try {
@@ -60,7 +60,7 @@ class CreationExportBridge(private val activity: Activity) {
                                 val send = Intent(Intent.ACTION_SEND).apply {
                                     type = "image/png"
                                     putExtra(Intent.EXTRA_STREAM, uri)
-                                    clipData = ClipData.newRawUri("RenoVision creation", uri)
+                                    clipData = ClipData.newRawUri("RenoImagineAI creation", uri)
                                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                 }
                                 activity.startActivity(Intent.createChooser(send, "Share creation"))
@@ -87,7 +87,7 @@ class CreationExportBridge(private val activity: Activity) {
         val values = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, "$name-${UUID.randomUUID().toString().take(8)}.png")
             put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-            put(MediaStore.Images.Media.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/RenoVision")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/RenoImagineAI")
             put(MediaStore.Images.Media.IS_PENDING, 1)
         }
         val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)

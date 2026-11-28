@@ -44,7 +44,7 @@ Future<Directory> caseDirectory(String name) async {
     defaultValue: 'output/save-acceptance',
   );
   final directory = Directory(
-    '$base/RenoVision-save-check-$name-${DateTime.now().microsecondsSinceEpoch}',
+    '$base/RenoImagineAI-save-check-$name-${DateTime.now().microsecondsSinceEpoch}',
   );
   if (await directory.exists()) {
     throw StateError('Existing test folder retained');
