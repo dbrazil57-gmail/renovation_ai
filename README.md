@@ -1,5 +1,10 @@
 # RenoVision
 
+Samsung listing preparation now includes public copy, reviewer notes and an
+offline 32-second sample promo/screenshot pack. See the
+[existing release guide](docs/GOOGLE_PLAY_RELEASE.md#samsung-listing-pack---28-november).
+The final replacement name is still undecided; no app branding or APK changed.
+
 Latest source work, **28 November 2026**: Samsung-first launch preparation and
 software-access foundations. Signed, installation-bound trial/Standard grants,
 expiry/refresh checks and Settings > App access are implemented and tested with

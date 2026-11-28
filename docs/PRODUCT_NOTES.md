@@ -2,6 +2,18 @@
 
 ## Samsung launch and advertising drafts - 28 November
 
+The draft has now been made concrete as a local media/copy pack: 32-second silent
+MP4, five existing Help-frame screenshots, current 512-pixel icon, public copy and
+private reviewer notes. Its offline generation recipe is
+`tool/prepare_samsung_listing.dart`; the canonical copy and required final-release
+work are in the [release guide](GOOGLE_PLAY_RELEASE.md#samsung-listing-pack---28-november).
+It is clearly labelled sample/draft: historical external AI images and simulated
+Help transactions are not represented as a newly recorded paid in-app generation.
+Final name remains undecided; no branding change, publication, video upload or
+spend was made. The screenshot supplied during preparation is a Samsung Developer
+profile page, separate from commercial seller verification.
+
+
 Owner has chosen Samsung first and confirms no Seller Portal registration yet.
 Keep one installed app with a trial and Standard. Owner wants Standard on one
 active device and is considering monthly expiry; no price, auto-renewal, trial

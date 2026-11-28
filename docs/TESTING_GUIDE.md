@@ -1,5 +1,21 @@
 # Testing and storage reference
 
+## Samsung draft media checks - 28 November 2026
+
+The standalone `tool/prepare_samsung_listing.dart` was executed using local
+FFmpeg/ffprobe and existing sample assets, with no paid AI, owner project store,
+secret vault or Android build. Its Dart analysis passes. The generated trailer is
+32.000 seconds, H.264/yuv420p, 1280 x 720; the icon is PNG 512 x 512 and the five
+sample UI frames are PNG 390 x 780. Public short/full/reviewer text measures
+33 / 1,669 / 1,839 UTF-8 bytes. Sample frames and a six-frame video contact sheet
+were visually inspected. Metadata includes source/provenance and SHA256 hashes.
+
+These are **draft media checks**, not Samsung acceptance, actual device footage
+or verification of live AI. Final phone captures, confirmed branding, approved
+purchase terms, public support/privacy pages and reviewer access remain. Shared
+app code/web source/APK are unchanged; the previous 491-test app result stands.
+
+
 ## Samsung access foundations - 28 November 2026
 
 Source `c58ff6c0f1` includes the first software-access client. The private Chrome

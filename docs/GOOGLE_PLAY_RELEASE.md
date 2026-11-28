@@ -1,5 +1,159 @@
 # RenoVision — Google Play release guide
 
+## Samsung listing pack - 28 November
+
+Prepare a store listing and promotional material separately from the in-app Help
+walkthroughs. Final app name is still undecided; **RenoCue is only a suggestion**.
+Keep `[APP NAME]` in copy until the name is confirmed and checked. The listing,
+installed app name/icon and final screenshots must match. Existing current-brand
+drafts are not upload-ready assets.
+[Samsung self-check](https://developer.samsung.com/galaxy-store/self-check-list-galaxy.html?lang=en).
+
+Samsung registration assets, checked against the
+[Content Publish reference](https://developer.samsung.com/galaxy-store/galaxy-store-developer-api/content-publish-api/reference.html):
+
+| Item | Preparation |
+| --- | --- |
+| App title | Final confirmed name, up to 100 UTF-8 bytes. |
+| Short description | One sentence, up to 40 UTF-8 bytes. Draft below is 33 bytes. |
+| Full description | Up to 4,000 UTF-8 bytes; draft below describes existing features. |
+| App icon | PNG, 512 x 512 pixels, at most 1,024 KB; use final approved icon. |
+| Screenshots | 4-8 PNG/JPG images, dimensions 320-3,840 pixels, at most 2:1 ratio. Prepare five. |
+| Optional listing video | YouTube URL; Samsung places its thumbnail/link first in the screenshot area. |
+| Review comments | Up to 4,000 bytes; private validation steps/access, separate from public copy. |
+
+Also prepare the production-signed Android binary, category/age-rating answers,
+country/language choices, support contact, working privacy-policy URL, accurate
+data/permission disclosures and any purchase/trial terms. Privacy requirements
+apply because selected photos/briefs are transmitted to the AI provider after
+confirmation. The screenshots/description must show actual features and disclose
+purchases appropriately. A promotional video does not establish working AI or
+replace reviewer access.
+[Samsung distribution rules](https://developer.samsung.com/galaxy-store/distribution-guide.html?lang=en),
+[registration/review tabs](https://developer.samsung.com/galaxy-store/launch.html).
+
+The owner's provided screenshot is **Samsung Developer personal/profile setup**
+(occupation, job level, technology interests), not the commercial Seller Portal
+verification page. Do not confuse its company field with legal publisher approval.
+Leave it empty if allowed; if required, use a truthful independent-developer
+description rather than an invented business. Formal seller eligibility is still
+unresolved and must be checked before committing to Samsung distribution. No
+personal account details from the screenshot are included in release materials.
+
+### Public listing copy - draft
+
+Replace the name and approve final pricing/disclosures before submission. English
+is the current app language. The app's technical support URLs/legal owner remain
+separate pending fields, never fabricated in public copy.
+
+<!-- samsung-public-copy:start -->
+APP TITLE
+[APP NAME]
+
+SHORT DESCRIPTION
+AI home design with your own key.
+
+FULL DESCRIPTION
+See renovation possibilities in your own space.
+
+Start with photos from your gallery or camera. Choose a room or outdoor space,
+explore styles and colour palettes, and create visual ideas using your own
+OpenAI or Google Gemini developer API key.
+
+DESIGN FROM YOUR PHOTOS
+Use a primary photo and add other views for context. Review the AI's observations
+and design proposal, then choose what to update and what to keep.
+
+EXPLORE AND REFINE
+Generate up to three design options, compare them with the original and select
+a favourite. Describe a focused change to refine an existing design while keeping
+each version available in your project.
+
+TRY FINISHES AND KEEP YOUR WORK
+Preview wall colours and tiles, organise rooms and saved designs, save a portable
+project file, and export or share your favourite images. Local finish previews
+can be sent for a separate AI polish after review and confirmation.
+
+TRY THE OFFLINE EXAMPLE
+Explore the included kitchen sample and Help walkthroughs before connecting AI.
+Sample replay uses saved example results and does not make a live AI request.
+
+BRING YOUR OWN AI
+A supported developer API key and internet access are required for live AI
+analysis and image generation. AI usage is charged separately by your provider.
+A consumer chatbot subscription is not the same as developer API credit.
+
+Projects are stored on your device. Selected photos and instructions are sent
+to your chosen AI service after confirmation. Keep a project file for a portable
+copy. English interface.
+
+AI images are visual inspiration, not measured building plans. Results vary;
+review important details before making renovation or purchasing decisions.
+<!-- samsung-public-copy:end -->
+
+### Private reviewer notes - draft
+
+These are preparation notes, not a claim that a production submission exists.
+Do not submit until the access/AI review instructions can actually be followed.
+
+<!-- samsung-review-copy:start -->
+DRAFT - COMPLETE BEFORE SUBMISSION
+App name, version/package and legal publisher: [confirm final values].
+Support and privacy URL: [provide working public destinations].
+
+Offline demonstration:
+1. Launch the app and open Help / Sample walkthroughs.
+2. Select Try the kitchen sample flow.
+3. Review the original, saved concept and later example ideas. Replay is offline;
+   the historical result was imported from an external AI session. Its provider
+   model is unknown. No live API call or generation speed is demonstrated.
+
+Actual app workflow:
+1. Create a project; choose a room and gallery photos or camera capture.
+2. Follow Room photos, Design direction, Analyse and review, and Finalise and
+   generate. Analysis and generation have separate confirmations.
+3. Review a generated design, compare the original and request a focused update.
+4. Save/Open a project file and export/share an image using the device chooser.
+5. Allow camera access only when testing camera features.
+
+Live AI review access: [provide a tested, limited review-access method privately].
+Do not ask reviewers to create/pay for an AI provider account simply to validate
+the core feature. Do not place an owner API key in the APK, screenshots or public
+description. Confirm how Samsung will test BYO AI before submission.
+
+Software access/purchases: [complete Samsung sandbox and restore/expiry checks,
+then provide actual reviewer steps and approved terms]. No real purchase flow
+or hosted activation is live in the current private test build.
+
+Camera preview is a captured still/design overlay; it is not continuous live
+AI video or spatially tracked AR. Local paint/tile previews are approximate.
+The sample videos simulate camera/AI/file-picker responses in real app widgets.
+Replace draft footage with final-device footage after branding/release acceptance.
+<!-- samsung-review-copy:end -->
+
+### Demo and screenshot preparation
+
+`tool/prepare_samsung_listing.dart` creates a **draft-only** local pack under
+`output/samsung-listing-draft/`: copy extracted from this guide, five sample-frame
+screenshots, the current approved 512-pixel icon, a silent 32-second MP4 and its
+storyboard/provenance. It uses existing authorised kitchen examples and recorded
+Help UI, with explicit sample/draft labels. No live AI, user project/vault, upload,
+APK, store account or advertising spend is involved. FFmpeg/ffprobe are development
+tools already available locally, not app dependencies. Generated media stays
+ignored by Git; the reproducible recipe is tracked.
+
+Five final screenshot targets: room photos/setup; style/palette selection; a
+selected design and focused update; before/after comparison; saved project/file
+controls. The draft uses historical Help recordings. Capture final phone images
+after the name/icon are agreed and the production build is accepted. Do not crop
+away simulation disclosures and then present those recordings as live generation.
+
+The promotional MP4 is for review before a final recording/YouTube upload. An
+optional longer private reviewer video should show the complete real workflow,
+including BYO connection/access, generation, refinement and save/restore. It must
+not expose keys, account details, personal project names or phone notifications.
+No publication or upload is authorised by creating this draft pack.
+
 ## Samsung-first release preparation - 28 November
 
 Samsung is now the first store target; the existing Play/iOS material below is

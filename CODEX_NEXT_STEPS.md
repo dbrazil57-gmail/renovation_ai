@@ -1,5 +1,29 @@
 # Renovision next steps
 
+## Samsung listing and demo pack - 28 November 2026
+
+- [x] Prepare short/full public copy and private reviewer instructions in the
+  [existing release guide](docs/GOOGLE_PLAY_RELEASE.md#samsung-listing-pack---28-november).
+  Verify Samsung's 40-byte short description, 4,000-byte full/review limits,
+  512-pixel PNG icon and 4-8 screenshot requirements against official sources.
+- [x] Export a labelled 32-second silent promo draft, five recorded-UI screenshots,
+  the existing icon, copy/field files and provenance with the offline
+  `tool/prepare_samsung_listing.dart` recipe. Generated media stays under ignored
+  `output/samsung-listing-draft/`; no user account/photo-store access or paid AI.
+- [x] Inspect the draft video frames/screenshots and validate codec, dimensions,
+  duration and copy byte counts. Static analysis of the tool passes. App source,
+  current web build and APK remain unchanged; no full app retest needed for this
+  documentation/development-tool-only batch.
+- [x] Clarify the owner's screenshot shows Samsung Developer personal/profile
+  fields, not Seller Portal commercial verification. Do not put a provisional
+  app name into legal business verification or store personal profile details.
+- [ ] Choose/check the final app name; no new name has been approved or installed.
+- [ ] Capture final S21 screenshots and real workflow footage after branding and
+  store-build acceptance. Existing Help/demo footage remains explicitly simulated.
+- [ ] Finalise support/privacy URLs, purchase/trial disclosures and limited live
+  reviewer access before submission. A recorded demo does not verify live AI.
+
+
 ## Samsung implementation batch - 28 November 2026
 
 - [x] Owner confirms Samsung first and no seller registration yet. Retain a trial
