@@ -1,9 +1,45 @@
 # RenoVision — Google Play release guide
 
+## Samsung individual-publisher eligibility - 28 November
+
+The detailed Seller Portal guide resolves the earlier private/corporate ambiguity:
+for the owner's Australian Android-app situation, registration requires a
+**Corporate Commercial Seller Request**, including D-U-N-S verification on the
+normal path. The guide for private commercial sellers explicitly redirects a
+personal seller wanting to sell an Android app to the corporate request guide.
+A personal Samsung Developer profile, or entering one's name in its company field,
+does not provide Android distribution approval.
+[Samsung corporate commercial request](https://seller.samsungapps.com/getSellerGuide.as#/0301010000),
+[Samsung private commercial request](https://seller.samsungapps.com/getSellerGuide.as#/0301020000).
+
+Verified by reading the public Markdown used by Samsung's JavaScript guide:
+[corporate instructions](https://d2nup21dbv379f.cloudfront.net/seller-user-guide/0301010000.md),
+[private instructions](https://d2nup21dbv379f.cloudfront.net/seller-user-guide/0301020000.md).
+The standard browser extractor only shows the guide shell; anonymous source access
+was required. No sign-in, application or account data was involved.
+
+This portal category does not establish that Australia requires an incorporated
+company. Acceptance of an Australian individual/sole trader using their legal
+name and any alternate business documents is **not confirmed**. Samsung's broader
+[preparation guide](https://developer.samsung.com/galaxy-store/prepare.html) mentions
+asking support about alternative verification when D-U-N-S is unavailable; that
+is not evidence of an exemption for this Android app.
+
+Before further store-specific investment, the owner should ask Seller Portal
+Help > Contact Us: "I am an Australian individual developer without an incorporated
+company. Can I publish an Android app as a sole trader under my legal name? What
+business documentation and D-U-N-S verification do you require?" No message has
+been sent. Samsung-first remains conditional on eligibility; its lack of a
+publishing fee does not mean personal-profile registration alone is sufficient.
+
+Owner rejects RenoCue and wants a name clearly conveying AI and renovation.
+Current candidate ideas are RenoPreview AI, RenoImagine AI and RenoVisual AI.
+These are suggestions only, not availability/trade-mark clearance or a rebrand.
+
 ## Samsung listing pack - 28 November
 
 Prepare a store listing and promotional material separately from the in-app Help
-walkthroughs. Final app name is still undecided; **RenoCue is only a suggestion**.
+walkthroughs. Final app name is still undecided; **RenoCue has been rejected**.
 Keep `[APP NAME]` in copy until the name is confirmed and checked. The listing,
 installed app name/icon and final screenshots must match. Existing current-brand
 drafts are not upload-ready assets.

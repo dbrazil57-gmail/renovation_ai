@@ -1,5 +1,21 @@
 # Renovision next steps
 
+## Individual publisher and naming clarification - 28 November 2026
+
+- [x] Read Samsung's actual public Seller Guide Markdown: an Australian personal
+  seller wanting to register an Android app is directed to Corporate Commercial
+  Seller approval and normal-path D-U-N-S verification. General Developer profile
+  registration and legal name entry are separate from permission to publish.
+  Record sources and the exact outstanding question in the
+  [release guide](docs/GOOGLE_PLAY_RELEASE.md#samsung-individual-publisher-eligibility---28-november).
+- [ ] Owner obtain Samsung's answer on Australian sole-trader eligibility under
+  their legal name and accepted business documents. Do not promise individual
+  approval or assume incorporation is required. Samsung-first is conditional.
+- [x] Record rejection of RenoCue: owner wants AI + renovation to be clear in the
+  name. Offer RenoPreview AI / RenoImagine AI / RenoVisual AI as unapproved ideas;
+  store/domain/trade-mark checks and final approval remain before any rebrand.
+
+
 ## Samsung listing and demo pack - 28 November 2026
 
 - [x] Prepare short/full public copy and private reviewer instructions in the

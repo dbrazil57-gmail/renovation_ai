@@ -1,5 +1,15 @@
 # Product and research reference
 
+Samsung eligibility correction, 28 November: the detailed Seller Guide requires
+the corporate commercial request for this Australian Android-app scenario, even
+when starting from a personal account, with D-U-N-S on its normal path. Personal
+Developer profile/name entry does not unlock publishing. Australian sole-trader
+acceptance under a legal name and any alternative documentation remain unconfirmed;
+the Samsung-first recommendation is conditional on that answer. See the
+[verified guide sources](GOOGLE_PLAY_RELEASE.md#samsung-individual-publisher-eligibility---28-november).
+RenoCue has been rejected; the replacement name must clearly convey renovation
+and AI. No new name is approved, installed or cleared for availability.
+
 ## Samsung launch and advertising drafts - 28 November
 
 The draft has now been made concrete as a local media/copy pack: 32-second silent
