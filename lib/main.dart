@@ -53,6 +53,7 @@ class _RenovisionStartupState extends State<RenovisionStartup> {
         return;
       }
       setState(() => store = loaded);
+      unawaited(loaded.access.load());
       unawaited(
         loaded.restoreAiConnection().catchError((_) {
           loaded.ai.connectionNotice =

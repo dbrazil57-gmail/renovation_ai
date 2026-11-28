@@ -21,6 +21,9 @@ export 'ai_model_choices.dart' show AiProvider;
 /// Supports a personal internet API key or the development relay. Provider keys
 /// stay in the platform vault/session memory, never project/photo records.
 class AiService extends ChangeNotifier {
+  /// Set by the application store. Runs before any billable provider work and
+  /// outside provider diagnostics (licence failures are not AI failures).
+  Future<void> Function()? creationGuard;
   final AiActivity activity = AiActivity();
   final AiDiagnostics diagnostics = AiDiagnostics();
 
@@ -124,7 +127,8 @@ class AiService extends ChangeNotifier {
   bool get connected => isDirect ? _directKey != null : _url != null;
   bool get supportsResearch =>
       connected && isDirect && provider == AiProvider.openai;
-  Future<DesignReferences> researchReferences(String query) {
+  Future<DesignReferences> researchReferences(String query) async {
+    await creationGuard?.call();
     if (!supportsResearch || activity.active) {
       throw const AiFailure(
         'Connect OpenAI directly and finish any active request before researching.',
@@ -556,20 +560,23 @@ class AiService extends ChangeNotifier {
     String? imageModel,
     String? imageQuality,
     void Function(AiStage)? onProgress,
-  }) => _logged(
-    AiOperation.design,
-    provider,
-    imageModel ?? model,
-    imageQuality ?? quality,
-    () => _edit(
-      image: image,
-      prompt: prompt,
-      supportingImages: supportingImages,
-      imageModel: imageModel,
-      imageQuality: imageQuality,
-      onProgress: onProgress,
-    ),
-  );
+  }) async {
+    await creationGuard?.call();
+    return _logged(
+      AiOperation.design,
+      provider,
+      imageModel ?? model,
+      imageQuality ?? quality,
+      () => _edit(
+        image: image,
+        prompt: prompt,
+        supportingImages: supportingImages,
+        imageModel: imageModel,
+        imageQuality: imageQuality,
+        onProgress: onProgress,
+      ),
+    );
+  }
 
   Future<AiResult> _edit({
     required Uint8List image,
@@ -698,18 +705,21 @@ class AiService extends ChangeNotifier {
     required String context,
     List<Uint8List> supportingImages = const [],
     void Function(AiStage)? onProgress,
-  }) => _logged(
-    AiOperation.analysis,
-    provider,
-    analysisModel,
-    null,
-    () => _analyse(
-      image: image,
-      context: context,
-      supportingImages: supportingImages,
-      onProgress: onProgress,
-    ),
-  );
+  }) async {
+    await creationGuard?.call();
+    return _logged(
+      AiOperation.analysis,
+      provider,
+      analysisModel,
+      null,
+      () => _analyse(
+        image: image,
+        context: context,
+        supportingImages: supportingImages,
+        onProgress: onProgress,
+      ),
+    );
+  }
 
   Future<RoomAnalysisResult> _analyse({
     required Uint8List image,

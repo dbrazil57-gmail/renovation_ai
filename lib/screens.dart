@@ -1,4 +1,5 @@
 import 'app_notices.dart';
+import 'app_access_widgets.dart';
 import 'wording_region.dart';
 import 'ai_usage_widgets.dart';
 import 'ai_usage.dart';
@@ -1345,6 +1346,7 @@ class SettingsTab extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         AiConnectionSettingsCard(ai: store.ai),
+        AppAccessSettingsCard(access: store.access),
         AiDiagnosticsCard(diagnostics: store.ai.diagnostics),
         ?roomSaving,
         WordingRegionSettings(store: store),

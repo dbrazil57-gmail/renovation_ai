@@ -1,5 +1,19 @@
 # RenoVision
 
+Latest source work, **28 November 2026**: Samsung-first launch preparation and
+software-access foundations. Signed, installation-bound trial/Standard grants,
+expiry/refresh checks and Settings > App access are implemented and tested with
+synthetic receipts. Private builds retain existing unrestricted software access.
+Samsung checkout, hosted verification, trial eligibility and device transfer are
+**not live**. APK 1.0.20 below is unchanged; no new APK was requested.
+Current private Chrome source is **`c58ff6c0f1`**, at http://localhost:7357/;
+older source IDs below refer to earlier batches.
+All **491 tests pass**; static analysis, Android Kotlin compilation and the
+release web build pass. The separate deprecated Chrome test runner stalled at
+startup; it is not counted as passed browser licence acceptance.
+See the [Samsung release checklist](docs/GOOGLE_PLAY_RELEASE.md#samsung-first-release-preparation---28-november)
+and [launch drafts](docs/PRODUCT_NOTES.md#samsung-launch-and-advertising-drafts---28-november).
+
 Current test release, **25 November 2026**: **1.0.20+21**, shared source
 **`454c2f8dcf`**. [Download APK 1.0.20](output/mobile-test/renovision-test-1.0.20.apk)
 and install over the existing app. App identity, signing certificate, icon and data

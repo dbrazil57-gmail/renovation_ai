@@ -1,5 +1,81 @@
 # RenoVision — Google Play release guide
 
+## Samsung-first release preparation - 28 November
+
+Samsung is now the first store target; the existing Play/iOS material below is
+retained for later channels. Owner has not registered in Samsung Seller Portal.
+No account, product, paid checkout, listing or deployment was created here.
+
+1. Owner register and establish commercial-seller eligibility in
+   [Samsung Seller Portal](https://seller.samsungapps.com/) using the
+   [official preparation guide](https://developer.samsung.com/galaxy-store/prepare.html).
+   Decide production package/signing and an update/data-migration path before
+   changing the current private `com.example.renovision_ai` package or certificate.
+2. Agree the trial duration/limits and Standard terms. Owner prefers one active
+   device and is considering monthly expiry; automatic renewal and price are not
+   approved. A subscription and a manually renewed pass need different product
+   behaviour/disclosures. Both can use one installed app.
+3. Obtain the official Samsung IAP SDK through Samsung login, register the app/
+   product IDs and implement the native method-channel contract. Show the actual
+   local product price, renewal/trial terms and cancellation before checkout.
+   [SDK integration](https://developer.samsung.com/iap/programming-guide/integrate-iap-helper-into-your-app.html).
+4. Implement and host the HTTPS access authority. Verify receipts/current
+   subscription state and keep a durable one-active-device/trial-eligibility
+   ledger. Use verified recovery/transfer, authenticated webhooks or reconciliation,
+   revocation/refund handling and private server signing keys.
+   [Samsung verification](https://developer.samsung.com/iap/programming-guide/samsung-iap-server-api.html).
+5. Test Samsung no-charge purchase/cancel/restore/acknowledgement, expiry, renewal,
+   refund, offline lease and authenticated new-phone transfer. Retain viewing/
+   export of existing work and distinguish app access from BYO provider charges.
+6. Finish support/privacy/reporting destinations, accurate screenshot/demo rights,
+   reviewer AI access and production signing, then submit for Samsung review.
+   Drafts are in [product notes](PRODUCT_NOTES.md#samsung-launch-and-advertising-drafts---28-november).
+
+Client implementation in this batch:
+
+- `lib/app_access.dart`: pinned Ed25519 grants, installation request proof,
+  expiry/high-water clock check and bounded offline lease, fail-closed licensed
+  configuration, trial/refresh/verified-Samsung-receipt endpoints.
+- `lib/samsung_access.dart`: SDK adapter **contract only**, purchase/owned-item
+  filtering and service verification. Native SDK implementation is still absent;
+  missing adapter means unavailable, never a fabricated successful purchase.
+- Settings > App access: compact real state, pending setup, refresh/restore when
+  configured. No Buy action until SDK, authority and price/terms review are ready.
+- Existing private builds stay unrestricted. Store builds must explicitly use
+  `RENOVISION_ACCESS_MODE=licensed`, HTTPS `RENOVISION_ACCESS_URL` and
+  `RENOVISION_ACCESS_PUBLIC_KEYS` (JSON key-ID to base64url 32-byte public key).
+  Optional `RENOVISION_SAMSUNG_STANDARD_PRODUCT` identifies the real portal SKU.
+  These definitions contain public configuration only; no signing/API private key.
+  Changing keys requires trusted app/key rotation, never trusting keys in a token.
+
+Authority protocol to implement (not a running service):
+
+- POST `<base>/v1/access/trial`, `/refresh` or `/samsung`, no redirects. Body is
+  `{payload, signature}`; payload is base64url JSON containing version 1, operation,
+  audience, SHA256 installation public-key ID, public key, UTC epoch-second time
+  and random 24-byte nonce. Samsung also includes `purchaseId`. Verify Ed25519
+  over UTF8 `RVREQ1.<payload>`, bind route/audience/key, enforce clock skew and
+  nonce replay protection. A signed request proves key possession, not payment or
+  unique trial eligibility. Add verified onboarding/invitation proof before public
+  trial deployment; do not grant one new trial for every new installation key.
+- 200 response `{grant: "RV1.<payload>.<signature>"}`. Signed payload fields:
+  `v=1`, pinned `kid`, `iss=renovision-access`, `aud=renovision`, opaque `licence`,
+  `device`, `plan=trial|standard`, integer UTC `iat`, `nbf`, `exp`, `refreshBy`.
+  Sign UTF8 `RV1.<payload>` with the private Ed25519 key. Refresh must preserve
+  original entitlement expiry unless a real renewal has been verified. Lease
+  cannot exceed expiry or 48 hours from issue. New responses must be freshly
+  issued; cached grants can be used locally until their lease ends.
+- 401/403/410 revoke local access; 409 indicates a device/ownership conflict.
+  Only use these statuses for authoritative access outcomes, not maintenance/
+  rate limiting. Network/service failures retain existing cached local access
+  until lease expiry, but stop new paid AI calls until online verification works.
+  Never log requests, purchase IDs, licences, signing material or user room data.
+
+The authority, actual SDK, account recovery, cumulative trial quotas, transfer
+workflow and production end-to-end acceptance are outstanding. This foundation
+must not be described as a finished billing system or reinstall-proof trial.
+No new APK was built for this source batch; 1.0.20 remains the last private APK.
+
 Latest requested test package, **25 November 2026**: **1.0.20+21**, source
 **`454c2f8dcf`**. Includes Gemini request compatibility/diagnostics, the pinned
 send action, draggable divider/conditional image strip, original/generated mode

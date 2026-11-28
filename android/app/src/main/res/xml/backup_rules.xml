@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
+    <exclude domain="sharedpref" path="renovision_access_secrets.xml" />
     <exclude domain="sharedpref" path="renovision_secrets.xml" />
     <exclude domain="sharedpref" path="renovision_gemini_secrets.xml" />
     <exclude domain="sharedpref" path="renovision_tester_secrets.xml" />

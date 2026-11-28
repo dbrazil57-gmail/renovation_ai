@@ -1,5 +1,39 @@
 # Renovision next steps
 
+## Samsung implementation batch - 28 November 2026
+
+- [x] Owner confirms Samsung first and no seller registration yet. Retain a trial
+  option; Standard should allow one active device. Monthly expiry is a candidate,
+  not approval for automatic renewal or a price.
+- [x] Add signed trial/Standard verification, installation proof, expiry/offline
+  checks, private-build continuity, Settings status, and guards before AI charges.
+- [x] Prepare Samsung purchase/restore adapter contract; reject unverified receipt
+  callbacks, wrong products, forged grants and conflicting installations.
+- [x] Validate **491 passing tests**, clean static analysis, Android Kotlin
+  compilation and release web build `c58ff6c0f1`; serve the same localhost:7357.
+  Separate deprecated Chrome licence-test startup stalled and is not claimed
+  as a pass. Verify APK 1.0.20 checksum unchanged; no APK requested/built.
+- [x] Keep photos/projects/keys and current private test APK intact. Export/view
+  remains possible without an active licence; access data is not project data.
+- [x] Draft the first store/demo advertising experiment and provider shortlist in
+  [product notes](docs/PRODUCT_NOTES.md#samsung-launch-and-advertising-drafts---28-november).
+- [ ] Owner register in Samsung Seller Portal and establish seller eligibility.
+  Obtain the official IAP SDK (Samsung-login download), choose final store identity
+  and signing/migration, and register trial/Standard products.
+- [ ] Implement official native Samsung SDK callbacks, owned-list startup checks,
+  current local prices/renewal terms, acknowledgement and review/test modes. The
+  current method-channel contract has no native SDK implementation or live Buy UI.
+- [ ] Implement and host the HTTPS authority: verified receipt/subscription status,
+  server-held original trial eligibility/expiry, one-active-device ledger, verified
+  recovery/transfer, revocation/refund handling and signed leases. No service exists
+  yet. Signing keys stay server-side; project backups must never carry activation.
+- [ ] Agree trial duration/limits, monthly vs one-off/renewal terms and price.
+  Then test real Samsung checkout/cancel/restore/refund, reinstall/new-phone transfer,
+  expiry/offline behaviour and retained project export on S21 before store release.
+- [ ] Approve screenshots/demo copy and support/privacy destinations. Publish only
+  after approval; measure initial organic discovery before spending on ads.
+
+
 Current task list after the full code/conversation/design audit, updated through
 25 November 2026 (Australia/Sydney). This supersedes older chronological lists.
 Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);

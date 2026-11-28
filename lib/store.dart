@@ -19,6 +19,7 @@ import 'app_appearance.dart';
 import 'wording_region.dart';
 import 'archive_cleanup.dart';
 import 'workspace_layout.dart';
+import 'app_access.dart';
 
 /// Stage 1 local-only prototype storage. Photos are kept in a dedicated box.
 /// For production-scale image libraries, move large originals to app-private
@@ -28,6 +29,7 @@ class RenovisionStore extends ChangeNotifier {
   final Box<dynamic> photos;
   final AiService ai;
   final AppFiles files;
+  final AppAccess access;
   late final ProjectDocuments documents;
   int _sequence = 0;
   final _purgingProjects = <String>{};
@@ -63,8 +65,19 @@ class RenovisionStore extends ChangeNotifier {
     required this.photos,
     AiService? ai,
     AppFiles? files,
+    AppAccess? access,
   }) : ai = ai ?? AiService(),
-       files = files ?? createAppFiles() {
+       files = files ?? createAppFiles(),
+       access = access ?? AppAccess() {
+    this.ai.creationGuard = this.access.privateBuild
+        ? null
+        : () async {
+            try {
+              await this.access.requireCreation(online: true);
+            } on AccessFailure catch (error) {
+              throw AiFailure(error.message);
+            }
+          };
     final savedAppearance = records.get('settings:appearance');
     appearance = ValueNotifier(
       AppThemeChoice.values
@@ -135,6 +148,7 @@ class RenovisionStore extends ChangeNotifier {
     removeListener(documents.changed);
     documents.dispose();
     ai.dispose();
+    access.dispose();
     super.dispose();
   }
 
@@ -810,6 +824,9 @@ class RenovisionStore extends ChangeNotifier {
   }
 
   Future<RenovationProject> createProject(String name) async {
+    if (!access.privateBuild) {
+      await access.requireCreation();
+    }
     final project = RenovationProject(
       id: _newId(),
       name: uniqueProjectName(name),
@@ -832,6 +849,9 @@ class RenovisionStore extends ChangeNotifier {
     bool automaticLiveName = false,
   }) async {
     _validatePalette(colourPaletteId);
+    if (!access.privateBuild) {
+      await access.requireCreation();
+    }
     if (_purgingProjects.contains(projectId) ||
         projectById(projectId) == null) {
       throw StateError('The project is unavailable.');

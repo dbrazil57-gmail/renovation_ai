@@ -87,7 +87,9 @@ void main() {
       await tester.tap(find.text('AI connection and models'));
       await tester.pumpAndSettle();
       await tester.ensureVisible(appearance);
-      await tester.tap(appearance);
+      // Let the scroll layout complete before tapping the visible header.
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('App appearance'));
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('app-theme-oceanBlue')), findsOneWidget);
       expect(tester.takeException(), isNull);

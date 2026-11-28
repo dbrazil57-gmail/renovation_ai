@@ -9,7 +9,7 @@ import 'package:web/web.dart' as web;
 import 'secret_store_types.dart';
 
 SecretStore createSecretStore({String provider = 'openai'}) {
-  if (!['openai', 'gemini', 'tester'].contains(provider)) {
+  if (!['openai', 'gemini', 'tester', 'access'].contains(provider)) {
     throw ArgumentError('Unsupported provider');
   }
   return BrowserSecretStore(provider);

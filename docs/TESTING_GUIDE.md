@@ -1,5 +1,47 @@
 # Testing and storage reference
 
+## Samsung access foundations - 28 November 2026
+
+Source `c58ff6c0f1` includes the first software-access client. The private Chrome
+preview keeps http://localhost:7357/ and uses bundled web resources. APK 1.0.20
+is unchanged. Preserve the same normal browser/profile and do not clear storage.
+Final regression: **491 tests pass**, including 23 new licence/adapter tests.
+Existing live-camera/multiple-design flows also pass. The Settings expansion
+test now waits for its requested scroll layout before tapping the header.
+
+Automated scope: synthetic trial/Standard signature, issuer/app/device binding,
+altered grants, offline lease, expiry, clock rollback/recovery, failed storage,
+revocation, receipt verification and purchase-cancel/restore/product filtering;
+expired projects/photos remain readable/exportable and no AI client is contacted.
+Private mode remains unrestricted without touching a licence vault. Settings
+activation/restore actions stay unavailable without configuration/SDK.
+
+The Android Kotlin/channel/vault compiler check and release web build pass;
+static analysis is clean. The deprecated Flutter Chrome test runner stalled
+before starting tests (responsive browser host, iframe startup exception); this
+is **not** recorded as a passed browser licence test. Real browser vault and
+licensed-device acceptance still need an integrated configured build.
+
+Owner private-preview acceptance:
+
+1. Reopen http://localhost:7357/ in the same normal profile. Existing project,
+   room photos, designs, autosave, layout and remembered AI connection should stay.
+2. Settings > App access expands to **Private test build**. No expiry, card entry,
+   automatic activation or enabled purchase action is added to this private build.
+3. Keep using sample replay and normal projects. Do not enter an API key into a
+   licence field: BYO AI keys and software purchase access are separate systems.
+4. No paid AI acceptance was run here. If checking an actual generation, use your
+   normal confirmation and compare result quality; the licence tests use fakes.
+
+Before Samsung release: obtain/configure the official SDK and products and host
+the authority; then run no-charge sandbox purchase/restore/acknowledgement,
+cancel/refund/renewal, verified trial eligibility/reinstall, clock/offline lease,
+one-device transfer/revocation and expiry without project loss. Test the complete
+flow on S21 before production checkout. Neither an unverified native receipt nor
+a local reinstall-resettable counter should grant a new entitlement.
+See [release preparation](GOOGLE_PLAY_RELEASE.md#samsung-first-release-preparation---28-november).
+
+
 ## Requested APK 1.0.20 acceptance
 
 Install `output/mobile-test/renovision-test-1.0.20.apk` over the existing app;

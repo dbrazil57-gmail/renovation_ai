@@ -12,9 +12,10 @@ import javax.crypto.spec.GCMParameterSpec
 
 /** The API key is encrypted; its encryption key stays in Android Keystore. */
 class KeyVault(context: Context, provider: String = "openai") {
-    init { require(provider in setOf("openai", "gemini", "tester")) }
+    init { require(provider in setOf("openai", "gemini", "tester", "access")) }
+    private val maxLength = if (provider == "access") 16384 else 1024
     private val preferences = context.getSharedPreferences(
-        when (provider) { "openai" -> "renovision_secrets"; "tester" -> "renovision_tester_secrets"; else -> "renovision_gemini_secrets" }, Context.MODE_PRIVATE)
+        when (provider) { "openai" -> "renovision_secrets"; "tester" -> "renovision_tester_secrets"; "access" -> "renovision_access_secrets"; else -> "renovision_gemini_secrets" }, Context.MODE_PRIVATE)
     private val alias = "renovision_${provider}_key_v1"
     private fun encryptionKey(): SecretKey {
         val store = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
@@ -29,7 +30,7 @@ class KeyVault(context: Context, provider: String = "openai") {
         return generator.generateKey()
     }
     fun write(value: String) {
-        require(value.isNotBlank() && value.length <= 1024)
+        require(value.isNotBlank() && value.length <= maxLength)
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.ENCRYPT_MODE, encryptionKey())
         val encrypted = cipher.doFinal(value.toByteArray(Charsets.UTF_8))

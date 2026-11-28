@@ -1,5 +1,34 @@
 # Renovision feature status
 
+## Samsung access foundations - 28 November 2026
+
+Verified shared source: **`c58ff6c0f1`**. All **491 tests pass**, including 23 new
+access tests; static analysis, Android Kotlin compilation and release web build
+pass. The preview serves HTTP 200 at http://localhost:7357/. The deprecated web
+test runner stalled before its suites started, so real configured browser/store
+licence acceptance remains outstanding. Latest APK remains 1.0.20, unchanged.
+
+- Shared source now verifies pinned Ed25519 trial/Standard grants, app/issuer/
+  installation binding, expiry and a maximum 48-hour signed offline lease.
+  Each online AI action requires a fresh service check before provider work.
+- Settings > App access shows the actual state. Current private builds keep
+  unrestricted software access and do not read/create a licensing identity.
+  Licensed builds fail closed if activation configuration is missing.
+- Installation proof is a random signing key kept in the separate device vault;
+  no IMEI/serial. Licence state is excluded from project exports and Android
+  cloud/device-transfer backups. Viewing/exporting existing work remains available.
+- Samsung purchase/restore **Dart adapter contract** is prepared. Only a signed
+  service response can unlock access; a purchase callback does not suffice.
+  The official native SDK is absent, checkout remains unavailable, and the
+  service is not implemented/deployed. No public trial or paid entitlement is live.
+- Owner confirms no Samsung seller registration yet; wants trial access and
+  one active Standard device, with monthly expiry under consideration. Price,
+  trial length/limits and auto-renewal have not been agreed. No local counter
+  or hardware ID is presented as protection against reinstalling.
+- OpenAI and Gemini already cover launch image generation/editing. No extra
+  provider, account, charge, app-ID/signature change or APK was added.
+
+
 ## Current release and conversation audit — 25 November 2026
 
 Requested APK **1.0.20+21** packages source **`454c2f8dcf`**, matching current

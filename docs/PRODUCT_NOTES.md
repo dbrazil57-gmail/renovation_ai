@@ -1,5 +1,95 @@
 # Product and research reference
 
+## Samsung launch and advertising drafts - 28 November
+
+Owner has chosen Samsung first and confirms no Seller Portal registration yet.
+Keep one installed app with a trial and Standard. Owner wants Standard on one
+active device and is considering monthly expiry; no price, auto-renewal, trial
+duration or limits are approved. A monthly subscription must disclose renewal,
+price and cancellation before purchase. A fixed-term pass must state that it ends
+without renewing. Do not silently turn a no-card test into a paid subscription.
+
+The current batch implements client access foundations only. It does not register
+an account, include the official Samsung IAP SDK, deploy a licence authority, issue
+real trial grants or accept money. Existing private builds stay unrestricted.
+The SDK integration download requires a Samsung login; seller eligibility and a
+review-ready app remain prerequisites.
+[Samsung SDK setup](https://developer.samsung.com/iap/programming-guide/integrate-iap-helper-into-your-app.html),
+[seller setup](https://developer.samsung.com/galaxy-store/prepare.html).
+
+Client contract: `AppAccess` validates an Ed25519 signature with pinned public keys,
+issuer/app/installation, dates and a maximum 48-hour signed offline lease. It signs
+HTTPS requests using a random installation key kept in a device-only vault. Each
+online AI action refreshes access before provider work; ordinary local project/
+room creation can use a valid offline lease. Existing projects remain viewable and
+exportable after expiry. Private builds create no licensing identity or network
+request. The current software licence does not impose project/room-count limits.
+
+One-active-device enforcement is **not complete**: the future authority must own
+the device ledger, subscription state, original trial history and recovery/transfer.
+Do not rely on a local trial counter, IMEI, a copied licence or possession of a
+purchase ID alone as account recovery. Transferring a paid seat must authenticate
+ownership; old-device online AI must then be refused. Offline local work can remain
+available until its bounded lease ends. Deleting/reinstalling must recover the
+original expiry through verified account/eligibility state rather than minting a
+new trial. Public-key request proof alone does not identify a unique human.
+
+Samsung's purchase/owned-list callback is input to verification, not an unlock.
+The server must check the actual package/product, transaction environment, current
+subscription period and refund/cancellation state with Samsung before signing.
+Acknowledge only after the purchased access has been durably delivered. Paid
+expiry comes from verified current entitlement, never `now + 30 days` on every
+refresh. Use a no-charge Samsung test mode until explicitly approving live checkout.
+[Samsung receipt verification](https://developer.samsung.com/iap/programming-guide/samsung-iap-server-api.html),
+[SDK programming](https://developer.samsung.com/iap/programming-guide/iap-helper-programming.html).
+
+Provider recommendation for launch: keep the already integrated **OpenAI and
+Google Gemini**. OpenAI's GPT Image 2.6 Sunburst/Flare support detailed edits/fast
+iteration; Gemini's Nano Banana 2.1/Pro cover conversational photo editing and
+complex visual briefs. Existing presets remain restricted to what the supplied
+account can access. Keep working model IDs/settings intact.
+[OpenAI image guide](https://developers.openai.com/api/docs/guides/image-generation),
+[Gemini image guide](https://aistudio.google.com/docs/image-generation).
+FLUX is a plausible later comparison provider with a generation/editing API; it
+is not needed to launch and is not added here.
+[Black Forest Labs documentation](https://docs.bfl.ai/quick_start/introduction).
+Claude's documented image-input analysis can help write briefs, but that alone
+does not make it a replacement for a room-image generation/editing endpoint.
+[Claude vision](https://platform.claude.com/docs/en/build-with-claude/vision).
+No verified global usage ranking is claimed. Choose quality with the same room,
+brief, palette and refinement tests, comparing layout preservation, variation,
+request cost and latency rather than consumer-chat brand popularity.
+
+Advertising drafts, **not published**:
+
+- Audience: Samsung-owning DIY renovators comfortable connecting a developer API
+  key. Start with people who already use OpenAI/Gemini; broad consumer promotion
+  before simplifying BYO setup risks disappointing users.
+- Store headline: **See renovation ideas in your own room.**
+- Store body draft: **Start with room photos, choose a style and colour palette,
+  and explore renovation ideas with your own OpenAI or Google Gemini API key.
+  Compare saved versions, refine your favourite, and keep your project together.
+  AI provider usage is charged separately. Designs are visual inspiration.**
+- Five screenshots: original/AI concept comparison; room/photo setup; compact
+  style/palette; two meaningfully different concepts; a focused final refinement.
+  Use the authorised bundled kitchen sample and remove personal information from
+  settings/screenshots. Label historical/sample replay and external AI results
+  honestly; do not present a different-angle image as a measured reconstruction.
+- 25-30 second demo: 0-4s before/after; 4-9s source photo + style/palette; 9-17s
+  select a concept; 17-24s one requested refinement; 24-30s save/compare plus BYO
+  key/cost disclosure. Shortened generation time must be labelled. Camera overlay
+  is a still-image preview, not instant spatially tracked AR.
+- Initial organic test: store search terms matching renovation/room redesign;
+  short before/after videos; permission-based DIY/community posts and voluntary
+  tester feedback. No posts, emails, outreach, analytics service or spending made.
+- First funnel: store visits > installs > connected key > first saved design >
+  voluntary feedback > paid conversion. Start with store aggregates and voluntary
+  feedback; do not collect email or install identifiers for marketing by default.
+  Decide on any additional telemetry and consent before adding it.
+- Keep the first campaign free. Paid promotion waits for real store availability,
+  reliable key onboarding, conversion evidence and an explicit spending cap.
+
+
 ## Discovery, delivery and one-app trials — 28 November clarification
 
 Owner prioritises people finding the app and asks which sites combine hosting,

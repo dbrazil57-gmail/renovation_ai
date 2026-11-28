@@ -18,10 +18,17 @@ class MainActivity : FlutterActivity() {
         val vault = KeyVault(applicationContext)
         val geminiVault = KeyVault(applicationContext, "gemini")
         val testerVault = KeyVault(applicationContext, "tester")
+        val accessVault = KeyVault(applicationContext, "access")
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "renovision/secrets")
             .setMethodCallHandler { call, result ->
                 try {
                     when (call.method) {
+                        "readAppAccess" -> result.success(accessVault.read())
+                        "writeAppAccess" -> {
+                            accessVault.write(call.argument<String>("key") ?: error("Missing key"))
+                            result.success(null)
+                        }
+                        "deleteAppAccess" -> { accessVault.delete(); result.success(null) }
                         "readOpenAiKey" -> result.success(vault.read())
                         "writeOpenAiKey" -> {
                             vault.write(call.argument<String>("key") ?: error("Missing key"))
