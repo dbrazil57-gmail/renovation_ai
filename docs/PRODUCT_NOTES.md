@@ -3,12 +3,46 @@
 ## Discovery, delivery and one-app trials — 28 November clarification
 
 Owner prioritises people finding the app and asks which sites combine hosting,
-payment and automated access. Recommendation: Google Play as the main general-
-Android discovery route, Apple after native parity, Samsung as an optional
-additional Samsung-focused channel. If Play recruitment delays launch, a Payhip
-or Gumroad page can deliver a direct APK for early users. A hosted sales page is
-not equivalent to a mobile-store audience and does not guarantee discovery/sales.
+payment and automated access. Latest recommendation after clarifying discovery:
+**Samsung Galaxy Store is a first-store candidate** for the no-sign-up/annual-fee,
+mobile-marketplace preference, subject to commercial-seller approval and a finished
+review-ready app. Google Play remains the main broader Android target; Apple
+follows native parity. This refines the earlier Samsung-as-extra recommendation.
+If store approval delays launch, Payhip/Gumroad can deliver an early direct APK.
 No final distribution selection or developer/seller account registration yet.
+
+Payhip and Gumroad are general digital-product storefronts, not specialist phone
+app stores. Their own discovery is conditional: Payhip requires at least US$10 in
+genuine sales plus account/product approval; Gumroad currently requires a US$100
+balance from genuine sales, risk verification and product eligibility. Neither
+is a dependable way to bootstrap the first customers. A hosted sales page is
+useful for payment/downloads but does not guarantee an audience.
+[Payhip Marketplace](https://help.payhip.com/article/307-marketplace),
+[Gumroad Discover](https://gumroad.com/help/article/79-gumroad-discover).
+
+Samsung's official FAQ confirms no sign-up or annual publishing fee and states
+Galaxy Store runs on Samsung Android phones/tablets. It is genuine app browsing/
+search with checkout support, but does not reach all Android makes. It uses its
+own commercial verification and review; the Play Console closed-test gate is
+separate. Review the final build/billing/signing/privacy/AI-reviewer access before
+submission; current private test APK is not a public-store release.
+[Samsung FAQ](https://developer.samsung.com/galaxy-store/faq.html),
+[seller setup](https://developer.samsung.com/galaxy-store/prepare.html),
+[distribution requirements](https://developer.samsung.com/galaxy-store/distribution-guide.html?lang=en).
+Other actual mobile marketplaces include
+[Huawei AppGallery](https://developer.huawei.com/consumer/en/doc/app/50104-overview/)
+and [Aptoide](https://en.aptoide.com/). Target-user demand, current compatibility
+and billing would need validation; no evidence from this research establishes
+their Australian renovation-app conversion or return on integration effort.
+
+Practical discovery experiment, no paid advertising or messages authorised:
+create a short real kitchen before/after/refinement demo with an honest BYO-key
+explanation; use searchable store title/screenshots; invite a small set of local
+DIY renovators and real-estate agents; seek permission before community promotion;
+use short video/search traffic to a single consistent app/store page. BYO setup
+still needs a clear walkthrough. Measure actual visits, installs, activations,
+completed first designs and voluntary feedback before adding more stores. A
+marketplace listing makes discovery possible; it does not supply guaranteed users.
 
 Store-managed route: Google/Apple/Samsung host platform builds and provide
 checkout, purchase history and entitlement APIs. Integrate the relevant billing/

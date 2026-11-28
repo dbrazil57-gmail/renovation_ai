@@ -7,6 +7,11 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Commercial planning — 28 November 2026
 
+- [x] Refine discovery recommendation: Payhip/Gumroad are generic storefronts with
+  prior-sale discovery gates; Samsung Galaxy Store is a first mobile-store
+  candidate for no sign-up/annual fee, subject to commercial approval. Keep Play
+  as the broader Android target. Record a small demo/outreach measurement plan
+  without paid ads, posts or external registration.
 - [x] Clarify discovery-first store selection, direct storefront automatic APK/
   code delivery, and one installed app with trial/Standard states. Store builds
   can use store purchases rather than separately emailed licence codes; direct
