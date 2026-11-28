@@ -7,6 +7,16 @@ Requirements remain in [the project brief](RENOVISION_PROJECT_BRIEF.md);
 
 ## Commercial planning — 28 November 2026
 
+- [x] Record the owner's low-overhead direction: no paid seller plan/sign-up fee,
+  sales-based fees, modest BYO positioning and migration freedom. Check Gumroad,
+  Payhip Free and Paddle alternatives; no sales platform or price chosen.
+- [x] Specify a proposed Activate app / emailed licence / recovery flow without
+  mandatory passwords, independent of AI keys and tester allowances. Record
+  portability and separate real-estate staging scope in the
+  [follow-up notes](docs/PRODUCT_NOTES.md#low-overhead-selling-portable-access-and-staging--28-november-follow-up).
+- [ ] Add a dedicated furniture-only property-staging task with original compare,
+  agent review and labelled export. Keep imagined renovation work separate;
+  current full-room defaults and prompt-only precision are not a listing guarantee.
 - [x] Check current Play/direct APK/web/Galaxy distribution, verification changes,
   competitor offers/publisher countries and comparable BYO-key products. Record
   sources and proposed trial/licensing in [product notes](docs/PRODUCT_NOTES.md#distribution-and-byo-key-pricing--researched-28-november-2026).

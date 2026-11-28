@@ -1,5 +1,89 @@
 # Product and research reference
 
+## Low-overhead selling, portable access and staging — 28 November follow-up
+
+Confirmed owner direction: a modest, personally useful BYO renovation tool;
+affordable pricing, no paid seller subscription/sign-up fee, preferably a cut of
+actual sales, and freedom to change platform or pricing later. Keep the scope
+manageable. Price, sales platform and paid access model remain unselected.
+
+Current candidate plans, checked against official pages:
+
+- Gumroad: no monthly platform fee; direct sales 10% + US$0.50, Discover 30%;
+  emailed software keys and sales/customer CSV export. Existing licensing/API
+  integration still has to enforce access in RenoVision.
+  [Pricing](https://gumroad.com/pricing),
+  [software keys](https://gumroad.com/help/article/76-license-keys),
+  [sales export](https://gumroad.com/help/article/268-customer-dashboard).
+- Payhip Free Forever: no monthly fee, 5% platform fee **plus** Stripe/PayPal
+  processing. Includes a storefront, software-key options and customer CSV export.
+  Its product-secret licence API needs a secure server or the vendor's supported
+  public-app alternative; never embed that secret in the distributed APK.
+  [Pricing](https://payhip.com/pricing),
+  [licensing](https://help.payhip.com/article/317-software-license-keys-new),
+  [export](https://help.payhip.com/article/83-export-customers).
+- Paddle pay-as-you-go: no monthly platform fee; advertised 5% + US$0.50 per
+  checkout, with account approval/integration needed. Its page asks sellers of
+  products under US$10 to contact it about pricing. A possible later software-
+  billing option, not a selected or opened account.
+  [Pricing/migration statement](https://www.paddle.com/pricing).
+
+Free seller plans still require account/identity/payout setup. A sales page can
+use the platform's hosted address at first; no paid custom-domain commitment is
+needed just to test demand. Avoid representing all checkout fees as a single
+percentage or suggesting a paid storefront supplies a ready-made app paywall.
+
+Proposed portability: stable RenoVision licence/customer identifiers with a
+separate mapping to each checkout's purchase IDs; an independent access record
+containing product, expiry/entitlements and refund status; isolated provider
+adapters and recoverable/exportable records. Honour existing purchase promises
+when adding new prices/plans. CSV export does not transfer stored payment methods
+or recurring mandates automatically; provider migration/customer re-authorisation
+may be required. A one-off unlock or explicitly renewed pass is simpler to move.
+App projects/images stay local and portable; the seller's customer list is not a
+cloud copy of those projects. No such licensing service has been implemented.
+
+Recommended customer flow: Buy > receive licence code by email > Activate app >
+periodic validation with a bounded offline grace period. Add Recover purchase /
+Move to another device; optional email one-time-code or magic-link verification
+can support recovery. Email addresses and public IDs alone are not proof of
+purchase or identity. Codes are credentials, separate from AI API keys; store
+activation/session secrets securely and never include them in project exports.
+No full username/password system is required for this initial flow. The existing
+API-key vault and TesterAllowance are not purchased software entitlements.
+
+If passwords are added later, use a supported identity service with salted
+adaptive password hashes rather than reversible password encryption or a custom
+password database. [OWASP password storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).
+Activation/expiry/recovery, licensing hosting and email delivery remain work;
+free-tier services may suit a small beta but their limits/costs must be verified
+before selection. No seller/auth/hosting account was created or deployed.
+
+Owner also proposes real-estate room staging. Keep it in the shared app as a
+dedicated task, not a separate product initially. Existing room photos/history/
+comparison/export provide foundations; **no dedicated staging mode is shipped**.
+Proposed first scope:
+
+1. Property project > room photos > Stage this room; empty-room furnishing first.
+2. Add movable furniture, rugs/art/accessories within the real room. Preserve the
+   actual walls/openings, floor, fixed fittings, outside view, proportions and
+   camera position. Do not apply whole-room renovation replacement defaults.
+3. Compare with the immutable source and require agent review of architectural
+   drift/hidden defects before export. Existing AI precision is prompt guidance,
+   so it cannot guarantee all these constraints automatically.
+4. Label output Virtually staged / furniture added digitally; retain the original
+   alongside it. Offer a separate, clearly labelled Renovation concept for future
+   finishes, rather than treating imagined work as a current-property photograph.
+5. Later evaluate batch photos, shared project looks, agent branding/export sizes
+   and agency seats only after real agent feedback. No new high-priced tier yet.
+
+Australian listing requirements depend on the jurisdiction/platform. NSW's
+official guidance says property images must truthfully represent the property
+and must not hide undesirable characteristics. Labels alone do not cure a
+misleading alteration. Verify the target market/portal and commercial-use terms
+before marketing a listing-ready workflow; do not claim regulatory compliance
+from a prompt. [NSW property advertising guidance](https://www.nsw.gov.au/housing-and-construction/property-professionals/working-as-an-agent/advertising-guidelines).
+
 ## Distribution and BYO-key pricing — researched 28 November 2026
 
 Owner wants a modest paid launch, alternatives to Play's tester recruitment,
