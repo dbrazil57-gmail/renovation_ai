@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'room_analysis.dart';
 import 'ai_usage.dart';
+import 'australian_design.dart';
 
 /// A detached, allow-listed snapshot. Connection settings/keys are never accepted.
 class DesignRecipe {
@@ -44,6 +45,14 @@ class DesignRecipe {
 
   static Map<String, dynamic> _checked(Map value) {
     final result = <String, dynamic>{'version': 1};
+    if (value['australianSetting'] != null) {
+      if (value['australianSetting'] is! Map) {
+        throw const FormatException('Invalid Australian design settings');
+      }
+      result['australianSetting'] = AustralianDesignSettings.fromMap(
+        value['australianSetting'] as Map,
+      ).toMap();
+    }
     if (value['version'] != null && value['version'] != 1) {
       throw const FormatException('Unsupported design settings');
     }

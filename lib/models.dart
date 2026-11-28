@@ -6,6 +6,7 @@ import 'room_features.dart';
 import 'design_recipe.dart';
 import 'local_paint.dart';
 import 'design_references.dart';
+import 'australian_design.dart';
 
 String _storedRoomType(Object? value) {
   final original = (value ?? '').toString();
@@ -70,6 +71,7 @@ class RenovationRoom {
   final String colourPaletteId;
   final List<String> designStyleIds;
   final String otherStyle;
+  final AustralianDesignSettings australianSetting;
   final bool preciseEdit;
   final bool keepLayout;
   final bool fullRenovation;
@@ -140,6 +142,7 @@ class RenovationRoom {
     this.colourPaletteId = '',
     this.designStyleIds = const [],
     this.otherStyle = '',
+    this.australianSetting = const AustralianDesignSettings(),
     this.preciseEdit = false,
     this.keepLayout = true,
     this.fullRenovation = true,
@@ -176,6 +179,7 @@ class RenovationRoom {
     String? colourPaletteId,
     List<String>? designStyleIds,
     String? otherStyle,
+    AustralianDesignSettings? australianSetting,
     bool? preciseEdit,
     bool? keepLayout,
     bool? fullRenovation,
@@ -205,6 +209,7 @@ class RenovationRoom {
     colourPaletteId: colourPaletteId ?? this.colourPaletteId,
     designStyleIds: designStyleIds ?? this.designStyleIds,
     otherStyle: otherStyle ?? this.otherStyle,
+    australianSetting: australianSetting ?? this.australianSetting,
     preciseEdit: preciseEdit ?? this.preciseEdit,
     keepLayout: keepLayout ?? this.keepLayout,
     fullRenovation: fullRenovation ?? this.fullRenovation,
@@ -246,6 +251,7 @@ class RenovationRoom {
     'colourPaletteId': colourPaletteId,
     'designStyleIds': designStyleIds,
     'otherStyle': otherStyle,
+    'australianSetting': australianSetting.toMap(),
     'preciseEdit': preciseEdit,
     'keepLayout': keepLayout,
     'fullRenovation': fullRenovation,
@@ -301,6 +307,9 @@ class RenovationRoom {
       data['designStyleIds'] as List? ?? const [],
     ),
     otherStyle: (data['otherStyle'] ?? '').toString(),
+    australianSetting: AustralianDesignSettings.fromMap(
+      data['australianSetting'] as Map?,
+    ),
     preciseEdit: data['preciseEdit'] is bool
         ? data['preciseEdit'] as bool
         : true,
@@ -448,6 +457,7 @@ String buildRenovationPrompt({
   String colourPaletteId = '',
   List<String> designStyleIds = const [],
   String otherStyle = '',
+  AustralianDesignSettings australianSetting = const AustralianDesignSettings(),
   bool keepLayout = true,
   List<String> renovationScopeIds = const [],
   String flooringNotes = '',
@@ -517,6 +527,7 @@ ${!preciseEdit && wholeRoomDirection && !conciseDesignDirection ? 'DESIGN SYNTHE
 $scope
 $itemPrompt
 ${style.isEmpty ? '' : styleDirection(designStyleIds, other: otherStyle)}
+${preciseEdit ? '' : australianSetting.prompt}
 ${paletteById(colourPaletteId)?.prompt(precise: preciseEdit) ?? ''}
 ${preciseEdit ? 'Keep unselected regions consistent. Do not silently remove items outside the target area. A marked-up reference or crop limits the intended change; it is not permission to redesign the rest of the room.' : 'Coordinate the requested changes across the room. Where new storage is requested, depict usable doors, panels and shelving appropriate to that request rather than blank decorative cladding. Do not silently remove items outside the requested renovation scope.'}
 ${!preciseEdit && wholeRoomDirection ? 'Unprotected existing furniture may be replaced in place as part of the coordinated renovation; retain practical seating/storage capacity and circulation. Do not add extra windows, doors, walls, alcoves or unrelated furniture.' : 'Do not add extra windows, doors, walls, alcoves or furniture unless asked.'} Preserve useful existing storage unless its removal is explicitly requested. ${!preciseEdit && wholeRoomDirection ? 'Resolve genuinely conflicting requirements conservatively; ordinary unspecified finish and styling choices are for the designer to propose within the authorised scope.' : 'Resolve unclear instructions conservatively; ask about genuinely conflicting requirements rather than inventing a new brief.'}

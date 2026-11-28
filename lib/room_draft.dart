@@ -11,6 +11,7 @@ import 'room_features.dart';
 import 'design_recipe.dart';
 import 'brief_readiness.dart';
 import 'design_palettes.dart';
+import 'australian_design.dart';
 
 enum DraftSaveState { saved, pending, saving, failed }
 
@@ -25,6 +26,10 @@ class RoomDraft extends ChangeNotifier {
   final TextEditingController correction;
   final TextEditingController protected;
   final TextEditingController otherStyle;
+  final TextEditingController australianSiteNotes;
+  AustralianDesignSettings australianSetting;
+  AustralianDesignSettings get currentAustralianSetting =>
+      australianSetting.copyWith(siteNotes: australianSiteNotes.text);
   final TextEditingController aiPrompt;
   final TextEditingController flooringNotes;
   final TextEditingController removeItems;
@@ -76,6 +81,10 @@ class RoomDraft extends ChangeNotifier {
       correction = TextEditingController(text: room.correctionInstructions),
       protected = TextEditingController(text: room.protectedFeatures),
       otherStyle = TextEditingController(text: room.otherStyle),
+      australianSiteNotes = TextEditingController(
+        text: room.australianSetting.siteNotes,
+      ),
+      australianSetting = room.australianSetting,
       aiPrompt = TextEditingController(text: room.aiPrompt),
       flooringNotes = TextEditingController(text: room.flooringNotes),
       removeItems = TextEditingController(text: room.removeItems),
@@ -98,13 +107,14 @@ class RoomDraft extends ChangeNotifier {
     correction.addListener(_textChanged);
     protected.addListener(_textChanged);
     otherStyle.addListener(_textChanged);
+    australianSiteNotes.addListener(_textChanged);
     aiPrompt.addListener(_textChanged);
     flooringNotes.addListener(_textChanged);
     removeItems.addListener(_textChanged);
   }
 
   String get _text =>
-      '${changes.text}\u0000${correction.text}\u0000${protected.text}\u0000${otherStyle.text}\u0000${aiPrompt.text}\u0000${flooringNotes.text}\u0000${removeItems.text}';
+      '${changes.text}\u0000${correction.text}\u0000${protected.text}\u0000${otherStyle.text}\u0000${aiPrompt.text}\u0000${flooringNotes.text}\u0000${removeItems.text}\u0000${australianSiteNotes.text}';
   void _textChanged() {
     if (_lastText == _text) return;
     _lastText = _text;
@@ -137,6 +147,7 @@ class RoomDraft extends ChangeNotifier {
     'correctionInstructions': correction.text,
     'protectedFeatures': protected.text,
     'otherStyle': otherStyle.text,
+    'australianSetting': currentAustralianSetting.toMap(),
     'colourPaletteId': store.roomById(roomId)?.colourPaletteId ?? '',
     'designStyleIds': styleIds.toList(),
     'preciseEdit': preciseEdit,
@@ -173,6 +184,10 @@ class RoomDraft extends ChangeNotifier {
         : saved['correctionInstructions'] as String? ?? '';
     protected.text = saved['protectedFeatures'] as String? ?? '';
     otherStyle.text = saved['otherStyle'] as String? ?? '';
+    australianSetting = AustralianDesignSettings.fromMap(
+      saved['australianSetting'] as Map?,
+    );
+    australianSiteNotes.text = australianSetting.siteNotes;
     aiPrompt.text = saved['aiPrompt'] as String? ?? '';
     flooringNotes.text = saved['flooringNotes'] as String? ?? '';
     removeItems.text = saved['removeItems'] as String? ?? '';
@@ -225,6 +240,19 @@ class RoomDraft extends ChangeNotifier {
     styleIds = {...styleIds};
     id = canonicalStyleId(id);
     selected ? styleIds.add(id) : styleIds.remove(id);
+    if (selected &&
+        australianStyleIds.contains(id) &&
+        !australianSetting.enabled) {
+      australianSetting = australianSetting.copyWith(climateId: 'general');
+    }
+    _changed();
+  }
+
+  void setAustralianSetting(AustralianDesignSettings value) {
+    australianSetting = value;
+    if (australianSiteNotes.text != value.siteNotes) {
+      australianSiteNotes.text = value.siteNotes;
+    }
     _changed();
   }
 
@@ -396,6 +424,7 @@ class RoomDraft extends ChangeNotifier {
     final correctionInstructions = correction.text;
     final protections = protected.text;
     final customStyle = otherStyle.text;
+    final australianSnapshot = currentAustralianSetting;
     final styles = styleIds.toList();
     final precise = preciseEdit;
     final layout = keepLayout;
@@ -422,6 +451,7 @@ class RoomDraft extends ChangeNotifier {
           protectedFeatures: protections,
           designStyleIds: styles,
           otherStyle: customStyle,
+          australianSetting: australianSnapshot,
           preciseEdit: precise,
           keepLayout: layout,
           fullRenovation: fullSnapshot,
@@ -463,6 +493,7 @@ class RoomDraft extends ChangeNotifier {
     correction.dispose();
     protected.dispose();
     otherStyle.dispose();
+    australianSiteNotes.dispose();
     aiPrompt.dispose();
     flooringNotes.dispose();
     removeItems.dispose();

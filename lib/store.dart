@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_ce/hive_ce.dart';
 
 import 'models.dart';
+import 'australian_design.dart';
 import 'room_analysis.dart';
 import 'ai_service.dart';
 import 'project_backup.dart';
@@ -913,6 +914,7 @@ class RenovisionStore extends ChangeNotifier {
     required String protectedFeatures,
     required List<String> designStyleIds,
     required String otherStyle,
+    AustralianDesignSettings? australianSetting,
     required bool preciseEdit,
     required bool keepLayout,
     bool? fullRenovation,
@@ -937,6 +939,7 @@ class RenovisionStore extends ChangeNotifier {
         protectedFeatures: protectedFeatures,
         designStyleIds: designStyleIds,
         otherStyle: otherStyle,
+        australianSetting: australianSetting,
         preciseEdit: preciseEdit,
         keepLayout: keepLayout,
         fullRenovation: fullRenovation,

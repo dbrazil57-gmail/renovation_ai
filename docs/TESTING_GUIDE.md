@@ -1,5 +1,39 @@
 # Testing and storage reference
 
+## Australian design options - 28 November 2026
+
+Use the same normal Chrome profile at http://localhost:7357/. No APK was requested
+for this batch. Automated checks use disposable synthetic photos, not owner data.
+Build **`2180356fa6`**: **498 tests pass**, static analysis and release web build
+pass. Seven new checks cover legacy/global defaults, autosave/project restore and
+recipe reuse, changed-climate proposal freshness, native opt-out, focused-update
+isolation, settings validation and 320-pixel portrait / landscape dropdowns. The
+additional UI check confirms typing notes then changing climate preserves both
+the note and native preference. No paid AI image acceptance has been run.
+
+1. Open an existing room, Style. All current choices should remain; Australian
+   setting is Not selected. Australian English in Settings does not activate it.
+2. Choose Australian styles, then Bushland retreat or Australian contemporary.
+   The optional Australian setting summary becomes Australia/unspecified. Expand
+   it, choose a climate, toggle native planting and enter broad site notes.
+3. Change climate after typing a note; it must retain the note. Switch styles,
+   navigate back, reopen and refresh. Settings should remain with autosave on.
+   With autosave off, use the Save button.
+4. Preview a New design brief: selected style, climate and planting preference
+   should appear. New photo analysis should receive the same context. After
+   changing climate, an old proposal must not be reapplied as current; matching
+   photo observations can still be reused without another analysis charge.
+5. Save/Open a portable project and inspect a generated design's saved settings.
+   Reapplying its recipe should restore the setting and notes. No key is included.
+6. On a saved design, request a focused Partial update or Precise correction:
+   the prompt should contain only that change, not a new landscape/style brief.
+   Disable the Australian setting to return to global designs.
+7. Optional paid acceptance: compare an outdoor courtyard/garden concept in a
+   suitable climate with an indoor room. Check protected trees, actual window
+   views and the requested planting scope. Actual native species and site
+   suitability are not verified by these image concepts. Confirm each AI request
+   as normal; no paid generation was run automatically.
+
 ## RenoImagineAI branding - 28 November 2026
 
 Wording follow-up: owner confirms icon 06/name and the lines **Snap. Imagine.

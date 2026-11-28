@@ -1,5 +1,17 @@
 # RenoImagineAI
 
+Australian design update, **28 November 2026**: Style now has an **Australian
+styles** shortcut with Contemporary, Coastal, Bushland retreat, Heritage and
+Tropical Australian influences. The optional **Australian setting** panel adds a
+climate, suitable native-planting preference and broad area/site notes to photo
+analysis and new-design briefs. Choices save with each room and design recipe,
+including portable projects. Existing rooms stay global until selected; focused
+saved-design updates/precision do not reapply this broader context. See the
+[acceptance steps](docs/TESTING_GUIDE.md#australian-design-options---28-november-2026).
+Chrome build **`2180356fa6`** is ready at http://localhost:7357/. **498 tests pass**,
+including seven new Australian-setting checks; static analysis and release web
+build pass. Actual model/native-planting quality needs the owner's normal AI test.
+
 Current brand, **28 November 2026**: owner selected **RenoImagineAI**, the numbered
 **06 camera/house** logo concept, dark teal/mint/white and **Snap. Imagine. Renovate.**
 The secondary brand line is **Australian designed. Globally inspired.**
@@ -16,7 +28,7 @@ offline 32-second sample promo/screenshot pack. See the
 The draft has been regenerated with the approved name and icon. Final device
 footage and store acceptance remain outstanding; no new APK was built.
 
-Current Chrome source is **`2cf9a5920a`** at http://localhost:7357/. The 491-test
+The preceding branding Chrome source was **`2cf9a5920a`**. Its 491-test
 regression suite, clean static analysis, six Help checks, seven recording runs,
 Android Kotlin compilation and release web build validate this branding batch.
 See the [branding acceptance steps](docs/TESTING_GUIDE.md#renoimagineai-branding---28-november-2026).

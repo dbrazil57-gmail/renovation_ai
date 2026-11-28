@@ -81,6 +81,7 @@ String roomTemplatePrompt(
         colourPaletteId: precise ? '' : room.colourPaletteId,
         designStyleIds: precise ? const [] : draft.styleIds.toList(),
         otherStyle: precise ? '' : draft.otherStyle.text,
+        australianSetting: draft.currentAustralianSetting,
         keepLayout: draft.keepLayout,
         renovationScopeIds: precise ? const [] : draft.effectiveScopeIds,
         flooringNotes: precise ? '' : draft.flooringNotes.text,

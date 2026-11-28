@@ -1,5 +1,25 @@
 # RenoImagineAI feature status
 
+## Australian design context - 28 November 2026
+
+Five Australian style influences join the existing 23 (28 total): Contemporary,
+Coastal, Bushland retreat, Heritage and Tropical Australian. A direct shortcut
+keeps them easy to find. The optional Australian setting has seven broad climate
+choices including unspecified, native-planting preference and up to 600 characters
+of broad area/site notes. It does not infer a location or use GPS.
+
+Settings persist in rooms, saved design recipes and portable projects. Analysis
+and New design prompts use them within the authorised scope; original-photo
+Partial retains scope restrictions. Focused saved-design updates, precision and
+finish polish do not reapply regional styling. Protected trees and actual outside
+views stay authoritative. These are visual directions, not a botanical database,
+verified species identification, an official climate-zone lookup or planting plan.
+Global styles remain available; earlier projects keep their existing choices.
+All **498 tests pass**, including legacy-data, autosave/backup/recipe, prompt
+freshness/scope and portrait/landscape climate-control checks. Static analysis and
+release web build pass; Chrome **`2180356fa6`** serves the same localhost:7357.
+No paid AI request, new APK, native plugin or permission was introduced.
+
 ## Approved branding - 28 November 2026
 
 Owner selected **RenoImagineAI**, numbered **06 camera/house** concept and the

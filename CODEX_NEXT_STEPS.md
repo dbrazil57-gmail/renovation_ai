@@ -1,5 +1,23 @@
 # RenoImagineAI next steps
 
+## Australian design options - 28 November 2026
+
+- [x] Research current Australian design directions and local climate/planting
+  guidance; record primary sources in product notes. Curate five influences,
+  without presenting them as a measured popularity ranking.
+- [x] Add Australian style shortcut and an optional compact setting panel to
+  Style in setup/workspace: climate, native preference and broad site notes.
+- [x] Save settings through room autosave, design recipes and portable projects.
+  Existing rooms default to no Australian setting; no GPS or account is added.
+- [x] Include context in analysis/New design and scoped original-photo Partial
+  briefs. Preserve protected vegetation/views and exclude broader styling from
+  updates to saved designs, Precise correction and local-finish polish.
+- [x] All 498 regression tests pass, including seven new persistence/prompt/UI
+  checks. Static analysis and release web build pass. Chrome `2180356fa6` uses the
+  same localhost:7357/profile; existing APK remains unchanged.
+- [ ] Owner compare an outdoor native-planting concept with an indoor room and
+  test actual model quality. No paid AI acceptance or new APK requested here.
+
 ## Approved brand - 28 November 2026
 
 - [x] Owner chooses exact name **RenoImagineAI** and favours numbered concept

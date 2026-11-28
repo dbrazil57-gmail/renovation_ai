@@ -36,6 +36,19 @@ const designStyles = <String, String>{
   'italian': 'Italian',
   'moroccan': 'Moroccan',
   'indian': 'Indian',
+  'australian_contemporary': 'Australian contemporary',
+  'australian_coastal': 'Australian coastal',
+  'australian_bushland': 'Bushland retreat',
+  'australian_heritage': 'Australian heritage',
+  'australian_tropical': 'Tropical Australian',
+};
+
+const australianStyleIds = {
+  'australian_contemporary',
+  'australian_coastal',
+  'australian_bushland',
+  'australian_heritage',
+  'australian_tropical',
 };
 
 const regionalStyleIds = {
@@ -47,9 +60,15 @@ const regionalStyleIds = {
   'italian',
   'moroccan',
   'indian',
+  ...australianStyleIds,
 };
 
 const styleDesignCues = <String, String>{
+  'australian_contemporary': 'Australian contemporary character with tactile timber, warm stone, restrained joinery and practical indoor/outdoor details within the existing geometry; no new openings',
+  'australian_coastal': 'relaxed Australian coastal character with sun-washed neutrals, timber, woven textures and understated finishes; avoid nautical props and retain the real outlook',
+  'australian_bushland': 'bushland-inspired gum-leaf, earthy and stone tones within the selected palette, textured timber and restrained natural materials; native planting only where authorised, never replace the outside view',
+  'australian_heritage': 'a contemporary renovation respecting visible Australian heritage details, verandah character and crafted timber where present; do not invent period features or alter protected facade details',
+  'australian_tropical': 'Australian tropical-inspired light materials, woven texture and shaded alfresco character within the existing structure; locally appropriate planting only where authorised, not generic resort palms',
   'modern': 'clean contemporary lines, streamlined cabinetry and fittings, restrained detailing and integrated lighting',
   'classic': 'balanced proportions, refined framed or panelled detailing where appropriate, timeless fittings and elegant layered finishes',
   'minimalist':

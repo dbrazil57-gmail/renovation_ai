@@ -6,11 +6,15 @@ import 'design_palettes.dart';
 import 'ai_model_choices.dart';
 import 'local_paint.dart';
 import 'ai_usage_widgets.dart';
+import 'australian_design.dart';
 
 Future<bool?> showDesignRecipe(BuildContext context, DesignVersion design) {
   final saved = design.recipe?.toMap();
   final styles = saved?['designStyleIds'] as List? ?? [];
   final palette = paletteById(saved?['colourPaletteId'] as String? ?? '');
+  final australianSetting = AustralianDesignSettings.fromMap(
+    saved?['australianSetting'] as Map?,
+  );
   return showDialog<bool>(
     context: context,
     builder: (dialogContext) => AlertDialog(
@@ -48,6 +52,14 @@ Future<bool?> showDesignRecipe(BuildContext context, DesignVersion design) {
                 'Style: ${styles.map((id) => designStyles[id] ?? id).join(', ')}',
               ),
               Text('Palette: ${palette?.name ?? 'No preset'}'),
+              if (australianSetting.enabled) ...[
+                Text('Australian setting: ${australianSetting.label}'),
+                Text(
+                  'Prefer native planting: ${australianSetting.preferNativePlants ? 'Yes' : 'No'}',
+                ),
+                if (australianSetting.siteNotes.trim().isNotEmpty)
+                  Text('Site context: ${australianSetting.siteNotes}'),
+              ],
               Text(
                 'Mode: ${saved['preciseEdit'] == true ? 'Precise correction' : 'New design'}',
               ),

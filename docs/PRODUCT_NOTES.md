@@ -1,5 +1,44 @@
 # Product and research reference
 
+## Australian design and landscape context - 28 November
+
+Owner wants Australian room/outdoor options as part of the Australian-designed
+brand. Add five curated influences: Australian contemporary, Australian coastal,
+Bushland retreat, Australian heritage and Tropical Australian. These are useful
+starting points, not a measured top-five ranking or claims of uniquely Australian
+ownership of global design movements. Existing Coastal/Hamptons styles remain.
+James Hardie's current forecast supports a local adaptation of global styles and
+an emphasis on modern coastal/heritage and indoor/outdoor material coordination:
+[2026 forecast](https://www.jameshardie.com.au/ContentfulCMS/Inspiration/modern-homes-forecast-26.pdf),
+[modern coastal](https://www.jameshardie.com.au/modern-homes-forecast/2026/modern-coastal).
+
+Australia spans markedly different climates; one national planting preset would
+mislead. Offer broad user-selected tropical, subtropical, temperate, cool/frost,
+hot/dry and dry-summer climates, plus Australia/unspecified. These are design
+groups, not the official eight climate zones, a postcode lookup or a performance
+assessment. Optional notes can describe coastal exposure, sun/shade, soil or a
+broad locality without collecting GPS/address data.
+[YourHome climate guidance](https://www.yourhome.gov.au/passive-design/design-climate).
+
+Prefer appropriate Australian native planting by default once the Australian
+setting is selected, with an off option. Indigenous/local suitability depends on
+soil, climate and site; native does not mean drought-tolerant everywhere or safe
+as an indoor/container plant. Never infer exact species from a photograph or
+claim a validated planting schedule. Favour locally indigenous plants when known
+and preserve protected trees, views and unselected surfaces. Indoor changes must
+not replace the real garden beyond a window. Balcony/courtyard planting must stay
+within the visible scale and authorised scope.
+[NSW species selection](https://www.nsw.gov.au/regional-and-primary-industries/natural-resource-management/revegetating-your-property/plant-species-selection-for-revegetation),
+[YourHome garden design](https://www.yourhome.gov.au/live-adapt/landscaping-garden-design).
+
+Store this separately from UI wording region: Australian English does not imply
+an Australian property. Existing rooms default global. Picking an Australian
+style initially enables Australia/unspecified, not a guessed climate; users can
+turn the setting off. New settings travel through normal room autosave, project
+files and per-design recipes. The optional site note accompanies the reviewed AI
+brief. No new service, automatic web search, photo upload, paid AI call or GPS
+permission is introduced. Prompt-level quality needs owner model acceptance.
+
 ## Approved name and logo - 28 November
 
 Owner chooses **RenoImagineAI** (one word, exact capitalisation). After initially

@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'design_styles.dart';
 import 'room_draft.dart';
 import 'context_help.dart';
+import 'australian_design_widgets.dart';
 
 class DesignStyleControls extends StatefulWidget {
   final RoomDraft draft;
@@ -13,11 +14,14 @@ class DesignStyleControls extends StatefulWidget {
 
 class _DesignStyleControlsState extends State<DesignStyleControls> {
   int page = 0;
+  bool australianOnly = false;
   RoomDraft get draft => widget.draft;
-  final orderedIds = [
-    ...commonStyleIds,
-    ...designStyles.keys.where((id) => !commonStyleIds.contains(id)),
-  ];
+  List<String> get orderedIds => australianOnly
+      ? australianStyleIds.toList()
+      : [
+          ...commonStyleIds,
+          ...designStyles.keys.where((id) => !commonStyleIds.contains(id)),
+        ];
   int get pageCount => (orderedIds.length / 10).ceil();
 
   @override
@@ -32,8 +36,32 @@ class _DesignStyleControlsState extends State<DesignStyleControls> {
             message: 'Choose one style or blend several influences in one design. Style choices apply to your next generation, not an existing image. Use Other for your own direction. For separate style concepts, choose Multiple design ideas and Compare styles separately in AI generation.',
           ),
           const SizedBox(height: 6),
+          Wrap(
+            spacing: 8,
+            children: [
+              ChoiceChip(
+                label: const Text('All styles'),
+                selected: !australianOnly,
+                onSelected: (_) => setState(() {
+                  australianOnly = false;
+                  page = 0;
+                }),
+              ),
+              ChoiceChip(
+                key: const ValueKey('australian-styles'),
+                label: const Text('Australian styles'),
+                selected: australianOnly,
+                onSelected: (_) => setState(() {
+                  australianOnly = true;
+                  page = 0;
+                }),
+              ),
+            ],
+          ),
           Text(
-            page == 0
+            australianOnly
+                ? 'Australian influences · select one or blend styles.'
+                : page == 0
                 ? 'Common choices · select one or blend styles.'
                 : 'More styles · selections stay saved across pages.',
           ),
@@ -56,33 +84,35 @@ class _DesignStyleControlsState extends State<DesignStyleControls> {
                 ),
             ],
           ),
-          Row(
-            children: [
-              IconButton(
-                tooltip: 'Previous styles',
-                onPressed: page == 0 ? null : () => setState(() => page--),
-                icon: const Icon(Icons.chevron_left),
-              ),
-              Expanded(
-                child: Text(
-                  '${page + 1} / $pageCount',
-                  textAlign: TextAlign.center,
+          if (!australianOnly)
+            Row(
+              children: [
+                IconButton(
+                  tooltip: 'Previous styles',
+                  onPressed: page == 0 ? null : () => setState(() => page--),
+                  icon: const Icon(Icons.chevron_left),
                 ),
-              ),
-              TextButton.icon(
-                key: const ValueKey('more-design-styles'),
-                onPressed: () => setState(() => page = (page + 1) % pageCount),
-                icon: Icon(
-                  page + 1 == pageCount
-                      ? Icons.first_page
-                      : Icons.chevron_right,
+                Expanded(
+                  child: Text(
+                    '${page + 1} / $pageCount',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-                label: Text(
-                  page + 1 == pageCount ? 'Common styles' : 'More styles',
+                TextButton.icon(
+                  key: const ValueKey('more-design-styles'),
+                  onPressed: () =>
+                      setState(() => page = (page + 1) % pageCount),
+                  icon: Icon(
+                    page + 1 == pageCount
+                        ? Icons.first_page
+                        : Icons.chevron_right,
+                  ),
+                  label: Text(
+                    page + 1 == pageCount ? 'Common styles' : 'More styles',
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           const SizedBox(height: 6),
           if (draft.styleIds.contains('modern') &&
               draft.styleIds.contains('classic'))
@@ -98,6 +128,7 @@ class _DesignStyleControlsState extends State<DesignStyleControls> {
               border: OutlineInputBorder(),
             ),
           ),
+          AustralianDesignControls(draft: draft),
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
             title: const Text('Keep existing layout and walls'),
